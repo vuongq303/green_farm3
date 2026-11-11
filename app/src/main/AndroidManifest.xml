@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:versionCode="44220"
+    android:versionName="4.4.2"
+    android:installLocation="auto"
+    android:compileSdkVersion="29"
+    android:compileSdkVersionCodename="10"
+    package="com.gameloft.android.ANMP.GloftGF2F"
+    platformBuildVersionCode="29"
+    platformBuildVersionName="10">
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="28"/>
+    <supports-screens
+        android:anyDensity="true"
+        android:smallScreens="false"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true"/>
+    <application
+        android:theme="@style/Theme.wrapper.black.notitlebar.fullscreen"
+        android:label="@string/MIDlet_Name"
+        android:icon="@mipmap/ic_launcher"
+        android:name="javax.microedition.midlet.App"
+        android:debuggable="false"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:label="@string/MIDlet_Name"
+            android:name="com.gameloft.android.ANMP.GloftGF2F.Start"
+            android:launchMode="singleTop"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="fontScale|layoutDirection|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:resizeableActivity="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>android:usesCleartextTraffic=&quot;true&quot;\10
+            <intent-filter>
+                <action android:name="com.google.android.apps.plus.VIEW_DEEP_LINK"/>
+                <data android:scheme="vnd.google.deeplink"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+            </intent-filter>
+        </activity>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"/>
+        <meta-data
+            android:name="com.samsung.android.infinitedisplay.supported"
+            android:value="yes"/>
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.5"/>
+        <activity
+            android:theme="@style/Theme.wrapper.translucent.notitlebar.fullscreen"
+            android:name="com.gameloft.android.wrapper.GamePermission"
+            android:configChanges="fontScale|layoutDirection|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"/>
+        <service android:name="com.gameloft.android.ANMP.GloftGF2F.PushNotification.FirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.gameloft.android.ANMP.GloftGF2F.PushNotification.FirebaseMessageService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:exported="true">
+            <intent-filter android:priority="-500">
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <receiver
+            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+            android:enabled="true"
+            android:exported="false"/>
+        <receiver
+            android:name="com.google.android.gms.measurement.AppMeasurementInstallReferrerReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER"/>
+            </intent-filter>
+        </receiver>
+        <service
+            android:name="com.google.android.gms.measurement.AppMeasurementService"
+            android:enabled="true"
+            android:exported="false"/>
+        <service
+            android:name="com.google.android.gms.measurement.AppMeasurementJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:enabled="true"
+            android:exported="false"/>
+        <receiver
+            android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <category android:name="com.gameloft.android.ANMP.GloftGF2F"/>
+            </intent-filter>
+        </receiver>
+        <service
+            android:name="com.google.firebase.iid.FirebaseInstanceIdService"
+            android:exported="true">
+            <intent-filter android:priority="-500">
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+        <provider
+            android:name="com.google.firebase.provider.FirebaseInitProvider"
+            android:exported="false"
+            android:authorities="com.gameloft.android.ANMP.GloftGF2F.firebaseinitprovider"
+            android:initOrder="100"/>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:exported="false"
+            android:authorities="com.gameloft.android.ANMP.GloftGF2F.provider"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false"/>
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="smallestScreenSize|screenSize|uiMode|screenLayout|orientation|keyboardHidden|keyboard"/>
+        <activity
+            android:name="com.facebook.ads.AudienceNetworkActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden"/>
+        <activity
+            android:name="com.facebook.ads.internal.ipc.RemoteANActivity"
+            android:exported="false"
+            android:process=":adnw"
+            android:configChanges="screenSize|orientation|keyboardHidden"/>
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.unity3d.services.ads.adunit.AdUnitActivity"
+            android:configChanges="fontScale|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:hardwareAccelerated="true"/>
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:name="com.unity3d.services.ads.adunit.AdUnitTransparentActivity"
+            android:configChanges="fontScale|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:hardwareAccelerated="true"/>
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:name="com.unity3d.services.ads.adunit.AdUnitTransparentSoftwareActivity"
+            android:configChanges="fontScale|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:hardwareAccelerated="false"/>
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.unity3d.services.ads.adunit.AdUnitSoftwareActivity"
+            android:configChanges="fontScale|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:hardwareAccelerated="false"/>
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.vungle.warren.ui.VungleActivity"
+            android:launchMode="singleTop"
+            android:configChanges="smallestScreenSize|screenSize|screenLayout|orientation|keyboardHidden"/>
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:name="com.vungle.warren.ui.VungleWebViewActivity"
+            android:launchMode="singleTop"
+            android:configChanges="smallestScreenSize|screenSize|screenLayout|orientation|keyboardHidden"/>
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:name="com.vungle.warren.ui.VungleFlexViewActivity"
+            android:launchMode="singleTop"
+            android:configChanges="smallestScreenSize|screenSize|screenLayout|orientation|keyboardHidden"/>
+        <activity
+            android:name="com.ironsource.sdk.controller.ControllerActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:hardwareAccelerated="true"/>
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:name="com.ironsource.sdk.controller.InterstitialActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:hardwareAccelerated="true"/>
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:name="com.ironsource.sdk.controller.OpenUrlActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden"
+            android:hardwareAccelerated="true"/>
+        <activity
+            android:theme="@style/Theme.wrapper.translucent.notitlebar.fullscreen"
+            android:name="com.gameloft.android.ANMP.GloftGF2F.ActivityMessage"
+            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:hardwareAccelerated="true"/>
+        <activity
+            android:theme="@style/Theme.wrapper.translucent.notitlebar.fullscreen"
+            android:name="com.gameloft.android.ANMP.GloftGF2F.Nt"
+            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:hardwareAccelerated="true"/>
+        <activity
+            android:theme="@style/Theme.wrapper.translucent.notitlebar.fullscreen"
+            android:name="com.gameloft.android.ANMP.GloftGF2F.ActivityClearAllTasks"
+            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:hardwareAccelerated="true"/>
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/game_api_app_id"/>
+        <meta-data
+            android:name="com.google.android.gms.appstate.APP_ID"
+            android:value="@string/game_api_app_id"/>
+        <activity
+            android:theme="@style/Theme.wrapper.translucent.notitlebar.fullscreen"
+            android:name="com.gameloft.android.ANMP.GloftGF2F.InGameBrowserActivity"
+            android:screenOrientation="unspecified"
+            android:configChanges="fontScale|layoutDirection|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|touchscreen|locale|mnc|mcc"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>
+        <activity
+            android:theme="@style/com_facebook_activity_theme"
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="screenSize|screenLayout|orientation|keyboardHidden|keyboard"/>
+        <activity android:name="com.facebook.CustomTabMainActivity"/>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/app_id"/>
+        <receiver android:name="com.gameloft.android.ANMP.GloftGF2F.PushNotification.LocalPushReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.gameloft.android.ANMP.GloftGF2F.PushNotification.PushIntentReceiver"/>
+        <receiver android:name="com.gameloft.android.ANMP.GloftGF2F.PushNotification.PushDeleteReceiver"/>
+        <provider
+            android:name="com.gameloft.android.ANMP.GloftGF2F.KeyProvider"
+            android:permission="glshare.permission.ACCESS_SHARED_DATA"
+            android:exported="true"
+            android:multiprocess="true"
+            android:authorities="com.gameloft.android.ANMP.GloftGF2F.KeyProvider"/>
+        <meta-data
+            android:name="CHANNEL_ID"
+            android:value="0"/>
+        <receiver
+            android:name="com.gameloft.android.ANMP.GloftGF2F.GoogleIAPTrackerReceiver"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </receiver>
+        <activity
+            android:name=".SoftKeyBoardActivity"
+            android:windowSoftInputMode="adjustPan"/>
+        <receiver
+            android:name="com.gameloft.android.ANMP.GloftGF2F.installer.IReferrerReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER"/>
+            </intent-filter>
+        </receiver>
+        <activity
+            android:name="com.gameloft.android.ANMP.GloftGF2F.S800x480.GloftGF2F"
+            android:launchMode="singleTask"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="fontScale|layoutDirection|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:resizeableActivity="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+    </application>
+    <uses-feature android:name="android.hardware.touchscreen"/>
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false"/>
+    <uses-feature android:name="android.hardware.screen.landscape"/>
+    <permission
+        android:name="com.gameloft.android.ANMP.GloftGF2F.permission.C2D_MESSAGE"
+        android:protectionLevel="signature"/>
+    <uses-feature android:name="android.hardware.touchscreen.multitouch"/>
+    <uses-feature android:glEsVersion="0x20000"/>
+    <permission
+        android:name="glshare.permission.ACCESS_SHARED_DATA"
+        android:protectionLevel="signature"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <uses-permission android:name="com.gameloft.android.ANMP.GloftGF2F.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="com.android.vending.BILLING"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="glshare.permission.ACCESS_SHARED_DATA"/>
+</manifest>

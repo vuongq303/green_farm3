@@ -1,0 +1,940 @@
+Manifest-Version: 1.0
+Created-By: 1.8.0_202 (Oracle Corporation)
+
+Name: assets/800x480/PL
+SHA1-Digest: LvqQqOxPPvxc7MSC8NhehHL3uD4=
+
+Name: res/drawable-ldpi-v11/pn_status_icon.png
+SHA1-Digest: 4nELx4vQYAqgE0Mg5cAvl/TLAcM=
+
+Name: res/layout/com_facebook_activity_layout.xml
+SHA1-Digest: +QTV4lrQmTxHNgdF3+s8SkcHQEs=
+
+Name: res/mipmap-xhdpi-v4/ic_pn8.png
+SHA1-Digest: dVmJdHOui3UQIBFwMeTz3/iUi1o=
+
+Name: res/drawable-hdpi-v4/com_facebook_tooltip_black_background.9.png
+SHA1-Digest: +DxTpyUKpT11iz68MG1Q0iB2EvA=
+
+Name: res/layout/iap_layout_osconfirmation.xml
+SHA1-Digest: TvQtY53bIwVtTcT1sBjX09s80jo=
+
+Name: res/drawable/common_google_signin_btn_icon_dark_normal.xml
+SHA1-Digest: F5278FvHYig7dvXRHlNwaoQ4XSE=
+
+Name: res/layout/layout_downloading_dialog.xml
+SHA1-Digest: U7J8/R55YnwjiIDHzLUuV/BJGCM=
+
+Name: res/drawable/background_update.jpg
+SHA1-Digest: dn4Zqdtibuvq9SGWJI8FosxNLvc=
+
+Name: res/drawable-mdpi-v4/common_google_signin_btn_text_dark_normal_b
+ ackground.9.png
+SHA1-Digest: P/wxkPCZpWlDXn4V4hSETB1GR4s=
+
+Name: res/drawable-xhdpi-v4/com_facebook_tooltip_black_xout.png
+SHA1-Digest: ikp9eJ1dNvy27OSM3ScVp7zEzyc=
+
+Name: res/drawable-hdpi-v4/tw_widget_progressbar_effect_holo_light.png
+SHA1-Digest: b/zN2s0TZYZcIMlnXbHVxeS82d4=
+
+Name: assets/InitialFeed.bin
+SHA1-Digest: RssPYP/aM6AjS+xawXIPQMxTslE=
+
+Name: res/drawable/close_button.png
+SHA1-Digest: bvJe7CAKm0jAQNhQBm/GM1HFuY0=
+
+Name: res/drawable/common_google_signin_btn_text_dark_focused.xml
+SHA1-Digest: feC/oNo4CAB4iQE/i/D/Isu1C4Y=
+
+Name: assets/800x480/11
+SHA1-Digest: I4btC3lkSKS7O0rVLiJh3TDR+4U=
+
+Name: assets/800x480/10
+SHA1-Digest: YW3Ow0BzO8rixd42bk1inmkecE4=
+
+Name: res/drawable-xxxhdpi-v4/ic_launcher.png
+SHA1-Digest: 9ieT0U1viyh1UPTXkKsgthAFh9U=
+
+Name: res/drawable/background_dialog_title2.png
+SHA1-Digest: lu0ZTe4Wlowb2y8SorxisTZeE+0=
+
+Name: res/drawable/com_facebook_auth_dialog_header_background.xml
+SHA1-Digest: B5lWXQcvnFCQ294ETjAW8xAdiFc=
+
+Name: play-services-games.properties
+SHA1-Digest: I1UJHZj2zbB7CLFbc3oE0kBI2zU=
+
+Name: res/mipmap-hdpi-v4/ic_launcher.png
+SHA1-Digest: Uk/Er7zsPJOZIJoo2/T6aGi23I0=
+
+Name: res/drawable-xhdpi-v4/com_facebook_tooltip_black_bottomnub.png
+SHA1-Digest: U5WqIiU/joRWpleUxbwoh9Dr5Kg=
+
+Name: firebase-analytics.properties
+SHA1-Digest: BgnyWidvYr+B4u6JrLrHDqur8bU=
+
+Name: res/raw/color_profile.conf
+SHA1-Digest: pigJKHmHNxK3DRFloINJsOk7L0E=
+
+Name: resources.arsc
+SHA1-Digest: C9qKSh+JLZ4jSWCiiw2I+jJPJVk=
+
+Name: assets/800x480/15
+SHA1-Digest: oUME7dmzrWCmHNNrU98YxCdxRZM=
+
+Name: res/drawable-xhdpi-v4/com_facebook_tooltip_blue_topnub.png
+SHA1-Digest: A5RVOew4XVzPAmqdSQHqKACOHXg=
+
+Name: assets/800x480/14
+SHA1-Digest: KRhvDj2cJUuznYNpR2zxr7G/tZU=
+
+Name: assets/800x480/13
+SHA1-Digest: veP6aSnN+Uk4MrqXl95sK4thiyo=
+
+Name: res/drawable-mdpi-v4/com_facebook_button_send_icon_white.png
+SHA1-Digest: R5kOBI5lKCPVcxCeiBi49N367Hk=
+
+Name: assets/800x480/12
+SHA1-Digest: FSDaFaqrZLskMzJKMUK5Cf9q7og=
+
+Name: res/drawable/navigation_back.png
+SHA1-Digest: OT7HCPz2QtsejAqgDMpAiGYedJY=
+
+Name: AndroidManifest.xml
+SHA1-Digest: my/pUCTZxE7j2DnxkVbYGOy3bc8=
+
+Name: support.txt
+SHA1-Digest: w2jZ9lLBO09+cu87bEv08629EiI=
+
+Name: res/drawable-hdpi-v9/pn_status_icon.png
+SHA1-Digest: 4nELx4vQYAqgE0Mg5cAvl/TLAcM=
+
+Name: res/layout/iap_layout_osconfirmation_sp_directiap.xml
+SHA1-Digest: gF0obe562ZrV9IiVJxXXiZ6wkN8=
+
+Name: res/xml/network_security_config.xml
+SHA1-Digest: uFfuo+hH/+aX7U/jkEqrNGX+iK8=
+
+Name: res/layout-v17/com_facebook_smart_device_dialog_fragment.xml
+SHA1-Digest: XJkCdTi+RDCghnYAmW2WlWX2gf0=
+
+Name: res/drawable/com_facebook_button_icon.xml
+SHA1-Digest: KM3XLiKEOeVCUQNhIH8xmPmjmmg=
+
+Name: res/mipmap-ldpi-v4/ic_pn8.png
+SHA1-Digest: 3pMYqmFVl22cSIA7iDgAH1N9X0s=
+
+Name: assets/800x480/BR
+SHA1-Digest: kA1n5LTr6ylnb1/SHF9s0Jj9zi4=
+
+Name: res/drawable-xhdpi-v4/googleg_standard_color_18.png
+SHA1-Digest: PIph7M4ZHhY/AYP5Y1gUzmtpP60=
+
+Name: res/drawable-mdpi-v4/com_facebook_button_icon_white.png
+SHA1-Digest: DO4DDyKW/+pVjYnmMBvRKZLiAMs=
+
+Name: res/drawable-xhdpi-v11/pn_status_icon.png
+SHA1-Digest: n9o/bdnpiMHutuUulut2imPWvc0=
+
+Name: res/drawable-xxhdpi-v4/com_facebook_button_like_icon_selected.pn
+ g
+SHA1-Digest: DTPdcyeDe7WBc+LUgdzpcPriOyI=
+
+Name: play-services-gcm.properties
+SHA1-Digest: li5EBIPU59EuRzty6pcmpp9iw/Q=
+
+Name: res/drawable-xxhdpi-v4/common_google_signin_btn_icon_light_norma
+ l_background.9.png
+SHA1-Digest: Mp14FgGLVMAFx4aJz9gLqSo67Ns=
+
+Name: res/layout/_template_native_ad_100_fan.xml
+SHA1-Digest: JTpJNJW2labhbcvHZQuTeAcOrDk=
+
+Name: play-services-auth.properties
+SHA1-Digest: 9y5NO8ySSi4stmHU/IL7LVmm+lU=
+
+Name: assets/800x480/RU
+SHA1-Digest: IOFT0LqTRCvH8fEfsT3tzXd3dww=
+
+Name: res/drawable-hdpi-v11/pn_status_icon.png
+SHA1-Digest: ZqNe2HnVsw/2s/2cDJkjmHW0Pvk=
+
+Name: assets/800x480/11.4
+SHA1-Digest: aX7DDbVbUxTGmqAlgnjtoR4f1kw=
+
+Name: assets/800x480/11.3
+SHA1-Digest: QwLmCQYXpLai3LHX5acyn/ATr1o=
+
+Name: res/layout/com_facebook_smart_device_dialog_fragment.xml
+SHA1-Digest: 0S1mvTQamWhMe+ZDeCvwZA8uoUw=
+
+Name: assets/800x480/11.6
+SHA1-Digest: uNoCN9ByxBSl8D5a5ym33otlZrY=
+
+Name: res/layout/iap_webview.xml
+SHA1-Digest: 8PnKycowrnLMyv3IkY+1abs7TA8=
+
+Name: assets/800x480/11.5
+SHA1-Digest: JaRXE+YWxvOHQl0TckmrELks6kM=
+
+Name: res/drawable-xhdpi-v4/common_google_signin_btn_icon_dark_normal_
+ background.9.png
+SHA1-Digest: yD9oZ20JeI0KgCsh9WHkjjufTLU=
+
+Name: assets/800x480/11.2
+SHA1-Digest: Q3zbvHgcJTn7e0H0C0zEUujlqNs=
+
+Name: res/drawable/com_facebook_send_button_icon.xml
+SHA1-Digest: C6SxFsjjDp+aOqTuFx5N1PHp+IA=
+
+Name: assets/800x480/11.1
+SHA1-Digest: wYNKkpWFIJqRw3//HBkBUMFn39g=
+
+Name: res/layout/activity_main.xml
+SHA1-Digest: sBUFdvkRAS9BWSRwLf14zd1JyYk=
+
+Name: lib/armeabi-v7a/libnativeU.so
+SHA1-Digest: NtIHZfccFJDpGiBxicqxqwYyjZA=
+
+Name: assets/800x480/11.8
+SHA1-Digest: E1/sMvZCgr5Aq84CoShXLr4Y6Mg=
+
+Name: assets/800x480/9.1
+SHA1-Digest: /Yeh6xuFL7Gj/LDXhevST2gYrBQ=
+
+Name: assets/800x480/11.7
+SHA1-Digest: hLp3Vx/tDkBJblkEi2TxmQGP9EU=
+
+Name: assets/800x480/9.3
+SHA1-Digest: kDRY1g6pBXKSbfbeE+b84LHNhA8=
+
+Name: res/drawable-ldpi-v4/pn_status_icon.png
+SHA1-Digest: jt3Qg93Zlz8cmTwmK8qSPogsdZg=
+
+Name: assets/800x480/9.2
+SHA1-Digest: LpdrBZMqbKGE7pdr3e43BNf5lRQ=
+
+Name: res/drawable-xhdpi-v4/com_facebook_tooltip_blue_background.9.png
+SHA1-Digest: ewmojyQLbwcPjW/HwZL3ryTwxZQ=
+
+Name: assets/800x480/9.5
+SHA1-Digest: CCuSH2d9rYCmD2mCx9Ozzk7pzBk=
+
+Name: assets/800x480/9.4
+SHA1-Digest: AWDnFcGKg4mTJgDZ7EAIpLzJGJc=
+
+Name: play-services-base.properties
+SHA1-Digest: aUssaWFmAd01V98IOyox+M+b4/4=
+
+Name: play-services-auth-base.properties
+SHA1-Digest: ZFihsOi8a/ib9ugLUkHNC/3OSCo=
+
+Name: play-services-analytics-impl.properties
+SHA1-Digest: pknD62upTYOBplI9hGep3bvufSQ=
+
+Name: res/drawable/style_progressbar_downloading.xml
+SHA1-Digest: ion0TxTWJd9qp72xKVPm8xBqIag=
+
+Name: res/drawable-hdpi-v4/com_facebook_tooltip_black_xout.png
+SHA1-Digest: r3D39uYdVL5rhaXdAcPwZaSc0HE=
+
+Name: play-services-analytics.properties
+SHA1-Digest: /bfT5oYtBhox+ju2wOVlXwq/LnQ=
+
+Name: assets/800x480/TR
+SHA1-Digest: jry65HFFbNn7KCef4o/lVdmn790=
+
+Name: res/raw/serialkey.txt
+SHA1-Digest: 2jmj7l5rSw0yVb/vlWAYkK/YBwk=
+
+Name: res/drawable/ic_background.png
+SHA1-Digest: vd77AK8raBWHYXJ/6ml3JC0KlTk=
+
+Name: res/layout-land/activity_in_game_browser.xml
+SHA1-Digest: u5ufezZT4HResBDxPVRXTv9jB5A=
+
+Name: res/drawable-mdpi-v4/ic_launcher.png
+SHA1-Digest: 9ieT0U1viyh1UPTXkKsgthAFh9U=
+
+Name: assets/800x480/TH
+SHA1-Digest: mNhcKeee6E0VgxbEV2niRCOJ6bU=
+
+Name: res/drawable-hdpi-v4/pn_status_icon.png
+SHA1-Digest: ZqNe2HnVsw/2s/2cDJkjmHW0Pvk=
+
+Name: play-services-tasks.properties
+SHA1-Digest: RsBturOqqla6pgtTu1rPwVkgt2w=
+
+Name: res/drawable-mdpi-v4/com_facebook_button_like_icon_selected.png
+SHA1-Digest: GYJHDiW8lSyOgd2FQB0VXmxY9n4=
+
+Name: res/layout/com_facebook_device_auth_dialog_fragment.xml
+SHA1-Digest: 3Af+E1bfVs3onUWBtWt2E9VsgkU=
+
+Name: res/drawable/common_google_signin_btn_icon_dark_focused.xml
+SHA1-Digest: 76uIhzqI82Y8VqHXvgfk9cxUSig=
+
+Name: play-services-iid.properties
+SHA1-Digest: 2OB+Rov05U4UGVSBRfORfCgDTuQ=
+
+Name: res/drawable/content_undo.png
+SHA1-Digest: drImTTJBmS8s3nvJC6SnXZ26OO8=
+
+Name: res/mipmap-hdpi-v4/ic_pn8.png
+SHA1-Digest: Uk/Er7zsPJOZIJoo2/T6aGi23I0=
+
+Name: res/mipmap-xxhdpi-v4/ic_pn8.png
+SHA1-Digest: uuqOxOfR+q0lWUNdw2tEjd++xv4=
+
+Name: assets/800x480/LATAM
+SHA1-Digest: ht+Z0hOWKvejBeC8fhmliyeRjQ4=
+
+Name: res/drawable/common_google_signin_btn_icon_light.xml
+SHA1-Digest: BnWpTYQMBZIz+TM5SV3hPhZ4KM4=
+
+Name: res/drawable/com_facebook_auth_dialog_cancel_background.xml
+SHA1-Digest: /mH1qF0zJF+syyC78aQDAYtPPl8=
+
+Name: res/drawable-hdpi-v4/common_google_signin_btn_text_light_normal_
+ background.9.png
+SHA1-Digest: Xu/vb2avz7RRuCeMEpG0r934+10=
+
+Name: res/drawable/content_cursor.png
+SHA1-Digest: JQ5hJ1VMp2dgSQwDCpmGbctJCAU=
+
+Name: assets/800x480/DE
+SHA1-Digest: dfvrfjfZtSzkH+gxXHzwhci8/Ok=
+
+Name: res/drawable-hdpi-v4/common_google_signin_btn_text_dark_normal_b
+ ackground.9.png
+SHA1-Digest: XBrlG5PBf4YH6VsSxD2+nV63KbU=
+
+Name: res/drawable-mdpi-v4/com_facebook_button_send_icon_blue.png
+SHA1-Digest: X+h8J9BmRtXwwc0Otq8FVE4qqxM=
+
+Name: assets/800x480/iaks
+SHA1-Digest: R/pUa0MMuMl6AZP9Bq77XKIl3Zg=
+
+Name: res/drawable/icon_g.png
+SHA1-Digest: D49HvrzVbU6vFbc8838w11GPbKA=
+
+Name: res/drawable-xhdpi-v4/com_facebook_tooltip_black_background.9.pn
+ g
+SHA1-Digest: 2xgU0++/KN5qhzcL/Lhz8p8cTNU=
+
+Name: res/drawable-xhdpi-v4/com_facebook_button_send_icon_white.png
+SHA1-Digest: W3cehOIuaujdWGqGh/4Ar2Pb5ws=
+
+Name: play-services-measurement-base.properties
+SHA1-Digest: 5rPgHpXBpyHp3n07CKXRANH9LyY=
+
+Name: res/layout/iap_layout_osselection_cc.xml
+SHA1-Digest: xteqj0JBBKeUSzqJeBGFNdf2hAo=
+
+Name: firebase-analytics-impl.properties
+SHA1-Digest: 8vYXqUYPKc4tATLb3PYJo6eDpwE=
+
+Name: lib/x86/libnativeU.so
+SHA1-Digest: bz/iSvVPaNwaFSH7YKvoWCpasEY=
+
+Name: res/drawable-mdpi-v4/common_google_signin_btn_text_light_normal_
+ background.9.png
+SHA1-Digest: 7S9TcXc89Lj6FlK/Rtfvh5fIwLQ=
+
+Name: assets/800x480/7
+SHA1-Digest: MjKxdbT6LhZ815TAvdbfIOseC+g=
+
+Name: res/drawable/com_facebook_button_background.xml
+SHA1-Digest: jVgGOobwkj7lafPlqEXz6NYO4Ww=
+
+Name: assets/800x480/8
+SHA1-Digest: EwGvGrbKw7iSxBusq1yhC/UIzzc=
+
+Name: assets/800x480/9
+SHA1-Digest: w777lVH3Zn2MUPt6kEx+DR0B1ik=
+
+Name: assets/800x480/ES
+SHA1-Digest: yxO0qXik89YYg8OFz2autPVWyh8=
+
+Name: res/drawable-xxhdpi-v4/com_facebook_button_send_icon_white.png
+SHA1-Digest: VTRriJMtr5FA4/hdadO/oAxu+Is=
+
+Name: res/drawable/com_facebook_button_like_background.xml
+SHA1-Digest: bSW/FOng9Ef+ifXl9vWa0OVODrY=
+
+Name: assets/800x480/EN
+SHA1-Digest: hPIh3oQx5KOWkVGhUxriuQIWGlM=
+
+Name: res/drawable-xxhdpi-v4/googleg_standard_color_18.png
+SHA1-Digest: nMVBDwLTSbultJoYcciQ4bN8x8o=
+
+Name: assets/800x480/0
+SHA1-Digest: fWk63FdtS4xcYPKUOQGT7r0HsXA=
+
+Name: res/drawable-hdpi-v4/googleg_disabled_color_18.png
+SHA1-Digest: hlnt60Dfc5NtZRHLV02uDuNyNhk=
+
+Name: res/raw/content.bin
+SHA1-Digest: F3hfxQdl61ZFv2k7EPL3vZxZ19I=
+
+Name: assets/800x480/1
+SHA1-Digest: 1jv3aiuY+To2yAcrLMk1NDM9r4w=
+
+Name: assets/800x480/2
+SHA1-Digest: Lqv0yx4PqrqVJP/xwxAYtyh7zts=
+
+Name: res/layout/activity_in_game_browser.xml
+SHA1-Digest: 5uCQdTh2KlTe9K8xya8N55ywBSw=
+
+Name: assets/800x480/3
+SHA1-Digest: UQsBjLNGXvcfAjYT0LSbZfMMc50=
+
+Name: res/raw/pbkey.txt
+SHA1-Digest: ZPS/U+pGuCJlVFgVzG4JQY3Dl6E=
+
+Name: assets/800x480/4
+SHA1-Digest: K6w/Wlnh0fZU/7lQMySoQZQhRZI=
+
+Name: res/drawable-xhdpi-v4/googleg_disabled_color_18.png
+SHA1-Digest: L11lHK2mmgu/o18gIGjz6Dil0fo=
+
+Name: assets/800x480/5
+SHA1-Digest: p7qce8yllxgUGUmxspOh3NWgrno=
+
+Name: res/drawable-hdpi-v4/com_facebook_tooltip_blue_xout.png
+SHA1-Digest: 2qhmOeK/WbRP91Co0a4OVxycJuo=
+
+Name: assets/800x480/6
+SHA1-Digest: NhaHCj1G1M0Mz72vxNJKAQGLtko=
+
+Name: res/drawable-xhdpi-v4/common_google_signin_btn_icon_light_normal
+ _background.9.png
+SHA1-Digest: YWT3Hu0c24Wx6GE5EQWO6lX0T2A=
+
+Name: res/drawable-hdpi-v4/com_facebook_button_send_icon_white.png
+SHA1-Digest: pETctitSEdoplf9mv+R5ngQIAt0=
+
+Name: res/drawable-xhdpi-v4/com_facebook_button_icon_blue.png
+SHA1-Digest: M1BpzzxWh4B0X1LXb+MPPX64Mig=
+
+Name: res/drawable/navigation_refresh.png
+SHA1-Digest: gPZavlpOQXHZZSlER8VKWlnsI4k=
+
+Name: res/layout-v17/com_facebook_device_auth_dialog_fragment.xml
+SHA1-Digest: ic7CJnb5hIyFyVgzJ4dcbB3k96s=
+
+Name: res/mipmap-xhdpi-v4/ic_launcher.png
+SHA1-Digest: dVmJdHOui3UQIBFwMeTz3/iUi1o=
+
+Name: res/drawable-hdpi-v4/googleg_standard_color_18.png
+SHA1-Digest: FeAurMe3wqXIrSUKp1Ky8+TbqAc=
+
+Name: assets/800x480/VI
+SHA1-Digest: 5lDMCmDzdSkselYuWUK6WtiaQjs=
+
+Name: res/drawable/common_google_signin_btn_icon_dark.xml
+SHA1-Digest: 9pwbTkxYkQLfM57qMI/a6tBcWZM=
+
+Name: play-services-appinvite.properties
+SHA1-Digest: IBeHRE0pKQkT7sRWo8/awbigv5M=
+
+Name: res/layout-port/activity_in_game_browser.xml
+SHA1-Digest: 5uCQdTh2KlTe9K8xya8N55ywBSw=
+
+Name: assets/800x480/FR
+SHA1-Digest: bNM447VUScVy+1JxDnsMo0VwwrQ=
+
+Name: res/drawable-xxhdpi-v4/googleg_disabled_color_18.png
+SHA1-Digest: SnPGdnIDgCp0sOBibA6ZKWY6cxI=
+
+Name: res/drawable-v21/com_facebook_favicon_blue.xml
+SHA1-Digest: EgTPdMsJELZTCDQu/L4oBonXnyo=
+
+Name: res/drawable-xhdpi-v4/com_facebook_button_icon_white.png
+SHA1-Digest: m2SsiKQTL6ODSYkVUIYlTpO7mvg=
+
+Name: res/drawable-xxhdpi-v4/common_google_signin_btn_text_dark_normal
+ _background.9.png
+SHA1-Digest: kJWGBYkmpyPo8tZlRKh0fttExxk=
+
+Name: res/drawable-xxhdpi-v4/ic_launcher.png
+SHA1-Digest: 9ieT0U1viyh1UPTXkKsgthAFh9U=
+
+Name: res/drawable-v21/com_facebook_button_login_logo.xml
+SHA1-Digest: fYoSvHh7ZEoGK7w5v7h8qXNpWtU=
+
+Name: res/layout/webview.xml
+SHA1-Digest: JiT39+llIoS6NAp2i7WG0yzqUxk=
+
+Name: res/layout/main.xml
+SHA1-Digest: eyvfrIZr/NiYEWB3VLE7Yf9Yj8g=
+
+Name: firebase-common.properties
+SHA1-Digest: U88nfG8BDGbGHr6bSr8KG4iUWGY=
+
+Name: res/color/common_google_signin_btn_text_light.xml
+SHA1-Digest: tM+OFfoHEmjiFvRTASGIkW1KP7A=
+
+Name: res/drawable-mdpi-v4/com_facebook_tooltip_blue_topnub.png
+SHA1-Digest: g0+x5u4uUe4YMevi8obrQWjqxwk=
+
+Name: assets/800x480/888
+SHA1-Digest: c2m4LSo9GrKCfm4ILEobMxmzpbY=
+
+Name: res/layout/_template_interstitial_native_fan.xml
+SHA1-Digest: m5CRJpRMtvoS/GqtL+ANEmL97LY=
+
+Name: res/raw/google_services.json
+SHA1-Digest: xWo0qcVHxL7B6G1zabLz8QPikSo=
+
+Name: res/drawable-mdpi-v4/googleg_disabled_color_18.png
+SHA1-Digest: MGA87YfiomuNCzYa+XKeVCPnoZ0=
+
+Name: res/drawable/layout_background_dialog.png
+SHA1-Digest: swWg/Nc9atXRLRSEYvngD0SomXY=
+
+Name: res/drawable/tw_widget_progressbar_effect_holo_light.png
+SHA1-Digest: b/zN2s0TZYZcIMlnXbHVxeS82d4=
+
+Name: res/drawable-hdpi-v4/com_facebook_tooltip_blue_background.9.png
+SHA1-Digest: sC70NtI1TOrQ25tTttVbTOvGpzY=
+
+Name: res/layout/iap_osconfirmation_germany.xml
+SHA1-Digest: ow9gI/Ztfv6MUYLX136H7TiB7Bw=
+
+Name: res/drawable/dialog_full_holo_light.9.png
+SHA1-Digest: bPvSbDfhzv+ftU4sAUxL8q4XjVE=
+
+Name: res/drawable/loadingbar_foreground.png
+SHA1-Digest: hJm6ykpJeE3DgzFTuVh1CZa/k2s=
+
+Name: play-services-auth-api-phone.properties
+SHA1-Digest: PPHXfA4V5dBMcXgwM9lInDkdmdE=
+
+Name: res/mipmap-xxxhdpi-v4/ic_launcher.png
+SHA1-Digest: 9zRpR1rOHSGXgucUhagN+wSQw3o=
+
+Name: res/drawable/com_facebook_button_send_background.xml
+SHA1-Digest: Nqa1HntJ70DQLQts6N15Lhjcb58=
+
+Name: res/drawable/common_google_signin_btn_text_light_focused.xml
+SHA1-Digest: tpzeIEuyYT0cjP3CaE6nJGOaGHI=
+
+Name: res/layout/_template_native_ad_300_fan.xml
+SHA1-Digest: 2LtIJmXRAhUmqLA8r5Dfr99rjvI=
+
+Name: res/drawable-hdpi-v4/com_facebook_button_icon_white.png
+SHA1-Digest: 7TpdYKtNN9cyn7JpPT7589+Br9I=
+
+Name: res/layout/iap_layout_osselection_sms_method.xml
+SHA1-Digest: nQnTAT6637AE5auOh4o+RBwE5T8=
+
+Name: res/drawable/common_google_signin_btn_text_light_normal.xml
+SHA1-Digest: py8jvwVz+IA6aby74GUI5X0WSz8=
+
+Name: firebase-core.properties
+SHA1-Digest: JVTXpdXhGOYfug5kh5opUSJvYio=
+
+Name: res/drawable-mdpi-v11/pn_status_icon.png
+SHA1-Digest: 4nELx4vQYAqgE0Mg5cAvl/TLAcM=
+
+Name: res/drawable/navigation_forward.png
+SHA1-Digest: YQa5E1d/tCuYIdGGBaBtwcg27GI=
+
+Name: lib/x86/libAdsManager.so
+SHA1-Digest: ldVX/ttDR6qRbIrJjT0xC7IvjME=
+
+Name: res/mipmap/ic_launcher.png
+SHA1-Digest: Qc7yUsaB0Opu4k3vl/tiTaKKpm8=
+
+Name: res/drawable-mdpi-v4/googleg_standard_color_18.png
+SHA1-Digest: tA1Zrbl7FxLpwYDQ9Sv1bxdk+w0=
+
+Name: res/drawable/common_google_signin_btn_icon_light_normal.xml
+SHA1-Digest: n8VLhbEmZk5a1I9hevTZmBmi0aY=
+
+Name: res/drawable-mdpi-v4/tw_widget_progressbar_holo_light.png
+SHA1-Digest: 26digt0I7NiytRQ9m7b3jFEiDE8=
+
+Name: res/drawable-mdpi-v4/com_facebook_tooltip_black_background.9.png
+SHA1-Digest: uxEQ5CeVdDLdVI/wV2UpqEvNpQ4=
+
+Name: res/layout/_template_native_ad_100_admob.xml
+SHA1-Digest: WlQYvsedhqU3OCi6X/iEbROCuj4=
+
+Name: res/drawable-hdpi-v4/com_facebook_tooltip_black_topnub.png
+SHA1-Digest: dhwcVkB1xFmtB1vdF29/9hIbKXQ=
+
+Name: assets/800x480/999
+SHA1-Digest: a5oT+Cm2gvtEq5MMUA9rxOxj7Cc=
+
+Name: res/layout/_template_native_ad_300_admob.xml
+SHA1-Digest: KNJhKRCv/JFuObH2saHV2DkvOLU=
+
+Name: res/color/common_google_signin_btn_text_dark.xml
+SHA1-Digest: 8GcHf4qL4R33By2SekDxMY4EsmY=
+
+Name: res/drawable/com_facebook_auth_dialog_background.xml
+SHA1-Digest: l8sHQam0a8+eneQ10nNs7HCM8JE=
+
+Name: res/drawable/info_but.png
+SHA1-Digest: qN5ZRiovUre1nBITHrWDyVcL6Zg=
+
+Name: res/drawable-mdpi-v4/com_facebook_tooltip_blue_xout.png
+SHA1-Digest: hiMOnqiD7IOAhOQOixUcFYPpm7E=
+
+Name: res/drawable-xhdpi-v4/com_facebook_tooltip_blue_xout.png
+SHA1-Digest: jc6rTpT9K/e8ZJLYRmFetntV0xQ=
+
+Name: res/drawable-hdpi-v4/com_facebook_tooltip_blue_bottomnub.png
+SHA1-Digest: P4tfmGbYAzKLq8I/oRkTveuh+Bg=
+
+Name: lib/armeabi-v7a/libAdsManager.so
+SHA1-Digest: KMbpK4FfYPZv5WsiUm+4DsLHlYY=
+
+Name: res/drawable/common_google_signin_btn_icon_disabled.xml
+SHA1-Digest: kKpdZnCggZonUeSN3QX2N0KrN2o=
+
+Name: res/drawable-xxhdpi-v4/com_facebook_button_icon_blue.png
+SHA1-Digest: AVcN4KbU9bkIl9Vho9QdcmV2R64=
+
+Name: firebase-iid.properties
+SHA1-Digest: dxlDUIChCc/GMuJ8nroIL14Rw4Y=
+
+Name: res/drawable-mdpi-v4/tw_widget_progressbar_effect_holo_light.png
+SHA1-Digest: b/zN2s0TZYZcIMlnXbHVxeS82d4=
+
+Name: res/layout/softkeyboardactivity.xml
+SHA1-Digest: idYq4n+tUCsIb1HmHHDv1SqT2vo=
+
+Name: res/layout/iap_layout_osconfirmation_sp.xml
+SHA1-Digest: /QUCvQsQWIu9ApNIGpaNjLGTWGQ=
+
+Name: res/drawable-hdpi-v4/com_facebook_tooltip_black_bottomnub.png
+SHA1-Digest: 3ov1gH1l7FHDDk4z3f3DyYKlPdI=
+
+Name: lib/x86_64/libnativeU.so
+SHA1-Digest: GZBjYUHVzf9LRCgF6LCwYzs6jFY=
+
+Name: lib/arm64-v8a/libAdsManager.so
+SHA1-Digest: pC10Y3BovOnaYieQ9idv8WtR8Rk=
+
+Name: res/drawable/loadingbar_background.png
+SHA1-Digest: 0hLNoGD28Yq9p/mlDHKI18fKLkM=
+
+Name: assets/800x480/IT
+SHA1-Digest: GA8xiDlCA5PnWA7b4tzGnGbw5Q4=
+
+Name: res/drawable-hdpi-v4/common_google_signin_btn_icon_light_normal_
+ background.9.png
+SHA1-Digest: 1eWl0kIiC3mj6N8is5Uk44jyABY=
+
+Name: res/drawable-mdpi-v4/com_facebook_tooltip_blue_bottomnub.png
+SHA1-Digest: gZ4ceziFMSSKqZ7QfwhDGGeIqZw=
+
+Name: res/drawable-mdpi-v4/common_google_signin_btn_icon_light_normal_
+ background.9.png
+SHA1-Digest: IkrmrmmuVz06NVl7Nv+YYaK9HSU=
+
+Name: res/xml/provider_paths.xml
+SHA1-Digest: PA6NX5xJUYHywb3ZOZDAbbLC5ck=
+
+Name: res/mipmap-xxxhdpi-v4/ic_pn8.png
+SHA1-Digest: 9zRpR1rOHSGXgucUhagN+wSQw3o=
+
+Name: res/layout/custom_notification_layout.xml
+SHA1-Digest: Sda2M2Je9bkLFKU/CWKUFuEkaos=
+
+Name: res/drawable-xhdpi-v4/tw_widget_progressbar_effect_holo_light.pn
+ g
+SHA1-Digest: 5tbZnWYG3AAOhKxXQ5OdFXf9r54=
+
+Name: res/drawable/common_google_signin_btn_text_light.xml
+SHA1-Digest: EnEfP2nqFexJ6LNwvUJOrqesRsE=
+
+Name: res/drawable-hdpi-v4/tw_widget_progressbar_holo_light.png
+SHA1-Digest: 26digt0I7NiytRQ9m7b3jFEiDE8=
+
+Name: res/drawable/com_facebook_button_login_logo.xml
+SHA1-Digest: 3BcAE+aASgl1nxjSSIEpWaELUgk=
+
+Name: res/drawable/progressbar_middle.xml
+SHA1-Digest: 5RAPwABnNgCpUL/967KFiF/gajA=
+
+Name: res/drawable-hdpi-v4/com_facebook_button_send_icon_blue.png
+SHA1-Digest: KFM7MS8S30HdL/KzLc93zrOu9N8=
+
+Name: res/drawable-ldpi-v9/pn_status_icon.png
+SHA1-Digest: 4nELx4vQYAqgE0Mg5cAvl/TLAcM=
+
+Name: res/drawable-xhdpi-v4/com_facebook_tooltip_black_topnub.png
+SHA1-Digest: bileSKgGbVFTzhetT2qftDyH5Pg=
+
+Name: res/drawable/pn_custom_icon.png
+SHA1-Digest: Yt8igOMBBcDuRa/plfNz7fsuSDY=
+
+Name: assets/800x480/JP
+SHA1-Digest: +01dYN9OynMSh0kjFGjRHYkc6BM=
+
+Name: play-services-plus.properties
+SHA1-Digest: U028AGg0jCurs4LKJ77gqPqp1cI=
+
+Name: res/drawable-mdpi-v4/pn_status_icon.png
+SHA1-Digest: 4nELx4vQYAqgE0Mg5cAvl/TLAcM=
+
+Name: res/mipmap-mdpi-v4/ic_launcher.png
+SHA1-Digest: 5wLAhsIZTGaXW2hOwOGjISKbCyc=
+
+Name: res/drawable-mdpi-v4/com_facebook_tooltip_black_xout.png
+SHA1-Digest: b4kBnHi206kks7LiLWj8d3En/QE=
+
+Name: res/drawable-mdpi-v4/common_google_signin_btn_icon_dark_normal_b
+ ackground.9.png
+SHA1-Digest: QWNxEibXctHKdimj4nbvZC5eWLc=
+
+Name: res/drawable-xhdpi-v4/com_facebook_button_like_icon_selected.png
+SHA1-Digest: sXmiOCGzqP35R4KapkgfkP4ggoo=
+
+Name: res/color/com_facebook_send_button_text_color.xml
+SHA1-Digest: DVA+DN/VsLC72Su5eNcAjQ6VxwE=
+
+Name: res/drawable-hdpi-v4/com_facebook_tooltip_blue_topnub.png
+SHA1-Digest: t6RFB0toPBuxmwgN3Ph5M6ZhA2s=
+
+Name: res/layout/iap_layout_autodetect_country.xml
+SHA1-Digest: kzMsbnhLal3H3nlGwPuCcKJ6ltA=
+
+Name: res/drawable-mdpi-v9/pn_status_icon.png
+SHA1-Digest: 4nELx4vQYAqgE0Mg5cAvl/TLAcM=
+
+Name: res/drawable/common_google_signin_btn_text_disabled.xml
+SHA1-Digest: n5ukyBj//2v9p9C+37j1FeQ+N+E=
+
+Name: res/drawable-xxhdpi-v4/tw_widget_progressbar_effect_holo_light.p
+ ng
+SHA1-Digest: 8FTuPKWCqdM+58Pvg8ig16TCqBI=
+
+Name: assets/800x480/KR
+SHA1-Digest: qvSHGD09fuG/OPHs6/+dKKVnJTU=
+
+Name: res/color/common_google_signin_btn_tint.xml
+SHA1-Digest: VYfC/z6me1616ikREcNs/lRnJj4=
+
+Name: res/drawable/com_facebook_button_login_silver_background.xml
+SHA1-Digest: GZFbdw1OPRejjt3JT4GSGKvhhqY=
+
+Name: res/drawable/navigation_cancel.png
+SHA1-Digest: LeUUIGDCJ3LcQ5DzfXIZQh2slZY=
+
+Name: res/drawable-hdpi-v4/common_full_open_on_phone.png
+SHA1-Digest: oq7YYqwYaTTP5b847OHU06mSxgA=
+
+Name: assets/IAP_profiles
+SHA1-Digest: cLNkBcuMn4x164u/jIVtd9AGDnE=
+
+Name: res/mipmap-anydpi-v26/ic_launcher.xml
+SHA1-Digest: yL/O60K0mkbefx0itR5ECBmNZsM=
+
+Name: res/mipmap-xxhdpi-v4/ic_launcher.png
+SHA1-Digest: uuqOxOfR+q0lWUNdw2tEjd++xv4=
+
+Name: res/raw/adsmanager_revision.txt
+SHA1-Digest: AMXz+fMrbDw2QZIt7T20elooGXc=
+
+Name: res/menu/activity_main.xml
+SHA1-Digest: m/Tui4uZLsbn1J2h0iYakcxX+to=
+
+Name: play-services-ads-identifier.properties
+SHA1-Digest: dcSSMTjr5/Cu4h6HLxfLYR+XN68=
+
+Name: res/drawable-xhdpi-v4/com_facebook_button_send_icon_blue.png
+SHA1-Digest: DOH3jzsXTGeu6sBwj/v30tMnUJk=
+
+Name: res/drawable-hdpi-v4/common_google_signin_btn_icon_dark_normal_b
+ ackground.9.png
+SHA1-Digest: V3s/YlawQ26DKo0P2hxPmefwmP4=
+
+Name: res/raw/crc.bin
+SHA1-Digest: 2jmj7l5rSw0yVb/vlWAYkK/YBwk=
+
+Name: res/drawable-mdpi-v4/com_facebook_profile_picture_blank_portrait
+ .png
+SHA1-Digest: 9kGOeq/tVClWE7Lz9AgjtukRZnQ=
+
+Name: res/drawable-mdpi-v4/com_facebook_close.png
+SHA1-Digest: 1Epu1ZvHA6xgqhVjVRLYkhkEEuU=
+
+Name: res/drawable-xhdpi-v4/tw_widget_progressbar_holo_light.png
+SHA1-Digest: qs1WgzTtZQ0UxH8gvjj5pvenrDo=
+
+Name: res/drawable/tw_widget_progressbar_holo_light.png
+SHA1-Digest: 26digt0I7NiytRQ9m7b3jFEiDE8=
+
+Name: res/drawable-xhdpi-v9/pn_status_icon.png
+SHA1-Digest: ZqNe2HnVsw/2s/2cDJkjmHW0Pvk=
+
+Name: res/drawable-mdpi-v4/com_facebook_tooltip_black_topnub.png
+SHA1-Digest: 9tDPjBFM8mI3WrSgRAKo9/soeaE=
+
+Name: res/drawable/common_google_signin_btn_icon_light_focused.xml
+SHA1-Digest: rr0+t3MhxYjXB/L4Sjh9m8hSzQA=
+
+Name: res/drawable-ldpi-v4/ic_launcher.png
+SHA1-Digest: 9ieT0U1viyh1UPTXkKsgthAFh9U=
+
+Name: assets/IAP_texts
+SHA1-Digest: 5YjC0muiPS+n/WL3ZNXILbtmwX0=
+
+Name: res/drawable/com_facebook_button_login_background.xml
+SHA1-Digest: HLsLKv1W7fi6VCfq4xeVaLG2jpk=
+
+Name: res/drawable/common_google_signin_btn_text_dark_normal.xml
+SHA1-Digest: d8pK2g+w60d0/SnaoYmkcWD4fQE=
+
+Name: res/drawable/close_but.png
+SHA1-Digest: QlxPeF+Z0Beytq1Tdjb+MacVdLo=
+
+Name: res/layout/iap_layout_osconfirmation_directiap.xml
+SHA1-Digest: cDALHYepuLkJ41hcGvxv9CS0+e4=
+
+Name: res/layout/progress_dialog.xml
+SHA1-Digest: NKIB7Pp5XvDqSvtahyelOiz2mpk=
+
+Name: res/drawable-xhdpi-v4/ic_launcher.png
+SHA1-Digest: 9ieT0U1viyh1UPTXkKsgthAFh9U=
+
+Name: res/drawable-hdpi-v4/com_facebook_close.png
+SHA1-Digest: vzoVwUXnEtJQCL4582EeDreqvIA=
+
+Name: res/mipmap/ic_pn8.png
+SHA1-Digest: Qc7yUsaB0Opu4k3vl/tiTaKKpm8=
+
+Name: res/drawable-xxhdpi-v4/common_google_signin_btn_text_light_norma
+ l_background.9.png
+SHA1-Digest: kieZ6iZ6OFU4p859oJQYCADvVuA=
+
+Name: res/drawable/common_google_signin_btn_text_dark.xml
+SHA1-Digest: 01Yrvp9rJAhsVPOiLRDlEX3c5jA=
+
+Name: lib/arm64-v8a/libnativeU.so
+SHA1-Digest: B6++WIr5f6uqi2wlUyBd6b+lLpg=
+
+Name: res/layout/com_facebook_login_fragment.xml
+SHA1-Digest: VNn017zd90R5qoI/EnwwVKymh1A=
+
+Name: res/layout/com_facebook_tooltip_bubble.xml
+SHA1-Digest: AXMsgf7DYH+DLNBaFptkO+hkVbQ=
+
+Name: play-services-ads-lite.properties
+SHA1-Digest: TPWJPquuAUDUAtD8ZGD+nyo2MBc=
+
+Name: res/drawable-xhdpi-v4/common_google_signin_btn_text_light_normal
+ _background.9.png
+SHA1-Digest: V5BgoOMFP6SkB/Rq1phUjJUqsSo=
+
+Name: lib/armeabi/libAdsManager.so
+SHA1-Digest: BjWvmUpsDhWzSn+B2U3G41DUEGA=
+
+Name: res/drawable-hdpi-v4/ic_launcher.png
+SHA1-Digest: 9ieT0U1viyh1UPTXkKsgthAFh9U=
+
+Name: res/drawable-mdpi-v4/com_facebook_profile_picture_blank_square.p
+ ng
+SHA1-Digest: ii3g4mqHjQXtghNZE1cibJA1Jbs=
+
+Name: play-services-ads.properties
+SHA1-Digest: KXXnD+whxq6PckIN1LJKsMPqcZo=
+
+Name: res/drawable/ic_launcher.png
+SHA1-Digest: Qc7yUsaB0Opu4k3vl/tiTaKKpm8=
+
+Name: res/drawable-xhdpi-v4/com_facebook_tooltip_blue_bottomnub.png
+SHA1-Digest: FjSt9VmG3rJcEKqLE/rx5YZVO8w=
+
+Name: res/drawable-xxhdpi-v4/common_google_signin_btn_icon_dark_normal
+ _background.9.png
+SHA1-Digest: UeOh+HJRiySoixJQcw9pSx76zas=
+
+Name: res/mipmap-ldpi-v4/ic_launcher.png
+SHA1-Digest: 3pMYqmFVl22cSIA7iDgAH1N9X0s=
+
+Name: res/drawable-hdpi-v4/com_facebook_button_icon_blue.png
+SHA1-Digest: k5/RWbmFldXExc1EpbPik52+y5o=
+
+Name: res/drawable-xhdpi-v4/common_google_signin_btn_text_dark_normal_
+ background.9.png
+SHA1-Digest: eDEv0/H5H+qqc28Qi2s85+/aPLA=
+
+Name: res/layout/_template_interstitial_native_admob.xml
+SHA1-Digest: fkCha4aiSiYIWc27yA0lnQZBzJY=
+
+Name: res/drawable-xhdpi-v4/pn_status_icon.png
+SHA1-Digest: 9ZabLfSioNQ5nZzTDxtG1gtLBkY=
+
+Name: res/drawable/com_facebook_favicon_blue.xml
+SHA1-Digest: wkcpA52IG7AXQtVVkkY579HAroQ=
+
+Name: lib/armeabi/libnativeU.so
+SHA1-Digest: 8tb0YaXOZTnbj1jLbnodAqqX32w=
+
+Name: res/drawable-mdpi-v4/german_buy_button.xml
+SHA1-Digest: Bn0ZFgpoJ7eqibvRohkybktH0Iw=
+
+Name: res/mipmap-mdpi-v4/ic_pn8.png
+SHA1-Digest: 5wLAhsIZTGaXW2hOwOGjISKbCyc=
+
+Name: play-services-basement.properties
+SHA1-Digest: vCy52YI6RkR8vL55L8jiEimz/hY=
+
+Name: res/drawable-xhdpi-v4/com_facebook_close.png
+SHA1-Digest: xhXGhiVJ589EYAbFZ106bjJ2Cg8=
+
+Name: res/color/com_facebook_button_text_color.xml
+SHA1-Digest: eCHDd3ZoLwDs17l5UE0kvlYPTfY=
+
+Name: play-services-stats.properties
+SHA1-Digest: ozO/79PyN2I/HKBW4D3ukAc3kew=
+
+Name: res/drawable/pn_status_icon.png
+SHA1-Digest: n9o/bdnpiMHutuUulut2imPWvc0=
+
+Name: firebase-messaging.properties
+SHA1-Digest: 1I20TXDdQ76RMzJ8SDVIIhesEj8=
+
+Name: res/drawable-mdpi-v4/com_facebook_tooltip_black_bottomnub.png
+SHA1-Digest: 0GmvJiNX8tnBGxZZVE7SEm7yJ2U=
+
+Name: res/drawable-xxhdpi-v4/com_facebook_button_icon_white.png
+SHA1-Digest: rLmxmecNDDLjueGOeuv6V3Ver0A=
+
+Name: res/drawable-xxhdpi-v4/tw_widget_progressbar_holo_light.png
+SHA1-Digest: vkHYQx3gmO466TTJB8KlYBktJSg=
+
+Name: lib/x86_64/libAdsManager.so
+SHA1-Digest: xIoEuRY78M0NpCjbsw0/79J0j3U=
+
+Name: res/drawable-mdpi-v4/com_facebook_button_icon_blue.png
+SHA1-Digest: Z7xVgTgqFPSHVotSIRwGooK8j+A=
+
+Name: res/drawable-mdpi-v4/com_facebook_tooltip_blue_background.9.png
+SHA1-Digest: catelxgP4Vurpy+V7+L3PNxSwKk=
+
+Name: res/drawable-xhdpi-v4/common_full_open_on_phone.png
+SHA1-Digest: HP+31ii3IcHx4ttOhH81nkSK1a8=
+
+Name: play-services-gass.properties
+SHA1-Digest: jf7NBY67l7OP/N5MYV8XbdtuVLk=
+
+Name: res/drawable-hdpi-v4/com_facebook_button_like_icon_selected.png
+SHA1-Digest: 7+QnD3HiFTWwQaP7O/S99NAll34=
+
+Name: res/layout/iap_layout_osselection_sms_method_ar.xml
+SHA1-Digest: E6E1AR5bhaWACnAxjdSemEVPxA8=
+
+Name: classes.dex
+SHA1-Digest: SHeviqU9NH1HAKlleg7nSdx4Q78=
+
+Name: play-services-ads-base.properties
+SHA1-Digest: +Ux2O0IfsfhEWjgQ7WnkMOlfcvc=
+

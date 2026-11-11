@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="page_loading_textview_textsize">15dp</dimen>
+    <dimen name="com_facebook_auth_dialog_corner_radius">2dp</dimen>
+    <dimen name="com_facebook_auth_dialog_corner_radius_oversized">4dp</dimen>
+    <dimen name="com_facebook_button_corner_radius">2dp</dimen>
+    <dimen name="com_facebook_likeview_text_size">11sp</dimen>
+    <dimen name="com_facebook_likeview_edge_padding">2dp</dimen>
+    <dimen name="com_facebook_likeview_internal_padding">6dp</dimen>
+    <dimen name="com_facebook_likeboxcountview_caret_width">6dp</dimen>
+    <dimen name="com_facebook_likeboxcountview_caret_height">3dp</dimen>
+    <dimen name="com_facebook_likeboxcountview_border_radius">3dp</dimen>
+    <dimen name="com_facebook_likeboxcountview_border_width">1dp</dimen>
+    <dimen name="com_facebook_likeboxcountview_text_size">11sp</dimen>
+    <dimen name="com_facebook_likeboxcountview_text_padding">6dp</dimen>
+    <dimen name="com_facebook_button_login_corner_radius">3dp</dimen>
+    <dimen name="com_facebook_profilepictureview_preset_size_small">50dp</dimen>
+    <dimen name="com_facebook_profilepictureview_preset_size_normal">100dp</dimen>
+    <dimen name="com_facebook_profilepictureview_preset_size_large">180dp</dimen>
+    <dimen name="cardview_compat_inset_shadow">1dp</dimen>
+    <dimen name="cardview_default_elevation">2dp</dimen>
+    <dimen name="cardview_default_radius">2dp</dimen>
+    <dimen name="fastscroll_default_thickness">8dp</dimen>
+    <dimen name="fastscroll_margin">0dp</dimen>
+    <dimen name="fastscroll_minimum_range">50dp</dimen>
+    <dimen name="item_touch_helper_max_drag_scroll_per_frame">20dp</dimen>
+    <dimen name="item_touch_helper_swipe_escape_max_velocity">800dp</dimen>
+    <dimen name="item_touch_helper_swipe_escape_velocity">120dp</dimen>
+    <dimen name="downloading_processbar_width">200dp</dimen>
+    <dimen name="downloading_processbar_height">15dp</dimen>
+    <dimen name="notify_dialog_text_pedding">10dp</dimen>
+    <dimen name="download_dialog_title_text_size">20sp</dimen>
+</resources>

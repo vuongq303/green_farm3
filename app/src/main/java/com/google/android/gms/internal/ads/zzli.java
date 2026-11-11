@@ -1,0 +1,19 @@
+package com.google.android.gms.internal.ads;
+
+import android.os.IBinder;
+import android.os.Parcel;
+
+/* JADX INFO: loaded from: classes.dex */
+public final class zzli extends zzej implements zzlg {
+    zzli(IBinder iBinder) {
+        super(iBinder, "com.google.android.gms.ads.internal.client.ICorrelationIdProvider");
+    }
+
+    @Override // com.google.android.gms.internal.ads.zzlg
+    public final long getValue() {
+        Parcel parcelTransactAndReadException = transactAndReadException(1, obtainAndWriteInterfaceToken());
+        long j = parcelTransactAndReadException.readLong();
+        parcelTransactAndReadException.recycle();
+        return j;
+    }
+}

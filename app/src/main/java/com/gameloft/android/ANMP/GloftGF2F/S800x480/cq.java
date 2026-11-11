@@ -1,0 +1,28 @@
+package com.gameloft.android.ANMP.GloftGF2F.S800x480;
+
+/* JADX INFO: loaded from: classes.dex */
+class cq implements Runnable {
+    final /* synthetic */ ci bbN;
+
+    public cq(ci ciVar) {
+        this.bbN = ciVar;
+    }
+
+    @Override // java.lang.Runnable
+    public void run() {
+        while (ci.bbF != null) {
+            try {
+                if (ci.bbG) {
+                    ci.bbG = false;
+                    if (ci.aZB == 0) {
+                        ci.rr();
+                    } else {
+                        ci.rs();
+                    }
+                }
+                Thread.sleep(50L);
+            } catch (Exception e) {
+            }
+        }
+    }
+}

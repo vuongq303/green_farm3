@@ -1,0 +1,44 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+	namespace "com.gameloft.android.ANMP.GloftGF2F"
+    compileSdkVersion 28
+
+    defaultConfig {
+        applicationId 'com.gameloft.android.ANMP.GloftGF2F'
+        minSdkVersion 16
+        //noinspection ExpiringTargetSdkVersion,ExpiredTargetSdkVersion
+        targetSdkVersion 28
+        versionCode 44220
+        versionName "4.4.2"
+        vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildFeatures {
+        buildConfig = false
+    }
+}
+
+dependencies {
+    // TODO: dependencies
+}

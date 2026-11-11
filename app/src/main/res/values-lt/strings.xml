@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_google_play_services_unknown_issue">Naudojant programą „%1$s“ kilo problemų dėl „Google Play“ paslaugų. Bandykite dar kartą.</string>
+    <string name="fcm_fallback_notification_channel_label">Įvairūs</string>
+    <string name="common_google_play_services_enable_button">Įgalinti</string>
+    <string name="common_google_play_services_enable_text">„%1$s“ neveiks, jei neįgalinsite „Google Play“ paslaugų.</string>
+    <string name="common_google_play_services_enable_title">Įgalinkite „Google Play“ paslaugas</string>
+    <string name="common_google_play_services_install_button">Įdiegti</string>
+    <string name="common_google_play_services_install_text">Programa „%1$s“ nebus paleidžiama be „Google Play“ paslaugų, kurių nėra įrenginyje.</string>
+    <string name="common_google_play_services_install_title">Gaukite „Google Play“ paslaugas</string>
+    <string name="common_google_play_services_notification_channel_name">„Google Play“ paslaugų pasiekiamumas</string>
+    <string name="common_google_play_services_notification_ticker">„Google Play“ paslaugų klaida</string>
+    <string name="common_google_play_services_unsupported_text">Programa „%1$s“ nebus paleidžiama be „Google Play“ paslaugų, kurių jūsų įrenginys nepalaiko.</string>
+    <string name="common_google_play_services_update_button">Atnaujinti</string>
+    <string name="common_google_play_services_update_text">„%1$s“ nebus paleidžiama, jei neatnaujinsite „Google Play“ paslaugų.</string>
+    <string name="common_google_play_services_update_title">Atnaujinkite „Google Play“ paslaugas</string>
+    <string name="common_google_play_services_updating_text">„%1$s“ nebus paleidžiama be „Google Play“ paslaugų, kurios šiuo metu atnaujinamos.</string>
+    <string name="common_google_play_services_wear_update_text">Reikia naujos versijos „Google Play“ paslaugų. Jos netrukus bus atnaujintos.</string>
+    <string name="common_open_on_phone">Atidaryti telefone</string>
+    <string name="common_signin_button_text">Prisijungti</string>
+    <string name="common_signin_button_text_long">Prisijungti naudojant „Google“</string>
+    <string name="gcm_fallback_notification_channel_label">Įvairūs</string>
+    <string name="s1">Išsaugoti vaizdą</string>
+    <string name="s2">Leisti skelbimui išsaugoti vaizdą nuotraukų galerijoje?</string>
+    <string name="s3">Sutikti</string>
+    <string name="s4">Atmesti</string>
+    <string name="s5">Sukurti kalendoriaus įvykį</string>
+    <string name="s6">Leisti skelbimui sukurti kalendoriaus įvykį?</string>
+    <string name="s7">Bandomasis skelbimas</string>
+    <string name="string_app_name">100% Games!</string>
+    <string name="string_error_io_exception">Failo atsisiuntimo klaida. Nepavyko įrašyti į išorinę saugyklą. Patikrinkite, ar pakanka laisvos vietos.</string>
+    <string name="string_error_exception">Mėginant atsisiųsti jūsų žaidimą įvyko klaida.\nBandykite dar kartą.</string>
+    <string name="string_network_error">Nepavyko užmegzti ryšio su serveriu. Patikrinkite, ar veikia tinklas ir bandykite dar kartą.</string>
+    <string name="string_downloading">Siunčiamasi...</string>
+    <string name="string_download_finish_dialog_successfull">Atsisiųsta sėkmingai.</string>
+    <string name="string_button_update">Update</string>
+    <string name="string_button_cancel">Cancel</string>
+    <string name="string_ask_new_version">A new version of the widget is available.\nPlease update to stay tuned for our latest games.</string>
+    <string name="string_confirmation_exit">Tikrai norite išeiti?</string>
+    <string name="string_confirmation_cancel">Tikrai norite atšaukti?</string>
+    <string name="string_COMMAND_YES">Taip</string>
+    <string name="string_COMMAND_NO">Ne</string>
+</resources>

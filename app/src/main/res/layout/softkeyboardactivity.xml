@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android" xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.gameloft.android.ANMP.GloftGF2F.ListenerEditText
+        android:textColor="#444"
+        android:textColorHint="#fff"
+        android:gravity="top|left"
+        android:id="@+id/editText"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_marginTop="100dp"
+        android:ems="500"
+        android:inputType="text"/>
+</merge>

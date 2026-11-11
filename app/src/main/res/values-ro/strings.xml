@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_google_play_services_unknown_issue">%1$s întâmpină probleme privind serviciile Google Play. Încercați din nou.</string>
+    <string name="fcm_fallback_notification_channel_label">Diverse</string>
+    <string name="common_google_play_services_enable_button">Activați</string>
+    <string name="common_google_play_services_enable_text">%1$s nu va funcționa decât dacă activați serviciile Google Play.</string>
+    <string name="common_google_play_services_enable_title">Activați serviciile Google Play</string>
+    <string name="common_google_play_services_install_button">Instalați</string>
+    <string name="common_google_play_services_install_text">%1$s nu va rula fără serviciile Google Play, care lipsesc de pe dispozitivul dvs.</string>
+    <string name="common_google_play_services_install_title">Descărcați serviciile Google Play</string>
+    <string name="common_google_play_services_notification_channel_name">Disponibilitatea serviciilor Google Play</string>
+    <string name="common_google_play_services_notification_ticker">Eroare a serviciilor Google Play</string>
+    <string name="common_google_play_services_unsupported_text">%1$s nu va rula fără serviciile Google Play, care nu sunt acceptate de dispozitivul dvs.</string>
+    <string name="common_google_play_services_update_button">Actualizați</string>
+    <string name="common_google_play_services_update_text">%1$s nu va rula decât dacă actualizați serviciile Google Play.</string>
+    <string name="common_google_play_services_update_title">Actualizați serviciile Google Play</string>
+    <string name="common_google_play_services_updating_text">%1$s nu va rula fără serviciile Google Play, care momentan se actualizează.</string>
+    <string name="common_google_play_services_wear_update_text">Este necesară o nouă versiune a serviciilor Google Play. Se vor actualiza automat în curând.</string>
+    <string name="common_open_on_phone">Deschideți pe telefon</string>
+    <string name="common_signin_button_text">Conectați-vă</string>
+    <string name="common_signin_button_text_long">Conectați-vă cu Google</string>
+    <string name="gcm_fallback_notification_channel_label">Diverse</string>
+    <string name="s1">Salvați imaginea</string>
+    <string name="s2">Permiteți ca anunțul să stocheze imaginea în Galeria de fotografii?</string>
+    <string name="s3">Acceptați</string>
+    <string name="s4">Refuzați</string>
+    <string name="s5">Creați un eveniment în calendar</string>
+    <string name="s6">Permiteți ca anunțul să creeze un eveniment în calendar?</string>
+    <string name="s7">Anunț de probă</string>
+    <string name="string_app_name">100% Games!</string>
+    <string name="string_error_io_exception">Eroare la descărcarea fișierului. Imposibil de scris în spațiul de stocare extern. Verifică dacă există spațiu liber.</string>
+    <string name="string_error_exception">Descărcarea jocului a întâmpinat o problemă.\nTe rugăm să încerci din nou.</string>
+    <string name="string_network_error">Conectarea la server a eșuat. Te rugăm să verifici rețeaua și să încerci din nou.</string>
+    <string name="string_downloading">Descărcare în curs...</string>
+    <string name="string_download_finish_dialog_successfull">Descărcare reușită.</string>
+    <string name="string_button_update">Update</string>
+    <string name="string_button_cancel">Cancel</string>
+    <string name="string_ask_new_version">A new version of the widget is available.\nPlease update to stay tuned for our latest games.</string>
+    <string name="string_confirmation_exit">Sigur dorești să renunți?</string>
+    <string name="string_confirmation_cancel">Sigur doreşti să anulezi?</string>
+    <string name="string_COMMAND_YES">Da</string>
+    <string name="string_COMMAND_NO">Nu</string>
+</resources>

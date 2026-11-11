@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.wrapper.black.notitlebar.fullscreen" parent="@style/Theme.wrapper.translucent.notitlebar">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    <style name="NoBorderDialogTheme" parent="">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    <style name="NoFullscreenDialogTheme" parent="">
+        <item name="android:windowFullscreen">false</item>
+    </style>
+    <style name="Theme.wrapper.translucent.notitlebar" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+    </style>
+    <style name="Theme.wrapper.translucent.notitlebar.fullscreen" parent="@style/Theme.wrapper.translucent.notitlebar">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    <style name="Theme.wrapper.notitlebar.fullscreen" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
+    </style>
+    <style name="Theme.wrapper.notitlebar" parent="@android:style/Theme.Material.NoActionBar">
+    </style>
+    <style name="Theme.wrapper.progressbar.horizontal" parent="@android:style/Widget.Material.ProgressBar.Horizontal">
+    </style>
+    <style name="Theme.wrapper.progressbar" parent="@android:style/Widget.Material.ProgressBar">
+    </style>
+</resources>

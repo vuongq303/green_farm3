@@ -1,0 +1,23 @@
+
+support
+
+jsr 030 - cldc 1.0
+jsr 037 - midp 1.0
+jsr 075 - file connection 1.0 (pda)
+jsr 082 - bluetooth
+jsr 118 - midp 2.0
+jsr 120 - wma 1.1
+jsr 135 - mobile media api
+jsr 139 - cldc 1.1
+jsr 184 - m3g
+jsr 205 - wma 2.0
+jsr 234 - amms
+
+sprint api
+sprint pcs licence mrc 
+nokia UI
+samsung api
+vodafone vscl 1.1.0
+vodafone vscl 2.0
+jscl 1.2.2
+doja up to doja 5.1

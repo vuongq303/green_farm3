@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_app_name">100% Games!</string>
+    <string name="string_error_io_exception">Error al descargar el archivo. No se puede escribir en la memoria externa. Verifica que haya espacio disponible.</string>
+    <string name="string_error_exception">Hubo un problema con la descarga del juego. \nVuelve a intentarlo más tarde.</string>
+    <string name="string_network_error">Fallo en la conexión con el servidor. Por favor, comprueba la red e inténtalo de nuevo.</string>
+    <string name="string_downloading">Descargando...</string>
+    <string name="string_download_finish_dialog_successfull">Descarga completada</string>
+    <string name="string_button_update">Actualizar</string>
+    <string name="string_button_cancel">Cancelar</string>
+    <string name="string_ask_new_version">A new version of the widget is available.\nPlease update to stay tuned for our latest games.</string>
+    <string name="string_confirmation_exit">¿Seguro que quieres salir?</string>
+    <string name="string_confirmation_cancel">¿Seguro que quieres cancelar?</string>
+    <string name="string_COMMAND_YES">SÍ</string>
+    <string name="string_COMMAND_NO">NO</string>
+</resources>

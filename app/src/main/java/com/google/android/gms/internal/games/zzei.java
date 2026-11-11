@@ -1,0 +1,17 @@
+package com.google.android.gms.internal.games;
+
+/* JADX INFO: loaded from: classes.dex */
+public final class zzei {
+    public static String zzn(int i) {
+        switch (i) {
+            case 0:
+                return "DAILY";
+            case 1:
+                return "WEEKLY";
+            case 2:
+                return "ALL_TIME";
+            default:
+                throw new IllegalArgumentException(new StringBuilder(29).append("Unknown time span ").append(i).toString());
+        }
+    }
+}
