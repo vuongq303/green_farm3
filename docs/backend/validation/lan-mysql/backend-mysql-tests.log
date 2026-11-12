@@ -1,0 +1,17 @@
+✔ real HTTP/MySQL authorization, profile and compliance survive a backend process restart (777.830522ms)
+✔ a real backend with an unavailable MySQL server reports HTTP503 without successful authorization (241.100576ms)
+✔ real MySQL migrations are additive, checksum tracked and idempotent (54.974564ms)
+✔ accounts, sessions, profile identity and compliance survive store restart (420.885383ms)
+✔ wrong stored password and failed session insert roll back related account writes (339.405338ms)
+✔ concurrent first authorizations retain one account identity (241.108828ms)
+✔ refresh preserves the account, rotates atomically and rejects replay (129.607345ms)
+✔ expired refresh sessions cannot rotate or generate a new session (71.503986ms)
+✔ an unavailable database returns explicit sanitized errors without memory fallback (13.410032ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1413.484701

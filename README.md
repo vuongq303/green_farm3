@@ -28,22 +28,44 @@ bằng argument array, hỗ trợ đường dẫn có khoảng trắng. Khóa de
 `.local/`, không commit và không bị `clean` xóa. Release chưa bật trong pipeline
 nghiên cứu này.
 
-Backend M0 local vẫn là dịch vụ riêng, không phải task build Android. Khi dùng
-emulator, chạy một lần ở terminal PowerShell backend:
+Địa chỉ backend của app và các URL discovery dùng chung **một biến** trong
+`gradle.properties` ở thư mục gốc:
+
+```properties
+BACKEND_BASE_URL=http://10.37.233.55:8787/
+```
+
+Đây là IPv4 Windows bạn đã cung cấp. Đổi IP/port phải sửa biến này, khởi động
+lại backend, **build và cài lại APK**. Không có fallback localhost/`10.0.2.2`;
+không dùng `localBackendUrl` nữa. Backend đọc trực tiếp cùng file properties.
+
+Backend dùng JavaScript ES Modules, Node.js 24+ và MySQL 8.0/8.4. Tạo database/
+user MySQL và cấu hình mật khẩu riêng theo [hướng dẫn backend](backend/README.md),
+sau đó chạy trong PowerShell:
 
 ```powershell
 cd backend
-$env:PUBLIC_BASE_URL = "http://10.0.2.2:8787"
+npm ci
+Copy-Item .env.example .env
+# Sửa .env: DB_* và RESEARCH_SESSION_SECRET riêng, ổn định qua restart.
+npm run migrate
 npm start
+# Khi phát triển: npm run dev
 ```
 
-Server cần Node24. Backend mặc định của APK là `http://10.0.2.2:8787/`.
-Điện thoại thật cần endpoint backend mà nó truy cập được; cấu hình
-`localBackendUrl` trước khi build. M0 dùng session RAM, chưa có tài khoản/DB
-bền vững. Xem [backend](backend/README.md).
+Listener mặc định `HOST=0.0.0.0`, `PORT=8787`. App chỉ gọi HTTP; tài khoản MySQL
+chỉ ở `backend/.env`, không nằm trong APK. Kiểm tra từ Windows **và** emulator:
+`http://10.37.233.55:8787/health`. Endpoint báo cả backend và MySQL; DB/schema
+chưa sẵn sàng trả 503, không chuyển sang RAM/JSON. Hướng dẫn lấy IPv4, migration
+và rule Windows Firewall đúng cổng nằm trong README backend.
+
+Tài khoản anonymous, access/refresh session và compliance hiện được lưu vào
+MySQL. Gameplay/save nông trại vẫn dùng RMS gốc trên thiết bị; chưa chuyển cloud
+farm save hoặc Facebook Connect sang giao thức mới không có bằng chứng.
 
 [Kết quả hợp nhất và sửa crash khởi động](docs/APP_BUILD_AND_STARTUP.md).
 [Thư mục ghép APK và chẩn đoán lỗi build Windows](docs/WINDOWS_APK_MERGE_PATHS.md).
+[Kiểm kê giao thức LAN/MySQL](docs/backend/LAN_PROTOCOL_AUDIT.md).
 M0 từng vượt Accept và mở farm tutorial; chưa xác nhận đầy đủ thao tác farm,
 save/load, đăng nhập Facebook, âm thanh hoặc Android mới. Các báo cáo recovered
 cũ được giữ làm lịch sử checkpoint, không còn là hướng dẫn build hiện tại.

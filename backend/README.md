@@ -1,91 +1,187 @@
-# Local research backend
+# Green Farm backend: JavaScript và MySQL
 
-This package implements the five bootstrap/Accept wire contracts verified in [ACCEPT_PROTOCOL_EVIDENCE.md](../docs/backend/ACCEPT_PROTOCOL_EVIDENCE.md) and [accept-contract.json](../docs/backend/accept-contract.json), the two profile startup routes verified in [CONFIG_STARTUP_EVIDENCE.md](../docs/backend/CONFIG_STARTUP_EVIDENCE.md), and a new `/healthz` endpoint. It uses Node 24 native TypeScript and standard-library modules. There are no npm dependencies, remote calls, service forwarding, Gameloft accounts, or Gameloft credentials.
+Backend dùng Node.js 24+, JavaScript ES Modules và `mysql2/promise`. Điểm khởi
+động là `src/main.js`; không cần TypeScript hoặc bước transpile. Một nguồn URL
+chung cho app và backend nằm tại **`../gradle.properties`**, biến
+`BACKEND_BASE_URL`. Backend đọc trực tiếp file này để tạo mọi URL discovery.
 
-The current scope is a local emulator experiment. Sessions exist only in process memory. The anonymous password derivation is public and deterministic; accepting it establishes wire compatibility, not account ownership. This is not production authentication. The entry point rejects `NODE_ENV=production`. PostgreSQL, persistent accounts/farms, cloud synchronization, recovery, and production deployment remain later work.
-
-## Run and test
-
-From the repository root:
-
-```sh
-cd backend
-npm test
-PUBLIC_BASE_URL=http://10.0.2.2:8787 npm start
+```properties
+BACKEND_BASE_URL=http://10.37.233.55:8787/
 ```
 
-The listener binds to `127.0.0.1:8787` by default. Android Emulator uses `10.0.2.2` to reach the host loopback interface; `PUBLIC_BASE_URL` controls the origins returned to the app. For host-only use, plain `npm start` advertises `http://127.0.0.1:8787`. A container/VM/emulator arrangement must provide its own host connectivity. This package does not alter the emulator, app networking, APK, or routing.
+`10.37.233.55` là IPv4 Windows người dùng cung cấp. Nếu mạng đổi IP, sửa chính
+biến này, khởi động lại backend, **build và cài lại APK**. Đổi file cấu hình không
+đổi được URL đã nhúng trong APK đang cài. Không còn biến `localBackendUrl`,
+`PUBLIC_BASE_URL`, `BIND_HOST` hoặc fallback về localhost/`10.0.2.2`.
 
-The start command runs a foreground process; Ctrl-C stops it. `/healthz` can be checked on the host at `http://127.0.0.1:8787/healthz`. Tests start isolated HTTP listeners on loopback ephemeral ports and close them; no persistent server is left running.
+## Cấu hình và chạy
 
-| Environment variable | Default | Meaning |
-| --- | --- | --- |
-| `BIND_HOST` | `127.0.0.1` | Listener address. Keep loopback for this experiment. |
-| `PORT` | `8787` | Integer `1..65535`. |
-| `PUBLIC_BASE_URL` | `http://127.0.0.1:<PORT>` | HTTP(S) origin only, with no credentials, path, query, or fragment. No trailing slash is returned. The built-in listener itself is plain HTTP. |
-| `SESSION_TTL_SECONDS` | `900` | Integer `1..86400`. |
-| `RESEARCH_SESSION_SECRET` | Fresh random 32-byte secret | Optional environment-supplied UTF-8 value, at least 32 bytes. Never commit it. |
+Từ thư mục `backend` trong PowerShell:
 
-An omitted secret is ephemeral and changes on every start. Even with a stable environment secret, restarting loses all active sessions. No secrets are written automatically. `.local/` and `.env*` files inside this package are ignored, but this program does not automatically load dotenv files. Startup logs report only whether the secret is ephemeral or environment supplied.
+```powershell
+npm ci
+Copy-Item .env.example .env
+```
 
-## Implemented routes
+Sửa `.env`: đặt `DB_PASSWORD` riêng, tài khoản database và
+`RESEARCH_SESSION_SECRET` ngẫu nhiên, ít nhất 32 byte. Giữ session secret ổn định
+qua các lần restart; thay secret sẽ làm token hiện có không hợp lệ. Có thể tạo
+secret riêng bằng `node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"`
+rồi lưu vào `.env` của máy bạn, không đưa vào Git hoặc log hỗ trợ.
 
-Successful protocol responses use HTTP `200`: the original HTTP transport and privacy callback have different status acceptance rules. Response bodies are UTF-8 with `Cache-Control: no-store`.
+MySQL 8.0/8.4: dùng tài khoản quản trị của chính bạn để tạo database và tài khoản
+ứng dụng một lần. Thay mật khẩu trong ví dụ trước khi chạy; không dùng tài khoản
+root cho server:
 
-| Route | Response |
-| --- | --- |
-| `GET /healthz` | `{"status":"ok","mode":"local-research"}`. New service health check. |
-| `GET /config/{client}/datacenters` | `[{"name":"local","_datacenter_id":"local-research"}]`. |
-| `GET /config/{client}/datacenters/local/urls` | All ten exact string keys listed below. |
-| `GET /locate/auth` | Exact plain `PUBLIC_BASE_URL` origin, without JSON quotes, trailing slash, or final newline. |
-| `GET /locate/storage` | Same exact plain origin for the profile service. |
-| `GET /profiles/me/myprofile?access_token=<token>` | `{"credential":"<authorized anonymous username>"}` from the validated session's stored identity. |
-| `POST /authorize` | `{"access_token":"<new opaque local session token>"}`. |
-| `POST /users/me/compliance` | `{"LOCAL_RESEARCH_16_PLUS":{"compliant":true}}` for age at least 16, or the same named object with false below 16. |
+```sql
+CREATE DATABASE IF NOT EXISTS green_farm CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+CREATE USER 'green_farm_app'@'localhost' IDENTIFIED BY '<your-private-password>';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, REFERENCES
+  ON green_farm.* TO 'green_farm_app'@'localhost';
+```
 
-The URL-map keys are `pandora`, `gllive-ope`, `tapjoy`, `offline_items`, `game_portal`, `status`, `crm_iap`, `ads_agency`, `marketing_site`, and `online_connectivity`. `pandora` is the public base origin. Every other value is an own-origin `/unsupported/<key>/` URL. Those operations return `501`; they are not fabricated working advertising, marketing, commerce, or game services.
+Nếu user đã tồn tại, quản lý mật khẩu/quyền của user đó thay vì chạy lại
+`CREATE USER`. Tài khoản migration cần quyền tạo bảng; triển khai nghiêm ngặt có
+thể dùng tài khoản migration riêng rồi chỉ cấp SELECT/INSERT/UPDATE/DELETE cho
+user chạy app. Database không tự tạo và không bị reset bởi chương trình.
 
-The seven compatibility routes come from original client evidence. The health route, input bounds, signed token format, lifetime, and research policy are **new project choices**, not reconstructed server behavior.
+Sau khi `.env` khớp MySQL:
 
-## Forms, sessions, and the research rule
+```powershell
+npm run migrate
+npm start
+# Hoặc khi phát triển:
+npm run dev
+```
 
-Both POST routes require `application/x-www-form-urlencoded`, allowing media-type parameters. The parser decodes UTF-8 form values with `+` as a space. It rejects malformed UTF-8/percent escapes, duplicate or unexpected fields, missing `=`, empty pairs, and bodies above 8 KiB. It never reads JSON request bodies.
+Migration có khóa chống chạy đồng thời, lưu checksum, tạo bảng nếu chưa có và
+không DROP/TRUNCATE/reset dữ liệu. Sau lần đầu, chạy lại giữ nguyên ID/nội dung.
+Một schema có checksum không khớp sẽ bị từ chối thay vì tự viết lại lịch sử.
 
-`/authorize` requires these five nonempty fields; control characters are rejected except scope whitespace separators:
+| Cấu hình backend | Giá trị/mục đích |
+|---|---|
+| `HOST` | Mặc định `0.0.0.0`, lắng nghe mọi interface IPv4. |
+| `PORT` | Mặc định `8787`; phải khớp port của `BACKEND_BASE_URL`. |
+| `DB_HOST`, `DB_PORT` | Mặc định `127.0.0.1`, `3306`; chỉ backend truy cập MySQL. |
+| `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Bắt buộc, chỉ trong `.env`/môi trường backend. |
+| `DB_POOL_SIZE`, `DB_CONNECT_TIMEOUT_MS` | Pool mặc định 5 kết nối, timeout 5000 ms. |
+| `RESEARCH_SESSION_SECRET` | Bắt buộc, riêng tư và ổn định, ít nhất 32 byte. |
+| `SESSION_TTL_SECONDS` | Access token: mặc định 900 giây, tối đa 86400. |
+| `REFRESH_TTL_SECONDS` | Refresh token: mặc định 2592000 giây; ít nhất access TTL, tối đa 7776000. |
+| `BACKEND_CONFIG_FILE` | Tùy chọn đường dẫn file properties cho test/instance tách biệt. Vẫn đọc đúng khóa `BACKEND_BASE_URL`, không phải URL thứ hai. |
 
-| Field | Local research validation |
-| --- | --- |
-| `client_id` | At most 512 UTF-16 code units. Accepted as a compatibility label; it does not select a remote service or privileged account. |
-| `username` | `anonymous:<credential>`, with nonempty credential at most 1024 UTF-16 code units. |
-| `password` | The original `a.aR(credential)` derivation: for each of the first at most 16 UTF-16 code units, emit character `(codeUnit % 25) + 97`. At most 16 characters. |
-| `scope` | At most 256 code units; whitespace-separated tokens from `storage auth config asset transaction message`. These legacy declarations do not enable extra services or privileges. |
-| `device_id` | At most 256 UTF-16 code units; required compatibility input, not a hardware attestation. |
+`.env` được Node tự đọc khi chạy entry point/migration; biến môi trường đã đặt
+có ưu tiên. Listener này dùng HTTP trực tiếp. Validator nhận cấu hình origin
+HTTP(S) IPv4 chuẩn; HTTPS không được mở bởi Node listener này và cần triển khai
+TLS/reverse proxy rõ ràng trước khi dùng. Không có chứng chỉ/TLS giả.
 
-There is no pre-existing user database or Gameloft account verification. Each accepted authorization generates a random session identifier and an HMAC-SHA-256 signed opaque token. The token contains only version, random session identifier, issue time, and expiry; no client/device/credential/country data. The in-memory session stores the validated client namespace and full authorized anonymous username. Compliance and profile reads verify the signature, expiry, and membership in this process's session map. Tokens from another process are invalid even with a shared signing secret. At most 10,000 unexpired sessions are retained; capacity returns `503`, and expired entries are removed when issuing/verifying sessions.
+## Kiểm tra IPv4 và mạng
 
-The profile endpoint returns only the authenticated session's stored username under the evidenced `credential` key. Two users receive their own identities; there is no query parameter for selecting another user. It does not invent dates, currency, purchases, inventory, or farm progress. Only `access_token` is allowed in its query; malformed, duplicate, or unknown query fields return `400`, and a missing/invalid/expired token returns `401`. Raw query strings and identities are excluded from logs. This minimal session-backed identity profile is not a persistent farm-save service.
+Trên Windows chạy `ipconfig`, chọn IPv4 Address của adapter LAN/Wi-Fi đang kết
+nối, không chọn `0.0.0.0`, loopback hoặc adapter ảo không có đường tới emulator.
+`0.0.0.0` chỉ là địa chỉ bind của server, không phải URL app. Kiểm tra:
 
-`/users/me/compliance` accepts exactly `access_token`, `country`, and `age`. It first requires a valid local session. Country must be two ASCII letters, case insensitive; no membership in an ISO country registry is claimed. Age must be canonical decimal integer text from `0` through `120`: no sign, fraction, whitespace, or leading zeros except `0` itself. These validations are new server constraints; the original checker lacks them.
+```powershell
+Invoke-RestMethod http://10.37.233.55:8787/health
+Get-NetTCPConnection -State Listen -LocalPort 8787
+```
 
-`LOCAL_RESEARCH_16_PLUS` is an explicit project experiment: age `>=16` returns true, younger ages return false. It is not a legal determination, a country-specific privacy policy, or a claim of COPPA/GDPR compliance. Use the intended adult age of `30` for the first emulator smoke test. The response is always a nonempty named policy object; the original parser's permissive `{}` success branch is not used. In the original app, a false policy response still invokes the successful callback but converts the resulting age to zero.
+Khi MySQL và migration sẵn sàng, `/health` trả HTTP200:
 
-## Failure behavior and limits
+```json
+{"status":"ok","backend":{"status":"running"},"mysql":{"status":"ready","schemaVersion":1}}
+```
 
-Errors use a small new JSON body `{"error":"<code>"}` and meaningful HTTP status. Original clients may ignore these bodies and can leave callbacks pending on non-200 responses; that behavior is documented in the evidence and is not hidden by success responses here.
+Khi MySQL/schema không sẵn sàng, server vẫn phản hồi HTTP503 với backend
+`running`, MySQL `unavailable`. Đăng nhập/đọc/ghi phụ thuộc DB cũng trả lỗi503;
+không chuyển sang RAM/JSON hoặc trả đăng nhập thành công. `/healthz` là alias.
 
-| Status | Meaning |
-| --- | --- |
-| `400` | Missing/invalid input, malformed form, unknown/duplicate field, unsupported scope. |
-| `401` | Invalid anonymous compatibility credential or missing/invalid/expired local session. |
-| `404` | Unknown route or datacenter. |
-| `405` | Wrong method on a known route, with `Allow`. |
-| `413` | Form exceeds 8 KiB. |
-| `415` | POST content type is not form encoded. |
-| `501` | Explicitly unsupported service surface, including advertised auxiliary URLs, known non-auth locators, device registration, and user config. |
-| `503` | Local in-memory session capacity reached. |
+Chỉ khi Windows Firewall chặn kết nối, mở **đúng cổng TCP 8787** trên profile
+Private và giới hạn mạng nội bộ, trong PowerShell quản trị:
 
-The service does not implement `/configs/users/me`, `/devices/mydevice`, profile writes/deletes, assets, farm storage/synchronization, transactions, ads, purchases, legal text, or full game startup. Unknown routes never receive a fake success, and no request is forwarded remotely.
+```powershell
+New-NetFirewallRule -DisplayName 'Green Farm backend 8787' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8787 -Profile Private -RemoteAddress LocalSubnet
+```
 
-Each completed request logs exactly method, a sanitized route-template path, and status. Logs omit raw client IDs, query strings, form values, credentials, tokens, and device/country data. Do not add raw request or token logging during emulator work.
+Không cần tắt toàn bộ firewall hoặc mở cổng MySQL cho Android. Nếu dùng port
+khác, cập nhật rule và cả `PORT`/URL chung. Từ trình duyệt trong emulator, mở
+**cùng** `http://10.37.233.55:8787/health`. Chỉ host truy cập được chưa chứng minh
+emulator có route qua LAN/VPN/firewall của máy bạn.
 
-The HTTP tests exercise real routes, all ten URL keys, exact plaintext locators, anonymous derivation, signed sessions and expiry, own-profile identity isolation, policy boundaries, validation failures, malformed forms, unsupported routes, and log redaction. They do not prove Android/DEX integration, which is a separate emulator task.
+## Giao thức game được giữ
+
+Bằng chứng gốc ở [Accept](../docs/backend/ACCEPT_PROTOCOL_EVIDENCE.md),
+[startup profile](../docs/backend/CONFIG_STARTUP_EVIDENCE.md) và mã gốc
+`S800x480/s.java`, `t.java`, `cs.java`. Không đổi client sang REST/JSON form mới.
+POST vẫn là `application/x-www-form-urlencoded` UTF-8, giới hạn 8 KiB; discovery
+locator vẫn là text thuần, không quote, không newline và không slash cuối.
+
+| Route | Dữ liệu/giao thức |
+|---|---|
+| `GET /config/{client}/datacenters` | JSON datacenter array như M0. |
+| `GET /config/{client}/datacenters/local/urls` | Đúng mười khóa gốc; mọi URL cùng origin cấu hình. |
+| `GET /locate/auth`, `GET /locate/storage` | Origin text thuần từ `BACKEND_BASE_URL`. |
+| `POST /authorize` | Ban đầu: form `client_id`, `username`, `password`, `scope`, `device_id`; JSON `access_token`, `refresh_token`. |
+| `POST /authorize` (refresh) | Form `client_id`, `grant_type=refresh_token`, `refresh_token`, `scope` tùy chọn; rotation token trong transaction thật. |
+| `GET /profiles/me/myprofile?access_token=...` | JSON `credential` đúng tài khoản của session đã kiểm tra. |
+| `POST /users/me/compliance` | Form `access_token`, `country`, `age`; persist và trả policy `LOCAL_RESEARCH_16_PLUS` như M0. |
+
+Core `s.cG` đọc cả access/refresh token; SDK wrapper cũ chỉ đọc access token và
+bỏ qua khóa bổ sung. Core `s.o` thực hiện refresh qua cùng route. Scope gốc
+`leaderboard social storage auth message config` được nhận cùng các scope M0
+`asset transaction`; nhận tên scope không có nghĩa các dịch vụ đó đã hoạt động.
+
+Đăng nhập hiện là **anonymous legacy** (`anonymous:<credential>`), kiểm tra đúng
+phép dẫn xuất password UTF-16 của APK rồi kiểm tra hash trong MySQL. Đây là giao
+thức công khai có thể tự dẫn xuất, không phải chứng minh quyền sở hữu tài khoản
+hiện đại. `NODE_ENV=production` vẫn bị từ chối. Không tạo đăng nhập Facebook thành
+công giả; nút Connect qua SDK Facebook cũ chưa có backend độc lập tương đương.
+
+Session được ký HMAC, sid chỉ lưu SHA-256 trong DB. Access/refresh có thời hạn;
+refresh token chỉ dùng một lần, giao dịch tạo session mới và xóa session cũ nên
+replay bị từ chối. Hash password dùng salted scrypt. Request log chỉ gồm method,
+route template và status; lỗi database log mã lỗi đã lọc, không SQL, password,
+client ID, token, body hay query string.
+
+## Dữ liệu MySQL và giới hạn phục hồi
+
+- `gf_accounts`: ID ổn định, client namespace, credential gốc cần cho profile,
+  salt/hash password; không lưu password nguyên văn.
+- `gf_sessions`: tài khoản, device, sid hash, thời điểm cấp/hết hạn access/refresh.
+- `gf_compliance`: country/age và thời điểm cập nhật của tài khoản.
+- `gf_schema_migrations`: version/checksum migration, đồng thời khóa phát hành
+  session để giữ giới hạn 10.000 session như backend trước.
+
+Backend cũ chỉ có `Map` session RAM; không có database/file JSON hay export đã
+lưu. Các process M0 còn chạy không bị xóa/reset. Session RAM không có snapshot
+để chuyển đổi một cách có bằng chứng; không có script tự bịa ID hoặc nhập token
+không tồn tại. Từ lần chạy MySQL này, mọi bản ghi thành công được commit bền vững.
+
+Backend trước chưa quản lý farm, tiền, kho hay tiến trình gameplay. Dữ liệu farm
+vẫn ở RMS phía thiết bị; không có save API farm có bằng chứng để chuyển thành
+cloud save. Các profile write/delete, `/configs/users/me`, `/devices/mydevice`,
+quảng cáo/thanh toán và dịch vụ auxiliary trả501/404 rõ ràng, không success giả.
+Không diễn giải đọc profile identity như đã đọc/tải toàn bộ nông trại.
+
+## Kiểm thử
+
+```powershell
+npm test
+# Dùng database thử nghiệm RIÊNG, tên kết thúc bằng _test:
+$env:DB_NAME='green_farm_test'
+npm run test:mysql
+Remove-Item Env:DB_NAME
+```
+
+`npm test` kiểm tra HTTP/config bằng repository test double **chỉ trong test**,
+không phải fallback runtime. `test:mysql` yêu cầu MySQL thật, migration thật,
+không skip nếu thiếu DB; kiểm tra restart, account/session/profile/compliance,
+refresh/replay, transaction rollback và concurrent identity. Nó cũng khởi động
+process Node riêng, gọi HTTP thật, restart process rồi xác minh token/profile và
+row MySQL còn nguyên; một process khác dùng cổng DB không lắng nghe để xác minh
+HTTP503 khi DB lỗi. Nó chỉ xóa các row
+thuộc namespace ngẫu nhiên nó đã tạo trong DB `_test`, không reset database.
+
+Các kiểm tra HTTP/DB riêng không thay thế việc chạy APK: cần xác nhận host và
+emulator cùng truy cập `/health`, backend nhận đúng request, rồi kiểm tra UI,
+network failure/timeout và save/load trên Android.

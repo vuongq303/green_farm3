@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import org.jf.dexlib2.AccessFlags;
@@ -33,36 +34,50 @@ import org.jf.dexlib2.immutable.reference.ImmutableStringReference;
 import org.jf.dexlib2.writer.io.MemoryDataStore;
 import org.jf.dexlib2.writer.pool.DexPool;
 
-/** Local-backend opt-in: change one reviewed SDK endpoint literal, with read-back proofs. */
+/** Redirect the two reviewed SDK/game bootstrap constructors, with read-back proofs. */
 public final class PatchBackendEndpoint {
     static final String OWNER = "Lcom/gameloft/a/b/a;";
+    static final String CORE_OWNER = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;";
+    static final Map<String, Integer> TARGETS = new TreeMap<>();
+    static { TARGETS.put(OWNER, 1); TARGETS.put(CORE_OWNER, 2); }
     static final String METHOD = "aL(Ljava/lang/String;)Ljava/lang/String;";
     static final String ORIGINAL = "https://eve.gameloft.com/";
     private PatchBackendEndpoint() {}
 
     static String validateUrl(String value) throws Exception {
-        URI uri = new URI(value);
-        String scheme = uri.getScheme(), host = uri.getHost();
-        if (scheme == null || !(scheme.equals("http") || scheme.equals("https"))
-                || host == null || uri.getRawUserInfo() != null || uri.getRawQuery() != null
-                || uri.getRawFragment() != null || uri.getPort() == 0 || uri.getPort() > 65535
-                || !value.endsWith("/") || value.indexOf('\\') >= 0 || value.equals(ORIGINAL)) {
-            throw new IllegalArgumentException("Expected a different absolute HTTP(S) base URL ending in /, without userinfo, query or fragment");
+        String message = "Set BACKEND_BASE_URL in root gradle.properties to an HTTP(S) IPv4 LAN origin, "
+                + "for example http://<server-IPv4>:<port>/; no userinfo, path, query, fragment or loopback address";
+        try {
+            URI uri = new URI(value.trim());
+            String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
+            String host = uri.getHost();
+            if (!(scheme.equals("http") || scheme.equals("https")) || host == null
+                    || !host.matches("(?:0|[1-9][0-9]{0,2})(?:\\.(?:0|[1-9][0-9]{0,2})){3}")
+                    || uri.getRawUserInfo() != null || uri.getRawQuery() != null || uri.getRawFragment() != null
+                    || !(uri.getRawPath().isEmpty() || uri.getRawPath().equals("/"))
+                    || uri.getPort() == 0 || uri.getPort() > 65535 || uri.getRawAuthority().endsWith(":")
+                    || value.indexOf('\\') >= 0) {
+                throw new IllegalArgumentException(message);
+            }
+            String[] parts = host.split("\\.");
+            int[] octets = new int[4];
+            for (int index = 0; index < 4; index++) {
+                octets[index] = Integer.parseInt(parts[index]);
+                if (octets[index] > 255) throw new IllegalArgumentException(message);
+            }
+            if (octets[0] == 0 || octets[0] == 127 || octets[0] >= 224
+                    || (octets[0] == 169 && octets[1] == 254) || host.equals("10.0.2.2")) {
+                throw new IllegalArgumentException(message);
+            }
+            return scheme + "://" + host + (uri.getPort() < 0 ? "" : ":" + uri.getPort()) + "/";
+        } catch (Exception failure) {
+            // A URI parser's exception may echo accidental userinfo/passwords.
+            throw new IllegalArgumentException(message);
         }
-        boolean loopback = host.equalsIgnoreCase("localhost") || host.equals("10.0.2.2")
-                || host.equals("[::1]") || host.equals("[0:0:0:0:0:0:0:1]");
-        if (host.matches("127(?:\\.[0-9]{1,3}){3}")) {
-            loopback = true;
-            for (String part : host.split("\\.")) if (Integer.parseInt(part) > 255) loopback = false;
-        }
-        if (scheme.equals("http") && !loopback) {
-            throw new IllegalArgumentException("Cleartext HTTP is restricted to localhost, loopback literals or Android emulator 10.0.2.2");
-        }
-        return value;
     }
 
     private static boolean target(Method method) {
-        return method.getDefiningClass().equals(OWNER) && method.getName().equals("aL")
+        return TARGETS.containsKey(method.getDefiningClass()) && method.getName().equals("aL")
                 && method.getReturnType().equals("Ljava/lang/String;")
                 && method.getParameterTypes().equals(Collections.singletonList("Ljava/lang/String;"));
     }
@@ -77,6 +92,7 @@ public final class PatchBackendEndpoint {
     }
 
     private static ClassDef replace(ClassDef definition, String before, String after) throws IOException {
+        int expected = TARGETS.get(definition.getType());
         int methods = 0, literals = 0, ownerLiterals = 0;
         List<Method> changed = new ArrayList<>();
         for (Method method : definition.getMethods()) {
@@ -107,9 +123,9 @@ public final class PatchBackendEndpoint {
                     new ImmutableMethodImplementation(implementation.getRegisterCount(), instructions,
                             implementation.getTryBlocks(), implementation.getDebugItems())));
         }
-        if (methods != 1 || literals != 1 || ownerLiterals != 1) {
-            throw new IOException("Expected exactly one target method and one endpoint literal in that method/owner; found "
-                    + methods + "/" + literals + "/" + ownerLiterals);
+        if (methods != 1 || literals != expected || ownerLiterals != expected) {
+            throw new IOException("Expected exactly one target method and " + expected + " endpoint literals in "
+                    + definition.getType() + "; found " + methods + "/" + literals + "/" + ownerLiterals);
         }
         return new ImmutableClassDef(definition.getType(), definition.getAccessFlags(), definition.getSuperclass(),
                 definition.getInterfaces(), definition.getSourceFile(), definition.getAnnotations(), definition.getFields(), changed);
@@ -178,28 +194,35 @@ public final class PatchBackendEndpoint {
         Opcodes opcodes = Opcodes.forDexVersion(version);
         if (opcodes == null) throw new IOException("Unsupported DEX version");
         Map<String, ClassDef> original = classes(originalBytes, opcodes);
-        ClassDef owner = original.get(OWNER);
-        if (owner == null) throw new IOException("Missing target class " + OWNER);
         Map<String, ClassDef> modified = new TreeMap<>(original);
-        modified.put(OWNER, replace(owner, ORIGINAL, replacement));
+        for (String owner : TARGETS.keySet()) {
+            if (!original.containsKey(owner)) throw new IOException("Missing target class " + owner);
+            modified.put(owner, replace(original.get(owner), ORIGINAL, replacement));
+        }
         byte[] outputBytes = serialize(modified.values(), opcodes);
         Map<String, ClassDef> actual = classes(outputBytes, opcodes);
         if (!original.keySet().equals(actual.keySet())) throw new IOException("Class set changed");
-        ClassDef restored = replace(actual.get(OWNER), replacement, ORIGINAL);
-        if (!Arrays.equals(serialize(Collections.singletonList(owner), opcodes),
-                serialize(Collections.singletonList(restored), opcodes))) throw new IOException("Reverse-patched target semantics changed");
+        for (String owner : TARGETS.keySet()) {
+            ClassDef restored = replace(actual.get(owner), replacement, ORIGINAL);
+            if (!Arrays.equals(serialize(Collections.singletonList(original.get(owner)), opcodes),
+                    serialize(Collections.singletonList(restored), opcodes))) {
+                throw new IOException("Reverse-patched target semantics changed: " + owner);
+            }
+        }
         Map<String, ClassDef> beforeOthers = new TreeMap<>(original), afterOthers = new TreeMap<>(actual);
-        beforeOthers.remove(OWNER); afterOthers.remove(OWNER);
+        for (String owner : TARGETS.keySet()) { beforeOthers.remove(owner); afterOthers.remove(owner); }
         byte[] beforeCanonical = serialize(beforeOthers.values(), opcodes);
         if (!Arrays.equals(beforeCanonical, serialize(afterOthers.values(), opcodes))) throw new IOException("Other class semantics changed");
         String json = "{\n"
                 + "  \"input_dex_sha256\": " + quote(sha256(originalBytes)) + ",\n"
                 + "  \"output_dex_sha256\": " + quote(sha256(outputBytes)) + ",\n"
-                + "  \"target_class\": " + quote(OWNER) + ",\n"
+                + "  \"schema_version\": 2,\n"
+                + "  \"target_classes\": [" + quote(OWNER) + ", " + quote(CORE_OWNER) + "],\n"
                 + "  \"target_method\": " + quote(METHOD) + ",\n"
                 + "  \"original_url\": " + quote(ORIGINAL) + ",\n"
                 + "  \"replacement_url\": " + quote(replacement) + ",\n"
-                + "  \"replacement_count\": 1,\n"
+                + "  \"replacement_count\": 3,\n"
+                + "  \"replacement_counts\": {" + quote(OWNER) + ": 1, " + quote(CORE_OWNER) + ": 2},\n"
                 + "  \"unchanged_other_classes_verified\": true,\n"
                 + "  \"reverse_patch_semantics_verified\": true,\n"
                 + "  \"unchanged_classes_canonical_sha256\": " + quote(sha256(beforeCanonical)) + "\n}\n";

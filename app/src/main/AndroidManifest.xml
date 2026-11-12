@@ -15,7 +15,7 @@
         android:debuggable="false"
         android:hardwareAccelerated="true"
         android:largeHeap="true"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="false">
         <activity
             android:label="@string/MIDlet_Name"
             android:name="com.gameloft.android.ANMP.GloftGF2F.Start"

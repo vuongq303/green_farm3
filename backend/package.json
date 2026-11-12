@@ -1,13 +1,19 @@
 {
   "name": "green-farm-local-research-backend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
-    "start": "node src/main.ts",
-    "test": "node --test test/*.test.mjs"
+    "start": "node src/main.js",
+    "dev": "node --watch src/main.js",
+    "migrate": "node scripts/migrate.js",
+    "test": "node --test test/*.test.mjs",
+    "test:mysql": "node --test test/mysql.integration.mjs test/http-mysql.integration.mjs"
+  },
+  "dependencies": {
+    "mysql2": "3.24.6"
   }
 }

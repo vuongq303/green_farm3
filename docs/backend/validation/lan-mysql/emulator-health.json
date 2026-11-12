@@ -1,0 +1,5 @@
+{
+  "returncode": 0,
+  "response": "HTTP/1.1 200 OK\nContent-Type: application/json; charset=utf-8\nContent-Length: 91\nCache-Control: no-store\nDate: Thu, 12 Nov 2026 12:24:08 GMT\nConnection: close\n\n{\"status\":\"ok\",\"backend\":{\"status\":\"running\"},\"mysql\":{\"status\":\"ready\",\"schemaVersion\":1}}",
+  "stderr": ""
+}

@@ -3,9 +3,10 @@ import { once } from 'node:events';
 import { request as httpRequest } from 'node:http';
 import test from 'node:test';
 
-import { createResearchServer } from '../src/server.ts';
+import { createResearchServer } from '../src/server.js';
+import { createTestStore } from './helpers/store.mjs';
 
-const PUBLIC_BASE = 'http://research.invalid:4141';
+const PUBLIC_BASE = 'http://192.168.23.41:4141';
 const CLIENT = 'research-client-fixture:1.0:Android';
 const DEVICE = 'research-device-fixture';
 const CREDENTIAL = 'local-fixture-\u{1f31e}-credential';
@@ -39,6 +40,8 @@ async function fixture(t, options = {}) {
   const server = createResearchServer({
     publicBaseUrl: PUBLIC_BASE,
     sessionSecret: 'test-secret-for-local-research-only',
+    store: createTestStore(),
+    errorLog: () => {},
     log: () => {},
     ...options,
   });
@@ -86,7 +89,7 @@ async function fixture(t, options = {}) {
     const response = await postForm('/authorize', fields);
     assert.equal(response.status, 200, response.text);
     const value = json(response);
-    assert.deepEqual(Object.keys(value), ['access_token']);
+    assert.deepEqual(Object.keys(value).sort(), ['access_token', 'refresh_token']);
     assert.equal(typeof value.access_token, 'string');
     assert.ok(value.access_token.length > 0);
     return value.access_token;
@@ -373,4 +376,61 @@ test('request logs contain only method, redacted route path, and status', async 
   for (const secret of [CLIENT, DEVICE, CREDENTIAL, token, originalPassword(CREDENTIAL), 'query-secret-fixture', 'query-password-fixture']) {
     assert.ok(!rendered.includes(secret), `log leaked ${secret.slice(0, 20)}`);
   }
+});
+
+test('core client scope declarations and durable refresh grant follow original request fields', async t => {
+  let now = 1_700_000_000_000;
+  const store = createTestStore();
+  const first = await fixture(t, { store, now: () => now, sessionTtlSeconds: 2, refreshTtlSeconds: 20 });
+  const initial = await first.postForm('/authorize', authorizeFields({ scope: 'leaderboard social storage auth message config' }));
+  assert.equal(initial.status, 200);
+  const tokens = json(initial);
+  now += 2000;
+  assert.equal((await first.request(`/profiles/me/myprofile?${new URLSearchParams({ access_token: tokens.access_token })}`)).status, 401);
+  // Same repository and signing secret model a server process restart.
+  const restarted = await fixture(t, { store, now: () => now, sessionTtlSeconds: 2, refreshTtlSeconds: 20 });
+  const refreshed = await restarted.postForm('/authorize', { client_id: CLIENT, grant_type: 'refresh_token', refresh_token: tokens.refresh_token });
+  assert.equal(refreshed.status, 200);
+  const rotated = json(refreshed);
+  assert.notEqual(rotated.access_token, tokens.access_token);
+  assert.notEqual(rotated.refresh_token, tokens.refresh_token);
+  assert.equal((await restarted.request(`/profiles/me/myprofile?${new URLSearchParams({ access_token: rotated.access_token })}`)).status, 200);
+  assert.equal((await restarted.postForm('/authorize', { client_id: CLIENT, grant_type: 'refresh_token', refresh_token: tokens.refresh_token })).status, 401);
+});
+
+test('refresh rejects wrong namespace, invalid, expired and access tokens', async t => {
+  let now = 1_700_000_000_000;
+  const { postForm } = await fixture(t, { now: () => now, sessionTtlSeconds: 2, refreshTtlSeconds: 3 });
+  const initial = json(await postForm('/authorize', authorizeFields()));
+  for (const refreshToken of ['wrong', initial.access_token, initial.refresh_token + 'x']) {
+    assert.equal((await postForm('/authorize', { client_id: CLIENT, grant_type: 'refresh_token', refresh_token: refreshToken })).status, 401);
+  }
+  assert.equal((await postForm('/authorize', { client_id: 'wrong-client', grant_type: 'refresh_token', refresh_token: initial.refresh_token })).status, 401);
+  now += 3000;
+  assert.equal((await postForm('/authorize', { client_id: CLIENT, grant_type: 'refresh_token', refresh_token: initial.refresh_token })).status, 401);
+});
+
+test('MySQL failures are observable and never produce successful login/profile/compliance responses', async t => {
+  const store = createTestStore();
+  const { request, postForm, authorize } = await fixture(t, { store });
+  const token = await authorize();
+  store.setUnavailable(true);
+  const health = await request('/health');
+  assert.equal(health.status, 503);
+  assert.deepEqual(json(health), { status: 'degraded', backend: { status: 'running' }, mysql: { status: 'unavailable' } });
+  for (const response of [
+    await postForm('/authorize', authorizeFields()),
+    await request(`/profiles/me/myprofile?${new URLSearchParams({ access_token: token })}`),
+    await postForm('/users/me/compliance', compliance(token)),
+  ]) {
+    assert.equal(response.status, 503);
+    assert.deepEqual(json(response), { error: 'database_unavailable' });
+  }
+  store.setUnavailable(false);
+  assert.equal((await request('/health')).status, 200);
+  assert.equal((await request(`/profiles/me/myprofile?${new URLSearchParams({ access_token: token })}`)).status, 200);
+});
+
+test('a production server cannot silently substitute an in-memory repository', () => {
+  assert.throws(() => createResearchServer({ publicBaseUrl: PUBLIC_BASE, sessionSecret: 'test-secret-for-local-research-only' }), /MySQL repository is required/u);
 });

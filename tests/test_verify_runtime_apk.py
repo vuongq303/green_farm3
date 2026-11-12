@@ -186,5 +186,46 @@ class ActualApkTest(unittest.TestCase):
         verify.verify_apk(complete, original, sdk)
 
 
+class NetworkPolicyTest(unittest.TestCase):
+    BASE = 'http://192.168.1.20:8787/'
+
+    @staticmethod
+    def tree(*, internet=True, debuggable='true', cleartext='true', security_config=None):
+        attributes = {'debuggable': debuggable, 'usesCleartextTraffic': cleartext}
+        if security_config is not None:
+            attributes['networkSecurityConfig'] = security_config
+        children = [{'tag': 'application', 'attributes': attributes, 'children': []}]
+        if internet:
+            children.append({'tag': 'uses-permission', 'attributes': {'name': 'android.permission.INTERNET'}, 'children': []})
+        return {'tag': 'manifest', 'attributes': {}, 'children': children}
+
+    def test_packaged_http_debug_manifest_is_checked(self):
+        with mock.patch.object(verify, 'manifest_tree', return_value=self.tree()):
+            result = verify.network_policy('final.apk', 'sdk', self.BASE)
+        self.assertTrue(result['internet_permission'])
+        self.assertTrue(result['debuggable'])
+        self.assertTrue(result['uses_cleartext_traffic'])
+
+    def test_rejects_missing_permission_release_manifest_http_block_and_unreviewed_override(self):
+        for changes in ({'internet': False}, {'debuggable': 'false'}, {'cleartext': 'false'},
+                        {'security_config': '@0x7f010001'}):
+            with self.subTest(changes=changes), mock.patch.object(verify, 'manifest_tree', return_value=self.tree(**changes)):
+                with self.assertRaises(ValueError):
+                    verify.network_policy('final.apk', 'sdk', self.BASE)
+
+    def test_binary_xml_dump_parser_retains_boolean_policy_attributes(self):
+        dump = '''E: manifest (line=1)
+  A: package="com.gameloft.android.ANMP.GloftGF2F"
+  E: uses-permission (line=2)
+    A: http://schemas.android.com/apk/res/android:name(0x01010003)="android.permission.INTERNET"
+  E: application (line=3)
+    A: http://schemas.android.com/apk/res/android:debuggable(0x0101000f)=true
+    A: http://schemas.android.com/apk/res/android:usesCleartextTraffic(0x010104ec)=true
+'''
+        with mock.patch.object(verify.subprocess, 'run', return_value=mock.Mock(stdout=dump)):
+            result = verify.network_policy('final.apk', 'sdk', self.BASE)
+        self.assertTrue(result['uses_cleartext_traffic'])
+
+
 if __name__ == "__main__":
     unittest.main()

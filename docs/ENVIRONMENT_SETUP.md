@@ -20,7 +20,7 @@ và Android Studio Run. Không cần module hoặc task recovered/baseline riên
 | Archive và công cụ bytecode | `/workspace/tooling/recovery-bytecode`; cache dependency trong `.local/bytecode-tools` |
 | Installer đầy đủ | `/workspace/tooling/setup-greenfarm.sh` |
 | Hướng dẫn khởi động đầy đủ | `/workspace/tooling/START.md` |
-| Backend local M0 | Node v24.22.1, standard library, session trong RAM |
+| Backend hiện tại | Node v24.22.1, JavaScript ES Modules, mysql2/promise và MySQL 8.4.13 đã kiểm thử |
 
 Installer mới thay thế vai trò của `/workspace/tooling/install.sh` cũ, vốn thiếu
 JDK, emulator, system image và công cụ bytecode. Nó kiểm tra SHA-256 cho từng
@@ -87,18 +87,31 @@ giữ quy trình backup app/AVD, tái sử dụng emulator hiện có và kiểm
 `sys.boot_completed`. Android Studio dùng JVM25 và cấu hình Android App `app`
 chuẩn; không thêm before-run task tùy chỉnh.
 
-Backend M0 chạy trong phiên terminal bền vững riêng:
+Backend JavaScript/MySQL chạy trong phiên terminal bền vững riêng. Cấu hình
+URL chung nằm ở `gradle.properties`, biến `BACKEND_BASE_URL`; giá trị hiện tại
+là IPv4 Windows người dùng cung cấp. Không dùng biến M0 `PUBLIC_BASE_URL` cũ.
+Đặt `backend/.env` và tạo database/user MySQL theo [README backend](../backend/README.md):
 
 ```bash
 cd /workspace/green_farm3/backend
-PUBLIC_BASE_URL=http://10.0.2.2:8787 npm start
+npm ci
+npm run migrate
+npm start
 ```
 
-Host kiểm tra `http://127.0.0.1:8787/healthz`; emulator gọi host qua `10.0.2.2`.
-M0 không cần `npm install`, không forward tới dịch vụ Gameloft. Session chỉ nằm
-trong RAM; chưa có PostgreSQL, persistent account/farm hoặc production auth.
-Các network client legacy khác vẫn còn, nên chưa thể khẳng định toàn bộ game
-độc lập khỏi Gameloft. APK hoàn chỉnh không tự khởi động backend.
+Kiểm tra `/health` từ host và emulator bằng cùng IPv4 cấu hình. Listener mặc
+định `0.0.0.0:8787`; MySQL/schema lỗi trả 503 và không fallback RAM. Đổi URL phải
+build/cài lại APK. Accounts, access/refresh session và compliance lưu MySQL;
+farm vẫn lưu RMS gốc trên thiết bị. Facebook, cloud farm save và các dịch vụ
+phụ legacy chưa hoàn tất, nên chưa khẳng định toàn bộ game độc lập khỏi Gameloft.
+APK hoàn chỉnh không tự khởi động backend. Installer/start_skill revision4 dưới
+đây được lưu trước mốc MySQL; dùng hướng dẫn backend trong repository cho bước
+database/server mới, không lặp lại lệnh PUBLIC_BASE_URL cũ trong snapshot.
+
+Trong lượt kiểm thử LAN/MySQL trên cloud, database dùng container MySQL riêng,
+named volume giữ dữ liệu và credential ở `.local/` không commit. Endpoint test
+cloud được override bằng chính `BACKEND_BASE_URL`; không ghi IP cloud vào cấu
+hình Windows của người dùng. Xem [checkpoint LAN/MySQL](backend/LAN_MYSQL_CHECKPOINT.md).
 
 ## Kiểm chứng và giới hạn
 

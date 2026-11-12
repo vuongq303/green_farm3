@@ -1,0 +1,21 @@
+{
+  "original": {
+    "dex_header": "dex\n035\u0000",
+    "apk_sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b"
+  },
+  "carrier_api24": {
+    "dex_header": "dex\n037\u0000",
+    "apk_sha256": "8ed379d8712aabe34a491d3bdbbce048c81bc146089059ca735dac7eb6e66b07"
+  },
+  "final_cloud": {
+    "dex_header": "dex\n035\u0000",
+    "apk_sha256": "4068b7390bc42c457dee034a18487c94bda7ae7b49a1e2f34f76eb6b0b971400"
+  },
+  "final_user_lan": {
+    "dex_header": "dex\n035\u0000",
+    "apk_sha256": "5a87fe01fdadae3bb0844cd5d39c91d824cba515fc50e691e4805b11b5ed637a"
+  },
+  "overlay": {
+    "dex_header": "dex\n035\u0000"
+  }
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "script": "npm run start",
+    "health": 200,
+    "mysql": "ready"
+  },
+  {
+    "script": "npm run dev",
+    "health": 200,
+    "mysql": "ready"
+  }
+]

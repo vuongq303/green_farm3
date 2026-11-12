@@ -115,6 +115,8 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
 
     @TaskAction
     void merge() {
+        // Validate before any output/work cleanup, including direct task use.
+        String endpoint = BackendBaseUrl.normalize(backendUrl.get())
         File incoming = inputApks.get().asFile.canonicalFile
         File outgoing = outputApks.get().asFile.canonicalFile
         File workspace = workDirectory.get().asFile.canonicalFile
@@ -153,9 +155,7 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
             File mergedDex = new File(work, 'merged/classes.dex')
             File output = new File(outgoing, carrier.name)
             File original = originalApk.get().asFile
-            String endpoint = backendUrl.get().trim()
-            boolean useBackend = endpoint && endpoint != 'original'
-            File base = useBackend ? new File(work, 'base/merged-base.apk') : output
+            File base = new File(work, 'base/merged-base.apk')
 
             runJava('MergeCoreDex', original, compiled, mergedDex)
             runPython('build_core_source.py', '--original', original,
@@ -163,19 +163,18 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
                     '--sdk', sdkDirectory.get().asFile, '--keystore', keystore.get().asFile,
                     '--output', base)
 
-            if (useBackend) {
-                File patchedDex = new File(work, 'backend/classes.dex')
-                runJava('PatchBackendEndpoint', mergedDex, patchedDex, endpoint)
-                runPython('build_local_backend.py', '--original', original,
-                        '--base', base, '--patched-dex', patchedDex,
-                        '--sdk', sdkDirectory.get().asFile, '--keystore', keystore.get().asFile,
-                        '--output', output)
-            }
+            File patchedDex = new File(work, 'backend/classes.dex')
+            runJava('PatchBackendEndpoint', mergedDex, patchedDex, endpoint)
+            runPython('build_local_backend.py', '--original', original,
+                    '--base', base, '--patched-dex', patchedDex,
+                    '--sdk', sdkDirectory.get().asFile, '--keystore', keystore.get().asFile,
+                    '--output', output)
             if (!output.isFile()) {
                 throw new GradleException('The complete APK was not produced: ' + output)
             }
             runPython('verify_runtime_apk.py', '--apk', output,
-                    '--original', original, '--sdk', sdkDirectory.get().asFile)
+                    '--original', original, '--sdk', sdkDirectory.get().asFile,
+                    '--backend-base-url', endpoint)
             return output
         }
     }

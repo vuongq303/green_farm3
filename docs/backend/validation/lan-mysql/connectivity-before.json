@@ -1,0 +1,14 @@
+{
+  "127.0.0.1": {
+    "status": 200,
+    "body": "{\"status\":\"ok\",\"mode\":\"local-research\"}"
+  },
+  "172.26.91.236": {
+    "error": "ConnectionRefusedError"
+  },
+  "emulator_to_host_lan_before": {
+    "returncode": 1,
+    "status_line": [],
+    "error": "nc: connect: Connection refused"
+  }
+}
