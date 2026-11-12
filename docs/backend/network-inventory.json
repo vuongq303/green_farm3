@@ -1,0 +1,6226 @@
+{
+  "apk": {
+    "name": "green-farm-3.apk",
+    "sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b",
+    "size": 14827195
+  },
+  "coverage": {
+    "asset_entries_scanned": 49,
+    "categories": {
+      "embedded_compiler_diagnostic_not_service": 1,
+      "example_placeholder": 1,
+      "game_wrapper_external_link": 3,
+      "gameloft_ads_cross_promotion": 15,
+      "gameloft_bootstrap_config": 3,
+      "gameloft_game_portal": 1,
+      "gameloft_state_tracking": 1,
+      "gameloft_static_content": 1,
+      "gameloft_support_legal_or_iap": 10,
+      "gameloft_tracking_discovery": 1,
+      "google_sdk_or_external_link": 21,
+      "store_iap_or_external_link": 10,
+      "third_party_ad_sdk": 10,
+      "third_party_analytics_sdk": 3,
+      "third_party_social_sdk": 9,
+      "xml_namespace_or_schema_not_network_destination": 3
+    },
+    "distinct_hosts": 44,
+    "distinct_sanitized_endpoints": 93,
+    "native_entries_scanned": 10,
+    "payload_entries_scanned": 59,
+    "third_party_reference_limit_per_endpoint": 3
+  },
+  "dex": [
+    {
+      "entry": "classes.dex",
+      "sha256": "3901b6678b4523947273914b30fe94a750e149f89e0a7a1fa3932261d7539ec4",
+      "size": 7655124,
+      "string_count": 50823
+    }
+  ],
+  "federation": {
+    "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/s.smali",
+    "route_table_constants": [
+      {
+        "line": 11094,
+        "parameter_names": [],
+        "path_constants": [],
+        "request_field": "Qc"
+      },
+      {
+        "line": 11119,
+        "parameter_names": [
+          "access_token",
+          "content_type",
+          "push_method",
+          "alert_types"
+        ],
+        "path_constants": [
+          "alerts",
+          "me"
+        ],
+        "request_field": "Qd"
+      },
+      {
+        "line": 11187,
+        "parameter_names": [
+          "action",
+          "ggi",
+          "domain",
+          "port",
+          "type",
+          "connectionstatus",
+          "mac_addr",
+          "game_version"
+        ],
+        "path_constants": [],
+        "request_field": "PD"
+      },
+      {
+        "line": 11264,
+        "parameter_names": [],
+        "path_constants": [
+          "<presence to='",
+          "@conference.pegasus/",
+          "'>",
+          "<x xmlns='http://jabber.org/protocol/muc'>",
+          "<history maxchars='0'/></x>",
+          "</presence>"
+        ],
+        "request_field": "PF"
+      },
+      {
+        "line": 11314,
+        "parameter_names": [],
+        "path_constants": [
+          "<presence to='",
+          "@conference.pegasus/",
+          "'>",
+          "<x xmlns='http://jabber.org/protocol/muc'>",
+          "<history maxchars='0'/></x>",
+          "</presence>"
+        ],
+        "request_field": "PG"
+      },
+      {
+        "line": 11370,
+        "parameter_names": [],
+        "path_constants": [
+          "<message from='",
+          "@pegasus' ",
+          "to='",
+          "@pegasus' type='chat' xml:lang='en'>",
+          "<body>",
+          "</body></message>"
+        ],
+        "request_field": "PH"
+      },
+      {
+        "line": 11432,
+        "parameter_names": [],
+        "path_constants": [
+          "<message to='",
+          "@conference.pegasus' ",
+          "type='groupchat' xml:lang='en'>",
+          "<body>",
+          "</body></message>"
+        ],
+        "request_field": "PI"
+      },
+      {
+        "line": 11482,
+        "parameter_names": [],
+        "path_constants": [
+          "<message to='",
+          "@conference.pegasus/",
+          "' ",
+          "type='chat' xml:lang='en'>",
+          "<body>",
+          "</body></message>"
+        ],
+        "request_field": "PJ"
+      },
+      {
+        "line": 11544,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq to='",
+          "@conference.pegasus' type='set'>",
+          "<query xmlns='http://jabber.org/protocol/muc#owner'>",
+          "<destroy jid='",
+          "@conference.pegasus'/></query></iq>"
+        ],
+        "request_field": "PK"
+      },
+      {
+        "line": 11594,
+        "parameter_names": [],
+        "path_constants": [
+          "<presence to='",
+          "@conference.pegasus' type='unavailable'/>"
+        ],
+        "request_field": "PL"
+      },
+      {
+        "line": 11622,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq to='",
+          "@conference.pegasus' type='set'>",
+          "<query xmlns='http://jabber.org/protocol/muc#admin'>",
+          "<item affiliation='member' jid='",
+          "@pegasus'/>",
+          "</query></iq>"
+        ],
+        "request_field": "PM"
+      },
+      {
+        "line": 11678,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq to='",
+          "@conference.pegasus' type='set'>",
+          "<query xmlns='http://jabber.org/protocol/muc#admin'>",
+          "<item affiliation='none' jid='",
+          "@pegasus'/>",
+          "</query></iq>"
+        ],
+        "request_field": "PN"
+      },
+      {
+        "line": 11734,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq to='",
+          "@conference.pegasus' type='get'>",
+          "<query xmlns='http://jabber.org/protocol/muc#admin'>",
+          "<item affiliation='member'/></query></iq>"
+        ],
+        "request_field": "PO"
+      },
+      {
+        "line": 11772,
+        "parameter_names": [],
+        "path_constants": [
+          "<message to='",
+          "@conference.pegasus'>",
+          "<x xmlns='http://jabber.org/protocol/muc#user'>",
+          "<invite to='",
+          "@pegasus'/></x></message>"
+        ],
+        "request_field": "PP"
+      },
+      {
+        "line": 11822,
+        "parameter_names": [],
+        "path_constants": [
+          "<message to='",
+          "@conference.pegasus'>",
+          "<x xmlns='http://jabber.org/protocol/muc#user'>",
+          "<decline to='",
+          "@pegasus'/></x></message>"
+        ],
+        "request_field": "PQ"
+      },
+      {
+        "line": 11872,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq to='",
+          "@conference.pegasus' type='get'>",
+          "<query xmlns='http://jabber.org/protocol/muc#owner'/></iq>"
+        ],
+        "request_field": "PR"
+      },
+      {
+        "line": 11904,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq type='set' to='",
+          "@conference.pegasus'>",
+          "<query xmlns='http://jabber.org/protocol/muc#owner'><x xmlns='jabber:x:data' type='submit'/>",
+          "</query></iq>"
+        ],
+        "request_field": "PS"
+      },
+      {
+        "line": 11942,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq to='",
+          "@conference.pegasus' type='set'>",
+          "<query xmlns='http://jabber.org/protocol/muc#owner'>",
+          "<x xmlns='jabber:x:data' type='submit'>",
+          "<field type='hidden' var='FORM_TYPE'>",
+          "<value>http://jabber.org/protocol/muc#roomconfig</value></field>",
+          "<field var='muc#roomconfig_roomname'><value>ChatRoom</value></field>",
+          "<field var='muc#roomconfig_roomdesc'><value>This is Test room</value></field>",
+          "<field var='muc#roomconfig_persistentroom'><value>1</value></field>",
+          "<field var='muc#roomconfig_publicroom'><value>1</value></field>",
+          "<field var='muc#roomconfig_maxusers'><value>200</value></field>",
+          "<field var='muc#roomconfig_whois'><value>moderators</value></field>",
+          "<field var='muc#roomconfig_membersonly'><value>1</value></field>",
+          "<field var='muc#roomconfig_moderatedroom'><value>1</value></field>",
+          "<field var='muc#roomconfig_changesubject'><value>1</value></field>",
+          "<field var='muc#roomconfig_allowinvites'><value>0</value></field>",
+          "<field var='muc#roomconfig_allowvisitorstatus'><value>1</value></field>",
+          "<field var='muc#roomconfig_allowvisitornickchange'><value>0</value></field>",
+          "</x></query></iq>"
+        ],
+        "request_field": "PT"
+      },
+      {
+        "line": 12070,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq to='",
+          "@conference.pegasus' type='set'>",
+          "<query xmlns='http://jabber.org/protocol/muc#admin'>",
+          "<item nick='",
+          "' role='none'/></query></iq>"
+        ],
+        "request_field": "PU"
+      },
+      {
+        "line": 12120,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq to='",
+          "@conference.pegasus' type='get'>",
+          "<query xmlns='jabber:iq:register'/></iq>"
+        ],
+        "request_field": "PV"
+      },
+      {
+        "line": 12152,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq to='",
+          "@conference.pegasus' type='set'>",
+          "<x xmlns='jabber:x:data' type='submit'>",
+          "<field var='FORM_TYPE' type='hidden'><value>http://jabber.org/protocol/muc#register</value></field>",
+          "<field var='muc#register_allow'><value>",
+          "</value></field>",
+          "</x></query></iq>"
+        ],
+        "request_field": "PW"
+      },
+      {
+        "line": 12214,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq to='",
+          "@conference.pegasus' type='set'>",
+          "<query xmlns='http://jabber.org/protocol/muc#admin'>",
+          "<item affiliation='admin' jid='",
+          "@pegasus'/>",
+          "</query></iq>"
+        ],
+        "request_field": "PX"
+      },
+      {
+        "line": 12270,
+        "parameter_names": [],
+        "path_constants": [
+          "<iq to='",
+          "@conference.pegasus' type='set'>",
+          "<query xmlns='http://jabber.org/protocol/muc#admin'>",
+          "<item affiliation='member' jid='",
+          "@pegasus'/>",
+          "</query></iq>"
+        ],
+        "request_field": "PY"
+      },
+      {
+        "line": 12326,
+        "parameter_names": [],
+        "path_constants": [
+          "<presence to='",
+          "@pegasus' xml:lang='en'><show>away</show>",
+          "<status>",
+          "</status>",
+          "<priority>1</priority></presence>"
+        ],
+        "request_field": "PZ"
+      },
+      {
+        "line": 12376,
+        "parameter_names": [],
+        "path_constants": [
+          "</stream:stream>"
+        ],
+        "request_field": "Qa"
+      },
+      {
+        "line": 12396,
+        "parameter_names": [
+          "access_token",
+          "profile_name",
+          "clusters_space",
+          "now"
+        ],
+        "path_constants": [
+          "configs",
+          "users",
+          "me"
+        ],
+        "request_field": "Pz"
+      },
+      {
+        "line": 12472,
+        "parameter_names": [
+          "clusters_space",
+          "line",
+          "access_token",
+          "end_date",
+          "start_date",
+          "campaign_name",
+          "is_enable"
+        ],
+        "path_constants": [
+          "configs",
+          "clusters"
+        ],
+        "request_field": "PA"
+      },
+      {
+        "line": 12572,
+        "parameter_names": [
+          "clusters_space",
+          "access_token"
+        ],
+        "path_constants": [
+          "configs",
+          "clusters"
+        ],
+        "request_field": "PB"
+      },
+      {
+        "line": 12646,
+        "parameter_names": [
+          "clusters_space",
+          "access_token",
+          "campaign_name"
+        ],
+        "path_constants": [
+          "configs"
+        ],
+        "request_field": "PC"
+      },
+      {
+        "line": 12706,
+        "parameter_names": [
+          "username",
+          "password",
+          "email"
+        ],
+        "path_constants": [
+          "users"
+        ],
+        "request_field": "Pp"
+      },
+      {
+        "line": 12766,
+        "parameter_names": [
+          "&&"
+        ],
+        "path_constants": [
+          "rooms"
+        ],
+        "request_field": "OE"
+      },
+      {
+        "line": 12822,
+        "parameter_names": [
+          "access_token",
+          "delete"
+        ],
+        "path_constants": [
+          "messages",
+          "secured",
+          "me"
+        ],
+        "request_field": "Pa"
+      },
+      {
+        "line": 12884,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "messages",
+          "secured",
+          "me"
+        ],
+        "request_field": "Pb"
+      },
+      {
+        "line": 12946,
+        "parameter_names": [
+          "access_token",
+          "delete"
+        ],
+        "path_constants": [
+          "messages",
+          "inbox",
+          "me"
+        ],
+        "request_field": "Pd"
+      },
+      {
+        "line": 13008,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "messages",
+          "secured",
+          "me"
+        ],
+        "request_field": "Pc"
+      },
+      {
+        "line": 13070,
+        "parameter_names": [
+          "access_token",
+          "&&",
+          "replace_label",
+          "delay",
+          "payload"
+        ],
+        "path_constants": [
+          "messages"
+        ],
+        "request_field": "Pe"
+      },
+      {
+        "line": 13146,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "transports",
+          "endpoints"
+        ],
+        "request_field": "Pf"
+      },
+      {
+        "line": 13204,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "transports",
+          "endpoints"
+        ],
+        "request_field": "Pg"
+      },
+      {
+        "line": 13266,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "transports",
+          "endpoints",
+          "delete"
+        ],
+        "request_field": "Ph"
+      },
+      {
+        "line": 13328,
+        "parameter_names": [
+          "access_token",
+          "credentials",
+          "&&",
+          "payload"
+        ],
+        "path_constants": [
+          "messages",
+          "inbox",
+          "multicast"
+        ],
+        "request_field": "Pi"
+      },
+      {
+        "line": 13398,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "messages",
+          "me"
+        ],
+        "request_field": "Pj"
+      },
+      {
+        "line": 13460,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "messages",
+          "me"
+        ],
+        "request_field": "Pk"
+      },
+      {
+        "line": 13522,
+        "parameter_names": [
+          "access_token",
+          "msgids"
+        ],
+        "path_constants": [
+          "messages",
+          "me"
+        ],
+        "request_field": "Pl"
+      },
+      {
+        "line": 13584,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "lists",
+          "me"
+        ],
+        "request_field": "Pm"
+      },
+      {
+        "line": 13642,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "lists",
+          "me",
+          "unsubscribe"
+        ],
+        "request_field": "Pn"
+      },
+      {
+        "line": 13704,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "lists",
+          "me"
+        ],
+        "request_field": "Po"
+      },
+      {
+        "line": 13758,
+        "parameter_names": [
+          "clientId",
+          "username",
+          "password",
+          "scope",
+          "device_id",
+          "access_token_only"
+        ],
+        "path_constants": [
+          "authorize"
+        ],
+        "request_field": "Nm"
+      },
+      {
+        "line": 13832,
+        "parameter_names": [
+          "clientId",
+          "username",
+          "password",
+          "scope",
+          "device_id",
+          "access_token_only",
+          "for_username",
+          "for_credential_type",
+          "grant_type",
+          "redirect_uri"
+        ],
+        "path_constants": [
+          "authorize"
+        ],
+        "request_field": "Nn"
+      },
+      {
+        "line": 13930,
+        "parameter_names": [
+          "access_token",
+          "language",
+          "carrier",
+          "country",
+          "model"
+        ],
+        "path_constants": [
+          "devices",
+          "mydevice"
+        ],
+        "request_field": "No"
+      },
+      {
+        "line": 14002,
+        "parameter_names": [
+          "access_token",
+          "credential",
+          "password",
+          "if_exists"
+        ],
+        "path_constants": [
+          "users",
+          "me",
+          "credentials"
+        ],
+        "request_field": "Np"
+      },
+      {
+        "line": 14072,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "users",
+          "me",
+          "credentials",
+          "unlink"
+        ],
+        "request_field": "Nq"
+      },
+      {
+        "line": 14140,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "users",
+          "me"
+        ],
+        "request_field": "Nr"
+      },
+      {
+        "line": 14194,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "users"
+        ],
+        "request_field": "Ns"
+      },
+      {
+        "line": 14248,
+        "parameter_names": [
+          "clientId",
+          "scope",
+          "grant_type",
+          "refresh_token"
+        ],
+        "path_constants": [
+          "authorize"
+        ],
+        "request_field": "Nt"
+      },
+      {
+        "line": 14310,
+        "parameter_names": [
+          "access_token",
+          "nonce"
+        ],
+        "path_constants": [
+          "encrypt_token"
+        ],
+        "request_field": "Nu"
+      },
+      {
+        "line": 14364,
+        "parameter_names": [
+          "password"
+        ],
+        "path_constants": [
+          "authenticate"
+        ],
+        "request_field": "Nv"
+      },
+      {
+        "line": 14418,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "games",
+          "mygame",
+          "alias"
+        ],
+        "request_field": "Nw"
+      },
+      {
+        "line": 14476,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "games",
+          "mygame",
+          "alias"
+        ],
+        "request_field": "Nx"
+      },
+      {
+        "line": 14538,
+        "parameter_names": [
+          "access_token",
+          "recipient"
+        ],
+        "path_constants": [
+          "users",
+          "me",
+          "approvals",
+          "request"
+        ],
+        "request_field": "Ny"
+      },
+      {
+        "line": 14610,
+        "parameter_names": [
+          "access_token",
+          "granted"
+        ],
+        "path_constants": [
+          "users",
+          "me",
+          "approvals",
+          "set"
+        ],
+        "request_field": "Nz"
+      },
+      {
+        "line": 14677,
+        "parameter_names": [],
+        "path_constants": [
+          "assets",
+          "clientId",
+          "url"
+        ],
+        "request_field": "Pr"
+      },
+      {
+        "line": 14722,
+        "parameter_names": [],
+        "path_constants": [
+          "assets",
+          "clientId",
+          "metadata"
+        ],
+        "request_field": "Pv"
+      },
+      {
+        "line": 14767,
+        "parameter_names": [
+          "access_token",
+          "override",
+          "onlyThisClient",
+          "data"
+        ],
+        "path_constants": [
+          "assets",
+          "clientId"
+        ],
+        "request_field": "Pw"
+      },
+      {
+        "line": 14831,
+        "parameter_names": [],
+        "path_constants": [
+          "assets",
+          "clientId"
+        ],
+        "request_field": "Pt"
+      },
+      {
+        "line": 14872,
+        "parameter_names": [],
+        "path_constants": [
+          "assets",
+          "clientId"
+        ],
+        "request_field": "Pu"
+      },
+      {
+        "line": 14913,
+        "parameter_names": [],
+        "path_constants": [
+          "coupons",
+          "clientId"
+        ],
+        "request_field": "Px"
+      },
+      {
+        "line": 14954,
+        "parameter_names": [
+          "num",
+          "length",
+          "uses",
+          "data",
+          "access_token"
+        ],
+        "path_constants": [
+          "coupons",
+          "clientId"
+        ],
+        "request_field": "Py"
+      },
+      {
+        "line": 15025,
+        "parameter_names": [
+          "access_token",
+          "offset",
+          "limit"
+        ],
+        "path_constants": [
+          "leaderboards"
+        ],
+        "request_field": "OV"
+      },
+      {
+        "line": 15101,
+        "parameter_names": [
+          "access_token",
+          "offset",
+          "limit",
+          "connection_type"
+        ],
+        "path_constants": [
+          "leaderboards",
+          "me",
+          "friends"
+        ],
+        "request_field": "OW"
+      },
+      {
+        "line": 15181,
+        "parameter_names": [
+          "access_token",
+          "score",
+          "replace_score_if",
+          "display_name",
+          "credential",
+          "expiration_date",
+          "expiration_duration"
+        ],
+        "path_constants": [
+          "leaderboards"
+        ],
+        "request_field": "OX"
+      },
+      {
+        "line": 15273,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "leaderboards",
+          "clear"
+        ],
+        "request_field": "OY"
+      },
+      {
+        "line": 15335,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "data",
+          "me",
+          "delete"
+        ],
+        "request_field": "Ou"
+      },
+      {
+        "line": 15399,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "data"
+        ],
+        "request_field": "Os"
+      },
+      {
+        "line": 15459,
+        "parameter_names": [
+          "access_token",
+          "data",
+          "visibility"
+        ],
+        "path_constants": [
+          "data"
+        ],
+        "request_field": "Ot"
+      },
+      {
+        "line": 15527,
+        "parameter_names": [
+          "access_token",
+          "object",
+          "visibility",
+          "operation"
+        ],
+        "path_constants": [
+          "profiles",
+          "myprofile"
+        ],
+        "request_field": "Ov"
+      },
+      {
+        "line": 15603,
+        "parameter_names": [
+          "access_token",
+          "include_fields"
+        ],
+        "path_constants": [
+          "profiles",
+          "myprofile"
+        ],
+        "request_field": "Ow"
+      },
+      {
+        "line": 15671,
+        "parameter_names": [
+          "access_token",
+          "credentials",
+          "include_fields"
+        ],
+        "path_constants": [
+          "profiles"
+        ],
+        "request_field": "Ox"
+      },
+      {
+        "line": 15731,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "profiles",
+          "me",
+          "myprofile",
+          "delete"
+        ],
+        "request_field": "Oy"
+      },
+      {
+        "line": 15795,
+        "parameter_names": [
+          "access_token",
+          "visibility"
+        ],
+        "path_constants": [
+          "profiles",
+          "me",
+          "myprofile",
+          "visibility"
+        ],
+        "request_field": "Oz"
+      },
+      {
+        "line": 15863,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "profiles",
+          "me",
+          "myprofile",
+          "visibility"
+        ],
+        "request_field": "OA"
+      },
+      {
+        "line": 15927,
+        "parameter_names": [
+          "access_token",
+          "limit",
+          "include_fields"
+        ],
+        "path_constants": [
+          "profiles",
+          "matchers",
+          "matches"
+        ],
+        "request_field": "OB"
+      },
+      {
+        "line": 15999,
+        "parameter_names": [
+          "access_token",
+          "condition"
+        ],
+        "path_constants": [
+          "profiles",
+          "matchers"
+        ],
+        "request_field": "OC"
+      },
+      {
+        "line": 16063,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "profiles",
+          "matchers",
+          "delete"
+        ],
+        "request_field": "OD"
+      },
+      {
+        "line": 16127,
+        "parameter_names": [
+          "access_token",
+          "target_credential"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "connections"
+        ],
+        "request_field": "NE"
+      },
+      {
+        "line": 16193,
+        "parameter_names": [
+          "access_token",
+          "limit",
+          "offset",
+          "game",
+          "seconds_since_last_login",
+          "online"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "connections"
+        ],
+        "request_field": "NF"
+      },
+      {
+        "line": 16279,
+        "parameter_names": [
+          "access_token",
+          "game",
+          "seconds_since_last_login",
+          "online"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "connections",
+          "count"
+        ],
+        "request_field": "NG"
+      },
+      {
+        "line": 16359,
+        "parameter_names": [
+          "access_token",
+          "limit",
+          "offset",
+          "request_type",
+          "status"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "requests"
+        ],
+        "request_field": "NH"
+      },
+      {
+        "line": 16435,
+        "parameter_names": [
+          "access_token",
+          "limit",
+          "offset",
+          "request_type"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "requests",
+          "sent"
+        ],
+        "request_field": "NI"
+      },
+      {
+        "line": 16509,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "requests",
+          "sent",
+          "cancel"
+        ],
+        "request_field": "NJ"
+      },
+      {
+        "line": 16583,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "requests",
+          "accept"
+        ],
+        "request_field": "NK"
+      },
+      {
+        "line": 16651,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "requests",
+          "reject"
+        ],
+        "request_field": "NL"
+      },
+      {
+        "line": 16719,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "requests",
+          "ignore"
+        ],
+        "request_field": "NM"
+      },
+      {
+        "line": 16787,
+        "parameter_names": [
+          "access_token",
+          "name",
+          "language",
+          "country"
+        ],
+        "path_constants": [
+          "accounts",
+          "me"
+        ],
+        "request_field": "NN"
+      },
+      {
+        "line": 16853,
+        "parameter_names": [
+          "access_token",
+          "status_line"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "status_line"
+        ],
+        "request_field": "NO"
+      },
+      {
+        "line": 16915,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "accounts"
+        ],
+        "request_field": "NP"
+      },
+      {
+        "line": 16969,
+        "parameter_names": [
+          "access_token",
+          "description",
+          "category",
+          "name",
+          "membership",
+          "member_limit"
+        ],
+        "path_constants": [
+          "groups"
+        ],
+        "request_field": "NQ"
+      },
+      {
+        "line": 17043,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "groups"
+        ],
+        "request_field": "NR"
+      },
+      {
+        "line": 17097,
+        "parameter_names": [
+          "access_token",
+          "limit",
+          "category",
+          "offset",
+          "keywords"
+        ],
+        "path_constants": [
+          "groups"
+        ],
+        "request_field": "NS"
+      },
+      {
+        "line": 17165,
+        "parameter_names": [
+          "access_token",
+          "credential"
+        ],
+        "path_constants": [
+          "groups",
+          "members"
+        ],
+        "request_field": "NT"
+      },
+      {
+        "line": 17227,
+        "parameter_names": [
+          "access_token",
+          "limit",
+          "offset"
+        ],
+        "path_constants": [
+          "groups",
+          "members"
+        ],
+        "request_field": "NU"
+      },
+      {
+        "line": 17293,
+        "parameter_names": [
+          "access_token",
+          "end_date",
+          "start_date",
+          "description",
+          "category",
+          "name",
+          "group_id"
+        ],
+        "path_constants": [
+          "events"
+        ],
+        "request_field": "NV"
+      },
+      {
+        "line": 17373,
+        "parameter_names": [
+          "access_token",
+          "type",
+          "leaderboard"
+        ],
+        "path_constants": [
+          "events",
+          "tournament:"
+        ],
+        "request_field": "NW"
+      },
+      {
+        "line": 17439,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "events"
+        ],
+        "request_field": "NX"
+      },
+      {
+        "line": 17493,
+        "parameter_names": [
+          "access_token",
+          "limit",
+          "category",
+          "offset",
+          "keywords",
+          "status"
+        ],
+        "path_constants": [
+          "events"
+        ],
+        "request_field": "NY"
+      },
+      {
+        "line": 17567,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "connections",
+          "delete"
+        ],
+        "request_field": "NZ"
+      },
+      {
+        "line": 17641,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "connections"
+        ],
+        "request_field": "Oa"
+      },
+      {
+        "line": 17709,
+        "parameter_names": [
+          "access_token",
+          "from_credential",
+          "secret"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "connections",
+          "import"
+        ],
+        "request_field": "Ob"
+      },
+      {
+        "line": 17785,
+        "parameter_names": [
+          "access_token",
+          "from_credential",
+          "secret"
+        ],
+        "path_constants": [
+          "accounts",
+          "me",
+          "import"
+        ],
+        "request_field": "Oc"
+      },
+      {
+        "line": 17855,
+        "parameter_names": [
+          "access_token",
+          "description",
+          "category",
+          "name",
+          "membership",
+          "member_limit"
+        ],
+        "path_constants": [
+          "groups"
+        ],
+        "request_field": "Od"
+      },
+      {
+        "line": 17933,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "groups",
+          "delete"
+        ],
+        "request_field": "Oe"
+      },
+      {
+        "line": 17991,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "groups",
+          "members"
+        ],
+        "request_field": "Of"
+      },
+      {
+        "line": 18053,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "groups",
+          "members"
+        ],
+        "request_field": "Og"
+      },
+      {
+        "line": 18115,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "groups",
+          "members",
+          "delete"
+        ],
+        "request_field": "Oh"
+      },
+      {
+        "line": 18183,
+        "parameter_names": [
+          "access_token",
+          "end_date",
+          "start_date",
+          "description",
+          "category",
+          "name",
+          "group_id"
+        ],
+        "path_constants": [
+          "events"
+        ],
+        "request_field": "Oi"
+      },
+      {
+        "line": 18267,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "events",
+          "delete"
+        ],
+        "request_field": "Oj"
+      },
+      {
+        "line": 18325,
+        "parameter_names": [
+          "start_rank",
+          "access_token",
+          "end_rank",
+          "gifts"
+        ],
+        "path_constants": [
+          "events",
+          "awards"
+        ],
+        "request_field": "Ok"
+      },
+      {
+        "line": 18395,
+        "parameter_names": [
+          "access_token"
+        ],
+        "path_constants": [
+          "events",
+          "awards",
+          "delete"
+        ],
+        "request_field": "Ol"
+      },
+      {
+        "line": 18463,
+        "parameter_names": [
+          "access_token",
+          "language",
+          "text"
+        ],
+        "path_constants": [
+          "wall"
+        ],
+        "request_field": "Om"
+      },
+      {
+        "line": 18529,
+        "parameter_names": [
+          "access_token",
+          "activity_type"
+        ],
+        "path_constants": [
+          "wall",
+          "vote"
+        ],
+        "request_field": "On"
+      },
+      {
+        "line": 18601,
+        "parameter_names": [
+          "access_token",
+          "language",
+          "sort_type"
+        ],
+        "path_constants": [
+          "wall"
+        ],
+        "request_field": "Oo"
+      },
+      {
+        "line": 18667,
+        "parameter_names": [
+          "access_token",
+          "connection_type",
+          "language",
+          "sort_type"
+        ],
+        "path_constants": [
+          "accounts",
+          "feed"
+        ],
+        "request_field": "Op"
+      },
+      {
+        "line": 18737,
+        "parameter_names": [
+          "access_token",
+          "trophy_id"
+        ],
+        "path_constants": [
+          "accounts",
+          "trophies"
+        ],
+        "request_field": "Oq"
+      },
+      {
+        "line": 18799,
+        "parameter_names": [
+          "access_token",
+          "game"
+        ],
+        "path_constants": [
+          "accounts",
+          "trophies"
+        ],
+        "request_field": "Or"
+      }
+    ],
+    "service_name_literals": [
+      {
+        "line": 162,
+        "name": "message"
+      },
+      {
+        "line": 168,
+        "name": "asset"
+      },
+      {
+        "line": 174,
+        "name": "auth"
+      },
+      {
+        "line": 180,
+        "name": "leaderboard"
+      },
+      {
+        "line": 186,
+        "name": "social"
+      },
+      {
+        "line": 192,
+        "name": "storage"
+      },
+      {
+        "line": 198,
+        "name": "lobby"
+      },
+      {
+        "line": 204,
+        "name": "matchmaker"
+      },
+      {
+        "line": 210,
+        "name": "gllive"
+      },
+      {
+        "line": 216,
+        "name": "config"
+      },
+      {
+        "line": 222,
+        "name": "chat"
+      },
+      {
+        "line": 234,
+        "name": "alert"
+      }
+    ]
+  },
+  "limits": [
+    "URL literals and DEX-pool-matching smali references do not establish execution or complete data flow.",
+    "DEX string offsets are relative to uncompressed DEX; native/asset offsets are relative to uncompressed APK entry.",
+    "Only literal URL schemes and scheme-less Gameloft domains are recognized; computed, encoded, remote-configured and native-generated destinations remain unresolved.",
+    "No DNS, HTTP, device, build, credential submission, service liveness, native callgraph or protocol reconstruction performed.",
+    "Smali reference files are hashed but not reassembled/validated as original DEX opcodes by this scanner.",
+    "Federation route constants are declarative MI/MJ table strings; null/dynamic path slots and method/feature gates are not interpreted."
+  ],
+  "literal_endpoints": [
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "201205igp.gameloft.com/redir",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "scheme_less_gameloft_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 5836098,
+          "string_index": 2256
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/aw;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/aw.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 884,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "201205igp.gameloft.com/redir/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "scheme_less_gameloft_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 5836128,
+          "string_index": 2257
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/y;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/y.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 421,
+          "method": "shouldOverrideUrlLoading(Landroid/webkit/WebView;Ljava/lang/String;)Z"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "201205igp.gameloft.com/redir/?from=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "scheme_less_gameloft_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 5836159,
+          "string_index": 2258
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/bq;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/bq.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 389,
+          "method": "shouldOverrideUrlLoading(Landroid/webkit/WebView;Ljava/lang/String;)Z"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "201205igp.gameloft.com/redir/ads/splashscreen_click",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "scheme_less_gameloft_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 5836195,
+          "string_index": 2259
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/bq;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/bq.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 301,
+          "method": "shouldOverrideUrlLoading(Landroid/webkit/WebView;Ljava/lang/String;)Z"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_support_legal_or_iap",
+      "endpoint": "br.gameloft.com",
+      "evidence": [
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 216716
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 219226
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 239435
+        }
+      ],
+      "evidence_count": 3,
+      "host": "br.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    },
+    {
+      "category": "gameloft_support_legal_or_iap",
+      "endpoint": "gameloft.com",
+      "evidence": [
+        {
+          "entry": "assets/IAP_texts",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 641
+        },
+        {
+          "entry": "assets/IAP_texts",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 1639
+        }
+      ],
+      "evidence_count": 2,
+      "host": "gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    },
+    {
+      "category": "gameloft_support_legal_or_iap",
+      "endpoint": "gameloft.com/conditions",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "scheme_less_gameloft_literal",
+          "match_character_offset": 420,
+          "source": "dex_string_pool",
+          "string_data_offset": 6471292,
+          "string_index": 22226
+        }
+      ],
+      "evidence_count": 1,
+      "host": "gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 25,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 165,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 197,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 229,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 261,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 295,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 329,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 363,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 397,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 431,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 465,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 499,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 533,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 567,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 591,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 603,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 615,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 627,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 639,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 653,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 667,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 681,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 695,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 709,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 723,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 737,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "http://developers.google.com/games/services/android/troubleshooting",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 7,
+          "source": "dex_string_pool",
+          "string_data_offset": 5818357,
+          "string_index": 1544
+        }
+      ],
+      "evidence_count": 1,
+      "host": "developers.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android2d/socialnetwork/g;",
+          "file": "com/gameloft/android2d/socialnetwork/g.smali",
+          "kind": "url_literal",
+          "line": 294,
+          "method": "as(Landroid/content/Context;)V"
+        }
+      ]
+    },
+    {
+      "category": "xml_namespace_or_schema_not_network_destination",
+      "endpoint": "http://etherx.jabber.org/streams",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 100,
+          "source": "dex_string_pool",
+          "string_data_offset": 5840668,
+          "string_index": 2505
+        }
+      ],
+      "evidence_count": 1,
+      "host": "etherx.jabber.org",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/s.smali",
+          "kind": "url_literal",
+          "line": 10205,
+          "method": "iK()V"
+        }
+      ]
+    },
+    {
+      "category": "embedded_compiler_diagnostic_not_service",
+      "endpoint": "http://gcc.gnu.org/bugs.html):",
+      "evidence": [
+        {
+          "entry": "lib/arm64-v8a/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 1318216
+        }
+      ],
+      "evidence_count": 1,
+      "host": "gcc.gnu.org",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "http://goo.gl/8Rd3yj",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 123,
+          "source": "dex_string_pool",
+          "string_data_offset": 5878022,
+          "string_index": 3933
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 131,
+          "source": "dex_string_pool",
+          "string_data_offset": 5878454,
+          "string_index": 3942
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 98,
+          "source": "dex_string_pool",
+          "string_data_offset": 5878626,
+          "string_index": 3943
+        }
+      ],
+      "evidence_count": 8,
+      "host": "goo.gl",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 8,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/measurement/zzbf;",
+          "file": "com/google/android/gms/internal/measurement/zzbf.smali",
+          "kind": "url_literal",
+          "line": 1793,
+          "method": "zza(Lcom/google/android/gms/internal/measurement/zzch;)V"
+        },
+        {
+          "class": "Lcom/google/android/gms/internal/measurement/zzbf;",
+          "file": "com/google/android/gms/internal/measurement/zzbf.smali",
+          "kind": "url_literal",
+          "line": 2285,
+          "method": "zzdc()V"
+        },
+        {
+          "class": "Lcom/google/android/gms/internal/measurement/zzbf;",
+          "file": "com/google/android/gms/internal/measurement/zzbf.smali",
+          "kind": "url_literal",
+          "line": 2297,
+          "method": "zzdc()V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "http://goo.gl/naFqQk",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 274,
+          "source": "dex_string_pool",
+          "string_data_offset": 6026049,
+          "string_index": 9385
+        }
+      ],
+      "evidence_count": 1,
+      "host": "goo.gl",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/measurement/zzah;",
+          "file": "com/google/android/gms/internal/measurement/zzah.smali",
+          "kind": "url_literal",
+          "line": 431,
+          "method": "zzbl()Lcom/google/android/gms/ads/identifier/AdvertisingIdClient$Info;"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_static_content",
+      "endpoint": "http://interstatic01.gameloft.com/beta-games/android/1557/icon_GE3_200.png",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753299,
+          "string_index": 39212
+        }
+      ],
+      "evidence_count": 1,
+      "host": "interstatic01.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 3,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 29065,
+          "method": "Bm()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 107169,
+          "method": "Io()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 414237,
+          "method": "yz()V"
+        }
+      ]
+    },
+    {
+      "category": "xml_namespace_or_schema_not_network_destination",
+      "endpoint": "http://jabber.org/protocol/muc",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 10,
+          "source": "dex_string_pool",
+          "string_data_offset": 5847212,
+          "string_index": 2785
+        }
+      ],
+      "evidence_count": 1,
+      "host": "jabber.org",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/s.smali",
+          "kind": "url_literal",
+          "line": 11289,
+          "method": "ja()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/s.smali",
+          "kind": "url_literal",
+          "line": 11345,
+          "method": "ja()V"
+        }
+      ]
+    },
+    {
+      "category": "xml_namespace_or_schema_not_network_destination",
+      "endpoint": "http://jabber.org/protocol/muc#<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 44,
+          "source": "dex_string_pool",
+          "string_data_offset": 5844031,
+          "string_index": 2720
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 14,
+          "source": "dex_string_pool",
+          "string_data_offset": 5846559,
+          "string_index": 2767
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 14,
+          "source": "dex_string_pool",
+          "string_data_offset": 5846613,
+          "string_index": 2768
+        }
+      ],
+      "evidence_count": 7,
+      "host": "jabber.org",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 14,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/s.smali",
+          "kind": "url_literal",
+          "line": 11565,
+          "method": "ja()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/s.smali",
+          "kind": "url_literal",
+          "line": 11643,
+          "method": "ja()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/s.smali",
+          "kind": "url_literal",
+          "line": 11699,
+          "method": "ja()V"
+        }
+      ]
+    },
+    {
+      "category": "store_iap_or_external_link",
+      "endpoint": "http://market.android.com/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753375,
+          "string_index": 39213
+        }
+      ],
+      "evidence_count": 1,
+      "host": "market.android.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/SplashScreenActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/SplashScreenActivity.smali",
+          "kind": "url_literal",
+          "line": 838,
+          "method": "dM(Ljava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "category": "store_iap_or_external_link",
+      "endpoint": "http://play.google.com",
+      "evidence": [
+        {
+          "entry": "lib/arm64-v8a/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 1302184
+        },
+        {
+          "entry": "lib/armeabi-v7a/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 515312
+        },
+        {
+          "entry": "lib/armeabi/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 538592
+        }
+      ],
+      "evidence_count": 5,
+      "host": "play.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    },
+    {
+      "category": "store_iap_or_external_link",
+      "endpoint": "http://play.google.com/store/apps/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753403,
+          "string_index": 39214
+        }
+      ],
+      "evidence_count": 1,
+      "host": "play.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    },
+    {
+      "category": "store_iap_or_external_link",
+      "endpoint": "http://play.google.com/store/apps/category/GAME",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753439,
+          "string_index": 39215
+        }
+      ],
+      "evidence_count": 1,
+      "host": "play.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    },
+    {
+      "category": "game_wrapper_external_link",
+      "endpoint": "http://tsto.re/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753488,
+          "string_index": 39216
+        }
+      ],
+      "evidence_count": 1,
+      "host": "tsto.re",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity.smali",
+          "kind": "url_literal",
+          "line": 841,
+          "method": "K(Ljava/lang/String;)V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/InGameBrowserActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/InGameBrowserActivity.smali",
+          "kind": "url_literal",
+          "line": 1053,
+          "method": "K(Ljava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "category": "store_iap_or_external_link",
+      "endpoint": "http://www.amazon.com",
+      "evidence": [
+        {
+          "entry": "lib/arm64-v8a/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 1302240
+        },
+        {
+          "entry": "lib/armeabi-v7a/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 515367
+        },
+        {
+          "entry": "lib/armeabi/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 538647
+        }
+      ],
+      "evidence_count": 5,
+      "host": "www.amazon.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    },
+    {
+      "category": "example_placeholder",
+      "endpoint": "http://www.example.com",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753505,
+          "string_index": 39217
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.example.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zzbfw;",
+          "file": "com/google/android/gms/internal/ads/zzbfw.smali",
+          "kind": "url_literal",
+          "line": 35,
+          "method": "zzbn(Landroid/content/Context;)Ljava/lang/String;"
+        },
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zzoh;",
+          "file": "com/google/android/gms/internal/ads/zzoh.smali",
+          "kind": "url_literal",
+          "line": 55,
+          "method": "zzh(Landroid/content/Context;)Z"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_support_legal_or_iap",
+      "endpoint": "http://www.gameloft.com/customer-support-contacts/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753529,
+          "string_index": 39218
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 416282,
+          "method": "zq()V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_support_legal_or_iap",
+      "endpoint": "http://www.gameloft.com/eula/?lang=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753581,
+          "string_index": 39219
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 41102,
+          "method": "Dw()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_analytics_sdk",
+      "endpoint": "http://www.google-analytics.com",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753618,
+          "string_index": 39220
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.google-analytics.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/measurement/zzcc;",
+          "file": "com/google/android/gms/internal/measurement/zzcc.smali",
+          "kind": "url_literal",
+          "line": 672,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "http://www.google.com",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753651,
+          "string_index": 39221
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zzagb;",
+          "file": "com/google/android/gms/internal/ads/zzagb.smali",
+          "kind": "url_literal",
+          "line": 100,
+          "method": "<init>(Landroid/content/Context;)V"
+        }
+      ]
+    },
+    {
+      "category": "game_wrapper_external_link",
+      "endpoint": "http://www.youtube.com/watch?v=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753674,
+          "string_index": 39222
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.youtube.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/SplashScreenActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/SplashScreenActivity.smali",
+          "kind": "url_literal",
+          "line": 752,
+          "method": "dL(Ljava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_social_sdk",
+      "endpoint": "https://.facebook.com",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753827,
+          "string_index": 39232
+        }
+      ],
+      "evidence_count": 1,
+      "host": ".facebook.com",
+      "host_is_template_or_cookie_domain": true,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/facebook/internal/Utility;",
+          "file": "com/facebook/internal/Utility.smali",
+          "kind": "url_literal",
+          "line": 472,
+          "method": "clearFacebookCookies(Landroid/content/Context;)V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "https://201205igp.gameloft.com/redir/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753850,
+          "string_index": 39233
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 62112,
+          "method": "F(ILjava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "https://201205igp.gameloft.com/redir/?from=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753890,
+          "string_index": 39234
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 6,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity.smali",
+          "kind": "url_literal",
+          "line": 417,
+          "method": "<init>(Landroid/content/Context;I)V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 383523,
+          "method": "tI()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 387122,
+          "method": "tt()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/wrapper/au;",
+          "file": "com/gameloft/android/wrapper/au.smali",
+          "kind": "url_literal",
+          "line": 8774,
+          "method": "a(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
+        },
+        {
+          "class": "Lcom/gameloft/android/wrapper/au;",
+          "file": "com/gameloft/android/wrapper/au.smali",
+          "kind": "url_literal",
+          "line": 10720,
+          "method": "b(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
+        },
+        {
+          "class": "Lcom/gameloft/android/wrapper/au;",
+          "file": "com/gameloft/android/wrapper/au.smali",
+          "kind": "url_literal",
+          "line": 14635,
+          "method": "m(Ljava/lang/String;Z)Ljava/lang/String;"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "https://201205igp.gameloft.com/redir/?from=<redacted>&op=<redacted>&game=<redacted>&ver=<redacted>&lg=<redacted>&country=<redacted>&d=<redacted>&f=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6753935,
+          "string_index": 39235
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/wrapper/ar;",
+          "file": "com/gameloft/android/wrapper/ar.smali",
+          "kind": "url_literal",
+          "line": 76,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "https://201205igp.gameloft.com/redir/?from=<redacted>&op=<redacted>&game=<redacted>&ver=<redacted>&lg=<redacted>&country=<redacted>&d=<redacted>&f=<redacted>&hdidfv=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6754078,
+          "string_index": 39236
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/wrapper/ar;",
+          "file": "com/gameloft/android/wrapper/ar.smali",
+          "kind": "url_literal",
+          "line": 140,
+          "method": "a(Ljavax/microedition/midlet/MIDlet;)V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "https://201205igp.gameloft.com/redir/ads/hocscreen.php?from=<redacted>&country=<redacted>&lg=<redacted>&udid=<redacted>&hdidfv=<redacted>&androidid=<redacted>&d=<redacted>&f=<redacted>&game_ver=<redacted>&igp_rev=<redacted>&os=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6754237,
+          "string_index": 39237
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/SplashScreenActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/SplashScreenActivity.smali",
+          "kind": "url_literal",
+          "line": 116,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "https://201205igp.gameloft.com/redir/ads/splashscreen_view.php?from=<redacted>&country=<redacted>&lg=<redacted>&udid=<redacted>&hdidfv=<redacted>&androidid=<redacted>&d=<redacted>&f=<redacted>&game_ver=<redacted>&igp_rev=<redacted>&os=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6754438,
+          "string_index": 39238
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/SplashScreenActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/SplashScreenActivity.smali",
+          "kind": "url_literal",
+          "line": 111,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "https://201205igp.gameloft.com/redir/android/index.php?page=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6754647,
+          "string_index": 39239
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity.smali",
+          "kind": "url_literal",
+          "line": 412,
+          "method": "<init>(Landroid/content/Context;I)V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "https://201205igp.gameloft.com/redir/freemium/hdfreemium.php?from=<redacted>&country=<redacted>&lg=<redacted>&udid=<redacted>&hdidfv=<redacted>&androidid=<redacted>&d=<redacted>&f=<redacted>&game_ver=<redacted>&os=<redacted>&igp_rev=<redacted>&conn=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6754724,
+          "string_index": 39240
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity.smali",
+          "kind": "url_literal",
+          "line": 397,
+          "method": "<init>(Landroid/content/Context;I)V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "https://201205igp.gameloft.com/redir/hdloading.php?game=<redacted>&country=<redacted>&lg=<redacted>&ver=<redacted>&device=<redacted>&f=<redacted>&hdidfv=<redacted>&g_ver=<redacted>&line_number=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6754960,
+          "string_index": 39241
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/wrapper/ar;",
+          "file": "com/gameloft/android/wrapper/ar.smali",
+          "kind": "url_literal",
+          "line": 71,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "https://201205igp.gameloft.com/redir/hdloading.php?game=<redacted>&country=<redacted>&lg=<redacted>&ver=<redacted>&device=<redacted>&f=<redacted>&hdidfv=<redacted>&g_ver=<redacted>&line_number=<redacted>&google_adid=<redacted>&google_optout=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755158,
+          "string_index": 39242
+        }
+      ],
+      "evidence_count": 1,
+      "host": "201205igp.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/wrapper/ar;",
+          "file": "com/gameloft/android/wrapper/ar.smali",
+          "kind": "url_literal",
+          "line": 135,
+          "method": "a(Ljavax/microedition/midlet/MIDlet;)V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_ads_cross_promotion",
+      "endpoint": "https://578756.gameloft.com/ads/adserver/index.php",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755412,
+          "string_index": 39243
+        }
+      ],
+      "evidence_count": 1,
+      "host": "578756.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/glads/GLAds;",
+          "file": "com/gameloft/glads/GLAds.smali",
+          "kind": "url_literal",
+          "line": 78,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_analytics_sdk",
+      "endpoint": "https://app-measurement.com/a",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755464,
+          "string_index": 39244
+        }
+      ],
+      "evidence_count": 1,
+      "host": "app-measurement.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/measurement/zzew;",
+          "file": "com/google/android/gms/internal/measurement/zzew.smali",
+          "kind": "url_literal",
+          "line": 888,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_ad_sdk",
+      "endpoint": "https://config.unityads.unity3d.com/webview/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755495,
+          "string_index": 39245
+        }
+      ],
+      "evidence_count": 1,
+      "host": "config.unityads.unity3d.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/unity3d/services/core/properties/SdkProperties;",
+          "file": "com/unity3d/services/core/properties/SdkProperties.smali",
+          "kind": "url_literal",
+          "line": 185,
+          "method": "getDefaultConfigUrl(Ljava/lang/String;)Ljava/lang/String;"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://csi.gstatic.com/csi",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755541,
+          "string_index": 39246
+        }
+      ],
+      "evidence_count": 1,
+      "host": "csi.gstatic.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 4038,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_social_sdk",
+      "endpoint": "https://developers.facebook.com/docs/android/getting-started",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 148,
+          "source": "dex_string_pool",
+          "string_data_offset": 5979379,
+          "string_index": 7545
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 205,
+          "source": "dex_string_pool",
+          "string_data_offset": 5979605,
+          "string_index": 7546
+        }
+      ],
+      "evidence_count": 2,
+      "host": "developers.facebook.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 4,
+      "smali_references": [
+        {
+          "class": "Lcom/facebook/internal/Validate;",
+          "file": "com/facebook/internal/Validate.smali",
+          "kind": "url_literal",
+          "line": 77,
+          "method": "checkCustomTabRedirectActivity(Landroid/content/Context;Z)V"
+        },
+        {
+          "class": "Lcom/facebook/internal/Validate;",
+          "file": "com/facebook/internal/Validate.smali",
+          "kind": "url_literal",
+          "line": 87,
+          "method": "checkCustomTabRedirectActivity(Landroid/content/Context;Z)V"
+        },
+        {
+          "class": "Lcom/facebook/internal/Validate;",
+          "file": "com/facebook/internal/Validate.smali",
+          "kind": "url_literal",
+          "line": 669,
+          "method": "hasFacebookActivity(Landroid/content/Context;Z)V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_social_sdk",
+      "endpoint": "https://developers.facebook.com/docs/app-events/<redacted-segment>#<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 298,
+          "source": "dex_string_pool",
+          "string_data_offset": 6417256,
+          "string_index": 20001
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 303,
+          "source": "dex_string_pool",
+          "string_data_offset": 6516932,
+          "string_index": 24164
+        }
+      ],
+      "evidence_count": 2,
+      "host": "developers.facebook.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/facebook/UserSettingsManager;",
+          "file": "com/facebook/UserSettingsManager.smali",
+          "kind": "url_literal",
+          "line": 935,
+          "method": "logWarnings()V"
+        },
+        {
+          "class": "Lcom/facebook/UserSettingsManager;",
+          "file": "com/facebook/UserSettingsManager.smali",
+          "kind": "url_literal",
+          "line": 952,
+          "method": "logWarnings()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_social_sdk",
+      "endpoint": "https://developers.facebook.com/docs/sharing/android",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 140,
+          "source": "dex_string_pool",
+          "string_data_offset": 5854432,
+          "string_index": 3079
+        }
+      ],
+      "evidence_count": 1,
+      "host": "developers.facebook.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/facebook/internal/Validate;",
+          "file": "com/facebook/internal/Validate.smali",
+          "kind": "url_literal",
+          "line": 435,
+          "method": "hasContentProvider(Landroid/content/Context;)V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_bootstrap_config",
+      "endpoint": "https://eve.gameloft.com/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755570,
+          "string_index": 39247
+        }
+      ],
+      "evidence_count": 1,
+      "host": "eve.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 3,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/a/b/a;",
+          "file": "com/gameloft/a/b/a.smali",
+          "kind": "url_literal",
+          "line": 2374,
+          "method": "aL(Ljava/lang/String;)Ljava/lang/String;"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/s.smali",
+          "kind": "url_literal",
+          "line": 2391,
+          "method": "aL(Ljava/lang/String;)Ljava/lang/String;"
+        },
+        {
+          "class": "Lcom/gameloft/android/wrapper/au;",
+          "file": "com/gameloft/android/wrapper/au.smali",
+          "kind": "url_literal",
+          "line": 9795,
+          "method": "aL(Ljava/lang/String;)Ljava/lang/String;"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_bootstrap_config",
+      "endpoint": "https://eve.gameloft.com/config/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 15,
+          "source": "dex_string_pool",
+          "string_data_offset": 6426221,
+          "string_index": 20403
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755597,
+          "string_index": 39248
+        }
+      ],
+      "evidence_count": 2,
+      "host": "eve.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/bi;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/bi.smali",
+          "kind": "url_literal",
+          "line": 152,
+          "method": "MW()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/bi;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/bi.smali",
+          "kind": "url_literal",
+          "line": 352,
+          "method": "MX()V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_bootstrap_config",
+      "endpoint": "https://eve.gameloft.com:443/config/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755631,
+          "string_index": 39249
+        }
+      ],
+      "evidence_count": 1,
+      "host": "eve.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/aa;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/PushNotification/aa.smali",
+          "kind": "url_literal",
+          "line": 658,
+          "method": "hq()Ljava/lang/String;"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/aa;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/PushNotification/aa.smali",
+          "kind": "url_literal",
+          "line": 877,
+          "method": "hr()Ljava/lang/String;"
+        }
+      ]
+    },
+    {
+      "category": "third_party_social_sdk",
+      "endpoint": "https://facebook.com",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755669,
+          "string_index": 39250
+        }
+      ],
+      "evidence_count": 1,
+      "host": "facebook.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/facebook/internal/Utility;",
+          "file": "com/facebook/internal/Utility.smali",
+          "kind": "url_literal",
+          "line": 467,
+          "method": "clearFacebookCookies(Landroid/content/Context;)V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_social_sdk",
+      "endpoint": "https://facebook.com/device?user_code=<redacted>&qr=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755691,
+          "string_index": 39251
+        }
+      ],
+      "evidence_count": 1,
+      "host": "facebook.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/facebook/login/DeviceAuthDialog$RequestState;",
+          "file": "com/facebook/login/DeviceAuthDialog$RequestState.smali",
+          "kind": "url_literal",
+          "line": 200,
+          "method": "setUserCode(Ljava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_game_portal",
+      "endpoint": "https://game-portal-beta.gameloft.com/android/1557/public/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755740,
+          "string_index": 39252
+        }
+      ],
+      "evidence_count": 1,
+      "host": "game-portal-beta.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 372164,
+          "method": "rg()Ljava/lang/String;"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://goo.gl/NAOOOI",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 56,
+          "source": "dex_string_pool",
+          "string_data_offset": 6033151,
+          "string_index": 9582
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 56,
+          "source": "dex_string_pool",
+          "string_data_offset": 6381538,
+          "string_index": 18607
+        }
+      ],
+      "evidence_count": 2,
+      "host": "goo.gl",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/measurement/zzjv;",
+          "file": "com/google/android/gms/internal/measurement/zzjv.smali",
+          "kind": "url_literal",
+          "line": 3547,
+          "method": "zzbz(Ljava/lang/String;)Z"
+        },
+        {
+          "class": "Lcom/google/android/gms/internal/measurement/zzjv;",
+          "file": "com/google/android/gms/internal/measurement/zzjv.smali",
+          "kind": "url_literal",
+          "line": 3573,
+          "method": "zzbz(Ljava/lang/String;)Z"
+        }
+      ]
+    },
+    {
+      "category": "third_party_ad_sdk",
+      "endpoint": "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/mraid/v2/mraid_app_banner.js",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755800,
+          "string_index": 39253
+        }
+      ],
+      "evidence_count": 1,
+      "host": "googleads.g.doubleclick.net",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 3974,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_ad_sdk",
+      "endpoint": "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/mraid/v2/mraid_app_expanded_banner.js",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755893,
+          "string_index": 39254
+        }
+      ],
+      "evidence_count": 1,
+      "host": "googleads.g.doubleclick.net",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 3984,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_ad_sdk",
+      "endpoint": "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/mraid/v2/mraid_app_interstitial.js",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6755995,
+          "string_index": 39255
+        }
+      ],
+      "evidence_count": 1,
+      "host": "googleads.g.doubleclick.net",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 3994,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_ad_sdk",
+      "endpoint": "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/native_ads.html",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756094,
+          "string_index": 39256
+        }
+      ],
+      "evidence_count": 1,
+      "host": "googleads.g.doubleclick.net",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 5530,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_ad_sdk",
+      "endpoint": "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/production/native_ads.js",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756174,
+          "string_index": 39257
+        }
+      ],
+      "evidence_count": 1,
+      "host": "googleads.g.doubleclick.net",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 5540,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_ad_sdk",
+      "endpoint": "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/production/sdk-core-v40-impl.js",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756263,
+          "string_index": 39258
+        }
+      ],
+      "evidence_count": 1,
+      "host": "googleads.g.doubleclick.net",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 3436,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_ad_sdk",
+      "endpoint": "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/sdk-core-v40.html",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756359,
+          "string_index": 39259
+        }
+      ],
+      "evidence_count": 1,
+      "host": "googleads.g.doubleclick.net",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 3426,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_social_sdk",
+      "endpoint": "https://graph-video.%s",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756441,
+          "string_index": 39260
+        }
+      ],
+      "evidence_count": 1,
+      "host": "graph-video.%s",
+      "host_is_template_or_cookie_domain": true,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/facebook/internal/ServerProtocol;",
+          "file": "com/facebook/internal/ServerProtocol.smali",
+          "kind": "url_literal",
+          "line": 239,
+          "method": "getGraphVideoUrlBase()Ljava/lang/String;"
+        }
+      ]
+    },
+    {
+      "category": "third_party_social_sdk",
+      "endpoint": "https://graph.%s",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756465,
+          "string_index": 39261
+        }
+      ],
+      "evidence_count": 1,
+      "host": "graph.%s",
+      "host_is_template_or_cookie_domain": true,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/facebook/internal/ServerProtocol;",
+          "file": "com/facebook/internal/ServerProtocol.smali",
+          "kind": "url_literal",
+          "line": 213,
+          "method": "getGraphUrlBase()Ljava/lang/String;"
+        }
+      ]
+    },
+    {
+      "category": "third_party_social_sdk",
+      "endpoint": "https://graph.facebook.com/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756483,
+          "string_index": 39262
+        }
+      ],
+      "evidence_count": 1,
+      "host": "graph.facebook.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android2d/socialnetwork/s;",
+          "file": "com/gameloft/android2d/socialnetwork/s.smali",
+          "kind": "url_literal",
+          "line": 3700,
+          "method": "hf(Ljava/lang/String;)Ljava/net/URL;"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://imasdk.googleapis.com/admob/sdkloader/native_video.html",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756512,
+          "string_index": 39263
+        }
+      ],
+      "evidence_count": 1,
+      "host": "imasdk.googleapis.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 5560,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_ad_sdk",
+      "endpoint": "https://mobile-static.adsafeprotected.com/avid-v2.js",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756577,
+          "string_index": 39264
+        }
+      ],
+      "evidence_count": 1,
+      "host": "mobile-static.adsafeprotected.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/c/a/a/a/f;",
+          "file": "com/c/a/a/a/f.smali",
+          "kind": "url_literal",
+          "line": 51,
+          "method": "a(Lcom/c/a/a/a/p;)V"
+        },
+        {
+          "class": "Lcom/c/a/a/a/f;",
+          "file": "com/c/a/a/a/f.smali",
+          "kind": "url_literal",
+          "line": 71,
+          "method": "a(Lcom/c/a/a/a/p;)V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://pagead2.googlesyndication.com/pagead/gen_204",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756631,
+          "string_index": 39265
+        }
+      ],
+      "evidence_count": 1,
+      "host": "pagead2.googlesyndication.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zzafx;",
+          "file": "com/google/android/gms/internal/ads/zzafx.smali",
+          "kind": "url_literal",
+          "line": 1235,
+          "method": "zzl(Ljava/util/Map;)V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://pagead2.googlesyndication.com/pagead/gen_204?id=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756685,
+          "string_index": 39266
+        }
+      ],
+      "evidence_count": 1,
+      "host": "pagead2.googlesyndication.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/ads/identifier/b;",
+          "file": "com/google/android/gms/ads/identifier/b.smali",
+          "kind": "url_literal",
+          "line": 31,
+          "method": "run()V"
+        }
+      ]
+    },
+    {
+      "category": "store_iap_or_external_link",
+      "endpoint": "https://play.google.com",
+      "evidence": [
+        {
+          "entry": "lib/arm64-v8a/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 1302208
+        },
+        {
+          "entry": "lib/armeabi-v7a/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 515335
+        },
+        {
+          "entry": "lib/armeabi/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 538615
+        }
+      ],
+      "evidence_count": 5,
+      "host": "play.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    },
+    {
+      "category": "store_iap_or_external_link",
+      "endpoint": "https://play.google.com/store/apps/details",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756752,
+          "string_index": 39267
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756796,
+          "string_index": 39268
+        }
+      ],
+      "evidence_count": 2,
+      "host": "play.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity.smali",
+          "kind": "url_literal",
+          "line": 695,
+          "method": "J(Ljava/lang/String;)V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/InGameBrowserActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/InGameBrowserActivity.smali",
+          "kind": "url_literal",
+          "line": 920,
+          "method": "J(Ljava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "category": "store_iap_or_external_link",
+      "endpoint": "https://play.google.com/store/apps/details?id=<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756841,
+          "string_index": 39269
+        }
+      ],
+      "evidence_count": 1,
+      "host": "play.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 3,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 29030,
+          "method": "Bm()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 107134,
+          "method": "Io()V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "url_literal",
+          "line": 414202,
+          "method": "yz()V"
+        }
+      ]
+    },
+    {
+      "category": "store_iap_or_external_link",
+      "endpoint": "https://play.google.com/store/search",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756924,
+          "string_index": 39270
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6756962,
+          "string_index": 39271
+        }
+      ],
+      "evidence_count": 2,
+      "host": "play.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity.smali",
+          "kind": "url_literal",
+          "line": 704,
+          "method": "J(Ljava/lang/String;)V"
+        },
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/InGameBrowserActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/InGameBrowserActivity.smali",
+          "kind": "url_literal",
+          "line": 928,
+          "method": "J(Ljava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://plus.google.com/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757001,
+          "string_index": 39272
+        }
+      ],
+      "evidence_count": 1,
+      "host": "plus.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/common/internal/ad;",
+          "file": "com/google/android/gms/common/internal/ad.smali",
+          "kind": "url_literal",
+          "line": 15,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "game_wrapper_external_link",
+      "endpoint": "https://signal-back.com",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757027,
+          "string_index": 39273
+        }
+      ],
+      "evidence_count": 1,
+      "host": "signal-back.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity.smali",
+          "kind": "url_literal",
+          "line": 407,
+          "method": "<init>(Landroid/content/Context;I)V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_analytics_sdk",
+      "endpoint": "https://ssl.google-analytics.com",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757052,
+          "string_index": 39274
+        }
+      ],
+      "evidence_count": 1,
+      "host": "ssl.google-analytics.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/measurement/zzcc;",
+          "file": "com/google/android/gms/internal/measurement/zzcc.smali",
+          "kind": "url_literal",
+          "line": 682,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://support.google.com/dfp_premium/answer/7160685#<redacted>",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757086,
+          "string_index": 39275
+        }
+      ],
+      "evidence_count": 1,
+      "host": "support.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zzalm;",
+          "file": "com/google/android/gms/internal/ads/zzalm.smali",
+          "kind": "url_literal",
+          "line": 34,
+          "method": "onClick(Landroid/content/DialogInterface;I)V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_tracking_discovery",
+      "endpoint": "https://vgold.gameloft.com",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757146,
+          "string_index": 39276
+        }
+      ],
+      "evidence_count": 1,
+      "host": "vgold.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/bx;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/bx.smali",
+          "kind": "url_literal",
+          "line": 2299,
+          "method": "NX()V"
+        }
+      ]
+    },
+    {
+      "category": "store_iap_or_external_link",
+      "endpoint": "https://www.amazon.com",
+      "evidence": [
+        {
+          "entry": "lib/arm64-v8a/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 1302264
+        },
+        {
+          "entry": "lib/armeabi-v7a/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 515389
+        },
+        {
+          "entry": "lib/armeabi/libAdsManager.so",
+          "kind": "url_literal",
+          "source": "native_literal",
+          "uncompressed_byte_offset": 538669
+        }
+      ],
+      "evidence_count": 5,
+      "host": "www.amazon.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://www.google.com",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757174,
+          "string_index": 39277
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/measurement/zzjv;",
+          "file": "com/google/android/gms/internal/measurement/zzjv.smali",
+          "kind": "url_literal",
+          "line": 1308,
+          "method": "zzd(Landroid/content/Intent;)Z"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://www.google.com/dfp/debugSignals",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757198,
+          "string_index": 39278
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 6278,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://www.google.com/dfp/inAppPreview",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757239,
+          "string_index": 39279
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 6268,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://www.google.com/dfp/linkDevice",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757280,
+          "string_index": 39280
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 6258,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://www.google.com/dfp/sendDebugData",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757319,
+          "string_index": 39281
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.google.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/internal/ads/zznk;",
+          "file": "com/google/android/gms/internal/ads/zznk.smali",
+          "kind": "url_literal",
+          "line": 6288,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://www.googleapis.com/auth/games",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757361,
+          "string_index": 39282
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.googleapis.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 3,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/auth/api/signin/GoogleSignInOptions;",
+          "file": "com/google/android/gms/auth/api/signin/GoogleSignInOptions.smali",
+          "kind": "url_literal",
+          "line": 135,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/google/android/gms/games/c;",
+          "file": "com/google/android/gms/games/c.smali",
+          "kind": "url_literal",
+          "line": 173,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/google/android/gms/games/internal/i;",
+          "file": "com/google/android/gms/games/internal/i.smali",
+          "kind": "url_literal",
+          "line": 4916,
+          "method": "validateScopes(Ljava/util/Set;)Ljava/util/Set;"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://www.googleapis.com/auth/games.firstparty",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757400,
+          "string_index": 39283
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.googleapis.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/games/c;",
+          "file": "com/google/android/gms/games/c.smali",
+          "kind": "url_literal",
+          "line": 201,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/google/android/gms/games/internal/i;",
+          "file": "com/google/android/gms/games/internal/i.smali",
+          "kind": "url_literal",
+          "line": 4920,
+          "method": "validateScopes(Ljava/util/Set;)Ljava/util/Set;"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://www.googleapis.com/auth/games_lite",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757450,
+          "string_index": 39284
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.googleapis.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 3,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/auth/api/signin/GoogleSignInOptions;",
+          "file": "com/google/android/gms/auth/api/signin/GoogleSignInOptions.smali",
+          "kind": "url_literal",
+          "line": 127,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/google/android/gms/games/c;",
+          "file": "com/google/android/gms/games/c.smali",
+          "kind": "url_literal",
+          "line": 181,
+          "method": "<clinit>()V"
+        },
+        {
+          "class": "Lcom/google/android/gms/games/internal/i;",
+          "file": "com/google/android/gms/games/internal/i.smali",
+          "kind": "url_literal",
+          "line": 4948,
+          "method": "validateScopes(Ljava/util/Set;)Ljava/util/Set;"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://www.googleapis.com/auth/plus.login",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757494,
+          "string_index": 39285
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 7,
+          "source": "dex_string_pool",
+          "string_data_offset": 6798466,
+          "string_index": 41765
+        }
+      ],
+      "evidence_count": 2,
+      "host": "www.googleapis.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 2,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android2d/socialnetwork/d;",
+          "file": "com/gameloft/android2d/socialnetwork/d.smali",
+          "kind": "url_literal",
+          "line": 61,
+          "method": "run()V"
+        },
+        {
+          "class": "Lcom/google/android/gms/plus/d;",
+          "file": "com/google/android/gms/plus/d.smali",
+          "kind": "url_literal",
+          "line": 106,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "google_sdk_or_external_link",
+      "endpoint": "https://www.googleapis.com/auth/plus.me",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757538,
+          "string_index": 39286
+        }
+      ],
+      "evidence_count": 1,
+      "host": "www.googleapis.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/google/android/gms/plus/d;",
+          "file": "com/google/android/gms/plus/d.smali",
+          "kind": "url_literal",
+          "line": 114,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "third_party_ad_sdk",
+      "endpoint": "https://z.moatads.com/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 145,
+          "source": "dex_string_pool",
+          "string_data_offset": 5839497,
+          "string_index": 2429
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 683,
+          "source": "dex_string_pool",
+          "string_data_offset": 5845140,
+          "string_index": 2743
+        },
+        {
+          "entry": "classes.dex",
+          "kind": "url_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6757579,
+          "string_index": 39287
+        }
+      ],
+      "evidence_count": 3,
+      "host": "z.moatads.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 3,
+      "smali_references": [
+        {
+          "class": "Lcom/moat/analytics/mobile/glft/f;",
+          "file": "com/moat/analytics/mobile/glft/f.smali",
+          "kind": "url_literal",
+          "line": 132,
+          "method": "a(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Lorg/json/JSONObject;Ljava/lang/Integer;)Ljava/lang/String;"
+        },
+        {
+          "class": "Lcom/moat/analytics/mobile/glft/f;",
+          "file": "com/moat/analytics/mobile/glft/f.smali",
+          "kind": "url_literal",
+          "line": 220,
+          "method": "b(Ljava/lang/String;)Ljava/lang/String;"
+        },
+        {
+          "class": "Lcom/moat/analytics/mobile/glft/u$a;",
+          "file": "com/moat/analytics/mobile/glft/u$a.smali",
+          "kind": "url_literal",
+          "line": 34,
+          "method": "<init>(Lcom/moat/analytics/mobile/glft/u;Ljava/lang/String;Landroid/os/Handler;Lcom/moat/analytics/mobile/glft/u$e;)V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_state_tracking",
+      "endpoint": "state-gold.gameloft.com",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "scheme_less_gameloft_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6869940,
+          "string_index": 45627
+        }
+      ],
+      "evidence_count": 1,
+      "host": "state-gold.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 16699,
+          "method": "<clinit>()V"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_support_legal_or_iap",
+      "endpoint": "support.gameloft.com",
+      "evidence": [
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 216732
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 219242
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 220809
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 222381
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 223953
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 224971
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 239451
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 243468
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 246346
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 248073
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 249753
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 251433
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 252580
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 268964
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 211408
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 213848
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 215325
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 216756
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 218187
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 219187
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 232879
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 231561
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 234361
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 236171
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 237866
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 239552
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 240714
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 256618
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 242244
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 245194
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 246966
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 248657
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 250348
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 251521
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 267612
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 225219
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 228090
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 229797
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 231458
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 233118
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 234323
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 249446
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 287254
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 290881
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 293139
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 295213
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 297287
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 298740
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 318281
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 237977
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 240744
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 242479
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 243933
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 245387
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 246515
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 262397
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 231409
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 234214
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 235947
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 237642
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 239328
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 240439
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 256109
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 222024
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 224653
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 226485
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 228054
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 229623
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 230785
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 245660
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 354540
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 358739
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 361172
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 363445
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 365718
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 367351
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 391862
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 581642
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 588193
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 591975
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 595698
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 599421
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 601952
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 639330
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 216186
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 218902
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 220628
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 222285
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 223942
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 225093
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 240474
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 269262
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 272502
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 274540
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 276453
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 278366
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 279701
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 298675
+        }
+      ],
+      "evidence_count": 98,
+      "host": "support.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    },
+    {
+      "category": "gameloft_support_legal_or_iap",
+      "endpoint": "wapshop.gameloft.com",
+      "evidence": [
+        {
+          "entry": "assets/IAP_profiles",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 1344
+        },
+        {
+          "entry": "assets/IAP_profiles",
+          "kind": "url_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 1563
+        }
+      ],
+      "evidence_count": 2,
+      "host": "wapshop.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    },
+    {
+      "category": "gameloft_support_legal_or_iap",
+      "endpoint": "wapshop.gameloft.com/bannedaccount/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "scheme_less_gameloft_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6891250,
+          "string_index": 46947
+        }
+      ],
+      "evidence_count": 1,
+      "host": "wapshop.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/as;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/as.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 675,
+          "method": "shouldOverrideUrlLoading(Landroid/webkit/WebView;Ljava/lang/String;)Z"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_support_legal_or_iap",
+      "endpoint": "wapshop.gameloft.com/support/",
+      "evidence": [
+        {
+          "entry": "classes.dex",
+          "kind": "scheme_less_gameloft_literal",
+          "match_character_offset": 0,
+          "source": "dex_string_pool",
+          "string_data_offset": 6891287,
+          "string_index": 46948
+        }
+      ],
+      "evidence_count": 1,
+      "host": "wapshop.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 1,
+      "smali_references": [
+        {
+          "class": "Lcom/gameloft/android/ANMP/GloftGF2F/as;",
+          "file": "com/gameloft/android/ANMP/GloftGF2F/as.smali",
+          "kind": "scheme_less_gameloft_literal",
+          "line": 667,
+          "method": "shouldOverrideUrlLoading(Landroid/webkit/WebView;Ljava/lang/String;)Z"
+        }
+      ]
+    },
+    {
+      "category": "gameloft_support_legal_or_iap",
+      "endpoint": "www.gameloft.com",
+      "evidence": [
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 49472
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 220791
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 222363
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 223935
+        },
+        {
+          "entry": "assets/800x480/BR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 224953
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 52587
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 243450
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 246328
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 248055
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 249735
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 251415
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 252562
+        },
+        {
+          "entry": "assets/800x480/DE",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 268946
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 46499
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 211391
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 213831
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 215308
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 216738
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 218169
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 219170
+        },
+        {
+          "entry": "assets/800x480/EN",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 232861
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 50694
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 231544
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 234344
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 236153
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 237848
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 239534
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 240696
+        },
+        {
+          "entry": "assets/800x480/ES",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 256601
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 51638
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 242226
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 245176
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 246948
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 248639
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 250330
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 251503
+        },
+        {
+          "entry": "assets/800x480/FR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 267594
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 48783
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 225201
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 228072
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 229779
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 231439
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 233100
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 234305
+        },
+        {
+          "entry": "assets/800x480/IT",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 249428
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 287237
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 290864
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 293122
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 295196
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 297270
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 298723
+        },
+        {
+          "entry": "assets/800x480/JP",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 318264
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 54349
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 237959
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 240726
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 242461
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 243915
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 245369
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 246497
+        },
+        {
+          "entry": "assets/800x480/KR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 262379
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 50883
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 231392
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 234197
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 235929
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 237624
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 239310
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 240421
+        },
+        {
+          "entry": "assets/800x480/LATAM",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 256092
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 48878
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 222006
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 224635
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 226467
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 228036
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 229605
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 230767
+        },
+        {
+          "entry": "assets/800x480/PL",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 245642
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 79974
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 354523
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 358722
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 361154
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 363427
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 365700
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 367333
+        },
+        {
+          "entry": "assets/800x480/RU",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 391844
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 123750
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 581625
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 588176
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 591958
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 595681
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 599404
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 601935
+        },
+        {
+          "entry": "assets/800x480/TH",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 639313
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 49157
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 216169
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 218885
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 220610
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 222267
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 223924
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 225075
+        },
+        {
+          "entry": "assets/800x480/TR",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 240456
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 59720
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 269245
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 272485
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 274522
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 276435
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 278348
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 279683
+        },
+        {
+          "entry": "assets/800x480/VI",
+          "kind": "scheme_less_gameloft_literal",
+          "source": "asset_domain_only",
+          "uncompressed_byte_offset": 298657
+        }
+      ],
+      "evidence_count": 108,
+      "host": "www.gameloft.com",
+      "host_is_template_or_cookie_domain": false,
+      "smali_reference_count": 0,
+      "smali_references": []
+    }
+  ],
+  "payload_entries": [
+    {
+      "entry": "assets/800x480/0",
+      "sha256": "966f0169739a92ebfa7335ba0d87ce4c84807bf6403ca31899ab8bfcf7e18baf",
+      "size": 23
+    },
+    {
+      "entry": "assets/800x480/1",
+      "sha256": "83b39c866718a4928dbd2e88f60c43f952c0039bec066e65ab8ac22fdfb80f8d",
+      "size": 667
+    },
+    {
+      "entry": "assets/800x480/10",
+      "sha256": "5300b4c62e6a707058cbd0b6b4fe28c7cae5d4876fd8571361d78d673261fdc8",
+      "size": 112830
+    },
+    {
+      "entry": "assets/800x480/11",
+      "sha256": "b7649cef01fc56b98a591a8b9b8311ae1332472c627881093de031ed0f816ce7",
+      "size": 1544736
+    },
+    {
+      "entry": "assets/800x480/11.1",
+      "sha256": "6bf2e7930dc46aeefacab73aae4adc96a6e1a9c77d304824847310c4a5c07283",
+      "size": 1585072
+    },
+    {
+      "entry": "assets/800x480/11.2",
+      "sha256": "3614ac85076f32199db48193ca88d0f1b1919d20ace4b63921fb8343d46f225e",
+      "size": 1067779
+    },
+    {
+      "entry": "assets/800x480/11.3",
+      "sha256": "1ec944c07a682c9a88b4217e19cca220437f65188438d1f8c7b6210c46076bc7",
+      "size": 1581458
+    },
+    {
+      "entry": "assets/800x480/11.4",
+      "sha256": "dcecbbf5742583fa06489cd3403636c4805863d279e2ebd620f771787c2ea8e0",
+      "size": 1471270
+    },
+    {
+      "entry": "assets/800x480/11.5",
+      "sha256": "7b4841e7a22f6cc63377ee307aaedf982bd897172505651ffdd90531326169b5",
+      "size": 1543918
+    },
+    {
+      "entry": "assets/800x480/11.6",
+      "sha256": "6733cb19cd6907008eb8d63db872b88bd785d3dda88eca79b48e6095ea0a2c24",
+      "size": 908432
+    },
+    {
+      "entry": "assets/800x480/11.7",
+      "sha256": "3c6748ff363163a5aac06695659b529e915f919439a08d1987562f1097537a9a",
+      "size": 1552838
+    },
+    {
+      "entry": "assets/800x480/11.8",
+      "sha256": "8de203bcf317e993f00e1dac47d177cfed3cb86c37e6fda5c5e13f5ea55d0136",
+      "size": 263494
+    },
+    {
+      "entry": "assets/800x480/12",
+      "sha256": "0f519e13df0118f7e5cc933058150eeda2d0fa5479c1bcdc440fc793f77a8fee",
+      "size": 8098
+    },
+    {
+      "entry": "assets/800x480/13",
+      "sha256": "2460fceb7c957eca1c50427f6182b5323b7b3c6529f03dcabbb22c9d2ea86b51",
+      "size": 98899
+    },
+    {
+      "entry": "assets/800x480/14",
+      "sha256": "a728904efd10f0fa766dd6f587e33922d722377719dcaed34731511eeec3c7df",
+      "size": 79340
+    },
+    {
+      "entry": "assets/800x480/15",
+      "sha256": "e7150ff33e90bc24c7fe252523b7f484c6a6d6cb68df0fc00fd01d730f3b1e94",
+      "size": 72268
+    },
+    {
+      "entry": "assets/800x480/2",
+      "sha256": "ddc8d5986fdae27a433c3bc9b087f1b6cb084454131df421e019fce7fb4b1b4c",
+      "size": 360106
+    },
+    {
+      "entry": "assets/800x480/3",
+      "sha256": "80175ab8af3e70b0bb904a20f7ff48250908259a25f3348ed495e2cb3c55a071",
+      "size": 187872
+    },
+    {
+      "entry": "assets/800x480/4",
+      "sha256": "18baee173b317deca0a02608d630b2479c1d9941929f38475d18daabcbaeb0d3",
+      "size": 239055
+    },
+    {
+      "entry": "assets/800x480/5",
+      "sha256": "1384819ee61fe4117443cc4b5f505c150ab4cd32e17432b43c7321757e83cb28",
+      "size": 481492
+    },
+    {
+      "entry": "assets/800x480/6",
+      "sha256": "508f568e136d34506800b22d4688f8faa3ac0a9aefd791588fb6cdf91d9e9bd9",
+      "size": 568564
+    },
+    {
+      "entry": "assets/800x480/7",
+      "sha256": "b94f18ed3636dcc46760d9c7932f760de2bf4975f972e063f65793316ff532f2",
+      "size": 80
+    },
+    {
+      "entry": "assets/800x480/8",
+      "sha256": "7245be91122452177d979fd9bb9f5393520adf7a7a669ee5c2c8cb53606d8859",
+      "size": 1488328
+    },
+    {
+      "entry": "assets/800x480/888",
+      "sha256": "0c23115d8f3aa850576421fa6f459eaf32a6a463b8ab40311db8de1c490ae377",
+      "size": 6096
+    },
+    {
+      "entry": "assets/800x480/9",
+      "sha256": "cb20820d37d281b471e57532bb03ab938f6217fb7ae7730480a2f0839ef32d98",
+      "size": 1571422
+    },
+    {
+      "entry": "assets/800x480/9.1",
+      "sha256": "44619d94a1ff5e52d253d49a9dc2b96d5c4c56ece7016476210ffc32170ec88d",
+      "size": 1299245
+    },
+    {
+      "entry": "assets/800x480/9.2",
+      "sha256": "f170dac263e65a4fcdd9268cb648e572c9267979c5e59673f9b14b74bc62dece",
+      "size": 1566733
+    },
+    {
+      "entry": "assets/800x480/9.3",
+      "sha256": "0f02c39814f4bde797dbcabac1ab55a5255e52f62b54022e029804db9e0fc484",
+      "size": 1483775
+    },
+    {
+      "entry": "assets/800x480/9.4",
+      "sha256": "eb928038ec0149ad97d72dcb53c6051f912e1d6a84e0e89282d12e7a386836d5",
+      "size": 1425925
+    },
+    {
+      "entry": "assets/800x480/9.5",
+      "sha256": "806e8d1d4cde32350c99faa81fc368ac1480b410e8e13cae445a441b0a016756",
+      "size": 1012851
+    },
+    {
+      "entry": "assets/800x480/999",
+      "sha256": "9b94c3641beed4ddfe9ec78b1c2c168b7c161eab88f4f29f53cde915b796e947",
+      "size": 448
+    },
+    {
+      "entry": "assets/800x480/BR",
+      "sha256": "e527c542324ed55ba04d1f1f49d306e29dc96a356543b8e95fb7ec639c5ca83b",
+      "size": 241359
+    },
+    {
+      "entry": "assets/800x480/DE",
+      "sha256": "ad994951c7beea753abc145f755a578dd9b081ed41d48cdeae796309a624b936",
+      "size": 271003
+    },
+    {
+      "entry": "assets/800x480/EN",
+      "sha256": "9963f835ce9d56ccf738a74ecc9dcd083c7869e1cba658596c1f8b1a7b92a893",
+      "size": 234642
+    },
+    {
+      "entry": "assets/800x480/ES",
+      "sha256": "a9b982e165c23a03a393f43b5d93c42d4286cf75eeec72109807c2b8bf2a7f1a",
+      "size": 258558
+    },
+    {
+      "entry": "assets/800x480/FR",
+      "sha256": "a6f4b5ca1650bfb65750c4b0e719b9f7effa45f3059c53ee3ed73b5ec8f26971",
+      "size": 269574
+    },
+    {
+      "entry": "assets/800x480/IT",
+      "sha256": "7a7f70b54db9b6ae017f18c2f2c2ec8234f877b28be8a4b02bfb9d0c492eddb8",
+      "size": 251345
+    },
+    {
+      "entry": "assets/800x480/JP",
+      "sha256": "4061c9ec65820da984ce17e547e84e533d7ae271b230800d878a0efd93b64bca",
+      "size": 320754
+    },
+    {
+      "entry": "assets/800x480/KR",
+      "sha256": "7c7b6885c34142108c9949458dc5cfc1285bc9e01b1cc0914f9c3d69079aa28d",
+      "size": 264411
+    },
+    {
+      "entry": "assets/800x480/LATAM",
+      "sha256": "170bab59915be5089c44371bef4c9c65e2f64ab49b7c2f3b84c1bb52abe81e8d",
+      "size": 258049
+    },
+    {
+      "entry": "assets/800x480/PL",
+      "sha256": "d79d6268c9a70eaeb28a4628b420dacb79c325aeba19fb6af48cf7ae18fe1077",
+      "size": 247569
+    },
+    {
+      "entry": "assets/800x480/RU",
+      "sha256": "596bf25f8d2a8fd5cf3fcc82875aef0d405430a546b5be2eab1e0743bca90316",
+      "size": 394899
+    },
+    {
+      "entry": "assets/800x480/TH",
+      "sha256": "141ed45208e2317c376cfd4bc153628def2bfce9a4012f048c056d0b1f78fd2c",
+      "size": 643999
+    },
+    {
+      "entry": "assets/800x480/TR",
+      "sha256": "16dcb39ecc7d425b23d7135658f771af3d8543a047ca9332ed2c75ae0c969ada",
+      "size": 242385
+    },
+    {
+      "entry": "assets/800x480/VI",
+      "sha256": "540c338def787e6df9e5c2e662d37eff1d03723a4cfcac787ac94ba28ab790cd",
+      "size": 301067
+    },
+    {
+      "entry": "assets/800x480/iaks",
+      "sha256": "b35ace6ad49588e917bb032e5037f3331bec7987f5a7de024b8e69f79a8b6e54",
+      "size": 4208
+    },
+    {
+      "entry": "assets/IAP_profiles",
+      "sha256": "4123843e8fe8db1c47924386754960431606dd3a50ec5c2e34d9c88030e97941",
+      "size": 1658
+    },
+    {
+      "entry": "assets/IAP_texts",
+      "sha256": "84b99903aef05de57d7d247588ab182b689191fb427facb8e3fcd891956e70c2",
+      "size": 1756
+    },
+    {
+      "entry": "assets/InitialFeed.bin",
+      "sha256": "3d677c104f3ec8d38ff03d08eb3f7ea0a6514779d72d1c698172049edd734b74",
+      "size": 54124
+    },
+    {
+      "entry": "lib/arm64-v8a/libAdsManager.so",
+      "sha256": "e5bf335238dd7362e20b10c7938e06c6fa729a2dcdacd767dcab512a6af943bf",
+      "size": 1571864
+    },
+    {
+      "entry": "lib/arm64-v8a/libnativeU.so",
+      "sha256": "9a13044c9570bdc2e6f46793470023a395466108f4d8f4e45bd216992b090777",
+      "size": 9912
+    },
+    {
+      "entry": "lib/armeabi-v7a/libAdsManager.so",
+      "sha256": "631296334a209071683291e220e6c293dec283129c8d39e452d3a8d8373b716f",
+      "size": 582940
+    },
+    {
+      "entry": "lib/armeabi-v7a/libnativeU.so",
+      "sha256": "d093d5b819d4df0bcc62a754c698189cd35721967ad3a23583b795bc57ecafe9",
+      "size": 13736
+    },
+    {
+      "entry": "lib/armeabi/libAdsManager.so",
+      "sha256": "d2f757cbc7673626af75a92cfcdd3c4f9059f00920ed098599d8044955fd70cd",
+      "size": 599316
+    },
+    {
+      "entry": "lib/armeabi/libnativeU.so",
+      "sha256": "b852aa8576860cb677dde4e37bf33afb23a95e27e836e5f5ea477848404c9d16",
+      "size": 17824
+    },
+    {
+      "entry": "lib/x86/libAdsManager.so",
+      "sha256": "f04bce0ce8d04a902d7edd21375a75fc34c412987c54be071b82fea15134436f",
+      "size": 1353084
+    },
+    {
+      "entry": "lib/x86/libnativeU.so",
+      "sha256": "c8e9b2f4188ce6d904f83fcfff77569919a35824fac2dd794a7a986c1f667a35",
+      "size": 9584
+    },
+    {
+      "entry": "lib/x86_64/libAdsManager.so",
+      "sha256": "805bc5712f1518c44ccc8f4ea0b1abf7c8bc092cfedb35836cf9eb702eec2a9c",
+      "size": 1621448
+    },
+    {
+      "entry": "lib/x86_64/libnativeU.so",
+      "sha256": "8374e2ff13ef26ec27ce3272e27fd6bf6f2a1e987ed72b4774f4b04beb052a81",
+      "size": 10144
+    }
+  ],
+  "redaction": "All query values, fragments and long path identifiers omitted; no arbitrary literal dumps. Assets report domains only because string boundaries are unresolved.",
+  "schema_version": 1,
+  "scope": "offline static literal inventory; references are not execution evidence",
+  "smali_evidence_files_sha256": {
+    "com/c/a/a/a/f.smali": "471308ccecfec9fea88566510e0f1874956340c84c4568459290a2780addb4e3",
+    "com/facebook/UserSettingsManager.smali": "94d02dac65d75831f484afe07beb8822741722b9312fec2eda3227d71a9079f9",
+    "com/facebook/internal/ServerProtocol.smali": "bc9aff2dda2660f08128be3c7174dd1fe9990e2ee0b300dc7d0668e3c8a65de9",
+    "com/facebook/internal/Utility.smali": "5e663883b0ff229b4203dee3afc189c64491cba9fef851759a37a8cc4f1a8e01",
+    "com/facebook/internal/Validate.smali": "4abb0eb7af3f90fe1630a9d068a7817526db516980f676a145386d5754e9096d",
+    "com/facebook/login/DeviceAuthDialog$RequestState.smali": "dbb9b912328de608d2e0995cb26119f9b28b2746aad80fca7bc1ab38f3924cc0",
+    "com/gameloft/a/b/a.smali": "5c007b39dfef42079a53abc4943bb934f28ab3ebc550a4130cfe31a24e80d867",
+    "com/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity.smali": "7c407bd4ac2b633211309205499472d3a4baac42f4f1d2f04d12aede88d98af3",
+    "com/gameloft/android/ANMP/GloftGF2F/InGameBrowserActivity.smali": "0f21aae33c616aa0990158d848545f207c58008369fcd6634c9e3c5fcfdfb298",
+    "com/gameloft/android/ANMP/GloftGF2F/PushNotification/aa.smali": "5e64296ef8a582675b46a8bc612c18666f762041bbfd3495b39d4fcf20de3e91",
+    "com/gameloft/android/ANMP/GloftGF2F/S800x480/am.smali": "a6cac889816a4300f4e22ee29103cf62204a0b11f3dde9d9c67d832e5b6e5129",
+    "com/gameloft/android/ANMP/GloftGF2F/S800x480/aw.smali": "49f35b07626f474f591e06e731ba524eafd2000ebc3b814430f517150135f376",
+    "com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.smali": "6b48566882da4d0037fc5be1c9f0688bb99c2489071988e8f75a5563507e34a7",
+    "com/gameloft/android/ANMP/GloftGF2F/S800x480/n.smali": "2d367715853c12186c3af808c7e45863cf8f41789ef3a3875a13e587b336afa5",
+    "com/gameloft/android/ANMP/GloftGF2F/S800x480/s.smali": "3af807871ee171c9734e748e42b1143358006353ab90da390741f4da0bb98df3",
+    "com/gameloft/android/ANMP/GloftGF2F/SplashScreenActivity.smali": "356e9cf1f014d107d200cb9f2aa7b742921f84b44a40c20a9c711f5c33d497e0",
+    "com/gameloft/android/ANMP/GloftGF2F/as.smali": "f92c146ad820553a0169d59b46dfb78491f1599c886c8bce3588ca83ddbdf4c2",
+    "com/gameloft/android/ANMP/GloftGF2F/bi.smali": "b5e14cd67b316497c441f3a33585798f48505e3f7c897cbf52324d6b7620d712",
+    "com/gameloft/android/ANMP/GloftGF2F/bq.smali": "7a3e5ae4ee4e777b4ed49b8558575dfc30afbddb58fb615517eab9e47e2c0563",
+    "com/gameloft/android/ANMP/GloftGF2F/bx.smali": "ec508c5b401b8f4de569f3b446415b9dcf6c376de270c2b1c9524d1426f319a0",
+    "com/gameloft/android/ANMP/GloftGF2F/m.smali": "0df3d5161812a6f70af424391ca87ee79969ec272cae9eb316c9e5029a4457b7",
+    "com/gameloft/android/ANMP/GloftGF2F/y.smali": "30e18557c457c951f85c3bf0a41649d55625a3834730fafb1525dd563ce30c6c",
+    "com/gameloft/android/wrapper/ar.smali": "5ed088a9dd57d62b949c25b87a5e409ebcfefeb14289ce090c3f167d4d621982",
+    "com/gameloft/android/wrapper/au.smali": "9b43025a47f21df639717f121e610322fde15ef535a73e13934f2b76b01a7ba2",
+    "com/gameloft/android2d/socialnetwork/d.smali": "d539ba555879ffee02d435b2ad28bea38bd908af86bf91d875ffbc321067381e",
+    "com/gameloft/android2d/socialnetwork/g.smali": "6373eae1be8b75e3bb488545d1fa55189fa4949002425a4beeb7dc8259d5b589",
+    "com/gameloft/android2d/socialnetwork/s.smali": "28e05534666ee76607a30474aa9b6433c80b63240b730f6c712c20fe0ac0c74a",
+    "com/gameloft/glads/GLAds.smali": "d83a69cdd0257c8d96671d629e8bd6c36b9b2a5fcd7aa1726ebe8813c0ecc051",
+    "com/gameloft/glads/GLURLConnection.smali": "cfe7f6e5e1bf7296f7bede8e10ca5c4fd13863b66cf2f6f1623e43c8b014fb6b",
+    "com/google/android/gms/ads/identifier/b.smali": "7a6e5912e9a775bb212e4fa41482726ef14b670def8f5eb6682825dd25854412",
+    "com/google/android/gms/auth/api/signin/GoogleSignInOptions.smali": "f65ac47102d6f9ff762177b52d139c6d861b79a618f506d6a4768cb2f79055fa",
+    "com/google/android/gms/common/internal/ad.smali": "0b0f6cd3a2b7ecb7d1dff6ca91d9c57fc2354925326542c259dfcc9cee041421",
+    "com/google/android/gms/games/c.smali": "e9bd1c8da3a8ab06631376678ee83ac155b94546ca5b6f7a52403df35e8a1a46",
+    "com/google/android/gms/games/internal/i.smali": "49e887be978f5a44e7834cee48719138e7bf166113a94537bc12fa81c4535dc5",
+    "com/google/android/gms/internal/ads/zzafx.smali": "7cac1325b101ff4be89616d1d765f95e91b00c58493e404077b701fca8e194d4",
+    "com/google/android/gms/internal/ads/zzagb.smali": "93d4c6ffc5643d3e7e55257435dc116f3b044f5ba28ad052dc1b705ef6965304",
+    "com/google/android/gms/internal/ads/zzalm.smali": "21c3356eb5bb1e097eecd68de939cf6d68efbc2d9ef796543967f9b3b26424d8",
+    "com/google/android/gms/internal/ads/zzbfw.smali": "8acb4231d9b7ff230bf9af24078630daef7ef36cf18f2271d70f36b0fbc746a6",
+    "com/google/android/gms/internal/ads/zznk.smali": "e71ef3497ca10a596a5e6749291a09743d3248c036dd1d2952df7b4785d3ce4b",
+    "com/google/android/gms/internal/ads/zzoh.smali": "eab9d87f91185a81fe31ac555d79d1fd229ae083bd6914ee532173999b2ddba1",
+    "com/google/android/gms/internal/measurement/zzah.smali": "a263512cd645545ef3e1489de0cc3d539832b0a6e721486caf825a22dd95754c",
+    "com/google/android/gms/internal/measurement/zzbf.smali": "953464ec070deff8343e638576c240892e355e5678fcaf6b4a219d6ec8992c6f",
+    "com/google/android/gms/internal/measurement/zzcc.smali": "3744a4106d8afb9ff503e7d5e1530246df50379ddabe72a5e6063c5ddcea8ae2",
+    "com/google/android/gms/internal/measurement/zzct.smali": "29652c70ecf769b1aa484b602c3038d19dd3b803bde921fd8a9340235a95799c",
+    "com/google/android/gms/internal/measurement/zzew.smali": "55513c4e5d335518af240e776aaf895768a946bc37a325d94090c54dee8a5106",
+    "com/google/android/gms/internal/measurement/zzjv.smali": "42b1d06014baa87483bfa4a274e1c8f6e52eda336d2b630748d3631dc0f8e02a",
+    "com/google/android/gms/plus/d.smali": "59b9e10a80853d1843bdbf3fd44927e3d89e6a2b8b510ce1c1d57f213929ef60",
+    "com/moat/analytics/mobile/glft/f.smali": "5ed5dadf85661f46a20c3679035c77b188668adf63e1d168b13b75c584608951",
+    "com/moat/analytics/mobile/glft/u$a.smali": "25a677378f1aeca2117c3d6b4807d1d9634f6798597a0f1e45f5a45121de6750",
+    "com/unity3d/services/core/properties/SdkProperties.smali": "435b6c779796deeb4c64020eaab45ebba14b21f49b8290450c0c84f7933aa269"
+  }
+}
