@@ -45,6 +45,7 @@ cho account/session; nông trại nằm trong SQLite riêng trên thiết bị. 
 - `LanguageRestartController`: xác nhận bằng ngôn ngữ hiện tại (14 mã menu),
   Cancel giữ phiên; OK một lần khóa thao tác, lưu gameplay trước rồi preference.
   Nếu cần rollback preference, chỉ báo trở lại setting cũ sau durable rollback.
+  Trong tutorial, phím Menu Android mở Options hiện có (không bỏ bước).
   Sau thành công, alarm/PendingIntent mở Start và kết thúc process cũ, tránh
   tái dùng MIDlet/static loop. Không gọi lại confirmation lúc đọc settings.
 - `TutorialFlowController/ci/ch`: một cập nhật bước/frame, ownership modal/gesture,
@@ -91,8 +92,11 @@ Trên API28/user0: farm cũ khôi phục; một lượt thu hoạch và burst3 �
 không Saved overlay/chồng thoại/crash. Một worker SQLite được thấy; cq không còn
 được tạo trong code. Bản cuối đã hiện lại book ở bước12 và giữ các ô đã thu hoạch.
 
-Kiểm chứng UI đổi ngôn ngữ, Go/Find, Quit/MoreGames, cold restart tiếp theo đang
-được ghi nhận. Chưa xác nhận50–100 lượt thu hoạch thật, số dư/XP toàn bộ, FPS,
+UI đã mở Farm Diary “Big Shoes to Fill” với ba mục tiêu0/1, Go/Find mở chợ,
+mua/đặt bê✓ trừ đúng100xu (2000→1900, cash50). MENU mở Pause Menu/Options,
+không có MoreGames. Chọn VI cho native confirmation tiếng Anh đang dùng; Cancel
+giữ PID và byte ngôn ngữ/generation không đổi. Bốn OK nhanh đã dẫn đến tiến trình
+mới tự động; ngôn ngữ và farm sau restart đang được ghi nhận. Chưa xác nhận50–100 lượt thu hoạch thật, số dư/XP toàn bộ, FPS,
 14 ngôn ngữ trên thiết bị, repeated restart/timer qua UI hoặc Android mới.
 Không xóa bản lưu để vượt tutorial.
 

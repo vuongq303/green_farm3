@@ -99,6 +99,11 @@ public final class ProgressSaveController {
     public static boolean atSnapshotBoundary() { return snapshotBoundary; }
     public static boolean isForcedCheckpoint() { return forcedCheckpoint; }
     public static boolean canSerialize() { return worldEligible() && GameSaveStore.isCaptureAvailable(); }
+    /** The Android Menu key may expose existing settings during a tutorial. */
+    public static boolean isWorldReadyForMenu() {
+        return worldReady && globalLoaded && ownFarmLoaded && !loadBlocked
+                && languageCheckpoint == null;
+    }
 
     private static boolean worldEligible() {
         int state = ci.qD();

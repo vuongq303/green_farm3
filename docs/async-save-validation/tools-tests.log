@@ -20,6 +20,6 @@ test_unknown_enum_is_rejected (test_restore_resource_values.RestoreResourceValue
 test_unknown_flag_combination_is_rejected (test_restore_resource_values.RestoreResourceValuesTest.test_unknown_flag_combination_is_rejected) ... ok
 
 ----------------------------------------------------------------------
-Ran 20 tests in 0.068s
+Ran 20 tests in 0.061s
 
 OK

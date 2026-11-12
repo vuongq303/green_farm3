@@ -34,6 +34,8 @@ public final class LanguageRestartController {
     private static String[] dialogText;
     private static RestartHandoff handoff;
     private static boolean restartPromptVisible;
+    private static boolean menuHeld;
+    private static boolean menuRequested;
 
     private LanguageRestartController() {}
 
@@ -97,17 +99,62 @@ public final class LanguageRestartController {
     /** Also guards pointer callbacks, which can arrive outside the game update. */
     public static boolean blocksGameplay() { return state != IDLE; }
 
+    /** Keep the normal settings menu reachable while tutorial HUD buttons are hidden. */
+    public static boolean menuKeyDown() {
+        synchronized (LOCK) {
+            if (menuHeld) return true;
+        }
+        if (!tutorialOptionsAvailable()) return false;
+        synchronized (LOCK) {
+            if (state != IDLE) return false;
+            menuHeld = true;
+            return true;
+        }
+    }
+
+    public static boolean menuKeyUp() {
+        synchronized (LOCK) {
+            if (!menuHeld) return false;
+            menuHeld = false;
+        }
+        if (tutorialOptionsAvailable()) {
+            synchronized (LOCK) {
+                if (state == IDLE) menuRequested = true;
+            }
+        }
+        return true;
+    }
+
+    private static boolean tutorialOptionsAvailable() {
+        synchronized (ci.class) {
+            int current = ci.qD();
+            return ProgressSaveController.isWorldReadyForMenu() && ci.aZB == 0
+                    && (ci.aYR > 0 || (ci.awV && ci.aYS > 0))
+                    && (current == 18 || current == 19)
+                    && ci.avD == -1 && ci.apA == -1;
+        }
+    }
+
     /** Consumes UI decisions on the game thread; never serializes on the UI thread. */
     public static boolean frameStarted() {
         final int ticket;
         final int language;
         final int action;
+        final boolean openMenu;
         synchronized (LOCK) {
             ticket = generation;
             language = selectedLanguage;
             action = state;
+            openMenu = menuRequested;
+            menuRequested = false;
             if (action == ACCEPTED) state = SAVING;
             else if (action == RETRY_RESTART) state = RESTARTING;
+        }
+        if (openMenu && action == IDLE && tutorialOptionsAvailable()) {
+            clearInput();
+            // Engine state 15 is Options; its existing Language row pushes
+            // engine state 5 (GUI layer 26), with the original Back behavior.
+            ci.fE(15);
         }
         if (action != IDLE) clearInput();
         if (action == ACCEPTED) {

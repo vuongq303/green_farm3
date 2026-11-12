@@ -23,6 +23,8 @@ ANDROID = {
     'android/os/Process.java': '''package android.os;public class Process {
         public static int kills;public static int myPid(){return 7;}
         public static void killProcess(int pid){kills++;} }''',
+    'android/view/KeyEvent.java': '''package android.view;public class KeyEvent {
+        public static final int KEYCODE_MENU=82; }''',
     'android/util/Log.java': '''package android.util;public class Log {
         public static int d(String a,String b){return 0;}
         public static int w(String a,String b,Throwable c){return 0;}
@@ -74,11 +76,13 @@ ANDROID = {
         public static final int LENGTH_LONG=1;public static Toast makeText(android.content.Context c,String s,int n){return new Toast();}
         public void show(){} }''',
     'javax/microedition/midlet/MIDlet.java': '''package javax.microedition.midlet;public class MIDlet {
-        public static android.app.Activity cnz,cnA;}''',
+        public static android.app.Activity cnz,cnA;public static int keyDowns,keyUps;
+        public boolean onKeyDown(int key,android.view.KeyEvent event){keyDowns++;return false;}
+        public boolean onKeyUp(int key,android.view.KeyEvent event){keyUps++;return false;} }''',
 }
 
 FIXTURE = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
-import java.util.*;
+import java.util.*;import android.view.KeyEvent;
 class GameSaveStore {
  static final int STATUS_FAILED=3;static boolean ready,loading,failFinish,failInitialize,failReopen;
  static int initializes,reopens,begins,logicalLanguage,durableLanguage,durableCredits,durablePending,applies;
@@ -125,15 +129,15 @@ class AsyncSaveQueue {
 class PendingRewardState {static int resets;static void resetForLoad(){resets++;}}
 class EntityPoseState {static int resets;static void resetForLoad(){resets++;}}
 class TutorialFlowController {static int invalidations;static void invalidateSession(){invalidations++;}}
-class GloftGF2F {static GloftGF2F acx;void mj(){}}
+class GloftGF2F extends javax.microedition.midlet.MIDlet {static GloftGF2F acx;static ci acw;void mj(){} /* ACTUAL_KEY_OVERRIDES */}
 class GLLib {static void lb(){}static void la(){}}
 class ch {static int pending,credits,settles,entities,loadClears;static boolean levelUpOnSettle;
  static void oM(){settles++;credits+=pending;pending=0;if(levelUpOnSettle){levelUpOnSettle=false;pending=2;ci.apA=0;ci.apz=14;ci.baa=true;}}
  static void oL(){entities=0;loadClears++;}}
 class ci {
- static int avD=-1,aZB,attempts,visitorWrites,cancels,clears,queued,aYU,aOD,auy,committedCallbacks;
+ static int avD=-1,aZB,attempts,visitorWrites,cancels,clears,queued,aYU,aOD,auy,committedCallbacks,aYR=-1,aYS=-1;
  static int aAG,aAH,aAI,aAJ,aAK,aZp;static Object avE,baf,aZn;static ch aZi,aZj;
- static boolean baa,bab,skipWrite,throwCapture,forcedSeen,aAi,aAj;
+ static boolean baa,bab,skipWrite,throwCapture,forcedSeen,aAi,aAj,awV;
  static int apA=-1,apz=-1,apB=-1,auN,asi;static int[]apC=new int[32],apV=new int[128];
  static void state(int...stack){apB=stack.length-1;System.arraycopy(stack,0,apC,0,stack.length);}
  static void FN(){queued=0;}static void cancelMovePreviewForInterruption(){cancels++;avD=-1;avE=null;}
@@ -143,6 +147,7 @@ class ci {
  static boolean fJ(int action){if(action==5&&isPersistedWorldState(qD())){ch.oM();clears++;}return false;}
  static void gD(int state){}static void gE(int state){}
  static void progressSaveCommitted(){committedCallbacks++;}
+ static void fE(int next){apz=next;apA=0;}
 '''
 
 RUNNER = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
@@ -158,10 +163,12 @@ public class ProgressSaveChecks {
   GameSaveStore.logicalLanguage=GameSaveStore.durableLanguage=GameSaveStore.durableCredits=GameSaveStore.durablePending=0;
   ci.attempts=ci.visitorWrites=ci.cancels=ci.clears=ci.committedCallbacks=0;ci.baa=ci.bab=ci.skipWrite=ci.throwCapture=ci.forcedSeen=false;
   ci.avD=-1;ci.aZB=0;ci.aYU=ci.aOD=ci.auy=0;ci.avE=null;ci.aZi=ci.aZj=null;ci.queued=0;ci.apA=ci.apz=-1;ci.state(18);
+  ci.aYR=ci.aYS=-1;ci.awV=false;GloftGF2F.acw=new ci();MIDlet.keyDowns=MIDlet.keyUps=0;
   ch.pending=ch.credits=ch.settles=ch.entities=ch.loadClears=0;ch.levelUpOnSettle=false;SystemClock.now=10000;
   MIDlet.cnz=MIDlet.cnA=null;AlertDialog.latest=null;AlarmManager.exact=AlarmManager.ordinary=android.os.Process.kills=0;
   AlarmManager.failAll=AlarmManager.exactDenied=false;android.content.pm.PackageManager.unavailable=false;
   set(LanguageRestartController.class,"state",0);set(LanguageRestartController.class,"restartPromptVisible",false);set(LanguageRestartController.class,"handoff",null);
+  set(LanguageRestartController.class,"menuHeld",false);set(LanguageRestartController.class,"menuRequested",false);
   ProgressSaveController.initialize();
  }
  static void ready(){ProgressSaveController.globalLoadFinished(false,false);ProgressSaveController.farmLoadFinished();ProgressSaveController.enterWorld();}
@@ -272,9 +279,28 @@ public class ProgressSaveChecks {
   queue().reject=false;frame(1000);finishPending();
   check(GameSaveStore.logicalLanguage==0,"rejected preference left new language in logical cache");
  }
+ static void tutorialHardwareOptions()throws Exception{
+  readySaved();ci.state(19);ci.aYR=16;GloftGF2F game=new GloftGF2F();android.view.KeyEvent event=new android.view.KeyEvent();
+  int captures=ci.attempts,credits=ch.credits;
+  check(game.onKeyDown(82,event)&&game.onKeyDown(82,event)&&game.onKeyUp(82,event),"tutorial MENU pair was not consumed");
+  check(ci.apA==-1&&ci.attempts==captures,"hardware callback mutated game stack or serialized");
+  check(!LanguageRestartController.frameStarted()&&ci.apA==0&&ci.apz==15,"game thread did not enqueue normal Options");
+  check(ci.aYR==16&&ch.credits==credits&&ci.attempts==captures,"Options shortcut changed tutorial, economy, or persistence");
+  ci.qG();check(ci.qD()==15&&ci.qE()==19,"Options push discarded tutorial parent");
+  ci.fE(5);ci.qG();check(ci.qD()==5&&ci.qE()==15,"normal Language picker lacks Options parent for Back");
+  check(MIDlet.keyDowns==0&&MIDlet.keyUps==0,"consumed MENU leaked to original game key route");
+  check(!game.onKeyDown(4,event)&&!game.onKeyUp(4,event)&&MIDlet.keyDowns==1&&MIDlet.keyUps==1,"ordinary key did not delegate exactly once");
+  readySaved();game=new GloftGF2F();ci.aYR=-1;
+  check(!game.onKeyDown(82,event)&&!game.onKeyUp(82,event)&&MIDlet.keyDowns==1&&MIDlet.keyUps==1,"non-tutorial MENU changed original behavior");
+  ci.aYR=12;ci.avD=3;game.onKeyDown(82,event);game.onKeyUp(82,event);LanguageRestartController.frameStarted();check(ci.apA==-1,"MENU interrupted an unconfirmed move");
+  ci.avD=-1;ci.apA=1;game.onKeyDown(82,event);game.onKeyUp(82,event);LanguageRestartController.frameStarted();check(ci.apA==1,"MENU replaced a pending transition");
+  ci.apA=-1;ci.aZB=1;game.onKeyDown(82,event);game.onKeyUp(82,event);LanguageRestartController.frameStarted();check(ci.apA==-1,"MENU opened own-farm options while visiting");
+  ci.aZB=0;check(game.onKeyDown(82,event)&&game.onKeyUp(82,event),"eligible MENU request missing");ci.avD=3;
+  LanguageRestartController.frameStarted();check(ci.apA==-1,"queued MENU bypassed game-thread eligibility recheck");
+ }
  public static void main(String[]args)throws Exception{
   loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
-  languageCancelAndRestart();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();
+  languageCancelAndRestart();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();
   System.out.println("PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff");
  }
 }
@@ -291,8 +317,12 @@ class ProgressSaveControllerTest(unittest.TestCase):
         source = ROOT / 'app/src/main/java' / PACKAGE
         entity = (source / 'ci.java').read_text(encoding='utf-8')
         methods = '\n'.join(extract_method(entity, signature) for signature in
-                            ('static int qD()', 'static boolean isPersistedWorldState(int state)',
+                            ('static int qD()', 'static int qE()', 'static boolean isPersistedWorldState(int state)',
                              'static boolean pendingTransitionUnloadsWorld()', 'static void qG()'))
+        midlet_source = (source / 'GloftGF2F.java').read_text(encoding='utf-8')
+        key_methods = '\n'.join(extract_method(midlet_source, signature) for signature in
+                                ('public boolean onKeyDown(int keyCode, KeyEvent event)',
+                                 'public boolean onKeyUp(int keyCode, KeyEvent event)'))
         with tempfile.TemporaryDirectory(prefix='progress-save-check-') as temporary:
             folder = Path(temporary)
             peers = []
@@ -302,7 +332,7 @@ class ProgressSaveControllerTest(unittest.TestCase):
                 peer.write_text(content, encoding='utf-8')
                 peers.append(peer)
             fixture, runner = folder / 'Fixture.java', folder / 'ProgressSaveChecks.java'
-            fixture.write_text(FIXTURE + methods + '\n}', encoding='utf-8')
+            fixture.write_text(FIXTURE.replace('/* ACTUAL_KEY_OVERRIDES */', key_methods) + methods + '\n}', encoding='utf-8')
             runner.write_text(RUNNER, encoding='utf-8')
             actual = [source / name for name in ('ProgressSaveController.java', 'SaveBatchPolicy.java', 'LanguageRestartController.java')]
             result = subprocess.run([str(javac), '-encoding', 'UTF-8', '-source', '8', '-target', '8',

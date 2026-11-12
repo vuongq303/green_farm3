@@ -140,7 +140,7 @@ test_runtime_classes_can_be_split_across_dex (test_verify_runtime_apk.RuntimeApk
 test_states_and_paths_match_original_bytecode (test_z_pathfinding.PathFindingTest.test_states_and_paths_match_original_bytecode) ... ok
 
 ----------------------------------------------------------------------
-Ran 128 tests in 82.721s
+Ran 128 tests in 79.978s
 
 OK
 800 decoder cases across 13 formats and row strides; 1200 text layout cases; 12 IO exception checks match original bytecode.
@@ -149,7 +149,7 @@ PASS lifecycle: interrupted/timeout wait preserves pending data; close only succ
 PASS checkpoint: failure completes once, no automatic canceled-language retry, explicit old-language recovery persists
 PASS retry: first failure retained, no partial publish, newer absolute values survive one atomic retry
 PASS coalescing: blocked A, one pending B/C, one active writer, A cannot acknowledge B/C, close retains work
-Built binary baseline: /tmp/tmp0n6e1ooc/debug output/app-debug.apk; 4 DEX/assets/native entries unchanged.
+Built binary baseline: /tmp/tmpiumpmy3s/debug output/app-debug.apk; 4 DEX/assets/native entries unchanged.
 PASS 20000 objective predicates, 10000 progress traces, 1000 completion traces match original bytecode
 5000 CI numeric-prefix cases and 2000 CI Arabic cases match original bytecode.
 PASS: 576 original/recovered selection, first-match continuation and failure outcomes match

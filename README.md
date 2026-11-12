@@ -64,16 +64,18 @@ Tài khoản anonymous, access/refresh session và compliance hiện được l�
 MySQL. Gameplay/save nông trại chuyển sang SQLite bền vững trên thiết bị
 (`greenfarm-progress.db`, schema 4), tự tạo/migration và nhập RMS cũ có CRC hợp lệ.
 Snapshot giữ codec gốc, gồm tutorial, quest, kho, farm, timestamp, thưởng đang chờ
-và hướng sprite. Lỗi đọc dừng tải để thử lại; lỗi ghi giữ bản lưu trước và hiện
-trạng thái lưu/thử lại. Đặt/di chuyển có ✓/✕, preview không được lưu như vị trí đã
+và hướng sprite. Snapshot tại cuối frame được gom200/500ms rồi ghi bằng một
+worker SQLite; lỗi đọc dừng tải, lỗi ghi giữ snapshot chờ và retry có kiểm soát. Đặt/di chuyển có ✓/✕, preview không được lưu như vị trí đã
 xác nhận. Chưa triển khai cloud farm save hoặc Facebook Connect mới.
 
-[Kiến trúc SQLite, migration và ma trận kiểm thử](docs/SQLITE_PROGRESS_RECOVERY.md).
-Đã tái hiện APK cũ mất XP 1/13→0/13 sau force-stop. Bản mới schema 4 đã tự
-nâng DB, vào lại farm, hiện “Đã lưu”, thu hoạch/tiếp tục tutorial và khôi phục
-farm sau force-stop trên emulator API28. Bộ mã có 116 test đạt và 13 test resource
-đạt; xem ma trận thiết bị/probe trong tài liệu trên. Chưa kiểm đủ toàn bộ XP,
-quest/reward, vật nuôi/công trình và thao tác di chuyển qua UI thực tế.
+[Checkpoint hiện tại: lưu nền, ngôn ngữ và tutorial](docs/ASYNC_GAMEPLAY_CHECKPOINT.md).
+Đã bỏ nhãn lưu thông thường và phần đề cử Trò chơi+/Welcome cross-promotion.
+Đổi ngôn ngữ có xác nhận bằng ngôn ngữ hiện tại, chờ lưu trước khi tự khởi động lại;
+trong tutorial, phím Menu Android mở màn hình Options hiện có. Không reset farm.
+128 test mã,20 test công cụ/ngôn ngữ và27 kiểm tra SQLite Android đã đạt.
+Bài tải cùng100snapshot tổng hợp giảm100→6commit; đây không phải100thu hoạch/FPS.
+Các mốc UI và phần chưa xác minh ghi rõ trong checkpoint, không coi unit/build là
+kiểm thử gameplay toàn bộ. [Lịch sử SQLite](docs/SQLITE_PROGRESS_RECOVERY.md).
 
 [Kết quả hợp nhất và sửa crash khởi động](docs/APP_BUILD_AND_STARTUP.md).
 [Thư mục ghép APK và chẩn đoán lỗi build Windows](docs/WINDOWS_APK_MERGE_PATHS.md).

@@ -6,6 +6,14 @@ gán `ci.aYU` và gọi `Cf()` ngay lập tức. Hộp xác nhận lấy bản d
 nguyên ngôn ngữ, tiến độ và phiên hiện tại. Chọn lại ngôn ngữ đang dùng không mở
 hộp thoại và không khởi động lại.
 
+Trong tutorial, nút pause trên HUD có thể đang bị ẩn theo kịch bản cũ. Phím
+**Menu của Android** vẫn mở màn hình Options có sẵn để vào Language. Đường này
+chỉ hoạt động trong farm của mình đã tải xong, khi tutorial đang chạy và không
+có thao tác đặt/di chuyển chưa xác nhận hoặc chuyển màn hình đang chờ. Callback
+phím chỉ xếp yêu cầu; luồng game mở Options bằng push state 15, giữ màn hình cha
+và trạng thái tutorial. Các phím khác và phím Menu ngoài tutorial dùng nguyên
+handler MIDlet cũ. Không thêm điều khiển debug hoặc sửa tiến độ để mở menu.
+
 Hộp thoại có bản dịch cho đủ 14 gói văn bản đang được game nạp: EN, DE, FR, IT,
 ES, BR, JP, KR, RU, TR, PL, TH, VI và LATAM. Mã 20 dùng asset `LATAM`; không sửa
 các gói nhị phân hoặc thêm các mã mà `fM(30)` không hỗ trợ.
@@ -70,10 +78,15 @@ SDK tới muộn, rollback ngôn ngữ đã commit, queue từ chối header ban
 writer còn bận, và retry riêng thao tác restart. Nó không tạo/cài APK và không
 dùng ADB; alarm và kết thúc tiến trình được quan sát qua fixture.
 
+Fixture cũng chạy hai override phím thật trong `GloftGF2F`: phím thường được
+chuyển cho MIDlet đúng một lần, Menu lặp chỉ xếp một lần mở Options, và yêu cầu
+không được mở khi đang visit farm, còn preview hoặc có chuyển màn hình khác.
+
 Ma trận kiểm tra runtime khi được phép chạy thiết bị:
 
 | Tình huống | Kết quả cần quan sát |
 | --- | --- |
+| Giữa tutorial, nhấn Menu Android → Options → Language | Mở menu cũ; không thay đổi bước tutorial, tiền hoặc phần thưởng đang chờ |
 | VI → EN, chọn Hủy/Back | Hộp thoại tiếng Việt; ngôn ngữ và phiên không đổi |
 | EN → VI, chọn OK một lần/nhiều lần | Hộp thoại tiếng Anh; chỉ một checkpoint và một phiên mới |
 | Đổi ngôn ngữ khi còn tiến độ mới | Chờ commit trước khi thoát; farm, quest, tutorial và phần thưởng khôi phục đúng |
