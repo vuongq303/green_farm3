@@ -82,7 +82,10 @@ Fixture cũng chạy hai override phím thật trong `GloftGF2F`: phím thườn
 chuyển cho MIDlet đúng một lần, Menu lặp chỉ xếp một lần mở Options, và yêu cầu
 không được mở khi đang visit farm, còn preview hoặc có chuyển màn hình khác.
 
-Ma trận kiểm tra runtime khi được phép chạy thiết bị:
+Kết quả UI thực tế (Cancel, OK lặp, VI→EN tự restart và cold reopen) cùng các
+giới hạn được ghi trong [checkpoint nghiệm thu](ASYNC_GAMEPLAY_CHECKPOINT.md)
+và [bằng chứng runtime](async-save-validation/game-runtime.json). Bảng dưới là
+các tình huống cần bao phủ; không phải mọi dòng đều đã được thử trên thiết bị.
 
 | Tình huống | Kết quả cần quan sát |
 | --- | --- |

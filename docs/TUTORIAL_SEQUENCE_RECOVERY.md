@@ -84,3 +84,10 @@ The cold quest-UI fixture verifies display/input enablement and GUI rebuilding
 without changing step 12 or its flags, then runs the actual Go handler and its
 original quest-guide branch to advance to step 13. Widget rendering and device
 touch targets remain runtime checks.
+
+Selected real-device-emulator checks are now recorded separately in the
+[acceptance checkpoint](ASYNC_GAMEPLAY_CHECKPOINT.md) and
+[runtime evidence](async-save-validation/game-runtime.json): cold-restored book,
+quest objectives still0/1 before actual purchase, calf purchase, original
+Vietnamese dialogue, and tutorial23 retained across language/cold restarts.
+They do not establish every tutorial step or a full rapid-touch stress run.
