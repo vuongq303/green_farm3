@@ -1,0 +1,248 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by net.rubygrapefruit.platform.internal.NativeLibraryLoader in an unnamed module (file:/workspace/tooling/gradle-home/wrapper/dists/gradle-9.7.1-bin/1w1c7tv4s851m17nbqdsro2tv/gradle-9.7.1/lib/native-platform-0.22-milestone-29.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+> Task :buildSrc:compileJava NO-SOURCE
+
+> Task :buildSrc:compileGroovy
+Couldn't create user preferences directory. User preferences are unusable.
+java.io.IOException: No such file or directory
+
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes
+> Task :buildSrc:jar
+
+> Configure project :app
+Unable to initialize metrics, ensure /home/agent/.android is writable, details: /home/agent/.android/analytics.settings (Read-only file system)
+
+> Task :app:generateStableResourceIds UP-TO-DATE
+
+> Task :app:prepareCoreDependencies
+Prepared compile-only dependencies: /workspace/green_farm3/app/build/original-dependencies/compile-view.jar; 108 core classes excluded, 6250 binary class identities retained.
+
+> Task :app:restoreResourceClasses UP-TO-DATE
+> Task :app:prepareCoreSources
+
+> Task :app:restoreResources
+Restored 23 compiled nine-patches; original resources unchanged.
+Restored 12 Android style values using SDK-verified symbols; declared 107 public ids from public.xml; originals unchanged.
+
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:javaPreCompileDebug
+> Task :app:checkDebugAarMetadata
+> Task :app:generateDebugResValues
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:mergeDebugResources
+> Task :app:parseDebugLocalResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+
+> Task :app:compileDexMergeTool
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:processDebugManifestForPackage
+> Task :app:checkDebugDuplicateClasses
+> Task :app:compressDebugAssets
+> Task :app:mergeDebugJavaResource
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeExtDexDebug
+> Task :app:mergeDebugJniLibFolders
+> Task :app:prepareDebugSigningKey
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:mergeDebugNativeLibs
+> Task :app:writeDebugSigningConfigVersions
+
+> Task :app:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libAdsManager.so, libnativeU.so. Run with --info option to learn more.
+
+> Task :app:processDebugResources
+
+> Task :app:compileDebugJavaWithJavac
+Java compiler version 25 has deprecated support for compiling with source/target version 8.
+Try one of the following options:
+    1. [Recommended] Use Java toolchain with a lower language version
+    2. Set a higher source/target version
+    3. Use a lower version of the JDK running the build (if you're not using Java toolchain)
+For more details on how to configure these settings, see https://developer.android.com/build/jdks.
+To suppress this warning, set android.javaCompile.suppressSourceTargetDeprecationWarning=true in gradle.properties.
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+/workspace/green_farm3/app/build/generated/core-java/com/gameloft/android/ANMP/GloftGF2F/S800x480/by.java:146: warning: 'yield' may become a restricted identifier in a future release
+            yield();
+            ^
+  (to invoke a method called yield, qualify the yield with a receiver or type name)
+Note: /workspace/green_farm3/app/build/generated/core-java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ac.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+4 warnings
+
+> Task :app:dexBuilderDebug
+> Task :app:mergeDexDebug
+> Task :app:packageDebug
+
+> Task :app:mergeOriginalSdkDebugApk
+:app:mergeOriginalSdkDebugApk carrier APK input: /workspace/green_farm3/app/build/intermediates/apk/debug/packageDebug
+:app:mergeOriginalSdkDebugApk merged APK output: /workspace/green_farm3/app/build/outputs/apk/debug
+:app:mergeOriginalSdkDebugApk merge work: /workspace/green_farm3/app/build/intermediates/original-sdk-merge/debug
+:app:mergeOriginalSdkDebugApk compiling core overlay with D8 --min-api 16
+
+Could not lock User prefs.  Unix error code 2.
+Couldn't flush user prefs: java.util.prefs.BackingStoreException: Couldn't get file lock.
+
+> Task :app:mergeOriginalSdkDebugApk
+:app:mergeOriginalSdkDebugApk overlay classes.dex: DEX 35, minSdk 16
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/workspace/tooling/android-sdk/build-tools/35.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+{
+  "original_apk_sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b",
+  "overlay_apk_sha256": "cd168cb8cd99a5e80ce4c95e14a2a283e3af2d3b7aa116f0c15d593c3018297a",
+  "output_dex_sha256": "fae5218661c17a45327362cd69c83f8a3ecc85ef626655a3e7cd4ffd3b5ac653",
+  "dex_version": 35,
+  "original_dex_entries": ["classes.dex"],
+  "overlay_dex_entries": ["classes.dex"],
+  "original_class_count": 6383,
+  "overlay_class_count": 147,
+  "retained_original_class_count": 6250,
+  "output_class_count": 6397,
+  "retained_original_canonical_sha256": "2c659128486480997144c698d2897ce31157258f15de91603d43aad5cdf6a2cb",
+  "compiled_overlay_canonical_sha256": "a0b5a672c18de04613df699edb513be47cacf7ac4ea54f7d63d9c5b14f0d7338",
+  "original_non_overlay_semantics_verified": true,
+  "compiled_overlay_semantics_verified": true,
+  "protected_original_stream_classes": ["Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/g;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/l;"],
+  "replaced_classes": ["Lcom/facebook/R$attr;", "Lcom/facebook/R$color;", "Lcom/facebook/R$dimen;", "Lcom/facebook/R$drawable;", "Lcom/facebook/R$id;", "Lcom/facebook/R$layout;", "Lcom/facebook/R$string;", "Lcom/facebook/R$style;", "Lcom/facebook/R$styleable;", "Lcom/facebook/R;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GLLib;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GloftGF2F;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/a;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/aa;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ab;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ac;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ad;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ae;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/af;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ag;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ah;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ai;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/aj;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ak;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/al;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/am;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/an;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ao;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ap;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/aq;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ar;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/as;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/at;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/au;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/av;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/aw;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ax;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ay;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/az;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/b;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ba;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bb;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bc;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bd;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/be;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bf;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bg;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bh;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bi;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bj;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bk;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bl;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bm;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bn;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bo;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bp;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bq;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/br;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bs;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bt;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bu;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bv;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bw;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bx;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/by;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bz;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/c;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ca;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cb;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cc;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cd;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ce;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cf;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cg;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ch;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cj;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ck;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cl;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cm;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cn;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/co;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cp;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cq;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cr;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cs;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ct;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cu;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cv;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cw;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cx;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cy;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cz;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/d;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/da;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/db;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/dc;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/dd;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/e;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/f;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/h;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/i;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/j;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/k;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/m;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/o;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/p;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/q;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/r;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/t;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/u;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/v;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/w;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/x;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/y;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/z;", "Lcom/google/android/gms/ads/R$attr;", "Lcom/google/android/gms/ads/R$integer;", "Lcom/google/android/gms/ads/R$string;", "Lcom/google/android/gms/ads/R$style;", "Lcom/google/android/gms/ads/R$styleable;", "Lcom/google/android/gms/ads/R;", "Lcom/google/android/gms/ads/impl/R$attr;", "Lcom/google/android/gms/ads/impl/R$integer;", "Lcom/google/android/gms/ads/impl/R$string;", "Lcom/google/android/gms/ads/impl/R$style;", "Lcom/google/android/gms/ads/impl/R$styleable;", "Lcom/google/android/gms/ads/impl/R;", "Lcom/google/firebase/messaging/R$integer;", "Lcom/google/firebase/messaging/R$string;", "Lcom/google/firebase/messaging/R;"],
+  "added_classes": ["Lcom/gameloft/android/ANMP/GloftGF2F/R$attr;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$color;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$dimen;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$drawable;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$id;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$integer;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$layout;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$menu;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$mipmap;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$raw;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$string;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$style;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$xml;", "Lcom/gameloft/android/ANMP/GloftGF2F/R;"]
+}
+{
+  "property": "REVISION-2408",
+  "original_dex_bytes": 7655124,
+  "rebuilt_dex_bytes": 7876112,
+  "original_revision": 7792744,
+  "rebuilt_revision": 7997612,
+  "size_xor": 140988,
+  "original_metadata_sha256": "58defca307864d420d0f7a32029407a7f56aebe7d1dce26bbe9c93602a082d9e",
+  "generated_metadata_sha256": "fb3a98ebecb296995bbff2d144d6fa05f628ab21a660b2ce8885d02b54d8743f",
+  "other_definition_bytes_preserved": true,
+  "original_guard_accepts_generated_revision": true
+}
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/workspace/tooling/android-sdk/build-tools/35.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/workspace/tooling/android-sdk/build-tools/35.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Verifies
+Verified using v1 scheme (JAR signing): true
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Built Java-core APK with original SDK DEX dependencies: /workspace/green_farm3/app/build/intermediates/original-sdk-merge/debug/app-debug/base/merged-base.apk
+
+Could not lock User prefs.  Unix error code 2.
+Couldn't flush user prefs: java.util.prefs.BackingStoreException: Couldn't get file lock.
+
+> Task :app:mergeOriginalSdkDebugApk
+{
+  "input_dex_sha256": "fae5218661c17a45327362cd69c83f8a3ecc85ef626655a3e7cd4ffd3b5ac653",
+  "output_dex_sha256": "6de95580e1be1ebda13bd2d8c323f5ccb1300dd9981f25e18c64b91e71c4c7ba",
+  "schema_version": 2,
+  "target_classes": ["Lcom/gameloft/a/b/a;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;"],
+  "target_method": "aL(Ljava/lang/String;)Ljava/lang/String;",
+  "original_url": "https://eve.gameloft.com/",
+  "replacement_url": "http://10.37.233.55:8787/",
+  "replacement_count": 3,
+  "replacement_counts": {"Lcom/gameloft/a/b/a;": 1, "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;": 2},
+  "unchanged_other_classes_verified": true,
+  "reverse_patch_semantics_verified": true,
+  "unchanged_classes_canonical_sha256": "907a6747968cb2adacb38397ee37bf2e0052e829f209429ef48c506a00f814c2"
+}
+{
+  "property": "REVISION-2408",
+  "original_dex_bytes": 7655124,
+  "rebuilt_dex_bytes": 7876144,
+  "original_revision": 7792744,
+  "rebuilt_revision": 7997580,
+  "size_xor": 140988,
+  "original_metadata_sha256": "58defca307864d420d0f7a32029407a7f56aebe7d1dce26bbe9c93602a082d9e",
+  "generated_metadata_sha256": "6c0f092ec2345755deb0261746273c89d614ed0a42f2f4f59d131dab4f040f24",
+  "other_definition_bytes_preserved": true,
+  "original_guard_accepts_generated_revision": true
+}
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/workspace/tooling/android-sdk/build-tools/35.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/workspace/tooling/android-sdk/build-tools/35.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Verifies
+Verified using v1 scheme (JAR signing): true
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Built complete debug APK with configured backend: /workspace/green_farm3/app/build/outputs/apk/debug/app-debug.apk
+{
+  "apk": "/workspace/green_farm3/app/build/outputs/apk/debug/app-debug.apk",
+  "package": "com.gameloft.android.ANMP.GloftGF2F",
+  "application": "javax.microedition.midlet.App",
+  "launcher": "com.gameloft.android.ANMP.GloftGF2F.Start",
+  "dex_count": 1,
+  "class_count": 6397,
+  "payload_count": 59,
+  "network_policy": {
+    "internet_permission": true,
+    "debuggable": true,
+    "uses_cleartext_traffic": true,
+    "network_security_config": null
+  }
+}
+
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+[Incubating] Problems report is available at: file:///workspace/green_farm3/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1m 19s
+42 actionable tasks: 40 executed, 2 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.1/userguide/configuration_cache_enabling.html

@@ -12,8 +12,9 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 ORIGINAL = "https://eve.gameloft.com/"
-LOCAL = "http://10.0.2.2:8787/"
+LOCAL = "http://192.168.11.20:8787/"
 OWNER = "Lcom/gameloft/a/b/a;"
+CORE_OWNER = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;"
 METHOD = "aL(Ljava/lang/String;)Ljava/lang/String;"
 
 ORACLE = r"""
@@ -33,6 +34,7 @@ import org.jf.dexlib2.writer.pool.*;
 
 public final class BackendEndpointOracle {
     static final String OWNER="Lcom/gameloft/a/b/a;", OLD="https://eve.gameloft.com/";
+    static final String CORE_OWNER="Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;";
     static final Opcodes OPS=Opcodes.forDexVersion(35);
     static byte[] canonical(Collection<? extends ClassDef> classes) throws Exception {
         DexPool pool=new DexPool(OPS);
@@ -83,14 +85,23 @@ public final class BackendEndpointOracle {
         if(mode.equals("missing_method")) methods.clear();
         ClassDef c=new ImmutableClassDef(owner,1,"Ljava/lang/Object;",Collections.emptyList(),
             "Fixture.java",Collections.emptySet(),Collections.emptyList(),methods);
-        Files.write(Paths.get(path),canonical(Collections.singletonList(c)));
+        List<ClassDef> classes=new ArrayList<>(); classes.add(c);
+        if(!mode.equals("missing_core")) classes.add(new ImmutableClassDef(CORE_OWNER,1,"Ljava/lang/Object;",Collections.emptyList(),
+            "CoreFixture.java",Collections.emptySet(),Collections.emptyList(),Collections.singletonList(
+                fixtureMethod(CORE_OWNER,"aL",OLD,!mode.equals("narrow"),!mode.equals("core_single_literal")))));
+        Files.write(Paths.get(path),canonical(classes));
     }
     public static void main(String[] args) throws Exception {
         if(args[0].equals("fixture")) {fixture(args[1],args[2]);return;}
         TreeMap<String,ClassDef> before=read(args[1]), after=read(args[2]);
         if(!before.keySet().equals(after.keySet())) throw new AssertionError("class set changed");
-        ClassDef oldOwner=before.remove(OWNER), newOwner=after.remove(OWNER);
+        TreeMap<String,ClassDef> oldOwners=new TreeMap<>(), newOwners=new TreeMap<>();
+        for(String owner:Arrays.asList(OWNER,CORE_OWNER)) {
+            oldOwners.put(owner,before.remove(owner));newOwners.put(owner,after.remove(owner));
+        }
         if(!Arrays.equals(canonical(before.values()),canonical(after.values()))) throw new AssertionError("other classes changed");
+        for(String owner:oldOwners.keySet()) {
+        ClassDef oldOwner=oldOwners.get(owner),newOwner=newOwners.get(owner);
         List<Instruction> oldCode=new ArrayList<>(),newCode=new ArrayList<>();
         for(Instruction i:target(oldOwner).getImplementation().getInstructions()) oldCode.add(i);
         for(Instruction i:target(newOwner).getImplementation().getInstructions()) newCode.add(i);
@@ -106,7 +117,7 @@ public final class BackendEndpointOracle {
                     throw new AssertionError("unexpected instruction change");
             }
         }
-        if(changes!=1) throw new AssertionError("expected one changed literal");
+        if(changes!=(owner.equals(OWNER)?1:2)) throw new AssertionError("wrong changed literal count in "+owner);
         // Independent rewriter-based reversal, including fields, annotations, debug and exception metadata.
         DexRewriter reverse=new DexRewriter(new RewriterModule() {
             @Override public Rewriter<Instruction> getInstructionRewriter(Rewriters rewriters) {
@@ -122,7 +133,8 @@ public final class BackendEndpointOracle {
         ClassDef reversed=reverse.getClassDefRewriter().rewrite(newOwner);
         if(!Arrays.equals(canonical(Collections.singletonList(oldOwner)),canonical(Collections.singletonList(reversed))))
             throw new AssertionError("target has unrelated semantic changes");
-        System.out.println("Read-back verified one literal, unchanged opcode/register/width, all other classes and reversed target canonical DEX.");
+        }
+        System.out.println("Read-back verified both bootstrap methods, unchanged opcode/register/width, all other classes and reversed targets canonical DEX.");
     }
 }
 """
@@ -176,19 +188,21 @@ class BackendEndpointPatchTest(unittest.TestCase):
         report = json.loads(output.with_name(output.name + ".json").read_text())
         self.assertEqual(report["input_dex_sha256"], before)
         self.assertEqual(report["output_dex_sha256"], hashlib.sha256(output.read_bytes()).hexdigest())
-        self.assertEqual(report["target_class"], OWNER)
+        self.assertEqual(report["schema_version"], 2)
+        self.assertEqual(report["target_classes"], [OWNER, CORE_OWNER])
         self.assertEqual(report["target_method"], METHOD)
         self.assertEqual(report["original_url"], ORIGINAL)
         self.assertEqual(report["replacement_url"], url)
-        self.assertEqual(report["replacement_count"], 1)
+        self.assertEqual(report["replacement_count"], 3)
+        self.assertEqual(report["replacement_counts"], {OWNER: 1, CORE_OWNER: 2})
         self.assertTrue(report["unchanged_other_classes_verified"])
         self.assertTrue(report["reverse_patch_semantics_verified"])
         result = self.oracle("verify", source, output, url)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), before)
 
-    def test_real_merged_dex_changes_one_sdk_literal_and_preserves_other_classes(self):
-        source = Path(os.environ.get("GREEN_FARM_MERGED_DEX", ROOT / "app/build/intermediates/original-sdk/debug/app-debug/merged/classes.dex"))
+    def test_real_merged_dex_changes_both_bootstraps_and_preserves_other_classes(self):
+        source = Path(os.environ.get("GREEN_FARM_MERGED_DEX", ROOT / "app/build/intermediates/original-sdk-merge/debug/app-debug/merged/classes.dex"))
         if not source.exists():
             self.skipTest("Build the recovered merged DEX first, or set GREEN_FARM_MERGED_DEX")
         self.verify_patch(source, self.path / "actual-patched.dex")
@@ -201,17 +215,27 @@ class BackendEndpointPatchTest(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.verify_patch(source, self.path / f"{mode}-patched.dex")
 
-    def test_allows_explicit_loopback_and_https_bases(self):
-        for n, url in enumerate(("http://127.0.0.1:8787/", "http://localhost:8787/", "http://[::1]:8787/",
-                                 "https://backend.example/api/")):
+    def test_allows_explicit_lan_ipv4_http_and_https_origins(self):
+        for n, url in enumerate(("http://192.168.1.3:8787/", "http://172.26.91.236:18787/",
+                                 "https://10.37.233.55/", "https://203.0.113.2:443/")):
             with self.subTest(url=url):
                 self.verify_patch(self.fixture, self.path / f"allowed-{n}.dex", url)
 
-    def test_rejects_bad_or_nonlocal_cleartext_urls_without_publishing(self):
-        invalid = ("http://example.com/", "http://10.0.2.3/", "http://192.168.1.1/", "ftp://localhost/",
-                   "http://localhost:8787", "http://user@localhost/", "https://example.com/?q=1",
-                   "https://example.com/#fragment", "https://example.com:70000/", "http://localhost:0/",
-                   "//localhost/", "http://localhost\\@example.com/", "http://localhost/\n", ORIGINAL)
+    def test_normalizes_missing_root_slash_before_embedding(self):
+        output = self.path / "normalized-origin.dex"
+        result = self.patch(self.fixture, output, "http://192.168.11.20:8787")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        report = json.loads(output.with_suffix('.dex.json').read_text())
+        self.assertEqual(report['replacement_url'], LOCAL)
+        self.assertEqual(self.oracle('verify', self.fixture, output, LOCAL).returncode, 0)
+
+    def test_rejects_non_ipv4_non_unicast_and_malformed_origins_without_publishing(self):
+        invalid = ("", "http://example.com/", "http://10.0.2.2/", "http://0.0.0.0/", "http://127.2.3.4/",
+                   "http://169.254.1.2/", "http://224.0.0.1/", "http://255.255.255.255/", "http://[::1]/",
+                   "http://192.168.001.1/", "http://192.168.1.300/", "http://192.168.1.3:/",
+                   "ftp://192.168.1.3/", "http://user@192.168.1.3/", "https://192.168.1.3/?q=1",
+                   "https://192.168.1.3/#fragment", "https://192.168.1.3:70000/", "http://192.168.1.3:0/",
+                   "https://192.168.1.3/api/", "//192.168.1.3/", "http://192.168.1.3\\@example.com/", ORIGINAL)
         for n, url in enumerate(invalid):
             with self.subTest(url=url):
                 output = self.path / f"invalid-url-{n}.dex"
@@ -222,7 +246,7 @@ class BackendEndpointPatchTest(unittest.TestCase):
 
     def test_rejects_wrong_missing_duplicate_and_already_patched_targets(self):
         for mode in ("wrong_owner", "wrong_method", "missing_method", "missing_literal",
-                     "duplicate_literal", "extra_owner_literal"):
+                     "duplicate_literal", "extra_owner_literal", "missing_core", "core_single_literal"):
             with self.subTest(mode=mode):
                 source, output = self.path / f"bad-{mode}.dex", self.path / f"rejected-{mode}.dex"
                 result = self.oracle("fixture", mode, source)

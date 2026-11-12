@@ -79,10 +79,12 @@ class LocalBackendPackagingTest(unittest.TestCase):
             },
         }
         self.patch = {
-            "target_class": build.TARGET_CLASS,
+            "schema_version": 2,
+            "target_classes": build.TARGET_CLASSES,
             "target_method": build.TARGET_METHOD,
             "original_url": build.ORIGINAL_URL,
-            "replacement_count": 1,
+            "replacement_count": 3,
+            "replacement_counts": {build.TARGET_CLASS: 1, build.CORE_TARGET_CLASS: 2},
             "unchanged_other_classes_verified": True,
             "reverse_patch_semantics_verified": True,
             "input_dex_sha256": build.sha256(self.base_dex),
@@ -172,7 +174,9 @@ class LocalBackendPackagingTest(unittest.TestCase):
     def test_rejects_patch_hash_target_count_and_false_semantic_proofs(self):
         valid = copy.deepcopy(self.patch)
         cases = [
-            ("target_class", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;"),
+            ("target_classes", [build.TARGET_CLASS]),
+            ("schema_version", 1),
+            ("replacement_counts", {build.TARGET_CLASS: 3}),
             ("target_method", "aL(Ljava/lang/String;)V"),
             ("original_url", "https://other.example/"),
             ("replacement_count", 0),

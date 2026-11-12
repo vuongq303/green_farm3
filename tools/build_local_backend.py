@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a separate research APK with one verified Janus discovery URL change."""
+"""Build the complete debug APK with verified SDK/game Janus bootstrap URLs."""
 
 import argparse
 import json
@@ -15,6 +15,8 @@ from android_build_tools import ensure_debug_keystore, signing_tools
 
 
 TARGET_CLASS = 'Lcom/gameloft/a/b/a;'
+CORE_TARGET_CLASS = 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;'
+TARGET_CLASSES = [TARGET_CLASS, CORE_TARGET_CLASS]
 TARGET_METHOD = 'aL(Ljava/lang/String;)Ljava/lang/String;'
 ORIGINAL_URL = 'https://eve.gameloft.com/'
 
@@ -37,11 +39,13 @@ def prepare(original, base, patched_dex, output):
             or baseline.get('dex_merge', {}).get('original_non_overlay_semantics_verified') is not True
             or baseline.get('dex_merge', {}).get('compiled_overlay_semantics_verified') is not True):
         raise ValueError('Base APK provenance mismatch')
-    if (patch.get('target_class') != TARGET_CLASS
+    if (patch.get('schema_version') != 2
+            or patch.get('target_classes') != TARGET_CLASSES
             or patch.get('target_method') != TARGET_METHOD
             or patch.get('original_url') != ORIGINAL_URL
             or type(patch.get('replacement_count')) is not int
-            or patch.get('replacement_count') != 1
+            or patch.get('replacement_count') != 3
+            or patch.get('replacement_counts') != {TARGET_CLASS: 1, CORE_TARGET_CLASS: 2}
             or patch.get('unchanged_other_classes_verified') is not True
             or patch.get('reverse_patch_semantics_verified') is not True
             or patch.get('output_dex_sha256') != sha256(patched_dex.read_bytes())):
@@ -114,10 +118,10 @@ def main():
         'endpoint_patch': patch,
         'build_revision_metadata': revision,
         'unchanged_assets_native_sha256': payload,
-        'scope': 'One Janus discovery URL; other legacy network clients are not migrated.',
+        'scope': 'SDK and game Janus discovery constructors; unrelated legacy service clients are not migrated.',
     }
     output.with_suffix('.provenance.json').write_text(json.dumps(report, indent=2) + '\n')
-    print('Built separate local-backend research APK:', output)
+    print('Built complete debug APK with configured backend:', output)
 
 
 if __name__ == '__main__':

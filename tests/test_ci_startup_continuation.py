@@ -148,9 +148,17 @@ class CIStartupContinuationTest(unittest.TestCase):
                 import com.gameloft.android.ANMP.GloftGF2F.S800x480.ci;
                 public class au {public static void el(String value){ci.calls.add("el:"+value);}
                 public static void em(String value){ci.calls.add("em:"+value);}}''')
+            # The whole original fM contains references in unexecuted states.
+            # dex2jar can allocate their locals differently between conversions,
+            # making JVM type-merge verification resolve this opaque peer before
+            # state 38 executes. Supply the same type to both fixture classpaths;
+            # no original instructions or state-38 behavior are rewritten.
+            midlet = sources / "GloftGF2F.java"
+            midlet.write_text('''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
+                public class GloftGF2F {}''')
             restored = root / "restored"
             result = subprocess.run([str(javac), "-source", "8", "-target", "8", "-d", str(restored),
-                                     str(sources / "ci.java"), str(peer)], capture_output=True, text=True)
+                                     str(sources / "ci.java"), str(peer), str(midlet)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             baseline = root / "original"
             shutil.copytree(restored, baseline)

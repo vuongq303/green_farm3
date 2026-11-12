@@ -1,0 +1,22 @@
+{
+  "health": {
+    "status": "ok",
+    "backend": {
+      "status": "running"
+    },
+    "mysql": {
+      "status": "ready",
+      "schemaVersion": 1
+    }
+  },
+  "pid": "11948",
+  "observed_at_least_seconds": 20,
+  "fatal_exception": false,
+  "installed_apk_sha256": "4068b7390bc42c457dee034a18487c94bda7ae7b49a1e2f34f76eb6b0b971400",
+  "test_endpoint": "http://172.26.91.236:18787/",
+  "installed_via": ":app:installDebug with injected API24",
+  "windows_lan_endpoint_tested": false,
+  "facebook_login_tested": false,
+  "full_gameplay_save_load_tested": false,
+  "automatic_ui_retry_verified": false
+}

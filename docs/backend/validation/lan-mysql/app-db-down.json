@@ -1,0 +1,17 @@
+{
+  "mysql_stopped": true,
+  "health_status": 503,
+  "health": {
+    "status": "degraded",
+    "backend": {
+      "status": "running"
+    },
+    "mysql": {
+      "status": "unavailable"
+    }
+  },
+  "app_pid": "11701",
+  "observed_at_least_seconds": 20,
+  "fatal_exception": false,
+  "ui_retry_not_verified": true
+}

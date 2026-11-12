@@ -1,0 +1,9 @@
+{
+  "owned_backend_stopped": true,
+  "connection_refused": true,
+  "app_pid": "11825",
+  "observed_at_least_seconds": 20,
+  "fatal_exception": false,
+  "ui_retry_not_verified": true,
+  "old_m0_port8787_untouched": true
+}

@@ -1,0 +1,78 @@
+{
+  "recorded_at": "2026-11-12T19:42:15+07:00",
+  "base_user_commit": "0c22c29",
+  "backend_base_url_file": "gradle.properties:5",
+  "backend_base_url": "http://10.37.233.55:8787/",
+  "cloud_test_url": "http://172.26.91.236:18787/",
+  "windows_lan_tested": false,
+  "configuration": {
+    "single_url_key": "BACKEND_BASE_URL",
+    "backend_reads_same_properties": true,
+    "default_bind": "0.0.0.0",
+    "default_port": 8787,
+    "backend_language": "JavaScript ESM",
+    "storage": "MySQL 8.4.13, mysql2/promise"
+  },
+  "verified": {
+    "old_loopback_health_200_but_lan_connection_refused": true,
+    "host_and_emulator_http_health_200": true,
+    "mysql_schema_version": 1,
+    "npm_start_dev_health_200": true,
+    "normal_debug_build": true,
+    "injected_api24_build_and_install": true,
+    "api24_carrier_dex": "037",
+    "declared_min_sdk_overlay_dex": "035",
+    "final_dex": "035",
+    "mergecore_guard_unchanged": true,
+    "sdk_and_core_bootstrap_rebased": true,
+    "actual_app_authorize_profile_status": 200,
+    "actual_app_mysql_accounts": 1,
+    "backend_process_restart_persists_account_session_compliance": true,
+    "missing_credentials_http": 400,
+    "wrong_credentials_http": 401,
+    "database_unavailable_http": 503,
+    "no_memory_fallback": true,
+    "app_alive_after_db_and_server_failure_at_least_seconds": 20,
+    "fatal_exception_in_observation_windows": false
+  },
+  "tests": {
+    "python_recovery_packaging_runtime": 110,
+    "resource": 13,
+    "http_config": 25,
+    "real_mysql_and_http_restart": 9,
+    "total": 157,
+    "skipped": 0,
+    "failures": 0
+  },
+  "not_verified": [
+    "Native Windows/Android Studio and LAN path to 10.37.233.55",
+    "Facebook account login (external SDK remains)",
+    "Automatic UI retry/long SDK wait loops under every network failure",
+    "Full farming/save-load and original cloud farm codec",
+    "Physical device/new Android"
+  ],
+  "data_boundary": "Persist anonymous account/profile identity, sessions/refresh and compliance; existing farm state remains device RMS. Legacy M0 had no persistent DB/file dataset to import; old live process and game data preserved.",
+  "evidence": "validation/lan-mysql/",
+  "app_runtime": {
+    "health": {
+      "status": "ok",
+      "backend": {
+        "status": "running"
+      },
+      "mysql": {
+        "status": "ready",
+        "schemaVersion": 1
+      }
+    },
+    "pid": "11948",
+    "observed_at_least_seconds": 20,
+    "fatal_exception": false,
+    "installed_apk_sha256": "4068b7390bc42c457dee034a18487c94bda7ae7b49a1e2f34f76eb6b0b971400",
+    "test_endpoint": "http://172.26.91.236:18787/",
+    "installed_via": ":app:installDebug with injected API24",
+    "windows_lan_endpoint_tested": false,
+    "facebook_login_tested": false,
+    "full_gameplay_save_load_tested": false,
+    "automatic_ui_retry_verified": false
+  }
+}

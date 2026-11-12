@@ -1,6 +1,7 @@
 import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.ScopedArtifacts
+import greenfarm.BackendBaseUrl
 import greenfarm.MergeOriginalSdkApk
 import greenfarm.PrepareDebugSigningKey
 
@@ -17,6 +18,11 @@ def greenFarmExecServices = objects.newInstance(GreenFarmExecServices)
 def windows = System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')
 def pythonCommand = providers.gradleProperty('pythonExecutable').orElse(windows ? 'python' : 'python3')
 def debugKeystore = rootProject.layout.projectDirectory.file('.local/baseline-debug.keystore')
+if (providers.gradleProperty('localBackendUrl').isPresent()) {
+    throw new GradleException('localBackendUrl is no longer supported. Set only BACKEND_BASE_URL in the root gradle.properties.')
+}
+def backendBaseUrl = providers.gradleProperty('BACKEND_BASE_URL').orElse('')
+        .map { BackendBaseUrl.normalize(it) }
 
 // JADX Java/resources are UTF-8 regardless of the Windows system code page.
 tasks.withType(Exec).configureEach {
@@ -191,8 +197,7 @@ androidComponents {
             sdkDirectory.set(android.sdkDirectory)
             workDirectory.set(layout.buildDirectory.dir("intermediates/original-sdk-merge/${variant.name}"))
             pythonExecutable.set(pythonCommand)
-            // Use -PlocalBackendUrl=original to retain the original discovery URL.
-            backendUrl.set(providers.gradleProperty('localBackendUrl').orElse('http://10.0.2.2:8787/'))
+            backendUrl.set(backendBaseUrl)
             mergeToolClasspath.from(configurations.dexMergeTool,
                     compileDexMergeTool.flatMap { it.destinationDirectory })
             // Rebuild only this project's classfiles at its declared minSdk.

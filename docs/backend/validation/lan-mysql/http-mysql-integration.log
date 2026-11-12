@@ -1,0 +1,10 @@
+✔ real HTTP/MySQL authorization, profile and compliance survive a backend process restart (659.131898ms)
+✔ a real backend with an unavailable MySQL server reports HTTP503 without successful authorization (292.251362ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1242.93222

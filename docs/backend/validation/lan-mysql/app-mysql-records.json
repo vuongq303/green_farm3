@@ -1,0 +1,7 @@
+{
+  "accounts": 1,
+  "sessions": 1,
+  "compliance_rows": 0,
+  "password_hash_bytes": 64,
+  "password_salt_bytes": 16
+}

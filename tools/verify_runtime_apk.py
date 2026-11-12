@@ -13,6 +13,7 @@ import struct
 import subprocess
 import zipfile
 import zlib
+from urllib.parse import urlsplit
 
 from android_build_tools import BUILD_TOOLS_VERSION, executable_name
 
@@ -127,7 +128,7 @@ def dex_classes(data):
     return classes
 
 
-def manifest(apk, sdk):
+def manifest_tree(apk, sdk):
     aapt2 = Path(sdk) / 'build-tools' / BUILD_TOOLS_VERSION / executable_name('aapt2')
     result = subprocess.run([str(aapt2), 'dump', 'xmltree', str(apk), '--file', 'AndroidManifest.xml'],
                             check=True, capture_output=True, text=True, timeout=30)
@@ -141,13 +142,17 @@ def manifest(apk, sdk):
             node = {'tag': element[2], 'attributes': {}, 'children': []}
             (stack[-1][1]['children'] if stack else nodes).append(node)
             stack.append((depth, node))
-        attribute = re.match(r'\s*A: (.*?)="([^"]*)"', line)
+        attribute = re.match(r'\s*A: (.*?)=(?:"([^"]*)"|(\S+))', line)
         if attribute and stack:
             key = attribute[1].split('(')[0].rsplit(':', 1)[-1]
-            stack[-1][1]['attributes'][key] = attribute[2]
+            stack[-1][1]['attributes'][key] = attribute[2] if attribute[2] is not None else attribute[3]
     if len(nodes) != 1 or nodes[0]['tag'] != 'manifest':
         raise ValueError('Packaged manifest is missing')
-    root = nodes[0]; package = root['attributes'].get('package', '')
+    return nodes[0]
+
+
+def manifest(apk, sdk):
+    root = manifest_tree(apk, sdk); package = root['attributes'].get('package', '')
     applications = [n for n in root['children'] if n['tag'] == 'application']
     if not package or len(applications) != 1:
         raise ValueError('Packaged manifest package/application is invalid')
@@ -165,7 +170,33 @@ def manifest(apk, sdk):
     return package, qualify(application['attributes']['name']), qualify(launchers[0])
 
 
-def verify_apk(apk, original, sdk, metadata=None):
+def network_policy(apk, sdk, backend_base_url):
+    """Inspect the installed artifact's binary manifest, not just source XML."""
+    root = manifest_tree(apk, sdk)
+    application = next((n for n in root['children'] if n['tag'] == 'application'), None)
+    if application is None:
+        raise ValueError('Packaged manifest application is missing')
+    attributes = application['attributes']
+    internet = any(n['tag'] == 'uses-permission'
+                   and n['attributes'].get('name') == 'android.permission.INTERNET'
+                   and 'maxSdkVersion' not in n['attributes'] for n in root['children'])
+    if not internet:
+        raise ValueError('Final APK lacks unrestricted android.permission.INTERNET')
+    if attributes.get('debuggable') != 'true':
+        raise ValueError('Configured backend pipeline must publish a debug APK manifest')
+    if attributes.get('networkSecurityConfig') is not None:
+        raise ValueError('Final APK has an unreviewed networkSecurityConfig override')
+    scheme = urlsplit(backend_base_url).scheme.lower()
+    if scheme not in ('http', 'https'):
+        raise ValueError('BACKEND_BASE_URL must use HTTP(S)')
+    cleartext = attributes.get('usesCleartextTraffic') == 'true'
+    if scheme == 'http' and not cleartext:
+        raise ValueError('Final debug APK blocks HTTP traffic to BACKEND_BASE_URL')
+    return {'internet_permission': internet, 'debuggable': True,
+            'uses_cleartext_traffic': cleartext, 'network_security_config': None}
+
+
+def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None):
     apk, original = Path(apk), Path(original)
     classes, dex_count = {}, 0
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(apk) as output:
@@ -211,8 +242,11 @@ def verify_apk(apk, original, sdk, metadata=None):
                 or values.get('applicationId') != package
                 or (metadata.parent / elements[0]['outputFile']).resolve() != apk.resolve()):
             raise ValueError('APK metadata does not point to this APK/package')
-    return {'apk': str(apk.resolve()), 'package': package, 'application': application, 'launcher': launcher,
-            'dex_count': dex_count, 'class_count': len(classes), 'payload_count': len(names)}
+    result = {'apk': str(apk.resolve()), 'package': package, 'application': application, 'launcher': launcher,
+              'dex_count': dex_count, 'class_count': len(classes), 'payload_count': len(names)}
+    if backend_base_url:
+        result['network_policy'] = network_policy(apk, sdk, backend_base_url)
+    return result
 
 
 def main():
@@ -220,8 +254,9 @@ def main():
     for name in ('apk', 'original', 'sdk'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--metadata', type=Path)
+    parser.add_argument('--backend-base-url')
     args = parser.parse_args()
-    print(json.dumps(verify_apk(args.apk, args.original, args.sdk, args.metadata), indent=2))
+    print(json.dumps(verify_apk(args.apk, args.original, args.sdk, args.metadata, args.backend_base_url), indent=2))
 
 
 if __name__ == '__main__':

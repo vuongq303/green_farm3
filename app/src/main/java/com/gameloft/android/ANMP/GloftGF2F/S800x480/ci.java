@@ -63706,7 +63706,8 @@ public final class ci extends GLLib implements av {
                     }
                     if (exc != null) {
                         MB();
-                        if ("java.net.UnknownHostException".equals(exc.getClass().getName()) || "java.net.ConnectException".equals(exc.getClass().getName()) || "java.lang.SecurityException".equals(exc.getClass().getName()) || "java.net.SocketException".equals(exc.getClass().getName()) || "Network not available".equals(exc.getMessage()) || (("java.io.IOException".equals(exc.getClass().getName()) && exc.getMessage().startsWith("Unknown error")) || exc.getMessage().startsWith("Could not initialize network"))) {
+                        String exceptionMessage = exc.getMessage();
+                        if ("java.net.UnknownHostException".equals(exc.getClass().getName()) || "java.net.ConnectException".equals(exc.getClass().getName()) || "java.lang.SecurityException".equals(exc.getClass().getName()) || "java.net.SocketException".equals(exc.getClass().getName()) || "Network not available".equals(exc.getMessage()) || (("java.io.IOException".equals(exc.getClass().getName()) && exceptionMessage != null && exceptionMessage.startsWith("Unknown error")) || (exceptionMessage != null && exceptionMessage.startsWith("Could not initialize network")))) {
                             E(qD(), true);
                             if (qD() != 43 && qD() != 39 && qD() != 4) {
                                 aOH += "No Internet connection";
