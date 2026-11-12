@@ -1,0 +1,52 @@
+{
+  "java_files": 5365,
+  "missing_methods": [
+    {
+      "file": "app/src/main/java/com/google/android/gms/common/api/a/cu.java",
+      "line": 64,
+      "method": "com.google.android.gms.common.api.a.cu.e(com.google.android.gms.common.api.a.m):void"
+    },
+    {
+      "file": "app/src/main/java/com/google/android/gms/common/api/a/l.java",
+      "line": 192,
+      "method": "com.google.android.gms.common.api.a.l.handleMessage(android.os.Message):boolean"
+    },
+    {
+      "file": "app/src/main/java/com/google/android/gms/internal/ads/zzakk.java",
+      "line": 483,
+      "method": "com.google.android.gms.internal.ads.zzakk.zzar(android.content.Context):android.graphics.Bitmap"
+    },
+    {
+      "file": "app/src/main/java/com/google/android/gms/internal/ads/zzbas.java",
+      "line": 112,
+      "method": "com.google.android.gms.internal.ads.zzbas.zzacc():int"
+    },
+    {
+      "file": "app/src/main/java/com/google/android/gms/internal/ads/zzbas.java",
+      "line": 247,
+      "method": "com.google.android.gms.internal.ads.zzbas.zzacd():long"
+    },
+    {
+      "file": "app/src/main/java/com/google/android/gms/internal/ads/zzgk.java",
+      "line": 223,
+      "method": "com.google.android.gms.internal.ads.zzgk.run():void"
+    },
+    {
+      "file": "app/src/main/java/com/google/android/gms/internal/ads/zzoy.java",
+      "line": 143,
+      "method": "com.google.android.gms.internal.ads.zzoy.zza(android.view.View$OnClickListener, boolean):android.view.View"
+    },
+    {
+      "file": "app/src/main/java/com/google/android/gms/internal/measurement/zzfo.java",
+      "line": 51,
+      "method": "com.google.android.gms.internal.measurement.zzfo.run():void"
+    },
+    {
+      "file": "app/src/main/java/com/moat/analytics/mobile/glft/o.java",
+      "line": 109,
+      "method": "com.moat.analytics.mobile.glft.o.jb(java.lang.String):com.moat.analytics.mobile.glft.a.b.a"
+    }
+  ],
+  "unresolved_type_declarations": [],
+  "note": "Marker counts are a lower bound, not a successful compile or behavior test."
+}

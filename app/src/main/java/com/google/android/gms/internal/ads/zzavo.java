@@ -100,7 +100,7 @@ public final class zzavo extends zzbbo<zzavo, zza> implements zzbcw {
                     zzbdf<zzavo> zzbdfVar2 = zzakh;
                     obj3 = zzbdfVar2;
                     if (zzbdfVar2 == null) {
-                        ?? zzbVar = new zzbbo.zzb(zzdik);
+                        zzbbo.zzb zzbVar = new zzbbo.zzb(zzdik);
                         zzakh = zzbVar;
                         obj3 = zzbVar;
                     }

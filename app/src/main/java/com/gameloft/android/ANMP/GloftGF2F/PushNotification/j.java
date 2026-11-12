@@ -32,19 +32,8 @@ public class j {
         return au.Pp() + "/pn_images";
     }
 
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r3v10 */
-    /* JADX WARN: Type inference failed for: r3v13 */
-    /* JADX WARN: Type inference failed for: r3v14 */
-    /* JADX WARN: Type inference failed for: r3v15 */
-    /* JADX WARN: Type inference failed for: r3v4, types: [java.lang.String] */
-    /* JADX WARN: Type inference failed for: r3v5 */
-    /* JADX WARN: Type inference failed for: r3v7, types: [java.io.FileOutputStream] */
-    /* JADX WARN: Type inference failed for: r3v8 */
-    /* JADX WARN: Type inference failed for: r7v0, types: [android.graphics.Bitmap] */
-    public static String a(Context context, Bitmap bitmap, String str) throws Throwable {
-        FileOutputStream fileOutputStream;
-        boolean z;
+    // Recovered from the original APK classes.dex, method a(Context, Bitmap, String).
+    public static String a(Context context, Bitmap bitmap, String str) {
         String strL = L(context);
         File file = new File(strL);
         if (!file.exists()) {
@@ -55,54 +44,25 @@ public class j {
         if (!file2.exists()) {
             file2.mkdir();
         }
-        ?? r3 = ".jpg";
+        File image = new File(str2 + "/" + MessengerShareContentUtility.MEDIA_IMAGE + ".jpg");
+        FileOutputStream fileOutputStream = null;
+        boolean z = false;
         try {
+            fileOutputStream = new FileOutputStream(image);
+            // The original bytecode ignores compress()'s boolean return value.
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+            z = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             try {
-                fileOutputStream = new FileOutputStream(new File(str2 + "/" + MessengerShareContentUtility.MEDIA_IMAGE + ".jpg"));
-                try {
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-                    z = true;
-                    try {
-                        fileOutputStream.close();
-                        r3 = fileOutputStream;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        r3 = e;
-                    }
-                } catch (Exception e2) {
-                    e = e2;
-                    e.printStackTrace();
-                    try {
-                        fileOutputStream.close();
-                        z = false;
-                        r3 = fileOutputStream;
-                    } catch (IOException e3) {
-                        e3.printStackTrace();
-                        z = false;
-                    }
-                }
-            } catch (Exception e4) {
-                e = e4;
-                fileOutputStream = null;
-            } catch (Throwable th) {
-                th = th;
-                r3 = 0;
-                try {
-                    r3.close();
-                } catch (IOException e5) {
-                    e5.printStackTrace();
-                }
-                throw th;
+                // Preserve the original unconditional close, including its null-stream behavior.
+                fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            if (z) {
-                return str2;
-            }
-            return null;
-        } catch (Throwable th2) {
-            th = th2;
-            r3.close();
-            throw th;
         }
+        return z ? str2 : null;
     }
 
     public static Bitmap l(Context context, String str) {

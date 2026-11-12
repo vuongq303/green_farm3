@@ -1,3 +1,12 @@
+/*
+ * setFileContent restored from Unity Technologies unity-ads-android 3.0.1:
+ * https://github.com/Unity-Technologies/unity-ads-android/blob/3.0.1/lib/src/main/java/com/unity3d/services/core/api/Cache.java
+ * Upstream code is licensed under the Apache License, Version 2.0.
+ * You may obtain a copy at https://www.apache.org/licenses/LICENSE-2.0
+ * Distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND.
+ * See the License for the specific language governing permissions and limitations.
+ * Modified: recovered the original method to replace malformed JADX output.
+ */
 package com.unity3d.services.core.api;
 
 import android.media.MediaMetadataRetriever;
@@ -94,118 +103,61 @@ public class Cache {
         }
     }
 
-    /* JADX WARN: Code duplicated, block: B:56:0x00bb A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /* JADX WARN: Code duplicated, block: B:74:? A[SYNTHETIC] */
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r0v11 */
-    /* JADX WARN: Type inference failed for: r0v12 */
-    /* JADX WARN: Type inference failed for: r0v13, types: [java.io.FileOutputStream] */
-    /* JADX WARN: Type inference failed for: r0v15 */
-    /* JADX WARN: Type inference failed for: r0v16 */
-    /* JADX WARN: Type inference failed for: r0v18 */
-    /* JADX WARN: Type inference failed for: r0v19 */
-    /* JADX WARN: Type inference failed for: r0v21, types: [java.io.FileOutputStream] */
-    /* JADX WARN: Type inference failed for: r0v23 */
-    /* JADX WARN: Type inference failed for: r0v24 */
-    /* JADX WARN: Type inference failed for: r0v6 */
-    /* JADX WARN: Type inference failed for: r0v8 */
-    /* JADX WARN: Type inference failed for: r0v9, types: [java.io.FileOutputStream] */
-    /* JADX WARN: Type inference failed for: r11v0, types: [com.unity3d.services.core.webview.bridge.WebViewCallback] */
-    /* JADX WARN: Type inference failed for: r3v1 */
-    /* JADX WARN: Type inference failed for: r3v2, types: [java.io.FileOutputStream] */
-    /* JADX WARN: Type inference failed for: r3v3 */
+    // Restored from Unity Ads 3.0.1, tag commit 0885aed0c58fdec731065e189a8c31c98893131d.
     @WebViewExposed
-    public static void setFileContent(String str, String str2, String str3, WebViewCallback webViewCallback) throws Throwable {
-        byte[] bArrDecode;
-        Throwable th;
-        ?? r3;
-        ?? fileOutputStream;
-        String strFileIdToFilename = fileIdToFilename(str);
+    public static void setFileContent(String fileId, String encoding, String content, WebViewCallback callback) {
+        String targetFileName = fileIdToFilename(fileId);
+        FileOutputStream fileOutput = null;
+        byte[] fileContents;
+        boolean success = false;
+
         try {
-            byte[] bytes = str3.getBytes(AndroidWebView.UTF_8);
-            if (str2 == null || str2.length() <= 0) {
-                bArrDecode = bytes;
-            } else if (str2.equals("Base64")) {
-                bArrDecode = Base64.decode(str3, 2);
-            } else {
-                if (!str2.equals(AndroidWebView.UTF_8)) {
-                    webViewCallback.error(CacheError.UNSUPPORTED_ENCODING, str, strFileIdToFilename, str2);
-                    return;
-                }
-                bArrDecode = bytes;
+            fileContents = content.getBytes("UTF-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            callback.error(CacheError.UNSUPPORTED_ENCODING, fileId, targetFileName, encoding);
+            return;
+        }
+
+        if (encoding != null && encoding.length() > 0) {
+            if (encoding.equals("Base64")) {
+                fileContents = Base64.decode(content, Base64.NO_WRAP);
             }
+            else if (encoding.equals("UTF-8")) {
+                // UTF-8 handled by default
+            }
+            else {
+                callback.error(CacheError.UNSUPPORTED_ENCODING, fileId, targetFileName, encoding);
+                return;
+            }
+        }
+
+        try {
+            fileOutput = new FileOutputStream(targetFileName);
+            fileOutput.write(fileContents);
+            fileOutput.flush();
+            success = true;
+        }
+        catch (FileNotFoundException e) {
+            callback.error(CacheError.FILE_NOT_FOUND, fileId, targetFileName, encoding);
+        }
+        catch (IOException e) {
+            callback.error(CacheError.FILE_IO_ERROR, fileId, targetFileName, encoding);
+        }
+        finally {
             try {
-                fileOutputStream = new FileOutputStream(strFileIdToFilename);
-                try {
-                    try {
-                        fileOutputStream.write(bArrDecode);
-                        fileOutputStream.flush();
-                        if (fileOutputStream != 0) {
-                            try {
-                                fileOutputStream.close();
-                            } catch (Exception e) {
-                                DeviceLog.exception("Error closing FileOutputStream", e);
-                                fileOutputStream = 1;
-                            }
-                        }
-                        fileOutputStream = 1;
-                    } catch (FileNotFoundException e2) {
-                        webViewCallback.error(CacheError.FILE_NOT_FOUND, str, strFileIdToFilename, str2);
-                        if (fileOutputStream != 0) {
-                            try {
-                                fileOutputStream.close();
-                            } catch (Exception e3) {
-                                DeviceLog.exception("Error closing FileOutputStream", e3);
-                                fileOutputStream = 0;
-                            }
-                        }
-                        fileOutputStream = 0;
-                    } catch (IOException e4) {
-                        webViewCallback.error(CacheError.FILE_IO_ERROR, str, strFileIdToFilename, str2);
-                        if (fileOutputStream != 0) {
-                            try {
-                                fileOutputStream.close();
-                            } catch (Exception e5) {
-                                DeviceLog.exception("Error closing FileOutputStream", e5);
-                                fileOutputStream = 0;
-                            }
-                        }
-                        fileOutputStream = 0;
-                    }
-                    if (fileOutputStream != 0) {
-                        webViewCallback.invoke(new Object[0]);
-                    }
-                } catch (Throwable th2) {
-                    th = th2;
-                    r3 = fileOutputStream;
-                    if (r3 != 0) {
-                        throw th;
-                    }
-                    try {
-                        r3.close();
-                        throw th;
-                    } catch (Exception e6) {
-                        DeviceLog.exception("Error closing FileOutputStream", e6);
-                        throw th;
-                    }
-                }
-            } catch (FileNotFoundException e7) {
-                fileOutputStream = 0;
-            } catch (IOException e8) {
-                fileOutputStream = 0;
-            } catch (Throwable th3) {
-                th = th3;
-                r3 = 0;
-                if (r3 != 0) {
-                    throw th;
-                }
-                r3.close();
-                throw th;
+                if (fileOutput != null)
+                    fileOutput.close();
             }
-        } catch (UnsupportedEncodingException e9) {
-            webViewCallback.error(CacheError.UNSUPPORTED_ENCODING, str, strFileIdToFilename, str2);
+            catch (Exception e) {
+                DeviceLog.exception("Error closing FileOutputStream", e);
+            }
+        }
+        if (success) {
+            callback.invoke();
         }
     }
+
 
     @WebViewExposed
     public static void getFiles(WebViewCallback webViewCallback) {

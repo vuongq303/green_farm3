@@ -50,7 +50,7 @@ public class n {
         }
     }
 
-    static ItemFeed[] aC(String str) {
+    static q[] aC(String str) {
         int iIndexOf = 0;
         q[] qVarArr = new q[50];
         int[] iArr = new int[2];
@@ -98,7 +98,7 @@ public class n {
         return qVarArr2;
     }
 
-    static ItemFeed aD(String str) {
+    static q aD(String str) {
         int[] iArr = new int[2];
         q qVar = new q(null);
         qVar.type = a(str, "type=\"", "\">", iArr);
@@ -177,7 +177,7 @@ public class n {
     }
 
     public static long g(int i, String str) {
-        ItemFeed itemFeedH = h(i, str);
+        q itemFeedH = h(i, str);
         if (itemFeedH.type.equals("")) {
             return 0L;
         }
@@ -188,7 +188,7 @@ public class n {
         return 0;
     }
 
-    public static ItemFeed h(int i, String str) {
+    public static q h(int i, String str) {
         if (LD == null) {
             iF();
         }
@@ -440,4 +440,6 @@ public class n {
         }
         return i;
     }
+    // Original DEX synthetic accessor, inlined away by JADX.
+    static long p(long value) { LE = value; return value; }
 }

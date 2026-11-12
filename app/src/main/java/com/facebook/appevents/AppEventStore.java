@@ -1,12 +1,32 @@
+/**
+ * Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
+ *
+ * You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
+ * copy, modify, and distribute this software in source code or binary form for use
+ * in connection with the web services and APIs provided by Facebook.
+ *
+ * As with any software that integrates with the Facebook platform, your use of
+ * this software is subject to the Facebook Developer Principles and Policies
+ * [http://developers.facebook.com/policy/]. This copyright notice shall be
+ * included in all copies or substantial portions of the software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package com.facebook.appevents;
 
 import android.content.Context;
+import android.util.Log;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.internal.AppEventUtility;
 import com.facebook.internal.Utility;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,126 +62,73 @@ class AppEventStore {
         saveEventsToDisk(andClearStore);
     }
 
-    /* JADX WARN: Code duplicated, block: B:10:0x0031 A[Catch: all -> 0x0085, TRY_ENTER, TRY_LEAVE, TryCatch #4 {, blocks: (B:4:0x0004, B:7:0x0022, B:8:0x0025, B:10:0x0031, B:14:0x0039, B:32:0x0077, B:33:0x007a, B:34:0x0084, B:39:0x0089, B:26:0x005f, B:27:0x0062, B:30:0x006f, B:17:0x0041, B:18:0x0044, B:21:0x0051), top: B:51:0x0004, inners: #0, #1, #6, #7 }] */
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r2v0 */
-    /* JADX WARN: Type inference failed for: r2v1 */
-    /* JADX WARN: Type inference failed for: r2v2, types: [java.io.Closeable] */
+    // Restored cleanup flow from Facebook SDK tag sdk-version-5.5.1.
+    // Only call from singleThreadExecutor
     public static synchronized PersistedEvents readAndClearStore() {
-        MovedClassObjectInputStream movedClassObjectInputStream;
-        MovedClassObjectInputStream movedClassObjectInputStream2;
-        PersistedEvents persistedEvents;
-        Object obj;
-        ?? r2 = 0;
-        synchronized (AppEventStore.class) {
+        AppEventUtility.assertIsNotMainThread();
+
+        MovedClassObjectInputStream ois = null;
+        PersistedEvents persistedEvents = null;
+        Context context = FacebookSdk.getApplicationContext();
+        try {
+            InputStream is = context.openFileInput(PERSISTED_EVENTS_FILENAME);
+            ois = new MovedClassObjectInputStream(new BufferedInputStream(is));
+
+            persistedEvents = (PersistedEvents) ois.readObject();
+        } catch (FileNotFoundException e) {
+            // Expected if we never persisted any events.
+        } catch (Exception e) {
+            Log.w(TAG, "Got unexpected exception while reading events: ", e);
+        } finally {
+            Utility.closeQuietly(ois);
+
+
             try {
-                AppEventUtility.assertIsNotMainThread();
-                Context applicationContext = FacebookSdk.getApplicationContext();
-                try {
-                    movedClassObjectInputStream = new MovedClassObjectInputStream(new BufferedInputStream(applicationContext.openFileInput(PERSISTED_EVENTS_FILENAME)));
-                    try {
-                        persistedEvents = (PersistedEvents) movedClassObjectInputStream.readObject();
-                        Utility.closeQuietly(movedClassObjectInputStream);
-                        try {
-                            File fileStreamPath = applicationContext.getFileStreamPath(PERSISTED_EVENTS_FILENAME);
-                            fileStreamPath.delete();
-                            obj = fileStreamPath;
-                        } catch (Exception e) {
-                            String str = TAG;
-                            obj = "Got unexpected exception when removing events file: ";
-                        }
-                    } catch (FileNotFoundException e2) {
-                        movedClassObjectInputStream2 = movedClassObjectInputStream;
-                        Utility.closeQuietly(movedClassObjectInputStream2);
-                        try {
-                            applicationContext.getFileStreamPath(PERSISTED_EVENTS_FILENAME).delete();
-                            persistedEvents = null;
-                        } catch (Exception e3) {
-                            String str2 = TAG;
-                            persistedEvents = null;
-                        }
-                        if (persistedEvents == null) {
-                            persistedEvents = new PersistedEvents();
-                        }
-                        return persistedEvents;
-                    } catch (Exception e4) {
-                        String str3 = TAG;
-                        Utility.closeQuietly(movedClassObjectInputStream);
-                        try {
-                            applicationContext.getFileStreamPath(PERSISTED_EVENTS_FILENAME).delete();
-                            persistedEvents = null;
-                            obj = movedClassObjectInputStream;
-                        } catch (Exception e5) {
-                            String str4 = TAG;
-                            persistedEvents = null;
-                            obj = movedClassObjectInputStream;
-                        }
-                    }
-                } catch (FileNotFoundException e6) {
-                    movedClassObjectInputStream2 = null;
-                } catch (Exception e7) {
-                    movedClassObjectInputStream = null;
-                } catch (Throwable th) {
-                    th = th;
-                    Utility.closeQuietly(r2);
-                    try {
-                        applicationContext.getFileStreamPath(PERSISTED_EVENTS_FILENAME).delete();
-                    } catch (Exception e8) {
-                        String str5 = TAG;
-                    }
-                    throw th;
-                }
-                if (persistedEvents == null) {
-                    persistedEvents = new PersistedEvents();
-                }
-            } catch (Throwable th2) {
-                th = th2;
-                r2 = obj;
+                // Note: We delete the store before we store the events; this means we'd
+                // prefer to lose some events in the case of exception rather than
+                // potentially log them twice.
+                // Always delete this file after the above try catch to recover from read
+                // errors.
+                context.getFileStreamPath(PERSISTED_EVENTS_FILENAME).delete();
+            } catch (Exception ex) {
+                Log.w(TAG, "Got unexpected exception when removing events file: ", ex);
             }
         }
+
+        if (persistedEvents == null) {
+            persistedEvents = new PersistedEvents();
+        }
+
         return persistedEvents;
     }
 
-    private static void saveEventsToDisk(PersistedEvents persistedEvents) throws Throwable {
-        Throwable th;
-        ObjectOutputStream objectOutputStream;
-        ObjectOutputStream objectOutputStream2;
-        Context applicationContext = FacebookSdk.getApplicationContext();
+    // Only call from singleThreadExecutor
+    private static void saveEventsToDisk(
+            PersistedEvents eventsToPersist) {
+        ObjectOutputStream oos = null;
+        Context context = FacebookSdk.getApplicationContext();
         try {
-            objectOutputStream2 = new ObjectOutputStream(new BufferedOutputStream(applicationContext.openFileOutput(PERSISTED_EVENTS_FILENAME, 0)));
+            oos = new ObjectOutputStream(
+                    new BufferedOutputStream(
+                            context.openFileOutput(PERSISTED_EVENTS_FILENAME, 0)));
+            oos.writeObject(eventsToPersist);
+        } catch (Exception e) {
+            Log.w(TAG, "Got unexpected exception while persisting events: ", e);
             try {
-                try {
-                    objectOutputStream2.writeObject(persistedEvents);
-                    Utility.closeQuietly(objectOutputStream2);
-                } catch (Throwable th2) {
-                    th = th2;
-                    objectOutputStream = objectOutputStream2;
-                    Utility.closeQuietly(objectOutputStream);
-                    throw th;
-                }
-            } catch (Exception e) {
-                String str = TAG;
-                try {
-                    applicationContext.getFileStreamPath(PERSISTED_EVENTS_FILENAME).delete();
-                } catch (Exception e2) {
-                }
-                Utility.closeQuietly(objectOutputStream2);
+                context.getFileStreamPath(PERSISTED_EVENTS_FILENAME).delete();
+            } catch (Exception innerException) {
+                // ignore
             }
-        } catch (Exception e3) {
-            objectOutputStream2 = null;
-        } catch (Throwable th3) {
-            th = th3;
-            objectOutputStream = null;
-            Utility.closeQuietly(objectOutputStream);
-            throw th;
+        } finally {
+            Utility.closeQuietly(oos);
         }
     }
 
-    class MovedClassObjectInputStream extends ObjectInputStream {
+    private static class MovedClassObjectInputStream extends ObjectInputStream {
         private static final String ACCESS_TOKEN_APP_ID_PAIR_SERIALIZATION_PROXY_V1_CLASS_NAME = "com.facebook.appevents.AppEventsLogger$AccessTokenAppIdPair$SerializationProxyV1";
         private static final String APP_EVENT_SERIALIZATION_PROXY_V1_CLASS_NAME = "com.facebook.appevents.AppEventsLogger$AppEvent$SerializationProxyV1";
 
-        public MovedClassObjectInputStream(InputStream inputStream) {
+        public MovedClassObjectInputStream(InputStream inputStream) throws IOException {
             super(inputStream);
         }
 

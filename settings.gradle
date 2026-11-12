@@ -1,3 +1,4 @@
 rootProject.name = 'Green Farm 3'
 
 include 'app'
+include 'core-source'

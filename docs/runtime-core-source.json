@@ -1,0 +1,156 @@
+{
+  "date": "2026-11-12",
+  "mode": "java-core-with-original-dex-sdk-dependencies",
+  "apk_relative": "core-source/build/outputs/apk/recovered/debug/app-core-source-debug.apk",
+  "apk_sha256": "67c6f29a7d32548e40b60b8bd55abaff179c7b4f127a41a86af3bac808d23c03",
+  "original_apk_sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b",
+  "emulator": {
+    "android_api": 28,
+    "abi": "x86",
+    "size": [
+      800,
+      480
+    ],
+    "hardware_acceleration": false,
+    "audio_enabled": false
+  },
+  "startup": {
+    "apk": "/workspace/green_farm3/core-source/build/outputs/apk/recovered/debug/app-core-source-debug.apk",
+    "sha256": "67c6f29a7d32548e40b60b8bd55abaff179c7b4f127a41a86af3bac808d23c03",
+    "start_elapsed_seconds": 5.588518359007139,
+    "pid": "6290",
+    "observed_seconds": 26.55419983900356
+  },
+  "post_start_monitor": {
+    "monitor_seconds": 157.93,
+    "checks": [
+      {
+        "elapsed_monitor_seconds": 0.53,
+        "pid": "6290",
+        "exit_code": 0
+      },
+      {
+        "elapsed_monitor_seconds": 31.03,
+        "pid": "6290",
+        "exit_code": 0
+      },
+      {
+        "elapsed_monitor_seconds": 61.27,
+        "pid": "6290",
+        "exit_code": 0
+      },
+      {
+        "elapsed_monitor_seconds": 94.43,
+        "pid": "6290",
+        "exit_code": 0
+      },
+      {
+        "elapsed_monitor_seconds": 124.81,
+        "pid": "6290",
+        "exit_code": 0
+      },
+      {
+        "elapsed_monitor_seconds": 155.15,
+        "pid": "6290",
+        "exit_code": 0
+      }
+    ],
+    "fatal_exception_in_log": false,
+    "account_banned_text_in_log": false
+  },
+  "layout_vs_original": {
+    "header": {
+      "bounds": [
+        58,
+        42,
+        748,
+        104
+      ],
+      "exact_pixels": true
+    },
+    "body": {
+      "bounds": [
+        58,
+        122,
+        748,
+        307
+      ],
+      "exact_pixels": true
+    },
+    "links": {
+      "bounds": [
+        58,
+        330,
+        748,
+        421
+      ],
+      "exact_pixels": true
+    }
+  },
+  "layout_compared_pixels": 233220,
+  "touch": {
+    "age_input": 30,
+    "age_verified_by_read_only_jdi": 30,
+    "male_checkbox": "visually_checked",
+    "accept": "remains_at_age_gate"
+  },
+  "state_after_accept": {
+    "top_state": 60,
+    "stack_index": 0,
+    "loader_complete": true
+  },
+  "tests": {
+    "recovery_unittests_passed": 68,
+    "resource_unittests_passed": 13,
+    "skipped": 0,
+    "bf_positive_and_mutation_verification": {
+      "focused_unittests_passed": 1,
+      "differential_scenarios": 4920,
+      "required_successful_glyph_scenarios_per_implementation": 1920,
+      "killed_mutants": [
+        "XA polarity",
+        "XE polarity",
+        "XF polarity",
+        "escaped char2 range omission"
+      ],
+      "log": "bf-tests-validation.log"
+    }
+  },
+  "payload": {
+    "unchanged_original_assets": 49,
+    "unchanged_original_native_libraries": 10,
+    "unchanged_tracked_assets_native_resources": 392,
+    "sdk_runtime": "6250 original class definitions retained; canonical DEX verification passed"
+  },
+  "blockers": [
+    {
+      "component": "Janus/privacy configuration",
+      "evidence": "UnknownHostException eve.gameloft.com in guest; previously proxy CONNECT403 from host",
+      "environment_rule": "saved in draft revision2; active runtime revision1 unchanged",
+      "does_not_establish": "whether remote Gameloft service is operational"
+    }
+  ],
+  "not_verified": [
+    "passing privacy gate",
+    "entering farm",
+    "farm interactions",
+    "gameplay save/load",
+    "audio",
+    "performance on hardware",
+    "compatibility with newer Android",
+    "all raw Java SDK sources",
+    "all decompiled gameplay branches"
+  ],
+  "build_revision_metadata": {
+    "property": "REVISION-2408",
+    "original_dex_bytes": 7655124,
+    "rebuilt_dex_bytes": 7880852,
+    "original_revision": 7792744,
+    "rebuilt_revision": 8021544,
+    "size_xor": 140988,
+    "original_metadata_sha256": "58defca307864d420d0f7a32029407a7f56aebe7d1dce26bbe9c93602a082d9e",
+    "generated_metadata_sha256": "92244c2ddbf9a95453b6f286fd69eeef927f92460016442c610d93d3ec28e3c6",
+    "other_definition_bytes_preserved": true,
+    "original_guard_accepts_generated_revision": true
+  }
+}

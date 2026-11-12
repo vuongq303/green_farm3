@@ -4,7 +4,6 @@ import com.facebook.appevents.UserDataStore;
 import com.facebook.appevents.codeless.internal.Constants;
 import com.facebook.internal.ServerProtocol;
 import com.facebook.share.internal.ShareConstants;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import java.io.IOException;
 
 /* JADX INFO: compiled from: UserProfile.java */
@@ -165,7 +164,7 @@ public class bz {
         bcVarArr[0].a("valid_stores", bcVarArr2);
         bcVarArr[0].a("download_code", "12312313");
         bcVar.a("devices", bcVarArr);
-        bcVar.t(FirebaseAnalytics.Param.LEVEL, 3);
+        bcVar.t("level", 3);
         bcVar.t("xp", Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
         bcVar.t("total_playtime", 144);
         bcVar.a(UserDataStore.COUNTRY, "ca");
@@ -436,10 +435,27 @@ public class bz {
 
     private int b(String str, bc bcVar) {
         try {
-            bcVar.ca(new String(GLLib.b(GLLib.bJ(str), this.akU, true)));
+            bcVar.ca(new String(GLLib.b(decodeBase64(str), this.akU, true)));
             return 0;
         } catch (IOException e) {
             return -24;
         }
     }
+    // Original bJ call is protected by an IOException handler in DEX.
+    private static byte[] decodeBase64(String value) throws IOException {
+        return GLLib.bJ(value);
+    }
+
+    // Original DEX synthetic accessors, inlined away by JADX.
+    static int a(bz owner) { return owner.oo(); }
+    static int a(bz owner, bc profile, String value) { return owner.c(profile, value); }
+    static boolean access$002(boolean value) { adu = value; return value; }
+    static int access$302(int value) { adh = value; return value; }
+    static boolean aq(boolean value) { adw = value; return value; }
+    static int b(bz owner) { return owner.oq(); }
+    static int b(bz owner, bc profile, String value) { return owner.e(profile, value); }
+    static int b(bz owner, String value) { return owner.cF(value); }
+    static int c(bz owner) { return owner.or(); }
+    static int c(bz owner, bc profile, String value) { return owner.g(profile, value); }
+    static int os() { return adv; }
 }

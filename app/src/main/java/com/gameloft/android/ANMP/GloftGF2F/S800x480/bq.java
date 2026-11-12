@@ -107,7 +107,7 @@ public class bq {
             }
             GLLib.be("Begin saving game.");
             try {
-                ajS = javax.microedition.b.b.t(str, true);
+                ajS = openRecordStore(str, true);
             } catch (javax.microedition.b.c e) {
                 GLLib.d(e);
             }
@@ -143,7 +143,7 @@ public class bq {
             if (iA == 0) {
                 GLLib.be("Error while compressing buffer. Aborting Save\n");
                 try {
-                    ajS.akW();
+                    closeRecordStore(ajS);
                 } catch (javax.microedition.b.c e2) {
                     GLLib.d(e2);
                 }
@@ -188,11 +188,11 @@ public class bq {
                     } else {
                         ajR.a(new bp(GLLib.g(new int[]{ajY})));
                         try {
-                            ajS.n(ajR.hT().data, 0, ajR.hT().data.length);
+                            addRecord(ajS, ajR.hT().data, 0, ajR.hT().data.length);
                             ajR.as(str);
                             ajR.at(s.jr());
                             try {
-                                ajS.akW();
+                                closeRecordStore(ajS);
                             } catch (javax.microedition.b.c e) {
                                 GLLib.d(e);
                             }
@@ -481,16 +481,16 @@ public class bq {
                     String string = ajV.cd("GLUID").toString();
                     byte[] bArrBJ = GLLib.bJ(strSubstring2);
                     if (cA("tempSaveFile")) {
-                        javax.microedition.b.b.ji("tempSaveFile");
+                        deleteRecordStore("tempSaveFile");
                     }
-                    ajS = javax.microedition.b.b.t("tempSaveFile", true);
+                    ajS = openRecordStore("tempSaveFile", true);
                     if (ajS == null) {
                         adh = -16;
                         GLLib.be("can't use tempSaveFile");
                         return;
                     }
-                    ajS.n(bArrBJ, 0, bArrBJ.length);
-                    ajS.akW();
+                    addRecord(ajS, bArrBJ, 0, bArrBJ.length);
+                    closeRecordStore(ajS);
                     adh = cv("tempSaveFile");
                     if (adh != 0) {
                         GLLib.be("can't load tempSaveFile");
@@ -518,7 +518,7 @@ public class bq {
                     if (adh == 0) {
                         adh = nL();
                         try {
-                            javax.microedition.b.b.ji("tempSaveFile");
+                            deleteRecordStore("tempSaveFile");
                         } catch (javax.microedition.b.c e) {
                             e.printStackTrace();
                             adh = -1;
@@ -541,7 +541,7 @@ public class bq {
         if (w.ZT) {
             GLLib.be("Begin loading game");
             try {
-                ajT = javax.microedition.b.b.t(str, false);
+                ajT = openRecordStore(str, false);
             } catch (javax.microedition.b.c e) {
                 GLLib.d(e);
             }
@@ -586,7 +586,7 @@ public class bq {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(GLLib.b(bArr, str, true));
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
-            ak.b(byteArrayInputStream, byteArrayOutputStream);
+            decompressSave(byteArrayInputStream, byteArrayOutputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -611,7 +611,7 @@ public class bq {
     public static int nL() {
         if (w.ZT) {
             try {
-                ajT.akW();
+                closeRecordStore(ajT);
             } catch (Exception e) {
                 GLLib.d(e);
             }
@@ -699,16 +699,16 @@ public class bq {
             try {
                 byte[] bArrBJ = GLLib.bJ(adc);
                 if (cA("tempSaveFile")) {
-                    javax.microedition.b.b.ji("tempSaveFile");
+                    deleteRecordStore("tempSaveFile");
                 }
-                ajS = javax.microedition.b.b.t("tempSaveFile", true);
+                ajS = openRecordStore("tempSaveFile", true);
                 if (ajS == null) {
                     adh = -16;
                     GLLib.be("can't use tempSaveFile");
                     return;
                 }
-                ajS.n(bArrBJ, 0, bArrBJ.length);
-                ajS.akW();
+                addRecord(ajS, bArrBJ, 0, bArrBJ.length);
+                closeRecordStore(ajS);
                 adh = cv("tempSaveFile");
                 if (adh != 0) {
                     GLLib.be("can't load tempSaveFile");
@@ -736,7 +736,7 @@ public class bq {
                 if (adh == 0) {
                     adh = nL();
                     try {
-                        javax.microedition.b.b.ji("tempSaveFile");
+                        deleteRecordStore("tempSaveFile");
                     } catch (javax.microedition.b.c e) {
                         GLLib.d(e);
                         adh = -1;
@@ -781,14 +781,14 @@ public class bq {
         try {
             byte[] bArrBJ = GLLib.bJ(adc);
             if (cA("tempSaveFile")) {
-                javax.microedition.b.b.ji("tempSaveFile");
+                deleteRecordStore("tempSaveFile");
             }
-            ajS = javax.microedition.b.b.t("tempSaveFile", true);
+            ajS = openRecordStore("tempSaveFile", true);
             if (ajS == null) {
                 return -16;
             }
-            ajS.n(bArrBJ, 0, bArrBJ.length);
-            ajS.akW();
+            addRecord(ajS, bArrBJ, 0, bArrBJ.length);
+            closeRecordStore(ajS);
             adh = cv("tempSaveFile");
             if (adh != 0) {
                 return adh;
@@ -814,7 +814,7 @@ public class bq {
             }
             adh = nL();
             try {
-                javax.microedition.b.b.ji("tempSaveFile");
+                deleteRecordStore("tempSaveFile");
             } catch (javax.microedition.b.c e2) {
                 GLLib.d(e2);
                 adh = -1;
@@ -881,7 +881,7 @@ public class bq {
 
     public static int cy(String str) {
         try {
-            javax.microedition.b.b.ji(str);
+            deleteRecordStore(str);
         } catch (javax.microedition.b.c e) {
             GLLib.d(e);
         }
@@ -918,17 +918,17 @@ public class bq {
         try {
             z = true;
             try {
-                javax.microedition.b.b.t(str, false).akW();
+                openRecordStore(str, false).akW();
             } catch (Exception e) {
             }
         } catch (Exception e2) {
             try {
-                bVar.akW();
+                closeRecordStore(bVar);
             } catch (Exception e3) {
             }
         } catch (Throwable th) {
             try {
-                bVar.akW();
+                closeRecordStore(bVar);
             } catch (Exception e4) {
             }
             throw th;
@@ -955,4 +955,38 @@ public class bq {
     private static long cB(String str) {
         return b(str.toCharArray(), 0);
     }
+    // Pure forwarders restore Java checked-throws metadata erased from DEX.
+    // Their original callers retain exactly the original narrow catch types.
+    private static javax.microedition.b.b openRecordStore(String name, boolean create)
+            throws javax.microedition.b.c {
+        return javax.microedition.b.b.t(name, create);
+    }
+
+    private static void closeRecordStore(javax.microedition.b.b store) throws javax.microedition.b.c {
+        store.akW();
+    }
+
+    private static void deleteRecordStore(String name) throws javax.microedition.b.c {
+        javax.microedition.b.b.ji(name);
+    }
+
+    private static int addRecord(javax.microedition.b.b store, byte[] data, int offset, int length)
+            throws javax.microedition.b.c {
+        return store.n(data, offset, length);
+    }
+
+    private static ak decompressSave(java.io.InputStream input, java.io.OutputStream output)
+            throws IOException {
+        return ak.b(input, output);
+    }
+
+    // Original DEX synthetic accessors, inlined away by JADX.
+    static int nO() { return ake; }
+    static void nP() { mJ(); }
+    static void access$100() { nH(); }
+    static void access$200() { nM(); }
+    static void access$600() { nN(); }
+    static void H(String first, String second) { G(first, second); }
+    static void b(String value, e data) { a(value, data); }
+    static void cC(String value) { cu(value); }
 }

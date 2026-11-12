@@ -11,19 +11,19 @@ class ap extends Thread {
     }
 
     private void mJ() {
-        this.ady.adu = false;
-        this.ady.adw = true;
+        ao.a(this.ady, false);
+        ao.b(this.ady, true);
         GLLib.be("thread ended");
     }
 
     @Override // java.lang.Thread, java.lang.Runnable
     public void run() {
-        switch (this.ady.adv) {
+        switch (ao.a(this.ady)) {
             case 0:
-                int unused = ao.adh = ao.ms().D((String) this.adx[1], (String) this.adx[2]);
+                ao.access$302(ao.ms().D((String) this.adx[1], (String) this.adx[2]));
                 break;
             case 1:
-                int unused2 = ao.adh = this.ady.ew(((Integer) this.adx[1]).intValue());
+                ao.access$302(ao.a(this.ady, ((Integer) this.adx[1]).intValue()));
                 break;
         }
         mJ();

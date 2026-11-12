@@ -2560,7 +2560,7 @@ public final class ci extends GLLib implements av {
         if (lM(aZQ[302])) {
             return;
         }
-        j(JavaUtils.Constants.NATIVE_HEIGHT_DP_300, 0, true);
+        j(300, 0, true);
         for (int i = aVG - 1; i >= 0; i--) {
             if (aUT[i] >= 0) {
                 J(i, false);
@@ -4551,7 +4551,7 @@ public final class ci extends GLLib implements av {
         gJ(1);
         if (awH) {
             int i = awI;
-            (i < 1000 ? atf[i] : aZf[i - 1000]).a(Qj, awJ, awK, awL, 0);
+            (i < 1000 ? atf[i] : aZf[i - 1000]).a(Qj, awJ, (float) (awK), (float) (awL), 0);
         }
     }
 
@@ -5810,12 +5810,12 @@ public final class ci extends GLLib implements av {
         aU(false);
         Ea();
         if (awH) {
-            atf[awI].a(Qj, awJ, awK, awL, 0);
+            atf[awI].a(Qj, awJ, (float) (awK), (float) (awL), 0);
         }
         if (ayp && ayq) {
-            atf[17].a(Qj, 1, ayz, ayA, 0);
+            atf[17].a(Qj, 1, (float) (ayz), (float) (ayA), 0);
             if (ayC == 1) {
-                atf[ayr].a(Qj, ays, ayz, ayA, 0);
+                atf[ayr].a(Qj, ays, (float) (ayz), (float) (ayA), 0);
             }
         }
     }
@@ -7303,11 +7303,13 @@ public final class ci extends GLLib implements av {
                                     azu = i10 - 1;
                                     s3 = s6;
                                 }
+                                break;
                             } else {
                                 i9++;
                             }
                         } else {
                             s3 = 0;
+                            break;
                         }
                     }
                     String str14 = "icon_sprite_id : " + ((int) s4);
@@ -7355,11 +7357,13 @@ public final class ci extends GLLib implements av {
                                     azu = i13;
                                     s = s8;
                                 }
+                                break;
                             } else {
                                 i12++;
                             }
                         } else {
                             s = 0;
+                            break;
                         }
                     }
                     String str17 = "icon_sprite_id : " + ((int) s7);
@@ -7404,11 +7408,13 @@ public final class ci extends GLLib implements av {
                                     azw = (short) jVarBY4.KW[i15][0];
                                     s9 = s10;
                                 }
+                                break;
                             } else {
                                 i15++;
                             }
                         } else {
                             s2 = 0;
+                            break;
                         }
                     }
                     String str20 = "icon_sprite_id : " + ((int) s9);
@@ -9104,11 +9110,11 @@ public final class ci extends GLLib implements av {
         aFT = 0;
         e(7, 68, true);
         f(7, 68, true);
-        aFV = (char) c(458820, 458821, JavaUtils.Constants.NATIVE_HEIGHT_DP_300, 0, 0, 0, 500);
+        aFV = (char) c(458820, 458821, 300, 0, 0, 0, 500);
     }
 
     static void GG() {
-        aFV = (char) c(458820, 458821, 0, 0, JavaUtils.Constants.NATIVE_HEIGHT_DP_300, 0, 500);
+        aFV = (char) c(458820, 458821, 0, 0, 300, 0, 500);
     }
 
     static void GH() {
@@ -9193,7 +9199,7 @@ public final class ci extends GLLib implements av {
         int iGJ = GJ() - aGn >= 5 ? 5 : GJ() - aGn;
         for (int i = 0; i <= iGJ; i++) {
             if (aGn + i < (aFp ? aGk : aGm - aGk) && i < 5 && aGx[aGn + i]) {
-                aZf[138].a(GLLib.Qj, 11, atc[22][(27 * i) + 31][2] - 100, atc[22][(27 * i) + 31][3] - 50, 0);
+                aZf[138].a(GLLib.Qj, 11, (float) (atc[22][(27 * i) + 31][2] - 100), (float) (atc[22][(27 * i) + 31][3] - 50), 0);
             }
         }
     }
@@ -10824,7 +10830,6 @@ public final class ci extends GLLib implements av {
             } else {
                 z = false;
                 break;
-                break;
             }
         } while (z);
         HQ();
@@ -10865,7 +10870,6 @@ public final class ci extends GLLib implements av {
                 }
             } else {
                 z = false;
-                break;
                 break;
             }
         } while (z);
@@ -11422,11 +11426,11 @@ public final class ci extends GLLib implements av {
         aIg = 0;
         e(6, 33, true);
         f(6, 33, true);
-        aIi = (char) c(393249, 393250, JavaUtils.Constants.NATIVE_HEIGHT_DP_300, 0, 0, 0, 500);
+        aIi = (char) c(393249, 393250, 300, 0, 0, 0, 500);
     }
 
     static void Ho() {
-        aIi = (char) c(393249, 393250, 0, 0, JavaUtils.Constants.NATIVE_HEIGHT_DP_300, 0, 500);
+        aIi = (char) c(393249, 393250, 0, 0, 300, 0, 500);
     }
 
     static void Hp() {
@@ -12371,7 +12375,7 @@ public final class ci extends GLLib implements av {
             Ip();
             i = 114734;
         } else if (aMt == 2) {
-            String strDt4 = dt((EI() - 1) + JavaUtils.Constants.BANNER_WIDTH_DP);
+            String strDt4 = dt((EI() - 1) + 320);
             if (strDt4 == null) {
                 strDt4 = "";
             }
@@ -14000,7 +14004,6 @@ public final class ci extends GLLib implements av {
                             iDl = (int) lr();
                             try {
                                 String str4 = "Redeem...cash..." + iDl;
-                                break;
                             } catch (Exception e) {
                             }
                             hT(iDl);
@@ -14139,8 +14142,9 @@ public final class ci extends GLLib implements av {
                 aSj = true;
                 break;
             case 3:
+            case R.styleable.CardView_contentPaddingTop /* 11 */:
                 for (i = 0; i < aTl.length; i++) {
-                    if (aTl[i] != null || aTl[i].trim().equals("")) {
+                    if (aTl[i] == null || aTl[i].trim().equals("")) {
                         String[] strArr = aTl;
                         strDt = dt(12333);
                         if (strDt == null) {
@@ -14200,25 +14204,6 @@ public final class ci extends GLLib implements av {
                 break;
             case 9:
                 aSj = false;
-                break;
-            case R.styleable.CardView_contentPaddingTop /* 11 */:
-                while (i < aTl.length) {
-                    if (aTl[i] != null) {
-                        String[] strArr2 = aTl;
-                        strDt = dt(12333);
-                        if (strDt == null) {
-                            strDt = "";
-                        }
-                        strArr2[i] = strDt;
-                    } else {
-                        String[] strArr3 = aTl;
-                        strDt = dt(12333);
-                        if (strDt == null) {
-                            strDt = "";
-                        }
-                        strArr3[i] = strDt;
-                    }
-                }
                 break;
             case R.styleable.CardView_contentPaddingBottom /* 12 */:
                 break;
@@ -14398,9 +14383,11 @@ public final class ci extends GLLib implements av {
         while (true) {
             if (i2 >= aUU.length) {
                 z = false;
+                break;
             } else if (i == aUU[i2]) {
                 aTF = i2;
                 z = true;
+                break;
             } else {
                 i2++;
             }
@@ -14409,10 +14396,7 @@ public final class ci extends GLLib implements av {
             for (int i3 = 0; i3 < aUU.length; i3++) {
                 if (aUU[i3] != 300 && aUU[i3] != 301) {
                     aTF = i3;
-                    aTE = true;
-                    aTG = i;
-                    lH(aTF);
-                    j(i, aTF, true);
+                    break;
                 }
             }
             aTE = true;
@@ -14532,7 +14516,7 @@ public final class ci extends GLLib implements av {
                 if (i3 <= 1) {
                     atf[aQP[i3]].b(GLLib.Qj, aQO[i3], (int) (((s3 + 140) - 10) + (95.0f * fCos)), (int) ((s4 + 140) - (95.0f * fSin)), 0, 90);
                 } else if (aQO[i3] == 8 && aQP[i3] == 5) {
-                    atf[aQP[i3]].a(GLLib.Qj, aQO[i3], (int) (((s3 + 140) - 10) + (95.0f * fCos)), (int) ((s4 + 140) - (95.0f * fSin)), 0, 0);
+                    atf[aQP[i3]].a(GLLib.Qj, aQO[i3], (float) ((int) (((s3 + 140) - 10) + (95.0f * fCos))), (float) ((int) ((s4 + 140) - (95.0f * fSin))), 0, 0);
                 } else if (aQO[i3] == 0 && aQP[i3] == 57) {
                     atf[aQP[i3]].b(GLLib.Qj, aQO[i3], (int) (s3 + 140 + (95.0f * fCos) + 12.0f), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 0, 35);
                 } else if (aQO[i3] == 1 && aQP[i3] == 9) {
@@ -14549,7 +14533,7 @@ public final class ci extends GLLib implements av {
             } else {
                 i = i2;
             }
-            atf[41].a(GLLib.Qj, 34, s, s2, 0);
+            atf[41].a(GLLib.Qj, 34, (float) (s), (float) (s2), 0);
             i3++;
             i2 = i;
         }
@@ -14664,7 +14648,7 @@ public final class ci extends GLLib implements av {
         a(Integer.toString(100), 47, 24, 0, 0);
         a(Integer.toString(100), 47, 25, 0, 0);
         a(Integer.toString(GLURLConnection.HTTP_OK), 47, 26, 0, 0);
-        a(Integer.toString(JavaUtils.Constants.NATIVE_HEIGHT_DP_300), 47, 27, 0, 0);
+        a(Integer.toString(300), 47, 27, 0, 0);
         a(Integer.toString(400), 47, 28, 0, 0);
         a(Integer.toString(5), 47, 29, 0, 0);
         a(Integer.toString(5), 47, 30, 0, 0);
@@ -14834,15 +14818,15 @@ public final class ci extends GLLib implements av {
             }
             if (aQW == 0 || aQW == 1) {
                 if (aQW == 0) {
-                    atf[20].a(GLLib.Qj, 120, s3, s4, 0);
+                    atf[20].a(GLLib.Qj, 120, (float) (s3), (float) (s4), 0);
                 } else {
-                    atf[20].a(GLLib.Qj, 121, s3, s4, 0);
+                    atf[20].a(GLLib.Qj, 121, (float) (s3), (float) (s4), 0);
                 }
             } else if (aQO[aQW] == 8 && aQP[aQW] == 5) {
                 atc[48][4][5] = 2;
                 atc[48][4][6] = 0;
             } else {
-                atf[aQP[aQW]].a(GLLib.Qj, aQO[aQW], s, s2, 0);
+                atf[aQP[aQW]].a(GLLib.Qj, aQO[aQW], (float) (s), (float) (s2), 0);
             }
             ate[48][3] = aQQ[aQW] + "";
         }
@@ -15501,20 +15485,20 @@ public final class ci extends GLLib implements av {
         }
         if (property2 == null) {
             z2 = false;
-            break;
-        }
-        String upperCase2 = property2.toUpperCase();
-        int i2 = 0;
-        while (true) {
-            if (i2 >= aUc.length) {
-                z2 = false;
-                break;
+        } else {
+            String upperCase2 = property2.toUpperCase();
+            int i2 = 0;
+            while (true) {
+                if (i2 >= aUc.length) {
+                    z2 = false;
+                    break;
+                }
+                if (upperCase2.equals(aUc[i2])) {
+                    z2 = true;
+                    break;
+                }
+                i2++;
             }
-            if (upperCase2.equals(aUc[i2])) {
-                z2 = true;
-                break;
-            }
-            i2++;
         }
         if (z) {
             return true;
@@ -16384,12 +16368,13 @@ public final class ci extends GLLib implements av {
         try {
             iCe = bcVar.ce("rank");
             try {
-                iCe2 = bcVar.ce(FirebaseAnalytics.Param.SCORE);
+                iCe2 = bcVar.ce("score");
             } catch (Exception e) {
                 iCe2 = 0;
             }
         } catch (Exception e2) {
             iCe = 1;
+            iCe2 = 0;
         }
         try {
             bcVarArrCj = bcVar.cj("award_by_rank");
@@ -16400,7 +16385,8 @@ public final class ci extends GLLib implements av {
             dcVar = null;
         } else {
             try {
-                dcVar = new dc(ds(bcVarArrCj[0].ch("gift")), bcVarArrCj[0].ce("amount"));
+                int amount = bcVarArrCj[0].ce("amount");
+                dcVar = new dc(ds(bcVarArrCj[0].ch("gift")), amount);
             } catch (Exception e4) {
                 dcVar = null;
             }
@@ -16414,6 +16400,7 @@ public final class ci extends GLLib implements av {
             }
         } catch (Exception e6) {
             i = 0;
+            i2 = 0;
         }
         if (dcVar == null) {
             dn(str);
@@ -17138,11 +17125,6 @@ public final class ci extends GLLib implements av {
     }
 
     static boolean O(int i, int i2, int i3) {
-        short s;
-        int i4;
-        short s2;
-        short s3;
-        short s4;
         int i5 = 0;
         String str = "Inventory_AddItem category : " + i + " item : " + i2 + " quantity : " + i3;
         int iHF = hF(5);
@@ -17156,24 +17138,19 @@ public final class ci extends GLLib implements av {
         }
         Q(i, i2 - (i == 4 ? 12 : 0), i3);
         if (i == 0) {
-            s4 = aZL[i2];
+            i5 = aZL[i2];
         } else if (i == 4) {
-            s3 = aZE[i2];
+            i5 = aZE[i2];
         } else if (i == 1) {
-            s2 = aZI[i2];
+            i5 = aZI[i2];
         } else if (i == 2) {
-            i4 = j.bY(4).KW[i2][1];
+            i5 = j.bY(4).KW[i2][1];
         } else if (i == 3) {
-            s = aZG[i2];
+            i5 = aZG[i2];
         }
         if (i5 != 0 && i3 > 0) {
             aa(i5, i3, 34);
         }
-        i5 = s;
-        i5 = i4;
-        i5 = s2;
-        i5 = s3;
-        i5 = s4;
         aIm = iHF + i3;
         baa = true;
         return true;
@@ -17278,9 +17255,9 @@ public final class ci extends GLLib implements av {
             case 4:
                 switch (ch.fA(i2)) {
                     case 49:
-                        int i6 = j.bY(2).KW[i2 - 3000][2];
+                        int i6 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(2).KW[i2 - 3000][2];
                     case 20:
-                        i4 = j.bY(4).KW[i2 - 7000][2];
+                        i4 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(4).KW[i2 - 7000][2];
                         break;
                     case 50:
                         if (i2 > 10000) {
@@ -17288,13 +17265,13 @@ public final class ci extends GLLib implements av {
                         } else if (i2 > 1000 && (i5 = (i2 - 1000) + 8) >= 18) {
                             i5 += 2;
                         }
-                        i4 = j.bY(3).KW[i5][2];
+                        i4 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(3).KW[i5][2];
                         break;
                     case 54:
-                        i4 = j.bY(0).KW[i2 - 2000][2];
+                        i4 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(0).KW[i2 - 2000][2];
                         break;
                     case 55:
-                        i4 = j.bY(1).KW[i2 - 4000][2];
+                        i4 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(1).KW[i2 - 4000][2];
                         break;
                     default:
                         i4 = -1;
@@ -17719,20 +17696,20 @@ public final class ci extends GLLib implements av {
         int i10 = jVarBY.KW[i9][18];
         if (!z) {
             i8 = i9;
-            break;
-        }
-        int i11 = jVarBY.KW[i9][13];
-        i8 = 0;
-        while (true) {
-            if (i8 >= 104) {
-                i8 = i9;
-                break;
-            } else {
-                if (aZO[i8] == i11) {
-                    i10 = jVarBY.KW[i8][18];
+        } else {
+            int i11 = jVarBY.KW[i9][13];
+            i8 = 0;
+            while (true) {
+                if (i8 >= 104) {
+                    i8 = i9;
                     break;
+                } else {
+                    if (aZO[i8] == i11) {
+                        i10 = jVarBY.KW[i8][18];
+                        break;
+                    }
+                    i8++;
                 }
-                i8++;
             }
         }
         aGv[i] = i10;
@@ -17754,8 +17731,8 @@ public final class ci extends GLLib implements av {
     }
 
     static void a(int i, int i2, long j, int i3, byte b) {
-        j jVarBY = j.bY(22);
-        j jVarBY2 = j.bY(1);
+        j jVarBY = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(22);
+        j jVarBY2 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(1);
         int i4 = 0;
         while (i4 < jVarBY.KV && i2 != jVarBY.KW[i4][1]) {
             i4++;
@@ -17778,7 +17755,7 @@ public final class ci extends GLLib implements av {
 
     static void a(int i, int i2, long j, int i3, boolean z, byte b) {
         int i4;
-        j jVarBY = j.bY(7);
+        j jVarBY = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(7);
         int i5 = 0;
         while (i5 < jVarBY.KV && i2 != jVarBY.KW[i5][1]) {
             i5++;
@@ -17796,7 +17773,7 @@ public final class ci extends GLLib implements av {
             aGw[i] = b;
             String str2 = "[CRAFT] load data. sprid:" + aGu[i] + ",index;" + i;
             aGm = i + 1;
-            j jVarBY2 = j.bY(7);
+            j jVarBY2 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(7);
             int i6 = 0;
             while (true) {
                 if (i6 >= 104) {
@@ -17811,20 +17788,20 @@ public final class ci extends GLLib implements av {
             int i7 = jVarBY2.KW[i6][18];
             if (!z) {
                 i4 = i7;
-                break;
-            }
-            int i8 = jVarBY2.KW[i6][13];
-            int i9 = 0;
-            while (true) {
-                if (i9 >= 104) {
-                    i4 = i7;
-                    break;
-                } else {
-                    if (aZO[i9] == i8) {
-                        i4 = jVarBY2.KW[i9][18];
+            } else {
+                int i8 = jVarBY2.KW[i6][13];
+                int i9 = 0;
+                while (true) {
+                    if (i9 >= 104) {
+                        i4 = i7;
                         break;
+                    } else {
+                        if (aZO[i9] == i8) {
+                            i4 = jVarBY2.KW[i9][18];
+                            break;
+                        }
+                        i9++;
                     }
-                    i9++;
                 }
             }
             aGv[i] = i4;
@@ -17886,7 +17863,7 @@ public final class ci extends GLLib implements av {
     }
 
     public static void a(int i, int i2, boolean z, String str, String str2, String str3, int i3, int i4) {
-        String str4 = "AdsManager_OnIncentivizedAdReward :: adProvider :" + i2 + "rewardDelivered : " + z + FirebaseAnalytics.Param.LOCATION + str2;
+        String str4 = "AdsManager_OnIncentivizedAdReward :: adProvider :" + i2 + "rewardDelivered : " + z + "location" + str2;
         if (Lc() && z) {
             try {
                 Thread.sleep(2000L);
@@ -18719,9 +18696,11 @@ public final class ci extends GLLib implements av {
                     if (i4 >= i) {
                         iG = 3;
                         c = 0;
+                        break;
                     } else if (g(cArr[i4]) != 5) {
                         c = cArr[i4];
                         iG = g(cArr[i4]);
+                        break;
                     } else {
                         i4++;
                     }
@@ -20635,7 +20614,7 @@ public final class ci extends GLLib implements av {
             if (asL <= 200) {
                 i31 = 297;
             } else if (asL == 300) {
-                i31 = JavaUtils.Constants.NATIVE_HEIGHT_DP_300;
+                i31 = 300;
             }
             for (int i32 = 0; i32 < i31; i32++) {
                 aVE[i32] = z ? -1 : l(bArrB, i22);
@@ -20796,6 +20775,8 @@ public final class ci extends GLLib implements av {
                                 azz[i54][i56] = z ? 0L : m(bArrB, i48);
                                 i48 += 8;
                                 i55 = i56 + 1;
+                            } else {
+                                break;
                             }
                         }
                     } else {
@@ -20806,6 +20787,8 @@ public final class ci extends GLLib implements av {
                                 azz[i54][i58] = z ? 0L : m(bArrB, i48);
                                 i48 += 8;
                                 i57 = i58 + 1;
+                            } else {
+                                break;
                             }
                         }
                     }
@@ -22887,7 +22870,7 @@ public final class ci extends GLLib implements av {
             String str2 = "[quest] Target:" + i2 + ",cur manor level: " + aZD + ",manorlevel:" + iGd;
             qB();
             if (iGd <= aZD) {
-                n(JavaUtils.Constants.NATIVE_HEIGHT_DP_300, 301, 15, 0, 1);
+                n(300, 301, 15, 0, 1);
                 return;
             }
             ch[] chVarArr5 = new ch[1];
@@ -24160,7 +24143,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void c(int i, int i2, int i3, int i4, int i5, int i6) {
-        GLLib.a(i, i2, i3, i4, i5, i6);
+        GLLib.a((float) (i), (float) (i2), (float) (i3), (float) (i4), i5, i6);
     }
 
     static void c(ch chVar, int i, int i2) {
@@ -24415,6 +24398,7 @@ public final class ci extends GLLib implements av {
                     awk = i11;
                     atm[3][8] = (atc[1][88][2] - atc[1][(i9 + 88) - i10][2]) + atm[3][8];
                     gR(3);
+                    break;
                 } else {
                     i6++;
                 }
@@ -25398,7 +25382,7 @@ public final class ci extends GLLib implements av {
                 return false;
             }
             String string = jSONObjectDz.getString("pointcut");
-            JSONObject jSONObject = jSONObjectDz.getJSONObject(FirebaseAnalytics.Param.CONTENT);
+            JSONObject jSONObject = jSONObjectDz.getJSONObject("content");
             String str2 = "THO DEBUG ADS :: checkCRMPointcut Trigger Pointcut : " + string + "_" + jSONObject.getString("section") + ".";
             return a(string, jSONObject);
         } catch (Exception e) {
@@ -25435,7 +25419,7 @@ public final class ci extends GLLib implements av {
                     return;
                 }
                 String string = jSONObjectDz.getString("pointcut");
-                JSONObject jSONObject = jSONObjectDz.getJSONObject(FirebaseAnalytics.Param.CONTENT);
+                JSONObject jSONObject = jSONObjectDz.getJSONObject("content");
                 String string2 = jSONObject.getString("section");
                 int iC = com.gameloft.a.a.k.VR().c(string, jSONObject);
                 if (iC != 0) {
@@ -25534,7 +25518,7 @@ public final class ci extends GLLib implements av {
                 }
                 int iCe3 = bcVar.ce("rank");
                 try {
-                    iCe = bcVar.ce(FirebaseAnalytics.Param.LEVEL);
+                    iCe = bcVar.ce("level");
                 } catch (Exception e2) {
                     iCe = 0;
                 }
@@ -25546,7 +25530,7 @@ public final class ci extends GLLib implements av {
                         str2 = aWZ;
                     }
                 } else {
-                    iCe2 = bcVar.ce(FirebaseAnalytics.Param.SCORE);
+                    iCe2 = bcVar.ce("score");
                 }
                 if (aPW < aPS) {
                     ct ctVar = new ct();
@@ -25798,14 +25782,15 @@ public final class ci extends GLLib implements av {
                 }
             } catch (Exception e) {
                 if (str2.length() >= 1) {
-                    return str2 == "" ? 0 : 0;
+                    break;
                 }
                 str2 = "";
             }
         }
-        if (str2 == "" && str2.length() >= 1) {
+        if (str2 != "" && str2.length() >= 1) {
             return Integer.parseInt(str2);
         }
+        return 0;
     }
 
     public static int dl(String str) {
@@ -26032,11 +26017,11 @@ public final class ci extends GLLib implements av {
                 aWb[i2] = bcVar2.ce("quest_type_id");
                 String str6 = "[OnlineQuest]" + aWb[i2];
                 if (lU(aWb[i2])) {
-                    aWp[i2] = bcVar2.ce(FirebaseAnalytics.Param.START_DATE);
+                    aWp[i2] = bcVar2.ce("start_date");
                     long[] jArr = aWp;
                     jArr[i2] = jArr[i2] * 1000;
                     String str7 = "[OnlineQuest]" + aWp[i2];
-                    aWq[i2] = bcVar2.ce(FirebaseAnalytics.Param.END_DATE);
+                    aWq[i2] = bcVar2.ce("end_date");
                     long[] jArr2 = aWq;
                     jArr2[i2] = jArr2[i2] * 1000;
                     String str8 = "[OnlineQuest]" + aWq[i2];
@@ -26169,7 +26154,7 @@ public final class ci extends GLLib implements av {
                 jSONObject.put("pointcut", "enter_section");
                 jSONObject2.put("section", "video_daily_stamp");
             }
-            jSONObject.put(FirebaseAnalytics.Param.CONTENT, jSONObject2);
+            jSONObject.put("content", jSONObject2);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -26919,7 +26904,7 @@ public final class ci extends GLLib implements av {
             if (cCharAt == '%' && i != length - 1) {
                 if (i2 <= objArr.length) {
                     switch (str.charAt(i + 1)) {
-                        case JavaUtils.Constants.NATIVE_HEIGHT_DP_100 /* 100 */:
+                        case 100 /* 100 */:
                         case 's':
                         case 't':
                             aYp.append(objArr[i2]);
@@ -27449,9 +27434,6 @@ public final class ci extends GLLib implements av {
         int i3;
         int iBB;
         int iBA;
-        int iBy;
-        int iBz;
-        int i4;
         aAL = i;
         String str = "[GAME GUI] layerinit " + i + ",elemCount:" + atc[i].length;
         int i5 = 0;
@@ -27494,29 +27476,21 @@ public final class ci extends GLLib implements av {
                             short s2 = atc[i][i11][5];
                             short s3 = atc[i][i11][6];
                             a aVar = s2 < 1000 ? atf[s2] : aZf[s2 - 1000];
-                            if (aVar != null && atc[i][i11][6] >= 0) {
-                                iBA = aVar.bA(s3);
-                                iBB = aVar.bB(s3);
-                                iBy = aVar.by(s3);
-                                iBz = aVar.bz(s3);
-                                if (atc[i][i11][22] != 0) {
-                                    if (iBy > atc[i][i11][22]) {
-                                        i3 = iBy;
-                                        i2 = iBz;
-                                        i4 = iBy;
-                                        iBA += (iBy - atc[i][i11][22]) >> 1;
-                                        i4 = atc[i][i11][22];
-                                    }
-                                    i3 = iBy;
-                                    i2 = iBz;
-                                    i4 = iBy;
-                                    i3 = i4;
-                                    i2 = iBz;
-                                    if (iBz > atc[i][i11][22]) {
-                                        iBB += (iBz - atc[i][i11][22]) >> 1;
-                                        i3 = i4;
-                                        i2 = atc[i][i11][22];
-                                    }
+                            if (aVar == null || atc[i][i11][6] < 0) {
+                                continue;
+                            }
+                            iBA = aVar.bA(s3);
+                            iBB = aVar.bB(s3);
+                            i3 = aVar.by(s3);
+                            i2 = aVar.bz(s3);
+                            if (atc[i][i11][22] != 0) {
+                                if (i3 > atc[i][i11][22]) {
+                                    iBA += (i3 - atc[i][i11][22]) >> 1;
+                                    i3 = atc[i][i11][22];
+                                }
+                                if (i2 > atc[i][i11][22]) {
+                                    iBB += (i2 - atc[i][i11][22]) >> 1;
+                                    i2 = atc[i][i11][22];
                                 }
                             }
                         } else if (atc[i][i11][0] == 204) {
@@ -27530,8 +27504,6 @@ public final class ci extends GLLib implements av {
                             iBB = 0;
                             iBA = 0;
                         }
-                        i3 = iBy;
-                        i2 = iBz;
                         if (atm[s][4] > atc[i][i11][2] + iBA) {
                             atm[s][4] = atc[i][i11][2] + iBA;
                         }
@@ -32280,7 +32252,7 @@ public final class ci extends GLLib implements av {
                 a(sb.append(strDt7).append(" ").append(aFA ? aGk : aGm - aGk).append("/").append((aFA || !aFp) ? GJ() : ii(aGd)).toString(), 7, 69, 0, 0);
             }
             if (aFO && bq(7, 63)) {
-                aZf[138].a(GLLib.Qj, 11, atc[7][64][2], atc[7][64][3], 0);
+                aZf[138].a(GLLib.Qj, 11, (float) (atc[7][64][2]), (float) (atc[7][64][3]), 0);
             }
             KX();
         }
@@ -32963,7 +32935,7 @@ public final class ci extends GLLib implements av {
             F(497, 498, 7, 0);
             return;
         }
-        if (aDY == 2 && ((aDo[i2] == 22 || aDo[i2] == 23) && !aDB[i2] && !lM(aZQ[300]) && !lN(JavaUtils.Constants.NATIVE_HEIGHT_DP_300))) {
+        if (aDY == 2 && ((aDo[i2] == 22 || aDo[i2] == 23) && !aDB[i2] && !lM(aZQ[300]) && !lN(300))) {
             gX(55);
             String strDt = dt(12444);
             if (strDt == null) {
@@ -33144,7 +33116,6 @@ public final class ci extends GLLib implements av {
                         avF = bs(aDY, aDo[i2]);
                         break;
                     }
-                    break;
                 case 3:
                 default:
                     if (aDY == 0) {
@@ -33196,7 +33167,6 @@ public final class ci extends GLLib implements av {
                     if (aDY == 0) {
                         avF.anc = (short) aDs[i2];
                     }
-                    break;
                     break;
                 case 4:
                     if (aDo[i2] < 64 || aDo[i2] > 68) {
@@ -33375,7 +33345,7 @@ public final class ci extends GLLib implements av {
             F(497, 498, 7, 0);
             return;
         }
-        if (aDY == 2 && ((aDo[i2] == 22 || aDo[i2] == 23) && !aDB[i2] && !lM(aZQ[300]) && !lN(JavaUtils.Constants.NATIVE_HEIGHT_DP_300))) {
+        if (aDY == 2 && ((aDo[i2] == 22 || aDo[i2] == 23) && !aDB[i2] && !lM(aZQ[300]) && !lN(300))) {
             gX(55);
             String strDt = dt(12444);
             if (strDt == null) {
@@ -33588,7 +33558,6 @@ public final class ci extends GLLib implements av {
                     avF = bs(aDY, aDo[i2]);
                     break;
                 }
-                break;
             case 3:
             default:
                 if (aDY == 0) {
@@ -33640,7 +33609,6 @@ public final class ci extends GLLib implements av {
                 if (aDY == 0) {
                     avF.anc = (short) aDs[i2];
                 }
-                break;
                 break;
             case 4:
                 if (aDo[i2] < 64 || aDo[i2] > 68) {
@@ -35059,17 +35027,14 @@ public final class ci extends GLLib implements av {
             case 5:
                 iJj = jj(i);
                 j jVarBY = j.bY(3);
-                for (int i6 = 0; i6 < jVarBY.KV; i6++) {
+                int i6 = 0;
+                while (i6 < jVarBY.KV) {
                     int i7 = jVarBY.KW[i6][0];
                     String str = "id : " + i6 + " roomId : " + i7;
                     if (i7 == jk(i)) {
-                        i5 = jVarBY.KW[i6][14];
-                        String str2 = "quantity : " + i5;
-                        if (i == 1) {
-                            i5 = 5 | (i5 << 16);
-                        }
+                        break;
                     }
-                    break;
+                    i6++;
                 }
                 i5 = jVarBY.KW[i6][14];
                 String str3 = "quantity : " + i5;
@@ -35311,7 +35276,7 @@ public final class ci extends GLLib implements av {
                         strDt2 = "";
                     }
                     a(strDt2, 11, 3, 0, 0);
-                    String strDt3 = dt((ayJ - 1) + JavaUtils.Constants.BANNER_WIDTH_DP);
+                    String strDt3 = dt((ayJ - 1) + 320);
                     if (strDt3 == null) {
                         strDt3 = "";
                     }
@@ -35337,7 +35302,7 @@ public final class ci extends GLLib implements av {
                         strDt6 = "";
                     }
                     e(strDt6, 11, 22, 0, 0);
-                    String strDt7 = dt(((ayJ - 1) + JavaUtils.Constants.BANNER_WIDTH_DP) - 1);
+                    String strDt7 = dt(((ayJ - 1) + 320) - 1);
                     if (strDt7 == null) {
                         strDt7 = "";
                     }
@@ -36493,7 +36458,7 @@ public final class ci extends GLLib implements av {
                             atc[46][9][6] = 285;
                             break;
                         case 3:
-                            ate[46][11] = Integer.toString(JavaUtils.Constants.NATIVE_HEIGHT_DP_300);
+                            ate[46][11] = Integer.toString(300);
                             atc[46][9][5] = 20;
                             atc[46][9][6] = 285;
                             break;
@@ -38075,7 +38040,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 3 && aPl) {
             if (w.screenWidth > 854 || w.screenHeight > 480) {
-                atf[124].a(Qj, 0, (-(888 - w.screenWidth)) >> 1, (-(600 - w.screenHeight)) >> 1, 0);
+                atf[124].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
             }
             gJ(29);
         }
@@ -38153,7 +38118,7 @@ public final class ci extends GLLib implements av {
             bc[] bcVarArrCj = new bc(l(strCh3, "\\", "")).cj("gifts");
             for (int i = 0; i < bcVarArrCj.length; i++) {
                 apK = bcVarArrCj[i].ch("name");
-                apL = bcVarArrCj[i].ce(FirebaseAnalytics.Param.VALUE);
+                apL = bcVarArrCj[i].ce("value");
                 apM = strCh4;
                 if ("cash".equals(apK) || "age_selection_screen".equals(apK) || "coin".equals(apK) || "cash_reset".equals(apK) || "coin_reset".equals(apK)) {
                     apN = "has gift on server";
@@ -39563,8 +39528,8 @@ public final class ci extends GLLib implements av {
                         ca(0, GLURLConnection.HTTP_OK);
                         break;
                     case 4:
-                        hS(JavaUtils.Constants.NATIVE_HEIGHT_DP_300);
-                        ca(0, JavaUtils.Constants.NATIVE_HEIGHT_DP_300);
+                        hS(300);
+                        ca(0, 300);
                         break;
                     case 5:
                         hS(400);
@@ -39941,6 +39906,7 @@ public final class ci extends GLLib implements av {
                 strL = str;
             }
         } catch (Exception e2) {
+            strL = str;
         }
         try {
             if (strL.trim().equals("")) {
@@ -40144,11 +40110,11 @@ public final class ci extends GLLib implements av {
                     aXj[i2] = -1;
                     aXk[i2] = bcVar2.ce("percentile");
                     String str4 = "[OnlineQuest]m_boostOnlineValue " + aXk[i2];
-                    aXl[i2] = bcVar2.ce(FirebaseAnalytics.Param.START_DATE);
+                    aXl[i2] = bcVar2.ce("start_date");
                     long[] jArr = aXl;
                     jArr[i2] = jArr[i2] * 1000;
                     String str5 = "[OnlineQuest]m_boostOnlineStartTime " + aXl[i2];
-                    aXm[i2] = bcVar2.ce(FirebaseAnalytics.Param.END_DATE);
+                    aXm[i2] = bcVar2.ce("end_date");
                     long[] jArr2 = aXm;
                     jArr2[i2] = jArr2[i2] * 1000;
                     String str6 = "[OnlineQuest]m_boostOnlineEndTime " + aXm[i2];
@@ -46528,8 +46494,8 @@ public final class ci extends GLLib implements av {
             return;
         }
         aTo = false;
-        e(8, JavaUtils.Constants.NATIVE_HEIGHT_DP_300, true);
-        f(8, JavaUtils.Constants.NATIVE_HEIGHT_DP_300, true);
+        e(8, 300, true);
+        f(8, 300, true);
         e(8, 301, true);
         e(8, 282, true);
         f(8, 282, true);
@@ -46584,8 +46550,8 @@ public final class ci extends GLLib implements av {
     }
 
     public static void wC() {
-        e(8, JavaUtils.Constants.NATIVE_HEIGHT_DP_300, false);
-        f(8, JavaUtils.Constants.NATIVE_HEIGHT_DP_300, false);
+        e(8, 300, false);
+        f(8, 300, false);
         e(8, 301, false);
         e(8, 282, false);
         f(8, 282, false);
@@ -49152,10 +49118,10 @@ public final class ci extends GLLib implements av {
             axW = false;
             axV = false;
             gX(41);
-        } else if (FC() >= 15 && lM(aZQ[298]) && !lN(299) && !lN(JavaUtils.Constants.NATIVE_HEIGHT_DP_300) && !lN(301)) {
+        } else if (FC() >= 15 && lM(aZQ[298]) && !lN(299) && !lN(300) && !lN(301)) {
             if (!lM(aZQ[300])) {
                 lH(0);
-                j(JavaUtils.Constants.NATIVE_HEIGHT_DP_300, 0, true);
+                j(300, 0, true);
             } else if (!lM(aZQ[301])) {
                 j(301, 0, true);
             }
@@ -50867,7 +50833,7 @@ public final class ci extends GLLib implements av {
             fE(2);
         }
         if (i == 3 && aZg[0] != null) {
-            aZg[0].a(Qj, 0, (-(888 - w.screenWidth)) >> 1, (-(600 - w.screenHeight)) >> 1, 0);
+            aZg[0].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
         }
         if (i == 5) {
         }
@@ -51317,7 +51283,7 @@ public final class ci extends GLLib implements av {
                     e(0, 2, false);
                 }
                 if (w.screenWidth > 854 || w.screenHeight > 480) {
-                    atf[124].a(Qj, 0, (-(888 - w.screenWidth)) >> 1, (-(600 - w.screenHeight)) >> 1, 0);
+                    atf[124].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
                 }
                 gJ(0);
                 if (ask == 0) {
@@ -51343,7 +51309,7 @@ public final class ci extends GLLib implements av {
                 j(12509, 0, 6, 0, 0);
             } else {
                 if (aZg[0] != null) {
-                    aZg[0].a(Qj, 0, (-(888 - w.screenWidth)) >> 1, (-(600 - w.screenHeight)) >> 1, 0);
+                    aZg[0].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
                 }
                 aZy = false;
             }
@@ -51820,7 +51786,7 @@ public final class ci extends GLLib implements av {
             z2 = false;
         }
         String str8 = aMw;
-        String strDt7 = dt(JavaUtils.Constants.NATIVE_HEIGHT_DP_300);
+        String strDt7 = dt(300);
         if (strDt7 == null) {
             strDt7 = "";
         }
@@ -51902,7 +51868,7 @@ public final class ci extends GLLib implements av {
             int i3 = azd[ayJ].aou;
             String str = "x : " + i2 + " y : " + i3;
             if (aYP == 100) {
-                aZf[143].a(GLLib.Qj, 0, i2, i3, 0);
+                aZf[143].a(GLLib.Qj, 0, (float) (i2), (float) (i3), 0);
             } else {
                 GLLib.l(18, 5, 1);
                 aZf[143].b(GLLib.Qj, 0, i2, i3, 0, aYP);
@@ -52354,9 +52320,9 @@ public final class ci extends GLLib implements av {
     }
 
     public ci(Object obj, Object obj2) {
+        super(obj, obj2);
         int i;
         int i2;
-        super(obj, obj2);
         this.apt = -1;
         this.apu = "";
         this.aYC = false;
@@ -52378,6 +52344,7 @@ public final class ci extends GLLib implements av {
         int width = getWidth() > getHeight() ? getWidth() : getHeight();
         int width2 = getWidth() < getHeight() ? getWidth() : getHeight();
         be("-------------------- w = " + width + " ------------------------------ h = " + width2);
+        i2 = width2;
         try {
             i = Integer.parseInt(GloftGF2F.acx.bY("microedition.screen.getwidth"));
             try {
@@ -53684,7 +53651,7 @@ public final class ci extends GLLib implements av {
                 aVar.b(Qj, s2, i, i2, 0, 94);
                 return;
             } else {
-                aVar.a(Qj, (int) s2, i, i2, 0);
+                aVar.a(Qj, (int) s2, (float) (i), (float) (i2), 0);
                 return;
             }
         }
@@ -53944,7 +53911,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 3) {
             if (w.screenWidth > 854 || w.screenHeight > 480) {
-                atf[124].a(Qj, 0, (-(888 - w.screenWidth)) >> 1, (-(600 - w.screenHeight)) >> 1, 0);
+                atf[124].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
             }
             gJ(44);
             short s4 = atc[44][14][5];
@@ -56312,7 +56279,7 @@ public final class ci extends GLLib implements av {
                 if (qN() && bt.nY()) {
                     String str9 = "[FB opengraph] Level Up" + FC();
                     String str10 = "[FB URL]" + rg();
-                    bt.g("gl_green_farm_three", "reach", FirebaseAnalytics.Param.LEVEL, rg() + "levelup.php?id=" + FC() + "&lang=" + GloftGF2F.acw.dr(aYU) + "&who=" + cL(bt.nZ().getName()));
+                    bt.g("gl_green_farm_three", "reach", "level", rg() + "levelup.php?id=" + FC() + "&lang=" + GloftGF2F.acw.dr(aYU) + "&who=" + cL(bt.nZ().getName()));
                     if (baf != null && qN() && bt.nY() && aTK && (strBY = GloftGF2F.acx.bY("conectivity")) != null && !strBY.equals("off")) {
                         baf.b(51816, new String[]{"INT:" + Integer.toString(0), "INT:" + Integer.toString(114733), "INT:" + Integer.toString(105555), "INT:" + Integer.toString(104712), "INT:" + Integer.toString(52009), "INT:" + Integer.toString(FC())});
                     }
@@ -57368,7 +57335,7 @@ public final class ci extends GLLib implements av {
                         }
                         aVar.b(Qj, s2, sArr[2] + i2, sArr[3] + i3, 0, i10);
                     } else if (s == 1 && s2 == 56) {
-                        aVar.a(Qj, (int) s2, sArr[2], sArr[3], 0);
+                        aVar.a(Qj, (int) s2, (float) (sArr[2]), (float) (sArr[3]), 0);
                         if (aBj > 0) {
                             dk(-1201919);
                             GLLib.a(Qj, sArr[2] - 38, sArr[3] - 38, 76.0f, 76.0f, 90, (aBj * 360) / aZw[5], true);
@@ -57397,7 +57364,7 @@ public final class ci extends GLLib implements av {
                             if (qD() == 28 || qD() == 10 || qD() == 12 || qD() == 11 || qD() == 33 || qD() == 32) {
                                 GLLib.a(GLLib.Qj, 0, 0, bh.ajq, bh.ajr, true);
                             }
-                            aVar.a(Qj, (int) s2, sArr[2] + i2, sArr[3] + i3, 0);
+                            aVar.a(Qj, (int) s2, (float) (sArr[2] + i2), (float) (sArr[3] + i3), 0);
                         }
                     }
                 }
@@ -58032,6 +57999,8 @@ public final class ci extends GLLib implements av {
                                         while (i10 < aJf && (aJb[i10].equals("") || aJe[i10] != 1)) {
                                             i10++;
                                         }
+                                    } else {
+                                        break;
                                     }
                                 }
                                 e(14, i13 + 23, true);
@@ -58287,6 +58256,8 @@ public final class ci extends GLLib implements av {
                                     while (i9 < aOk && (aOg[i9].equals("") || aOj[i9] != 1)) {
                                         i9++;
                                     }
+                                } else {
+                                    break;
                                 }
                             }
                             e(25, i12 + 25, true);
@@ -58423,15 +58394,15 @@ public final class ci extends GLLib implements av {
 
     public static void Y(int i, int i2, int i3) {
         dk(4861523);
-        GLLib.a(GLLib.Qj, i, i3, i2, i3, true);
-        GLLib.a(GLLib.Qj, i, i3 + 1, i2, i3 + 1, true);
+        GLLib.a(GLLib.Qj, (float) (i), (float) (i3), (float) (i2), (float) (i3), true);
+        GLLib.a(GLLib.Qj, (float) (i), (float) (i3 + 1), (float) (i2), (float) (i3 + 1), true);
     }
 
     static void Ep() {
         try {
             if (aYR == 0 && apz == 36) {
                 if (atf[124] != null) {
-                    atf[124].a(Qj, 0, (-(888 - w.screenWidth)) >> 1, (-(600 - w.screenHeight)) >> 1, 0);
+                    atf[124].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
                 }
                 gJ(0);
             }
@@ -58719,10 +58690,10 @@ public final class ci extends GLLib implements av {
                     axV = false;
                 } else if (aYS == 1001) {
                     aYS = Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS;
-                } else if (FC() >= 15 && !lN(JavaUtils.Constants.NATIVE_HEIGHT_DP_300) && !lN(301) && lM(297) && lM(298)) {
+                } else if (FC() >= 15 && !lN(300) && !lN(301) && lM(297) && lM(298)) {
                     if (!lM(aZQ[300])) {
                         lH(0);
-                        j(JavaUtils.Constants.NATIVE_HEIGHT_DP_300, 0, true);
+                        j(300, 0, true);
                     } else if (!lM(aZQ[301])) {
                         j(301, 0, true);
                     }
@@ -58809,10 +58780,10 @@ public final class ci extends GLLib implements av {
                 f(1, 53, false);
             }
             if (FC() >= 15 && lM(aZQ[298]) && !lN(299)) {
-                if (!lN(JavaUtils.Constants.NATIVE_HEIGHT_DP_300) && aUU[0] != 300) {
+                if (!lN(300) && aUU[0] != 300) {
                     if (!lM(aZQ[300])) {
                         lH(0);
-                        j(JavaUtils.Constants.NATIVE_HEIGHT_DP_300, 0, true);
+                        j(300, 0, true);
                     }
                 }
             }
@@ -59673,6 +59644,7 @@ public final class ci extends GLLib implements av {
             String strBY = GLLib.Qu == null ? null : GLLib.Qu.bY("connectivity");
             return strBY != null && strBY.equals("on");
         } catch (Exception e) {
+            return false;
         }
     }
 
@@ -59704,7 +59676,7 @@ public final class ci extends GLLib implements av {
         awh = false;
         awi = false;
         awm = -1;
-        awn = JavaUtils.Constants.NATIVE_HEIGHT_DP_300;
+        awn = 300;
         awo = 2;
         awp = 0;
         awq = 0;
@@ -61009,7 +60981,7 @@ public final class ci extends GLLib implements av {
         }
         long j = (((long) ((axk || axl) ? 60 : 86400)) + azz[aNI][6]) - (jCurrentTimeMillis / 1000);
         if (azy[aNI][0] != 0) {
-            j jVarBY = j.bY(18);
+            j jVarBY = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(18);
             aNK = jVarBY.KW[FC() - 1][17];
             aNL = jVarBY.KW[FC() - 1][16];
             e(17, 19, true);
@@ -62091,7 +62063,7 @@ public final class ci extends GLLib implements av {
             aOF = qD();
             String str2 = "s_stateRepaint=====================" + aOF;
             if (w.screenWidth > 854 || w.screenHeight > 480) {
-                atf[124].a(Qj, 0, (-(888 - w.screenWidth)) >> 1, (-(600 - w.screenHeight)) >> 1, 0);
+                atf[124].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
             }
             gJ(0);
             dk(26856);
@@ -62178,7 +62150,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 3) {
             if (w.screenWidth > 854 || w.screenHeight > 480) {
-                atf[124].a(Qj, 0, (-(888 - w.screenWidth)) >> 1, (-(600 - w.screenHeight)) >> 1, 0);
+                atf[124].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
             }
             gJ(0);
             if (ask == 0) {
@@ -62557,7 +62529,7 @@ public final class ci extends GLLib implements av {
                         short s2 = atc[9][72][6];
                         GLLib.a(GLLib.Qj, i15, atc[9][69][3] + iArr2[1], i16, iArr2[3], true);
                         if (i11 == 0 && aNm == 0) {
-                            atf[20].a(GLLib.Qj, 192, atc[9][72][2] + (s >> 1), atc[9][72][3] + (s2 >> 1), 0);
+                            atf[20].a(GLLib.Qj, 192, (float) (atc[9][72][2] + (s >> 1)), (float) (atc[9][72][3] + (s2 >> 1)), 0);
                         }
                         int i17 = ((i11 + 1) * 15) + 72;
                         short s3 = atc[9][i17][2];
@@ -62585,7 +62557,7 @@ public final class ci extends GLLib implements av {
                         short s4 = atc[9][72][5];
                         short s5 = atc[9][72][6];
                         GLLib.a(GLLib.Qj, i19, atc[9][69][3] + iArr3[1], i20, iArr3[3], true);
-                        atf[20].a(GLLib.Qj, 192, atc[9][72][2] + (s4 >> 1), atc[9][72][3] + (s5 >> 1), 0);
+                        atf[20].a(GLLib.Qj, 192, (float) (atc[9][72][2] + (s4 >> 1)), (float) (atc[9][72][3] + (s5 >> 1)), 0);
                         GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
                     }
                 }
@@ -67532,7 +67504,6 @@ public final class ci extends GLLib implements av {
 
     static void fM(int i) {
         String str;
-        z = false;
         boolean z = false;
         switch (i) {
             case 0:
@@ -67784,7 +67755,6 @@ public final class ci extends GLLib implements av {
                 }
                 try {
                     Ml();
-                    break;
                 } catch (Exception e2) {
                 }
                 aYJ = Mp();
@@ -68186,21 +68156,21 @@ public final class ci extends GLLib implements av {
                     Integer.toString(FA());
                     int iFC = FC() + 0;
                     String str16 = "unlocked amount level :" + iFC;
-                    j jVarBY = j.bY(22);
+                    j jVarBY = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(22);
                     for (int i7 = 0; i7 < 7; i7++) {
                         if (FC() >= jVarBY.KW[i7][4]) {
                             iFC++;
                         }
                     }
                     String str17 = "unlocked amount feed recipe:" + iFC;
-                    j jVarBY2 = j.bY(7);
+                    j jVarBY2 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(7);
                     for (int i8 = 0; i8 < 104; i8++) {
                         if (FC() >= jVarBY2.KW[i8][5] && jVarBY2.KW[i8][5] != -1) {
                             iFC++;
                         }
                     }
                     String str18 = "unlocked amount recipe:" + iFC;
-                    j jVarBY3 = j.bY(0);
+                    j jVarBY3 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(0);
                     int i9 = iFC;
                     for (int i10 = 0; i10 < jVarBY3.KV; i10++) {
                         if (jVarBY3.KW[i10][6] != -1 && jVarBY3.KW[i10][9] <= FC()) {
@@ -68208,21 +68178,21 @@ public final class ci extends GLLib implements av {
                         }
                     }
                     String str19 = "unlocked amount animal:" + i9;
-                    j jVarBY4 = j.bY(2);
+                    j jVarBY4 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(2);
                     for (int i11 = 0; i11 < jVarBY4.KV; i11++) {
                         if (jVarBY4.KW[i11][19] <= FC()) {
                             i9++;
                         }
                     }
                     String str20 = "unlocked amount crop:" + i9;
-                    j jVarBY5 = j.bY(3);
+                    j jVarBY5 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(3);
                     for (int i12 = 0; i12 < jVarBY5.KV; i12++) {
                         if (jVarBY5.KW[i12][6] != -1 && jVarBY5.KW[i12][12] <= FC()) {
                             i9++;
                         }
                     }
                     String str21 = "unlocked amount build:" + i9;
-                    j jVarBY6 = j.bY(4);
+                    j jVarBY6 = com.gameloft.android.ANMP.GloftGF2F.S800x480.j.bY(4);
                     for (int i13 = 0; i13 < jVarBY6.KV; i13++) {
                         if (jVarBY6.KW[i13][8] <= FC()) {
                             i9++;
@@ -69679,7 +69649,7 @@ public final class ci extends GLLib implements av {
                     str6 = "room";
                     z = true;
                 } else if (aMt == 2) {
-                    String strDt9 = dt((EI() - 1) + JavaUtils.Constants.BANNER_WIDTH_DP);
+                    String strDt9 = dt((EI() - 1) + 320);
                     if (strDt9 == null) {
                         strDt9 = "";
                     }
@@ -71792,7 +71762,7 @@ public final class ci extends GLLib implements av {
                 }
                 if (i == 3) {
                     gJ(13);
-                    if (atk != null) {
+                    if (atk != null && !atk.lQ() && !aIQ) {
                         atk.lR();
                     }
                     i2 = 0;
@@ -71802,16 +71772,17 @@ public final class ci extends GLLib implements av {
                         } else {
                             i3 = 6;
                         }
-                        if (i2 < i3) {
-                            break;
+                        if (i2 >= i3) {
                             break;
                         }
-                        if (atj[i2] == null) {
+                        if (atj[i2] != null && !atj[i2].lQ() && !aIR[i2]) {
+                            atj[i2].lR();
                         }
                         i2++;
                     }
-                    while (i4 < 3) {
-                        if (atl[i4] == null) {
+                    for (i4 = 0; i4 < 3; i4++) {
+                        if (atl[i4] != null && !atl[i4].lQ() && !aIS[i4]) {
+                            atl[i4].lR();
                         }
                     }
                     strDt = dt(309);
@@ -71820,14 +71791,14 @@ public final class ci extends GLLib implements av {
                     }
                     a(strDt, 13, 1, 0, 0);
                     if (bh(13, 41)) {
-                        if (IK()) {
+                        if (!IK()) {
                             aIY = 3;
                             strDt4 = dt(346);
                             if (strDt4 == null) {
                                 strDt4 = "";
                             }
                             e(strDt4, 13, 42, 0, 0);
-                        } else if (IL()) {
+                        } else if (!IL()) {
                             aIY = 1;
                             strDt6 = dt(347);
                             if (strDt6 == null) {
@@ -71842,11 +71813,11 @@ public final class ci extends GLLib implements av {
                             }
                             e(strDt5, 13, 42, 0, 0);
                         }
-                    } else if (!IK()) {
+                    } else if (!IK() && aTK) {
                         jMD = MD() / 1000;
                         if (aIX != 0) {
                             j = 86400 - (jMD - aIX);
-                            if (j > 0) {
+                            if (j > 0 && j < 86400) {
                                 aIY = 4;
                                 e(13, 41, true);
                                 strDt2 = dt(363);
@@ -71858,12 +71829,12 @@ public final class ci extends GLLib implements av {
                             }
                         }
                     }
-                    while (i5 < 6) {
+                    for (i5 = 0; i5 < 6; i5++) {
                         if (atc[13][i5 + 46][10] == 1) {
                             a(fY((int) ((aIO[i5] - MD()) / 1000)), 13, i5 + 53, 0, 0);
                         }
                     }
-                    while (i6 < 6) {
+                    for (i6 = 0; i6 < 6; i6++) {
                         if (aIP[i6] != null) {
                             aIP[i6].pY();
                             aIP[i6].pZ();
@@ -72133,7 +72104,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 3) {
             if ((w.screenWidth > 854 || w.screenHeight > 480) && atf[124] != null) {
-                atf[124].a(Qj, 0, (-(888 - w.screenWidth)) >> 1, (-(600 - w.screenHeight)) >> 1, 0);
+                atf[124].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
             }
             gJ(42);
             String strDt = dt(12388);
@@ -72438,4 +72409,32 @@ public final class ci extends GLLib implements av {
         aAm = GLLib.dG(0);
         aAn = GLLib.dH(0);
     }
+
+    // Original DEX synthetic accessors inlined by JADX into sibling classes.
+    static boolean a(ci instance, boolean value) {
+        instance.aYE = value;
+        return value;
+    }
+
+    static Object MM() {
+        return aXG;
+    }
+
+    static int MN() {
+        return aXN;
+    }
+
+    static boolean MO() {
+        return aXH;
+    }
+
+    static int MP() {
+        return aXL;
+    }
+
+    static boolean bD(boolean value) {
+        adu = value;
+        return value;
+    }
+
 }

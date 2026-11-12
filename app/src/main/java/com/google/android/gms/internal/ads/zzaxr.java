@@ -69,7 +69,7 @@ public final class zzaxr extends zzbbo<zzaxr, zza> implements zzbcw {
                         zzbdf<zzb> zzbdfVar2 = zzakh;
                         obj3 = zzbdfVar2;
                         if (zzbdfVar2 == null) {
-                            ?? zzbVar = new zzbbo.zzb(zzdlx);
+                            zzbbo.zzb zzbVar = new zzbbo.zzb(zzdlx);
                             zzakh = zzbVar;
                             obj3 = zzbVar;
                         }
@@ -143,7 +143,7 @@ public final class zzaxr extends zzbbo<zzaxr, zza> implements zzbcw {
                     zzbdf<zzaxr> zzbdfVar2 = zzakh;
                     obj3 = zzbdfVar2;
                     if (zzbdfVar2 == null) {
-                        ?? zzbVar = new zzbbo.zzb(zzdlt);
+                        zzbbo.zzb zzbVar = new zzbbo.zzb(zzdlt);
                         zzakh = zzbVar;
                         obj3 = zzbVar;
                     }

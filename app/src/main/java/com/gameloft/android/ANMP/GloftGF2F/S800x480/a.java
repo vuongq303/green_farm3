@@ -12,6 +12,11 @@ import java.util.ArrayList;
 /* JADX INFO: compiled from: ASprite.java */
 /* JADX INFO: loaded from: classes.dex */
 public class a {
+    // DEX does not require Java checked-throws declarations; retain the original exception instance.
+    @SuppressWarnings("unchecked")
+    private static <Failure extends Throwable> RuntimeException propagateChecked(Throwable failure) throws Failure {
+        throw (Failure) failure;
+    }
     private static char[] Go;
     private static boolean Gp;
     private static boolean Gr;
@@ -540,70 +545,78 @@ public class a {
     }
 
     private void a(l lVar, int i) {
-        if (bp(4194304)) {
-            if (this.HZ == null) {
-                this.HZ = new boolean[this.Gz];
+        try {
+            if (bp(4194304)) {
+                if (this.HZ == null) {
+                    this.HZ = new boolean[this.Gz];
+                }
+                boolean z = lVar.Lm.readByte() == 1;
+                a(z, i);
+                if (z) {
+                    a(lVar.Lm.readByte(), i);
+                    b(lVar.Lm.readByte(), i);
+                }
             }
-            boolean z = lVar.Lm.readByte() == 1;
-            a(z, i);
-            if (z) {
-                a(lVar.Lm.readByte(), i);
-                b(lVar.Lm.readByte(), i);
-            }
+        } catch (IOException failure) {
+            throw a.<RuntimeException>propagateChecked(failure);
         }
     }
 
     private void b(l lVar) {
-        int unsignedShort = lVar.readUnsignedShort();
-        aq("nFModules = " + unsignedShort);
-        if (unsignedShort > 0) {
-            if (w.Xb || (w.Xa && (this.Hz & 1048576) != 0)) {
-                this.GV = new short[unsignedShort];
-            } else {
-                this.GU = new byte[unsignedShort];
-            }
-            if (w.Xe || (w.Xf && (this.Hz & 1024) != 0)) {
-                this.GX = new short[unsignedShort];
-                this.GY = new short[unsignedShort];
-            } else {
-                this.GZ = new byte[unsignedShort];
-                this.Ha = new byte[unsignedShort];
-            }
-            this.GW = new byte[unsignedShort];
-            if (w.Xg && (this.Hz & GLURLConnection.BUFFER_SIZE) != 0) {
-                this.Hb = new byte[unsignedShort];
-            }
-            if (w.Xh && (this.HA & 16) != 0) {
-                this.Hc = new byte[unsignedShort];
-                this.Hd = new byte[unsignedShort];
-            }
-            for (int i = 0; i < unsignedShort; i++) {
-                if ((w.Xb || w.Xa) && (this.Hz & 1048576) != 0) {
-                    this.GV[i] = lVar.readShort();
-                } else if (w.Xb) {
-                    this.GV[i] = (short) lVar.Lm.readUnsignedByte();
+        try {
+            int unsignedShort = lVar.readUnsignedShort();
+            aq("nFModules = " + unsignedShort);
+            if (unsignedShort > 0) {
+                if (w.Xb || (w.Xa && (this.Hz & 1048576) != 0)) {
+                    this.GV = new short[unsignedShort];
                 } else {
-                    this.GU[i] = lVar.Lm.readByte();
+                    this.GU = new byte[unsignedShort];
                 }
-                if (!w.Xe && (!w.Xf || (this.Hz & 1024) == 0)) {
-                    this.GZ[i] = lVar.Lm.readByte();
-                    this.Ha[i] = lVar.Lm.readByte();
-                } else if ((this.Hz & 1024) != 0) {
-                    this.GX[i] = lVar.readShort();
-                    this.GY[i] = lVar.readShort();
+                if (w.Xe || (w.Xf && (this.Hz & 1024) != 0)) {
+                    this.GX = new short[unsignedShort];
+                    this.GY = new short[unsignedShort];
                 } else {
-                    this.GX[i] = lVar.Lm.readByte();
-                    this.GY[i] = lVar.Lm.readByte();
+                    this.GZ = new byte[unsignedShort];
+                    this.Ha = new byte[unsignedShort];
                 }
+                this.GW = new byte[unsignedShort];
                 if (w.Xg && (this.Hz & GLURLConnection.BUFFER_SIZE) != 0) {
-                    this.Hb[i] = lVar.Lm.readByte();
+                    this.Hb = new byte[unsignedShort];
                 }
-                this.GW[i] = lVar.Lm.readByte();
                 if (w.Xh && (this.HA & 16) != 0) {
-                    this.Hc[i] = lVar.Lm.readByte();
-                    this.Hd[i] = lVar.Lm.readByte();
+                    this.Hc = new byte[unsignedShort];
+                    this.Hd = new byte[unsignedShort];
+                }
+                for (int i = 0; i < unsignedShort; i++) {
+                    if ((w.Xb || w.Xa) && (this.Hz & 1048576) != 0) {
+                        this.GV[i] = lVar.readShort();
+                    } else if (w.Xb) {
+                        this.GV[i] = (short) lVar.Lm.readUnsignedByte();
+                    } else {
+                        this.GU[i] = lVar.Lm.readByte();
+                    }
+                    if (!w.Xe && (!w.Xf || (this.Hz & 1024) == 0)) {
+                        this.GZ[i] = lVar.Lm.readByte();
+                        this.Ha[i] = lVar.Lm.readByte();
+                    } else if ((this.Hz & 1024) != 0) {
+                        this.GX[i] = lVar.readShort();
+                        this.GY[i] = lVar.readShort();
+                    } else {
+                        this.GX[i] = lVar.Lm.readByte();
+                        this.GY[i] = lVar.Lm.readByte();
+                    }
+                    if (w.Xg && (this.Hz & GLURLConnection.BUFFER_SIZE) != 0) {
+                        this.Hb[i] = lVar.Lm.readByte();
+                    }
+                    this.GW[i] = lVar.Lm.readByte();
+                    if (w.Xh && (this.HA & 16) != 0) {
+                        this.Hc[i] = lVar.Lm.readByte();
+                        this.Hd[i] = lVar.Lm.readByte();
+                    }
                 }
             }
+        } catch (IOException failure) {
+            throw a.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -688,64 +701,72 @@ public class a {
     }
 
     private void d(l lVar) {
-        int unsignedShort = lVar.readUnsignedShort();
-        aq("nAFrames = " + unsignedShort);
-        if (unsignedShort > 0) {
-            if (w.Xm || (w.Xl && (this.Hz & 2097152) != 0)) {
-                this.Hi = new short[unsignedShort];
-            } else {
-                this.Hh = new byte[unsignedShort];
-            }
-            this.Hj = new byte[unsignedShort];
-            if (!w.Xj || (this.Hz & 262144) == 0) {
-                this.Hm = new byte[unsignedShort];
-                this.Hn = new byte[unsignedShort];
-            } else {
-                this.Hk = new short[unsignedShort];
-                this.Hl = new short[unsignedShort];
-            }
-            this.Ho = new byte[unsignedShort];
-            for (int i = 0; i < unsignedShort; i++) {
-                if ((w.Xm || w.Xl) && (this.Hz & 2097152) != 0) {
-                    this.Hi[i] = lVar.readShort();
-                } else if (w.Xm) {
-                    this.Hi[i] = (short) lVar.Lm.readUnsignedByte();
+        try {
+            int unsignedShort = lVar.readUnsignedShort();
+            aq("nAFrames = " + unsignedShort);
+            if (unsignedShort > 0) {
+                if (w.Xm || (w.Xl && (this.Hz & 2097152) != 0)) {
+                    this.Hi = new short[unsignedShort];
                 } else {
-                    this.Hh[i] = lVar.Lm.readByte();
+                    this.Hh = new byte[unsignedShort];
                 }
-                this.Hj[i] = lVar.Lm.readByte();
+                this.Hj = new byte[unsignedShort];
                 if (!w.Xj || (this.Hz & 262144) == 0) {
-                    this.Hm[i] = lVar.Lm.readByte();
-                    this.Hn[i] = lVar.Lm.readByte();
+                    this.Hm = new byte[unsignedShort];
+                    this.Hn = new byte[unsignedShort];
                 } else {
-                    this.Hk[i] = lVar.readShort();
-                    this.Hl[i] = lVar.readShort();
+                    this.Hk = new short[unsignedShort];
+                    this.Hl = new short[unsignedShort];
                 }
-                this.Ho[i] = lVar.Lm.readByte();
+                this.Ho = new byte[unsignedShort];
+                for (int i = 0; i < unsignedShort; i++) {
+                    if ((w.Xm || w.Xl) && (this.Hz & 2097152) != 0) {
+                        this.Hi[i] = lVar.readShort();
+                    } else if (w.Xm) {
+                        this.Hi[i] = (short) lVar.Lm.readUnsignedByte();
+                    } else {
+                        this.Hh[i] = lVar.Lm.readByte();
+                    }
+                    this.Hj[i] = lVar.Lm.readByte();
+                    if (!w.Xj || (this.Hz & 262144) == 0) {
+                        this.Hm[i] = lVar.Lm.readByte();
+                        this.Hn[i] = lVar.Lm.readByte();
+                    } else {
+                        this.Hk[i] = lVar.readShort();
+                        this.Hl[i] = lVar.readShort();
+                    }
+                    this.Ho[i] = lVar.Lm.readByte();
+                }
             }
+        } catch (IOException failure) {
+            throw a.<RuntimeException>propagateChecked(failure);
         }
     }
 
     private void e(l lVar) {
-        int unsignedShort = lVar.readUnsignedShort();
-        aq("nAnims = " + unsignedShort);
-        if (unsignedShort > 0) {
-            if (w.Xo || (w.Xn && (this.Hz & 524288) != 0)) {
-                this.Hf = new short[unsignedShort];
-            } else {
-                this.He = new byte[unsignedShort];
-            }
-            this.Hg = new short[unsignedShort];
-            for (int i = 0; i < unsignedShort; i++) {
-                if ((w.Xo || w.Xn) && (this.Hz & 524288) != 0) {
-                    this.Hf[i] = lVar.readShort();
-                } else if (w.Xo) {
-                    this.Hf[i] = (short) lVar.Lm.readUnsignedByte();
+        try {
+            int unsignedShort = lVar.readUnsignedShort();
+            aq("nAnims = " + unsignedShort);
+            if (unsignedShort > 0) {
+                if (w.Xo || (w.Xn && (this.Hz & 524288) != 0)) {
+                    this.Hf = new short[unsignedShort];
                 } else {
-                    this.He[i] = lVar.Lm.readByte();
+                    this.He = new byte[unsignedShort];
                 }
-                this.Hg[i] = lVar.readShort();
+                this.Hg = new short[unsignedShort];
+                for (int i = 0; i < unsignedShort; i++) {
+                    if ((w.Xo || w.Xn) && (this.Hz & 524288) != 0) {
+                        this.Hf[i] = lVar.readShort();
+                    } else if (w.Xo) {
+                        this.Hf[i] = (short) lVar.Lm.readUnsignedByte();
+                    } else {
+                        this.He[i] = lVar.Lm.readByte();
+                    }
+                    this.Hg[i] = lVar.readShort();
+                }
             }
+        } catch (IOException failure) {
+            throw a.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -901,40 +922,44 @@ public class a {
     }
 
     private void f(l lVar) {
-        if (w.WC) {
-            short s = lVar.readShort();
-            bh(s);
-            for (int i = 0; i < s; i++) {
-                if (this.Hp[i] == null) {
-                    this.Hp[i] = new short[this.Gz];
-                    for (int i2 = 0; i2 < this.Gz; i2++) {
-                        this.Hp[i][i2 & 65535] = (short) i2;
+        try {
+            if (w.WC) {
+                short s = lVar.readShort();
+                bh(s);
+                for (int i = 0; i < s; i++) {
+                    if (this.Hp[i] == null) {
+                        this.Hp[i] = new short[this.Gz];
+                        for (int i2 = 0; i2 < this.Gz; i2++) {
+                            this.Hp[i][i2 & 65535] = (short) i2;
+                        }
                     }
-                }
-                if ((this.HA & 262144) != 0) {
-                    if ((this.HA & 524288) != 0) {
-                        this.Hq[i] = new short[this.Gz << 1];
-                    } else {
-                        this.Hr[i] = new byte[this.Gz << 1];
-                    }
-                }
-                short s2 = lVar.readShort();
-                for (int i3 = 0; i3 < s2; i3++) {
-                    short s3 = lVar.readShort();
-                    this.Hp[i][s3 & 65535] = lVar.readShort();
                     if ((this.HA & 262144) != 0) {
-                        if ((this.HA & 524288) == 0) {
-                            this.Hr[i][s3 << 1] = lVar.Lm.readByte();
-                            this.Hr[i][(s3 << 1) + 1] = lVar.Lm.readByte();
+                        if ((this.HA & 524288) != 0) {
+                            this.Hq[i] = new short[this.Gz << 1];
                         } else {
-                            short s4 = lVar.readShort();
-                            short s5 = lVar.readShort();
-                            this.Hq[i][s3 << 1] = s4;
-                            this.Hq[i][(s3 << 1) + 1] = s5;
+                            this.Hr[i] = new byte[this.Gz << 1];
+                        }
+                    }
+                    short s2 = lVar.readShort();
+                    for (int i3 = 0; i3 < s2; i3++) {
+                        short s3 = lVar.readShort();
+                        this.Hp[i][s3 & 65535] = lVar.readShort();
+                        if ((this.HA & 262144) != 0) {
+                            if ((this.HA & 524288) == 0) {
+                                this.Hr[i][s3 << 1] = lVar.Lm.readByte();
+                                this.Hr[i][(s3 << 1) + 1] = lVar.Lm.readByte();
+                            } else {
+                                short s4 = lVar.readShort();
+                                short s5 = lVar.readShort();
+                                this.Hq[i][s3 << 1] = s4;
+                                this.Hq[i][(s3 << 1) + 1] = s5;
+                            }
                         }
                     }
                 }
             }
+        } catch (IOException failure) {
+            throw a.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -1191,7 +1216,7 @@ public class a {
             Ih = Integer.MIN_VALUE;
             Ii = Integer.MIN_VALUE;
             HQ = 1;
-            a((aj) null, i, i2, i3, i4);
+            a((aj) null, i, (float) i2, (float) i3, i4);
             HQ = 0;
         } else {
             int iBA = bA(i);
@@ -1559,75 +1584,79 @@ public class a {
     }
 
     private void a(l lVar, int i, int i2, int i3, int i4) {
-        int i5;
-        int i6 = 0;
-        while (true) {
-            int i7 = i6;
-            if ((this.Hz & 1073741824) != 0) {
-                i5 = this.HF[i3];
-            } else {
-                i5 = this.HE;
-            }
-            if (i7 < i5) {
-                this.HC[i3][i7] = new int[i2];
-                int[] iArr = this.HC[i3][i7];
-                if (w.WG && i == -30584) {
-                    for (int i8 = 0; i8 < i2; i8++) {
-                        int i9 = lVar.readInt();
-                        if (((-16777216) & i9) != -16777216) {
-                            this.HJ = true;
-                            if (((-16777216) & i9) != 0) {
-                                this.HK = true;
-                            }
-                        }
-                        iArr[i8] = i9;
-                    }
-                } else if (w.WI && i == 17476) {
-                    for (int i10 = 0; i10 < i2; i10++) {
-                        short s = lVar.readShort();
-                        if ((61440 & s) != 61440) {
-                            this.HJ = true;
-                            if ((61440 & s) != 0) {
-                                this.HK = true;
-                            }
-                        }
-                        iArr[i10] = (s & 15) | ((61440 & s) << 16) | ((61440 & s) << 12) | ((s & 3840) << 12) | ((s & 3840) << 8) | ((s & 240) << 8) | ((s & 240) << 4) | ((s & 15) << 4);
-                    }
-                } else if (w.WJ && i == 21781) {
-                    for (int i11 = 0; i11 < i2; i11++) {
-                        short s2 = lVar.readShort();
-                        int i12 = -16777216;
-                        if ((Short.MIN_VALUE & s2) != 32768) {
-                            i12 = 0;
-                            this.HJ = true;
-                        }
-                        int i13 = i12 | ((s2 & 31744) << 9) | ((s2 & 992) << 6) | ((s2 & 31) << 3);
-                        if (i13 == 16253176) {
-                            i13 = 16711935;
-                        }
-                        iArr[i11] = i13;
-                    }
-                } else if (w.WH && i == -30712) {
-                    this.HK = false;
-                    for (int i14 = 0; i14 < i2; i14++) {
-                        int unsignedByte = lVar.Lm.readUnsignedByte() + (lVar.Lm.readUnsignedByte() << 8) + (lVar.Lm.readUnsignedByte() << 16);
-                        if (unsignedByte == 16711935) {
-                            this.HJ = true;
-                        } else {
-                            unsignedByte |= -16777216;
-                        }
-                        iArr[i14] = unsignedByte;
-                    }
+        try {
+            int i5;
+            int i6 = 0;
+            while (true) {
+                int i7 = i6;
+                if ((this.Hz & 1073741824) != 0) {
+                    i5 = this.HF[i3];
                 } else {
-                    GLLib.c(false, "Sprite Pixel Format Error: Unsupported format! Format ID: 0x" + Integer.toHexString(i));
+                    i5 = this.HE;
                 }
-                if (GLLib.lB()) {
-                    a(i3, i7, GLLib.lC());
+                if (i7 < i5) {
+                    this.HC[i3][i7] = new int[i2];
+                    int[] iArr = this.HC[i3][i7];
+                    if (w.WG && i == -30584) {
+                        for (int i8 = 0; i8 < i2; i8++) {
+                            int i9 = lVar.readInt();
+                            if (((-16777216) & i9) != -16777216) {
+                                this.HJ = true;
+                                if (((-16777216) & i9) != 0) {
+                                    this.HK = true;
+                                }
+                            }
+                            iArr[i8] = i9;
+                        }
+                    } else if (w.WI && i == 17476) {
+                        for (int i10 = 0; i10 < i2; i10++) {
+                            short s = lVar.readShort();
+                            if ((61440 & s) != 61440) {
+                                this.HJ = true;
+                                if ((61440 & s) != 0) {
+                                    this.HK = true;
+                                }
+                            }
+                            iArr[i10] = (s & 15) | ((61440 & s) << 16) | ((61440 & s) << 12) | ((s & 3840) << 12) | ((s & 3840) << 8) | ((s & 240) << 8) | ((s & 240) << 4) | ((s & 15) << 4);
+                        }
+                    } else if (w.WJ && i == 21781) {
+                        for (int i11 = 0; i11 < i2; i11++) {
+                            short s2 = lVar.readShort();
+                            int i12 = -16777216;
+                            if ((Short.MIN_VALUE & s2) != 32768) {
+                                i12 = 0;
+                                this.HJ = true;
+                            }
+                            int i13 = i12 | ((s2 & 31744) << 9) | ((s2 & 992) << 6) | ((s2 & 31) << 3);
+                            if (i13 == 16253176) {
+                                i13 = 16711935;
+                            }
+                            iArr[i11] = i13;
+                        }
+                    } else if (w.WH && i == -30712) {
+                        this.HK = false;
+                        for (int i14 = 0; i14 < i2; i14++) {
+                            int unsignedByte = lVar.Lm.readUnsignedByte() + (lVar.Lm.readUnsignedByte() << 8) + (lVar.Lm.readUnsignedByte() << 16);
+                            if (unsignedByte == 16711935) {
+                                this.HJ = true;
+                            } else {
+                                unsignedByte |= -16777216;
+                            }
+                            iArr[i14] = unsignedByte;
+                        }
+                    } else {
+                        GLLib.c(false, "Sprite Pixel Format Error: Unsupported format! Format ID: 0x" + Integer.toHexString(i));
+                    }
+                    if (GLLib.lB()) {
+                        a(i3, i7, GLLib.lC());
+                    }
+                    i6 = i7 + 1;
+                } else {
+                    return;
                 }
-                i6 = i7 + 1;
-            } else {
-                return;
             }
+        } catch (IOException failure) {
+            throw a.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -2008,22 +2037,19 @@ public class a {
                 }
                 int i23 = i22 >> this.HP[i];
                 int i24 = i20;
-                while (true) {
-                    i23--;
-                    if (i23 >= 0) {
-                        if (z) {
-                            i17 = i18 + 1;
-                            Gs[i18] = i19;
-                        } else {
-                            i17 = i18 + 1;
-                            Gu[i18] = b;
-                        }
-                        if (i7 <= 0 || i17 < (i24 * i7) + i5 + i3) {
-                            i18 = i17;
-                        } else {
-                            i24++;
-                            i18 = i17 + (i7 - i5);
-                        }
+                while (i23-- >= 0) {
+                    if (z) {
+                        i17 = i18 + 1;
+                        Gs[i18] = i19;
+                    } else {
+                        i17 = i18 + 1;
+                        Gu[i18] = b;
+                    }
+                    if (i7 <= 0 || i17 < (i24 * i7) + i5 + i3) {
+                        i18 = i17;
+                    } else {
+                        i24++;
+                        i18 = i17 + (i7 - i5);
                     }
                 }
                 i20 = i24;
@@ -2044,20 +2070,17 @@ public class a {
                     }
                     int i29 = i27 - 128;
                     i15 = i18;
-                    while (true) {
-                        i29--;
-                        if (i29 > 0) {
-                            if (z) {
-                                Gs[i15] = i19;
-                                i15++;
-                            } else {
-                                Gu[i15] = b;
-                                i15++;
-                            }
-                            if (i7 > 0 && i15 >= (i25 * i7) + i5 + i3) {
-                                i25++;
-                                i15 += i7 - i5;
-                            }
+                    while (i29-- > 0) {
+                        if (z) {
+                            Gs[i15] = i19;
+                            i15++;
+                        } else {
+                            Gu[i15] = b;
+                            i15++;
+                        }
+                        if (i7 > 0 && i15 >= (i25 * i7) + i5 + i3) {
+                            i25++;
+                            i15 += i7 - i5;
                         }
                     }
                 } else {
@@ -2262,12 +2285,10 @@ public class a {
                 }
                 if (z) {
                     i14 = i70 + 1;
-                    i2++;
-                    Gs[i70] = iArr[bArr[i2] & 255];
+                    Gs[i70] = iArr[bArr[i2++] & 255];
                 } else {
                     i14 = i70 + 1;
-                    i2++;
-                    Gu[i70] = (byte) (bArr[i2] & 255);
+                    Gu[i70] = (byte) (bArr[i2++] & 255);
                 }
                 if (i7 <= 0 || i14 < (i4 * i7) + i5 + i3) {
                     i70 = i14;
@@ -2286,13 +2307,13 @@ public class a {
                 }
                 if (z) {
                     i13 = i71 + 1;
+                    int alpha = bArr[i2] & 255;
                     int i72 = i2 + 1;
                     i2 = i72 + 1;
-                    Gs[i71] = (iArr[bArr[i72] & 255] & 16777215) | ((bArr[i2] & 255) << 24);
+                    Gs[i71] = (iArr[bArr[i72] & 255] & 16777215) | (alpha << 24);
                 } else {
                     i13 = i71 + 1;
-                    i2++;
-                    Gu[i71] = (byte) (bArr[i2] & 255);
+                    Gu[i71] = (byte) (bArr[i2++] & 255);
                 }
                 if (i7 <= 0 || i13 < (i4 * i7) + i5 + i3) {
                     i71 = i13;
@@ -2364,6 +2385,8 @@ public class a {
                         i8 -= i7 - i5;
                         i78 = i12 + (i7 - i5);
                     }
+                } else {
+                    break;
                 }
             }
         } else if (w.WS && this.HM == -24280) {
@@ -2453,6 +2476,8 @@ public class a {
                         i86 = (i7 - i5) + i11;
                         i85 -= i7 - i5;
                     }
+                } else {
+                    break;
                 }
             }
         } else if (w.WU && this.HM == -22976) {
@@ -2470,22 +2495,19 @@ public class a {
                 int i93 = i92 >> this.HP[i];
                 int i94 = i88;
                 int i95 = i89;
-                while (true) {
-                    i93--;
-                    if (i93 >= 0) {
-                        if (z) {
-                            i10 = i95 + 1;
-                            Gs[i95] = i19;
-                        } else {
-                            i10 = i95 + 1;
-                            Gu[i95] = b;
-                        }
-                        if (i7 <= 0 || i10 < (i94 * i7) + i5 + i3) {
-                            i95 = i10;
-                        } else {
-                            i94++;
-                            i95 = i10 + (i7 - i5);
-                        }
+                while (i93-- >= 0) {
+                    if (z) {
+                        i10 = i95 + 1;
+                        Gs[i95] = i19;
+                    } else {
+                        i10 = i95 + 1;
+                        Gu[i95] = b;
+                    }
+                    if (i7 <= 0 || i10 < (i94 * i7) + i5 + i3) {
+                        i95 = i10;
+                    } else {
+                        i94++;
+                        i95 = i10 + (i7 - i5);
                     }
                 }
                 i88 = i94;
@@ -2502,17 +2524,14 @@ public class a {
                     int i101 = bArr[i98] & 255;
                     i98 = i100 + 1;
                     int i102 = bArr[i100] & 255;
-                    while (true) {
-                        i101--;
-                        if (i101 > 0) {
-                            if (z) {
-                                Gs[i97] = (i102 << 24) | (Gs[i97] & 16777215);
-                                i97++;
-                            }
-                            if (i7 > 0 && i97 >= (i96 * i7) + i5 + i3) {
-                                i96++;
-                                i97 += i7 - i5;
-                            }
+                    while (i101-- > 0) {
+                        if (z) {
+                            Gs[i97] = (i102 << 24) | (Gs[i97] & 16777215);
+                            i97++;
+                        }
+                        if (i7 > 0 && i97 >= (i96 * i7) + i5 + i3) {
+                            i96++;
+                            i97 += i7 - i5;
                         }
                     }
                 } else if (z) {
@@ -2541,20 +2560,17 @@ public class a {
                     }
                     int i109 = i107 - 128;
                     i9 = i105;
-                    while (true) {
-                        i109--;
-                        if (i109 > 0) {
-                            if (z) {
-                                Gs[i9] = i19;
-                                i9++;
-                            } else {
-                                Gu[i9] = b;
-                                i9++;
-                            }
-                            if (i7 > 0 && i9 >= (i103 * i7) + i5 + i3) {
-                                i103++;
-                                i9 += i7 - i5;
-                            }
+                    while (i109-- > 0) {
+                        if (z) {
+                            Gs[i9] = i19;
+                            i9++;
+                        } else {
+                            Gu[i9] = b;
+                            i9++;
+                        }
+                        if (i7 > 0 && i9 >= (i103 * i7) + i5 + i3) {
+                            i103++;
+                            i9 += i7 - i5;
                         }
                     }
                 } else {
@@ -2585,16 +2601,13 @@ public class a {
                     int i116 = bArr[i113] & 255;
                     i113 = i115 + 1;
                     int i117 = bArr[i115] & 255;
-                    while (true) {
-                        i116--;
-                        if (i116 > 0) {
-                            if (z) {
-                                Gs[i111] = (i117 << 24) | (Gs[i111] & 16777215);
-                                i111++;
-                                if (i7 > 0 && i111 >= (i110 * i7) + i5 + i3) {
-                                    i110++;
-                                    i111 += i7 - i5;
-                                }
+                    while (i116-- > 0) {
+                        if (z) {
+                            Gs[i111] = (i117 << 24) | (Gs[i111] & 16777215);
+                            i111++;
+                            if (i7 > 0 && i111 >= (i110 * i7) + i5 + i3) {
+                                i110++;
+                                i111 += i7 - i5;
                             }
                         }
                     }
@@ -2618,22 +2631,19 @@ public class a {
                 if (i122 > 127) {
                     int i123 = i122 - 128;
                     i120 = i121;
-                    while (true) {
-                        i123--;
-                        if (i123 > 0) {
-                            if (z) {
-                                Gs[i119] = iArr[bArr[i120] & 255];
-                                i119++;
-                                i120++;
-                            } else {
-                                Gu[i119] = (byte) (bArr[i120] & 255);
-                                i119++;
-                                i120++;
-                            }
-                            if (i7 > 0 && i119 >= (i118 * i7) + i5 + i3) {
-                                i118++;
-                                i119 += i7 - i5;
-                            }
+                    while (i123-- > 0) {
+                        if (z) {
+                            Gs[i119] = iArr[bArr[i120] & 255];
+                            i119++;
+                            i120++;
+                        } else {
+                            Gu[i119] = (byte) (bArr[i120] & 255);
+                            i119++;
+                            i120++;
+                        }
+                        if (i7 > 0 && i119 >= (i118 * i7) + i5 + i3) {
+                            i118++;
+                            i119 += i7 - i5;
                         }
                     }
                 } else {
@@ -2644,20 +2654,17 @@ public class a {
                         i120 = i121 + 1;
                         b = (byte) (bArr[i121] & 255);
                     }
-                    while (true) {
-                        i122--;
-                        if (i122 > 0) {
-                            if (z) {
-                                Gs[i119] = i19;
-                                i119++;
-                            } else {
-                                Gu[i119] = b;
-                                i119++;
-                            }
-                            if (i7 > 0 && i119 >= (i118 * i7) + i5 + i3) {
-                                i118++;
-                                i119 += i7 - i5;
-                            }
+                    while (i122-- > 0) {
+                        if (z) {
+                            Gs[i119] = i19;
+                            i119++;
+                        } else {
+                            Gu[i119] = b;
+                            i119++;
+                        }
+                        if (i7 > 0 && i119 >= (i118 * i7) + i5 + i3) {
+                            i118++;
+                            i119 += i7 - i5;
                         }
                     }
                 }
@@ -2673,16 +2680,13 @@ public class a {
                     int i130 = bArr[i127] & 255;
                     i127 = i129 + 1;
                     int i131 = bArr[i129] & 255;
-                    while (true) {
-                        i130--;
-                        if (i130 > 0) {
-                            if (z) {
-                                Gs[i125] = (i131 << 24) | (Gs[i125] & 16777215);
-                                i125++;
-                                if (i7 > 0 && i125 >= (i124 * i7) + i5 + i3) {
-                                    i124++;
-                                    i125 += i7 - i5;
-                                }
+                    while (i130-- > 0) {
+                        if (z) {
+                            Gs[i125] = (i131 << 24) | (Gs[i125] & 16777215);
+                            i125++;
+                            if (i7 > 0 && i125 >= (i124 * i7) + i5 + i3) {
+                                i124++;
+                                i125 += i7 - i5;
                             }
                         }
                     }
@@ -3213,117 +3217,121 @@ public class a {
                     s10 = (short) (s20 + 1);
                 }
             } else {
-                if (cCharAt2 >= ' ') {
-                    cCharAt = cCharAt2;
-                } else if (cCharAt2 == 1) {
-                    iBO = i18;
-                    i4 = i21;
-                    i5 = i16;
-                    z3 = z11;
-                    s3 = s12;
-                    z4 = z10;
-                    i6 = i15;
-                    z5 = z8;
-                    s2 = s11;
-                    s4 = s8;
-                } else if (cCharAt2 == 2) {
-                    cCharAt = str.charAt(i20);
-                } else {
-                    iBO = i18;
-                    i4 = i21;
-                    i5 = i16;
-                    z3 = z11;
-                    s3 = s12;
-                    z4 = z10;
-                    i6 = i15;
-                    z5 = z8;
-                    s2 = s11;
-                    s4 = s8;
-                }
-                int iHD = cCharAt == ' ' ? hD() : iA + hF();
-                iBO = (w.XE && this.IN) ? i18 + bO(cCharAt) : i18;
-                int i25 = z11 ? iHD + 1 : iHD;
-                short s22 = (short) (((short) i25) + s12);
-                short s23 = (short) (((short) i25) + s8);
-                if (s23 > i) {
-                    boolean z13 = z || !z10;
-                    int i26 = 0;
-                    if (z13) {
-                        sHD = (short) (s23 - ((short) i25));
-                        s6 = 0;
-                        i11 = i20 - 1;
-                        i26 = 1;
-                        s22 = 0;
+                plainCharacter: {
+                    if (cCharAt2 >= ' ') {
+                        cCharAt = cCharAt2;
+                    } else if (cCharAt2 == 1) {
+                        iBO = i18;
+                        i4 = i21;
+                        i5 = i16;
+                        z3 = z11;
+                        s3 = s12;
+                        z4 = z10;
+                        i6 = i15;
+                        z5 = z8;
+                        s2 = s11;
+                        s4 = s8;
+                        break plainCharacter;
+                    } else if (cCharAt2 == 2) {
+                        cCharAt = str.charAt(i20);
                     } else {
-                        sHD = (short) (s23 - ((short) hD()));
-                        i11 = s11;
-                        s6 = s11;
+                        iBO = i18;
+                        i4 = i21;
+                        i5 = i16;
+                        z3 = z11;
+                        s3 = s12;
+                        z4 = z10;
+                        i6 = i15;
+                        z5 = z8;
+                        s2 = s11;
+                        s4 = s8;
+                        break plainCharacter;
                     }
-                    z4 = false;
-                    short s24 = (short) (s10 + 1);
-                    Jd[s10] = s9;
-                    short s25 = (short) (s24 + 1);
-                    Jd[s24] = (short) (i26 + (i11 - s9));
-                    short s26 = (short) (s25 + 1);
-                    Jd[s25] = (short) (sHD - s22);
-                    short s27 = (short) (s26 + 1);
-                    Jd[s26] = (short) iB;
-                    if (z13) {
-                        s22 = 0;
-                        i12 = i16;
-                        z6 = z12;
-                        z7 = z11;
-                    } else {
-                        i12 = i15;
-                        z6 = z9;
-                        z7 = z8;
-                    }
-                    if (w.XG) {
-                        s7 = (short) (s27 + 1);
-                        Jd[s27] = (short) i21;
-                        GLLib.c(i16 < 4095, "Warning: WrapTextB formatting can only save palettes up to 4095");
-                        i21 = (z6 ? Utility.DEFAULT_STREAM_BUFFER_SIZE : 0) | (i12 & 4095) | (z7 ? 4096 : 0);
-                        i16 = i12;
-                        z12 = z6;
-                    } else {
-                        s7 = s27;
-                    }
-                    if (w.XE) {
-                        if (this.IN) {
-                            Jd[s7] = (short) i19;
-                            i13 = 0;
-                            i19 = 0;
+                    int iHD = cCharAt == ' ' ? hD() : iA + hF();
+                    iBO = (w.XE && this.IN) ? i18 + bO(cCharAt) : i18;
+                    int i25 = z11 ? iHD + 1 : iHD;
+                    short s22 = (short) (((short) i25) + s12);
+                    short s23 = (short) (((short) i25) + s8);
+                    if (s23 > i) {
+                        boolean z13 = z || !z10;
+                        int i26 = 0;
+                        if (z13) {
+                            sHD = (short) (s23 - ((short) i25));
+                            s6 = 0;
+                            i11 = i20 - 1;
+                            i26 = 1;
+                            s22 = 0;
+                        } else {
+                            sHD = (short) (s23 - ((short) hD()));
+                            i11 = s11;
+                            s6 = s11;
+                        }
+                        z4 = false;
+                        short s24 = (short) (s10 + 1);
+                        Jd[s10] = s9;
+                        short s25 = (short) (s24 + 1);
+                        Jd[s24] = (short) (i26 + (i11 - s9));
+                        short s26 = (short) (s25 + 1);
+                        Jd[s25] = (short) (sHD - s22);
+                        short s27 = (short) (s26 + 1);
+                        Jd[s26] = (short) iB;
+                        if (z13) {
+                            s22 = 0;
+                            i12 = i16;
+                            z6 = z12;
+                            z7 = z11;
+                        } else {
+                            i12 = i15;
+                            z6 = z9;
+                            z7 = z8;
+                        }
+                        if (w.XG) {
+                            s7 = (short) (s27 + 1);
+                            Jd[s27] = (short) i21;
+                            GLLib.c(i16 < 4095, "Warning: WrapTextB formatting can only save palettes up to 4095");
+                            i21 = (z6 ? Utility.DEFAULT_STREAM_BUFFER_SIZE : 0) | (i12 & 4095) | (z7 ? 4096 : 0);
+                            i16 = i12;
+                            z12 = z6;
+                        } else {
+                            s7 = s27;
+                        }
+                        if (w.XE) {
+                            if (this.IN) {
+                                Jd[s7] = (short) i19;
+                                i13 = 0;
+                                i19 = 0;
+                            } else {
+                                i13 = iBO;
+                            }
+                            s7 = (short) (s7 + 1);
                         } else {
                             i13 = iBO;
                         }
-                        s7 = (short) (s7 + 1);
+                        s4 = 0;
+                        i20 = i11;
+                        iBO = i13;
+                        i4 = i21;
+                        i5 = i16;
+                        z3 = z7;
+                        s3 = s22;
+                        i6 = i12;
+                        z9 = z6;
+                        z5 = z7;
+                        s2 = s6;
+                        iB = this.IO;
+                        s10 = s7;
+                        s9 = (short) (i11 + 1);
                     } else {
-                        i13 = iBO;
+                        i4 = i21;
+                        i5 = i16;
+                        z3 = z11;
+                        s3 = s22;
+                        z4 = z10;
+                        i6 = i15;
+                        z5 = z8;
+                        s2 = s11;
+                        s4 = s23;
                     }
-                    s4 = 0;
-                    i20 = i11;
-                    iBO = i13;
-                    i4 = i21;
-                    i5 = i16;
-                    z3 = z7;
-                    s3 = s22;
-                    i6 = i12;
-                    z9 = z6;
-                    z5 = z7;
-                    s2 = s6;
-                    iB = this.IO;
-                    s10 = s7;
-                    s9 = (short) (i11 + 1);
-                } else {
-                    i4 = i21;
-                    i5 = i16;
-                    z3 = z11;
-                    s3 = s22;
-                    z4 = z10;
-                    i6 = i15;
-                    z5 = z8;
-                    s2 = s11;
-                    s4 = s23;
                 }
             }
             i20++;
@@ -3401,10 +3409,10 @@ public class a {
         if ((i5 & 32) != 0) {
             i7 = i2 - i16;
         } else if ((i5 & 2) != 0) {
-            i7 = i2;
             i7 = i2 - (i16 >> 1);
+        } else {
+            i7 = i2;
         }
-        i7 = i2;
         II = this.HI[0];
         boolean z = this.IV;
         boolean z2 = this.IU;
@@ -3931,19 +3939,19 @@ public class a {
                                 i10 = iA;
                             }
                             if (z5) {
-                                a(ajVar, i10, i14, i13, 0);
+                                a(ajVar, i10, (float) i14, (float) i13, 0);
                             }
                             if (this.IU) {
                                 iBN = bN(95);
                                 iBP = ((bP(i10) - bP(iBN)) >> 1) + i14;
                                 if (z5) {
-                                    a(ajVar, iBN, iBP, i13, 0);
+                                    a(ajVar, iBN, (float) iBP, (float) i13, 0);
                                 }
                             }
                             if (this.IV) {
                                 i14++;
                                 if (z5) {
-                                    a(ajVar, i10, i14, i13, 0);
+                                    a(ajVar, i10, (float) i14, (float) i13, 0);
                                 }
                             }
                             if (z5) {
@@ -4000,19 +4008,19 @@ public class a {
                                 i10 = 0;
                             }
                             if (z5) {
-                                a(ajVar, i10, i14, i13, 0);
+                                a(ajVar, i10, (float) i14, (float) i13, 0);
                             }
                             if (this.IU) {
                                 iBN = bN(95);
                                 iBP = ((bP(i10) - bP(iBN)) >> 1) + i14;
                                 if (z5) {
-                                    a(ajVar, iBN, iBP, i13, 0);
+                                    a(ajVar, iBN, (float) iBP, (float) i13, 0);
                                 }
                             }
                             if (this.IV) {
                                 i14++;
                                 if (z5) {
-                                    a(ajVar, i10, i14, i13, 0);
+                                    a(ajVar, i10, (float) i14, (float) i13, 0);
                                 }
                             }
                             if (z5) {
@@ -4045,7 +4053,7 @@ public class a {
                             int iBN2 = bN(95);
                             int iHD = ((hD() - bP(iBN2)) >> 1) + i14;
                             if (z5) {
-                                a(ajVar, iBN2, iHD, i13, 0);
+                                a(ajVar, iBN2, (float) iHD, (float) i13, 0);
                             }
                         }
                         int iHD2 = hD() + i14;
@@ -4102,19 +4110,19 @@ public class a {
                                 i10 = iA;
                             }
                             if (z5) {
-                                a(ajVar, i10, i14, i13, 0);
+                                a(ajVar, i10, (float) i14, (float) i13, 0);
                             }
                             if (this.IU) {
                                 iBN = bN(95);
                                 iBP = ((bP(i10) - bP(iBN)) >> 1) + i14;
                                 if (z5) {
-                                    a(ajVar, iBN, iBP, i13, 0);
+                                    a(ajVar, iBN, (float) iBP, (float) i13, 0);
                                 }
                             }
                             if (this.IV) {
                                 i14++;
                                 if (z5) {
-                                    a(ajVar, i10, i14, i13, 0);
+                                    a(ajVar, i10, (float) i14, (float) i13, 0);
                                 }
                             }
                             if (z5) {
@@ -4365,13 +4373,12 @@ public class a {
         }
         if ((i5 & 4) != 0) {
             i10 = HY[i10 & 7] | (i10 & (-8));
-            if (w.Zo) {
-                if (((GLLib.TX & 262144) != 0) && (GLLib.TY[18][6] % GLLib.Rk != 0 || GLLib.TY[18][10] != 0)) {
-                    i6 = iBu;
-                }
+            if (w.Zo && ((GLLib.TX & 262144) != 0) && (GLLib.TY[18][6] % GLLib.Rk != 0 || GLLib.TY[18][10] != 0)) {
+                i6 = iBu;
+            } else {
+                i6 = -iBv;
+                iBv = iBu;
             }
-            i6 = -iBv;
-            iBv = iBu;
         } else {
             i6 = iBu;
         }
@@ -4391,7 +4398,7 @@ public class a {
                 }
             }
         }
-        a(ajVar, i9, i3 + i6, iBv + i4, i10);
+        a(ajVar, i9, (float) (i3 + i6), (float) (iBv + i4), i10);
     }
 
     public void a(aj ajVar, int i, float f, float f2, int i2, int i3) {
@@ -4599,15 +4606,14 @@ public class a {
         }
         if ((i3 & 4) != 0) {
             i9 = (i9 & (-8)) | HY[i9 & 7];
-            if (w.Zo) {
-                if (((GLLib.TX & 262144) != 0) && (GLLib.TY[18][6] % GLLib.Rk != 0 || GLLib.TY[18][10] != 0)) {
-                    f3 = fBw;
-                    i10 = i9;
-                }
+            if (w.Zo && ((GLLib.TX & 262144) != 0) && (GLLib.TY[18][6] % GLLib.Rk != 0 || GLLib.TY[18][10] != 0)) {
+                f3 = fBw;
+                i10 = i9;
+            } else {
+                f3 = (-fBx) - i7;
+                fBx = fBw;
+                i10 = i9;
             }
-            f3 = (-fBx) - i7;
-            fBx = fBw;
-            i10 = i9;
         } else {
             f3 = fBw;
             i10 = i9;
@@ -4708,7 +4714,7 @@ public class a {
             GLLib.l(18, 3, i5);
             GLLib.l(18, 1, 100);
             GLLib.l(18, 4, i6);
-            a(ajVar, i, i2, i3, i4);
+            a(ajVar, i, (float) i2, (float) i3, i4);
             GLLib.i(18, false);
             return;
         }
@@ -4776,7 +4782,7 @@ public class a {
             } else {
                 iBH = bH(i);
             }
-        } else if (w.Zm) {
+        } else if (!w.Zm) {
             iBH = bH(i);
         } else {
             if ((GLLib.TX & GLURLConnection.BUFFER_SIZE) != 0) {

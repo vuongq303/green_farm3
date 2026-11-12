@@ -1,6 +1,5 @@
 package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 /* JADX INFO: compiled from: PromotionOI.java */
 /* JADX INFO: loaded from: classes.dex */
@@ -14,7 +13,7 @@ public class bn {
             return -2147479542;
         }
         bc bcVar2 = (bc) objCd;
-        Object objCd2 = bcVar2.cd(FirebaseAnalytics.Param.END_DATE);
+        Object objCd2 = bcVar2.cd("end_date");
         if (objCd2 == null) {
             return -2147483646;
         }

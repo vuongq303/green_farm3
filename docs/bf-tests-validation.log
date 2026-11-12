@@ -1,0 +1,6 @@
+test_glyph_flags_literal_escapes_styles_recursion_and_errors (test_bf_text_renderer.BfTextRendererTest.test_glyph_flags_literal_escapes_styles_recursion_and_errors) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 5.074s
+
+OK

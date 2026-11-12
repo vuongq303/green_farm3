@@ -1314,215 +1314,59 @@ public class aa implements Runnable {
     /* JADX WARN: Code duplicated, block: B:96:0x019d  */
     /* JADX WARN: Code duplicated, block: B:98:0x01a1  */
     /* JADX WARN: Code duplicated, block: B:99:0x01a6  */
+    // Recovered from original DEX register joins at cond_58/cond_225 and draw-loop branches.
     private static void a(aj ajVar, int i, int i2, int i3, int i4, int i5, int i6, int i7) {
-        int i8;
-        int i9;
-        int i10;
-        int i11;
-        int i12;
-        int i13;
-        int i14;
-        int i15;
-        int iW;
-        boolean z;
-        int iW2;
-        int i16;
-        int i17;
-        int iW3;
-        boolean z2;
-        boolean zAb = ab(i, 1);
-        boolean zAb2 = ab(i, 2);
-        int i18 = abT[i][2];
-        int i19 = abT[i][3];
-        int i20 = abS[2];
-        int i21 = abS[5];
-        int i22 = i18 * i19;
-        if (zAb) {
-            i10 = i2;
-            while (i10 < 0) {
-                i10 += i18;
+        boolean wrapX = ab(i, 1);
+        boolean wrapY = ab(i, 2);
+        int mapWidth = abT[i][2];
+        int mapHeight = abT[i][3];
+        int tileWidth = abS[2];
+        int tileHeight = abS[5];
+        int tileCount = mapWidth * mapHeight;
+        int firstColumn;
+        if (wrapX) {
+            firstColumn = i2;
+            while (firstColumn < 0) {
+                firstColumn += mapWidth;
             }
-            while (i10 >= i18) {
-                i10 -= i18;
+            while (firstColumn >= mapWidth) {
+                firstColumn -= mapWidth;
             }
+        } else if (ab(i, 16)) {
+            firstColumn = i2;
         } else {
-            if (ab(i, 16)) {
-                i8 = i6;
-                i9 = i4;
-                i10 = i2;
+            if (i2 < 0) {
+                i6 -= i2 * tileWidth;
+                i4 += i2;
+                firstColumn = 0;
             } else {
-                if (i2 < 0) {
-                    i6 -= i2 * i20;
-                    i4 += i2;
-                    i10 = 0;
-                } else {
-                    i10 = i2;
-                }
-                if (i10 + i4 >= i18) {
-                    i4 = (i18 - i10) - 1;
-                }
-                if (i4 < 0) {
-                    return;
-                }
+                firstColumn = i2;
             }
-            if (zAb2) {
-                while (i3 < 0) {
-                    i3 += i19;
-                }
-                while (i3 >= i19) {
-                    i3 -= i19;
-                }
-            } else if (!ab(i, 32)) {
-                if (i3 < 0) {
-                    i7 -= i3 * i21;
-                    i5 += i3;
-                    i3 = 0;
-                }
-                if (i3 + i5 >= i19) {
-                    i5 = (i19 - i3) - 1;
-                }
-                if (i5 < 0) {
-                    return;
-                }
+            if (firstColumn + i4 >= mapWidth) {
+                i4 = (mapWidth - firstColumn) - 1;
             }
-            if (abW != 100) {
-                GLLib.h(18, false);
-                GLLib.l(18, 1, abW);
-                GLLib.l(18, 5, 1);
-            }
-            while (true) {
-                i5--;
-                if (i5 >= 0) {
-                    break;
-                }
-                i11 = i10;
-                i12 = i9;
-                i13 = i8;
-                while (true) {
-                    i12--;
-                    if (i12 < 0) {
-                        break;
-                    }
-                    i14 = i11 + (i3 * i18);
-                    if (i14 < i22) {
-                        if (w.Wq) {
-                            iW = a(i, 0, i14, true);
-                            if (iW == 65535) {
-                                z = true;
-                            } else {
-                                z = false;
-                            }
-                        } else {
-                            iW = w(i, 0, i14);
-                            if (iW == 255) {
-                                z = true;
-                            } else {
-                                z = false;
-                            }
-                        }
-                        if (!z) {
-                            iW2 = w(i, 1, i14);
-                            if (abV[i].hv() == 0) {
-                                abV[i].a(ajVar, iW, i13, i7, iW2, abS[2], abS[5]);
-                            } else {
-                                if ((iW2 & 4) != 0) {
-                                    if ((iW2 & 1) == 0 && (iW2 & 2) != 0) {
-                                        i17 = i7 + i20;
-                                        i16 = i13;
-                                    } else if ((iW2 & 1) != 0) {
-                                        i16 = i13 + i21;
-                                        i17 = i7 + i20;
-                                    } else if ((iW2 & 2) == 0) {
-                                        i17 = i7;
-                                        i16 = i13 + i21;
-                                    } else {
-                                        i17 = i7;
-                                        i16 = i13;
-                                    }
-                                } else {
-                                    if ((iW2 & 1) != 0) {
-                                        i16 = i13 + i20;
-                                    } else {
-                                        i16 = i13;
-                                    }
-                                    if ((iW2 & 2) != 0) {
-                                        i17 = i7 + i21;
-                                    } else {
-                                        i17 = i7;
-                                    }
-                                }
-                                abV[i].a(ajVar, iW, i16, i17, iW2);
-                            }
-                            if (w.Wr && i == abP && abQ > 0) {
-                                if (w.Wq) {
-                                    iW3 = a(abQ, 0, i14, true);
-                                    if (iW3 == 65535) {
-                                        z2 = true;
-                                    } else {
-                                        z2 = false;
-                                    }
-                                } else {
-                                    iW3 = w(abQ, 0, i14);
-                                    if (iW3 == 255) {
-                                        z2 = true;
-                                    } else {
-                                        z2 = false;
-                                    }
-                                }
-                                if (!z2) {
-                                    if (abV[abQ].hv() != 0) {
-                                        iW3 = abV[abQ].t(iW3, 0);
-                                    }
-                                    if (abR != 2 && abR != 3 && abR != 4 && abR != 5 && abR == 1) {
-                                        abV[abQ].a(ajVar, iW3, i13, i7, 0);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    i13 += i20;
-                    i15 = i11 + 1;
-                    if (i15 >= i18) {
-                        i11 = i15;
-                    } else if (zAb) {
-                        break;
-                    } else {
-                        i11 = 0;
-                    }
-                }
-                i7 += i21;
-                i3++;
-                if (i3 < i19) {
-                    if (zAb2) {
-                        break;
-                    } else {
-                        i3 = 0;
-                    }
-                }
-            }
-            if (abW != 100) {
+            if (i4 < 0) {
                 return;
             }
-            GLLib.l(18, 5, 0);
-            GLLib.i(18, false);
         }
-        i8 = i6;
-        i9 = i4;
-        if (zAb2) {
+        // Both original horizontal paths join with v16=p6 and v14=p4.
+        int firstX = i6;
+        int columns = i4;
+        if (wrapY) {
             while (i3 < 0) {
-                i3 += i19;
+                i3 += mapHeight;
             }
-            while (i3 >= i19) {
-                i3 -= i19;
+            while (i3 >= mapHeight) {
+                i3 -= mapHeight;
             }
         } else if (!ab(i, 32)) {
             if (i3 < 0) {
-                i7 -= i3 * i21;
+                i7 -= i3 * tileHeight;
                 i5 += i3;
                 i3 = 0;
             }
-            if (i3 + i5 >= i19) {
-                i5 = (i19 - i3) - 1;
+            if (i3 + i5 >= mapHeight) {
+                i5 = (mapHeight - i3) - 1;
             }
             if (i5 < 0) {
                 return;
@@ -1533,133 +1377,76 @@ public class aa implements Runnable {
             GLLib.l(18, 1, abW);
             GLLib.l(18, 5, 1);
         }
-        while (true) {
-            i5--;
-            if (i5 >= 0) {
-                break;
-                break;
-            }
-            i11 = i10;
-            i12 = i9;
-            i13 = i8;
-            while (true) {
-                i12--;
-                if (i12 < 0) {
-                    break;
-                    break;
-                }
-                i14 = i11 + (i3 * i18);
-                if (i14 < i22) {
-                    if (w.Wq) {
-                        iW = a(i, 0, i14, true);
-                        if (iW == 65535) {
-                            z = true;
-                        } else {
-                            z = false;
-                        }
-                    } else {
-                        iW = w(i, 0, i14);
-                        if (iW == 255) {
-                            z = true;
-                        } else {
-                            z = false;
-                        }
-                    }
-                    if (!z) {
-                        iW2 = w(i, 1, i14);
+        while (i5-- >= 0) {
+            int column = firstColumn;
+            int remainingColumns = columns;
+            int x = firstX;
+            while (remainingColumns-- >= 0) {
+                int index = column + (i3 * mapWidth);
+                if (index < tileCount) {
+                    int tile = w.Wq ? a(i, 0, index, true) : w(i, 0, index);
+                    if (tile != (w.Wq ? 65535 : 255)) {
+                        int flags = w(i, 1, index);
                         if (abV[i].hv() == 0) {
-                            abV[i].a(ajVar, iW, i13, i7, iW2, abS[2], abS[5]);
+                            abV[i].a(ajVar, tile, (float) x, (float) i7, flags, abS[2], abS[5]);
                         } else {
-                            if ((iW2 & 4) != 0) {
-                                if ((iW2 & 1) == 0) {
-                                    if ((iW2 & 1) != 0) {
-                                        i16 = i13 + i21;
-                                        i17 = i7 + i20;
-                                    } else if ((iW2 & 2) == 0) {
-                                        i17 = i7;
-                                        i16 = i13 + i21;
-                                    } else {
-                                        i17 = i7;
-                                        i16 = i13;
-                                    }
-                                } else if ((iW2 & 1) != 0) {
-                                    i16 = i13 + i21;
-                                    i17 = i7 + i20;
-                                } else if ((iW2 & 2) == 0) {
-                                    i17 = i7;
-                                    i16 = i13 + i21;
+                            int drawX;
+                            int drawY;
+                            if ((flags & 4) != 0) {
+                                if ((flags & 1) != 0 && (flags & 2) != 0) {
+                                    drawX = x;
+                                    drawY = i7 + tileWidth;
+                                } else if ((flags & 1) != 0) {
+                                    drawX = x + tileHeight;
+                                    drawY = i7 + tileWidth;
+                                } else if ((flags & 2) == 0) {
+                                    drawX = x + tileHeight;
+                                    drawY = i7;
                                 } else {
-                                    i17 = i7;
-                                    i16 = i13;
+                                    drawX = x;
+                                    drawY = i7;
                                 }
                             } else {
-                                if ((iW2 & 1) != 0) {
-                                    i16 = i13 + i20;
-                                } else {
-                                    i16 = i13;
-                                }
-                                if ((iW2 & 2) != 0) {
-                                    i17 = i7 + i21;
-                                } else {
-                                    i17 = i7;
-                                }
+                                drawX = (flags & 1) != 0 ? x + tileWidth : x;
+                                drawY = (flags & 2) != 0 ? i7 + tileHeight : i7;
                             }
-                            abV[i].a(ajVar, iW, i16, i17, iW2);
+                            abV[i].a(ajVar, tile, (float) drawX, (float) drawY, flags);
                         }
-                        if (w.Wr) {
-                            if (w.Wq) {
-                                iW3 = a(abQ, 0, i14, true);
-                                if (iW3 == 65535) {
-                                    z2 = true;
-                                } else {
-                                    z2 = false;
-                                }
-                            } else {
-                                iW3 = w(abQ, 0, i14);
-                                if (iW3 == 255) {
-                                    z2 = true;
-                                } else {
-                                    z2 = false;
-                                }
-                            }
-                            if (!z2) {
+                        if (w.Wr && i == abP && abQ > 0) {
+                            int overlay = w.Wq ? a(abQ, 0, index, true) : w(abQ, 0, index);
+                            if (overlay != (w.Wq ? 65535 : 255)) {
                                 if (abV[abQ].hv() != 0) {
-                                    iW3 = abV[abQ].t(iW3, 0);
+                                    overlay = abV[abQ].t(overlay, 0);
                                 }
-                                if (abR != 2) {
-                                    abV[abQ].a(ajVar, iW3, i13, i7, 0);
+                                if (abR == 1) {
+                                    abV[abQ].a(ajVar, overlay, x, i7, 0);
                                 }
                             }
                         }
                     }
                 }
-                i13 += i20;
-                i15 = i11 + 1;
-                if (i15 >= i18) {
-                    i11 = i15;
-                } else {
-                    if (zAb) {
-                        break;
+                x += tileWidth;
+                column++;
+                if (column >= mapWidth) {
+                    if (!wrapX) {
                         break;
                     }
-                    i11 = 0;
+                    column = 0;
                 }
             }
-            i7 += i21;
+            i7 += tileHeight;
             i3++;
-            if (i3 < i19) {
-                if (zAb2) {
-                    break;
+            if (i3 >= mapHeight) {
+                if (!wrapY) {
                     break;
                 }
                 i3 = 0;
             }
         }
         if (abW != 100) {
-            return;
+            GLLib.l(18, 5, 0);
+            GLLib.i(18, false);
         }
-        GLLib.l(18, 5, 0);
-        GLLib.i(18, false);
     }
 
     private static final int ac(int i, int i2) {

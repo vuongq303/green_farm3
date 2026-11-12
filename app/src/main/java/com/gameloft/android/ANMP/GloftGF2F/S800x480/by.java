@@ -26,33 +26,14 @@ class by extends Thread {
     }
 
     void ok() {
-        Exception e;
-        byte b;
-        byte b2;
+        // Original catch_6e starts the unread packet-header register at zero.
+        byte b2 = 0;
         this.len = -2;
         try {
             if (this.akO) {
                 if (w.XT) {
                     b2 = (byte) this.akI.read();
-                    try {
-                        this.len = this.akI.read(this.akL, 0, b2);
-                    } catch (Exception e2) {
-                        e = e2;
-                        b = b2;
-                        if (!this.akP.aky) {
-                            this.akP.BT = true;
-                            this.akH.acI = e;
-                            if (w.XX) {
-                                this.akP.akz = "Recv: " + (e.getMessage() == null ? e.toString() : e.getMessage());
-                            }
-                            this.akK = false;
-                            if (w.XX) {
-                                GLLib.b("TCP: recv exception: " + e.toString(), "TCP", 6);
-                                GLLib.d(e);
-                            }
-                        }
-                        b2 = b;
-                    }
+                    this.len = this.akI.read(this.akL, 0, b2);
                 } else {
                     this.len = this.akI.read(this.akL, 0, this.akL.length);
                     b2 = 0;
@@ -88,7 +69,7 @@ class by extends Thread {
                     this.akL[0] = b6;
                     if (b6 != 123) {
                         String str = new String();
-                        if (bx.akw <= 0) {
+                        if (bx.nO() <= 0) {
                             int i2 = 0;
                             while (b6 != 124 && i2 < 4 && this.akI.available() > 0) {
                                 str = str + ((char) b6);
@@ -99,9 +80,9 @@ class by extends Thread {
                             if (b6 == 124) {
                                 int i3 = Integer.parseInt(str);
                                 if (i3 + i2 > this.akL.length) {
-                                    int unused = bx.akw = (i3 + i2) - this.akL.length;
+                                    bx.eQ((i3 + i2) - this.akL.length);
                                 } else {
-                                    int unused2 = bx.akw = -1;
+                                    bx.eQ(-1);
                                 }
                                 this.len = this.akI.read(this.akL, i2 + 1, Math.min(i3 - 1, (this.akL.length - i2) - 1)) + i2 + 1;
                             } else if (i2 == 4) {
@@ -109,12 +90,12 @@ class by extends Thread {
                             } else {
                                 this.len = i2 + 1;
                             }
-                        } else if (bx.akw > this.akL.length) {
+                        } else if (bx.nO() > this.akL.length) {
                             this.len = this.akI.read(this.akL, 1, this.akL.length - 1) + 1;
                             bx.eP(this.akL.length);
                         } else {
-                            this.len = this.akI.read(this.akL, 1, bx.akw - 1) + 1;
-                            int unused3 = bx.akw = -1;
+                            this.len = this.akI.read(this.akL, 1, bx.nO() - 1) + 1;
+                            bx.eQ(-1);
                         }
                     } else {
                         this.len = this.akI.read(this.akL, 1, Math.min(this.akI.available(), this.akL.length - 1)) + 1;
@@ -127,9 +108,20 @@ class by extends Thread {
                 this.len = this.akI.read(this.akL, 0, this.akL.length);
                 b2 = 0;
             }
-        } catch (Exception e3) {
-            e = e3;
-            b = 0;
+        } catch (Exception failure) {
+            // catch_6e/catch_28f share this handler; a read header remains in b2.
+            if (!this.akP.aky) {
+                this.akP.BT = true;
+                this.akH.acI = failure;
+                if (w.XX) {
+                    this.akP.akz = "Recv: " + (failure.getMessage() == null ? failure.toString() : failure.getMessage());
+                }
+                this.akK = false;
+                if (w.XX) {
+                    GLLib.b("TCP: recv exception: " + failure.toString(), "TCP", 6);
+                    GLLib.d(failure);
+                }
+            }
         }
         if (this.len < 0) {
             this.akK = false;
@@ -188,54 +180,50 @@ class by extends Thread {
         super.start();
     }
 
-    /* JADX WARN: Code duplicated, block: B:20:0x003a  */
-    /* JADX WARN: Code duplicated, block: B:33:0x0030 A[EXC_TOP_SPLITTER, SYNTHETIC] */
     @Override // java.lang.Thread, java.lang.Runnable
     public void run() {
-        int iOl;
-        byte[] bytes;
         this.akN = new byte[0];
         this.akM = 0;
         if (w.XX) {
             GLLib.b("TCPRecv: Starting receiver", "TCP", 3);
         }
         while (this.akK) {
+            int length;
+            byte[] bytes;
             if (this.akO) {
-                iOl = ol();
-                if (iOl == -1) {
+                length = ol();
+                if (length == -1) {
                     this.akK = false;
-                } else if (iOl > 0) {
-                    bytes = getBytes(iOl);
-                    synchronized (this.akJ) {
-                        this.akJ.addElement(bytes);
-                    }
-                    if (w.XX) {
-                        GLLib.b("TCPRecv: Received " + iOl + " bytes packet:" + new String(bytes), "TCP", 3);
-                    }
-                    try {
-                        sleep(300L);
-                    } catch (InterruptedException e) {
-                    }
-                } else {
                     continue;
                 }
+                if (length <= 0) {
+                    continue;
+                }
+                bytes = getBytes(length);
             } else {
                 ok();
-                if (this.len > 0) {
-                    bytes = new byte[this.len];
-                    System.arraycopy(this.akL, 0, bytes, 0, this.len);
-                    iOl = this.len;
-                    synchronized (this.akJ) {
-                        this.akJ.addElement(bytes);
-                        if (w.XX) {
-                            GLLib.b("TCPRecv: Received " + iOl + " bytes packet:" + new String(bytes), "TCP", 3);
-                        }
-                        sleep(300L);
-                    }
-                } else {
+                if (this.len <= 0) {
                     continue;
                 }
+                bytes = new byte[this.len];
+                System.arraycopy(this.akL, 0, bytes, 0, this.len);
+                length = this.len;
+            }
+            // Both original modes join here; release the queue lock before log/sleep.
+            synchronized (this.akJ) {
+                this.akJ.addElement(bytes);
+            }
+            if (w.XX) {
+                GLLib.b("TCPRecv: Received " + length + " bytes packet:" + new String(bytes), "TCP", 3);
+            }
+            try {
+                sleep(300L);
+            } catch (InterruptedException originalIgnored) {
+                // Original catch_6a continues the receive loop after interruption.
             }
         }
     }
+    // Original DEX synthetic accessors, inlined away by JADX.
+    static boolean a(by owner) { return owner.akK; }
+    static boolean a(by owner, boolean value) { owner.akK = value; return value; }
 }

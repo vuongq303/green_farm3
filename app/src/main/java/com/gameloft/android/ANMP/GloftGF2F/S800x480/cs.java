@@ -13,12 +13,12 @@ class cs extends Thread {
     }
 
     private void mJ() {
-        this.bbN.aYE = false;
+        ci.a(this.bbN, false);
     }
 
     @Override // java.lang.Thread, java.lang.Runnable
     public void run() {
-        this.bbN.aYE = true;
+        ci.a(this.bbN, true);
         ci.Mn();
         mJ();
     }

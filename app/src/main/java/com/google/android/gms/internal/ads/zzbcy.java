@@ -3552,7 +3552,7 @@ final class zzbcy<T> implements zzbdm<T> {
                     if (list.isEmpty()) {
                         z2 = true;
                     } else {
-                        ?? Zzcq = zzcq(iZzcw);
+                        zzbdm Zzcq = zzcq(iZzcw);
                         int i9 = 0;
                         while (true) {
                             if (i9 >= list.size()) {
@@ -3575,12 +3575,12 @@ final class zzbcy<T> implements zzbdm<T> {
                         z = true;
                     } else {
                         if (this.zzdwx.zzx(zzcr(iZzcw)).zzdwa.zzagl() == zzbex.MESSAGE) {
-                            ?? Zze = 0;
+                            zzbdm Zze = null;
                             Iterator<?> it = mapZzt.values().iterator();
                             while (true) {
                                 if (it.hasNext()) {
                                     Object next = it.next();
-                                    if (Zze == 0) {
+                                    if (Zze == null) {
                                         Zze = Zze;
                                         Zze = zzbdg.zzaeo().zze(next.getClass());
                                     }

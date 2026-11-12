@@ -1,0 +1,117 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+Unable to initialize metrics, ensure /home/agent/.android is writable, details: /home/agent/.android/analytics.settings (No such file or directory)
+
+> Task :app:generateStableResourceIds UP-TO-DATE
+> Task :app:restoreResourceClasses UP-TO-DATE
+> Task :app:prepareRestoredJavaSources UP-TO-DATE
+
+> Task :app:restoreResources
+Restored 23 compiled nine-patches; original resources unchanged.
+Restored 12 Android style values using SDK-verified symbols; declared 107 public ids from public.xml; originals unchanged.
+
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:mergeDebugResources
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:preDebugUnitTestBuild
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:processDebugUnitTestJavaRes NO-SOURCE
+> Task :app:parseDebugLocalResources
+> Task :app:processDebugResources
+
+> Task :app:compileDebugJavaWithJavac
+Java compiler version 21 has deprecated support for compiling with source/target version 8.
+Try one of the following options:
+    1. [Recommended] Use Java toolchain with a lower language version
+    2. Set a higher source/target version
+    3. Use a lower version of the JDK running the build (if you're not using Java toolchain)
+For more details on how to configure these settings, see https://developer.android.com/build/jdks.
+To suppress this warning, set android.javaCompile.suppressSourceTargetDeprecationWarning=true in gradle.properties.
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+/workspace/green_farm3/app/build/generated/restored-java-sources/com/gameloft/android/ANMP/GloftGF2F/S800x480/by.java:154: warning: 'yield' may become a restricted identifier in a future release
+            yield();
+            ^
+  (to invoke a method called yield, qualify the yield with a receiver or type name)
+/workspace/green_farm3/app/build/generated/restored-java-sources/com/gameloft/android/ANMP/GloftGF2F/PushNotification/j.java:58: error: illegal start of expression
+        ?? r3 = ".jpg";
+        ^
+/workspace/green_farm3/app/build/generated/restored-java-sources/com/gameloft/android/ANMP/GloftGF2F/PushNotification/j.java:58: error: illegal start of expression
+        ?? r3 = ".jpg";
+         ^
+/workspace/green_farm3/app/build/generated/restored-java-sources/com/gameloft/android/ANMP/GloftGF2F/PushNotification/j.java:58: error: : expected
+        ?? r3 = ".jpg";
+                      ^
+3 errors
+4 warnings
+
+> Task :app:compileDebugJavaWithJavac FAILED
+[Incubating] Problems report is available at: file:///workspace/green_farm3/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugJavaWithJavac'.
+> Compilation failed; see the compiler output below.
+  /workspace/green_farm3/app/build/generated/restored-java-sources/com/gameloft/android/ANMP/GloftGF2F/PushNotification/j.java:58: error: : expected
+          ?? r3 = ".jpg";
+                        ^
+  /workspace/green_farm3/app/build/generated/restored-java-sources/com/gameloft/android/ANMP/GloftGF2F/S800x480/by.java:154: warning: 'yield' may become a restricted identifier in a future release
+              yield();
+              ^
+    (to invoke a method called yield, qualify the yield with a receiver or type name)
+  warning: [options] source value 8 is obsolete and will be removed in a future release
+  /workspace/green_farm3/app/build/generated/restored-java-sources/com/gameloft/android/ANMP/GloftGF2F/PushNotification/j.java:58: error: illegal start of expression
+          ?? r3 = ".jpg";
+          ^
+  /workspace/green_farm3/app/build/generated/restored-java-sources/com/gameloft/android/ANMP/GloftGF2F/PushNotification/j.java:58: error: illegal start of expression
+          ?? r3 = ".jpg";
+           ^
+  warning: [options] target value 8 is obsolete and will be removed in a future release
+  warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+  3 errors
+  4 warnings
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 16s
+33 actionable tasks: 8 executed, 25 up-to-date

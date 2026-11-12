@@ -12,27 +12,27 @@ class br extends Thread {
     @Override // java.lang.Thread, java.lang.Runnable
     public void run() {
         if (w.ZT) {
-            switch (bq.ake) {
+            switch (bq.nO()) {
                 case 1:
-                    bq.nH();
+                    bq.access$100();
                     break;
                 case 2:
-                    bq.nM();
+                    bq.access$200();
                     break;
                 case 3:
-                    bq.cu((String) this.adx[0]);
+                    bq.cC((String) this.adx[0]);
                     break;
                 case 4:
-                    bq.G((String) this.adx[0], (String) this.adx[1]);
+                    bq.H((String) this.adx[0], (String) this.adx[1]);
                     break;
                 case 5:
-                    bq.a((String) this.adx[0], (e) this.adx[1]);
+                    bq.b((String) this.adx[0], (e) this.adx[1]);
                     break;
                 case 6:
-                    bq.nN();
+                    bq.access$600();
                     break;
             }
-            bq.mJ();
+            bq.nP();
         }
     }
 }

@@ -1,0 +1,41 @@
+{
+  "original_apk_sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b",
+  "classes_dex_sha256": "3901b6678b4523947273914b30fe94a750e149f89e0a7a1fa3932261d7539ec4",
+  "dex_count": 1,
+  "dex2jar_class_count": 6383,
+  "tools": [
+    {
+      "name": "baksmali",
+      "version": "3.0.3",
+      "source": "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip",
+      "archive_sha1_published": "5fdcc763663eefb86a5b8879697aa6088b041e70",
+      "archive_sha256": "7ec965280a073311c339e571cd5de778b9975026cfcbe79f2b1cdcb1e15317ee",
+      "dependencies": "JCommander 1.64 and Guava 32.0.1, from already verified SDK distributions; select minimal classpath to avoid JCommander conflicts."
+    },
+    {
+      "name": "dex2jar",
+      "version": "2.4",
+      "source": "https://github.com/pxb1988/dex2jar/releases/download/v2.4/dex-tools-v2.4.zip",
+      "sha256": "ee7c45eb3c1d2474a6145d8d447e651a736a22d9664b6d3d3be5a5a817dda23a",
+      "published_checksum": "Not provided in release assets; downloaded through inherited trusted TLS."
+    },
+    {
+      "name": "JADX",
+      "version": "1.5.3",
+      "source": "https://github.com/skylot/jadx/releases/download/v1.5.3/jadx-1.5.3.zip",
+      "sha256": "8280f3799c0273fe797a2bcd90258c943e451fd195f13d05400de5e6451d15ec",
+      "published_checksum": "Not provided; downloaded through inherited trusted TLS."
+    },
+    {
+      "name": "CFR",
+      "version": "0.152",
+      "source": "https://repo.maven.apache.org/maven2/org/benf/cfr/0.152/cfr-0.152.jar",
+      "sha256": "f686e8f3ded377d7bc87d216a90e9e9512df4156e75b06c655a16648ae8765b2",
+      "verification": "Previously verified Maven published SHA1 over TLS."
+    }
+  ],
+  "conversion_exit": 0,
+  "conversion_logged_errors": 0,
+  "note": "Original DEX is authoritative. Zero conversion diagnostics and matching class counts do not prove bytecode or behavioral equivalence. CFR has unresolved regions in some methods.",
+  "original_apk_source": "https://github.com/vuongq303/green_farm3/blob/228cc7dd7b4b413f430e93c74cc147a1ffb8a23c/green-farm-3.apk"
+}

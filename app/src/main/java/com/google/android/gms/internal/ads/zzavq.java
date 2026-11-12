@@ -52,7 +52,7 @@ public final class zzavq extends zzbbo<zzavq, zza> implements zzbcw {
                     zzbdf<zzavq> zzbdfVar2 = zzakh;
                     obj3 = zzbdfVar2;
                     if (zzbdfVar2 == null) {
-                        ?? zzbVar = new zzbbo.zzb(zzdin);
+                        zzbbo.zzb zzbVar = new zzbbo.zzb(zzdin);
                         zzakh = zzbVar;
                         obj3 = zzbVar;
                     }

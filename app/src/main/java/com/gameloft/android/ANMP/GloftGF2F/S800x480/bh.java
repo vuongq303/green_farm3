@@ -1,6 +1,5 @@
 package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 
-import com.gameloft.adsmanager.JavaUtils;
 
 /* JADX INFO: loaded from: classes.dex */
 class bh {
@@ -8,7 +7,7 @@ class bh {
     static final int ajm = ((w.screenWidth - 800) >> 1) + 240;
     static final int ajn = ((w.screenWidth - 800) >> 1) + 600;
     static final int ajo = ((w.screenHeight - 480) >> 1) + 160;
-    static final int ajp = ((w.screenHeight - 480) >> 1) + JavaUtils.Constants.NATIVE_HEIGHT_DP_300;
+    static final int ajp = ((w.screenHeight - 480) >> 1) + 300;
     static final int acp = (w.screenHeight - 480) + 360;
     static final int acq = (w.screenHeight - 480) + 132;
     static final int ajq = w.screenWidth;

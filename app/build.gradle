@@ -5,6 +5,22 @@ plugins {
 android {
 	namespace "com.gameloft.android.ANMP.GloftGF2F"
     compileSdkVersion 28
+    useLibrary 'org.apache.http.legacy'
+
+    // Some obfuscated R holders still contain literal original APK IDs.
+    aaptOptions {
+        additionalParameters '--stable-ids',
+                layout.buildDirectory.file('generated/restored-resources/stable-ids.txt').get().asFile.absolutePath
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/main/lib']
+            // Keep the JADX export intact; compile a staged tree without its R classes.
+            java.srcDirs = [layout.buildDirectory.dir('generated/restored-java-sources')]
+            res.srcDirs = [layout.buildDirectory.dir('generated/restored-res')]
+        }
+    }
 
     defaultConfig {
         applicationId 'com.gameloft.android.ANMP.GloftGF2F'
@@ -40,5 +56,79 @@ android {
 }
 
 dependencies {
-    // TODO: dependencies
+    // SDK sources are bundled in this JADX export. Adding their AARs blindly
+    // would duplicate classes and may change the obfuscated API used by the game.
+    // Legacy Google SDK sources reference JSR-305 annotations at compile time.
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+}
+
+def restoreResources = tasks.register('restoreResources', Exec) {
+    inputs.dir('src/main/res')
+    inputs.file(rootProject.file('tools/restore_ninepatch.py'))
+    inputs.file(rootProject.file('tools/restore_resource_values.py'))
+    def frameworkAttrs = new File(android.sdkDirectory, 'platforms/android-28/data/res/values/attrs.xml')
+    inputs.file(frameworkAttrs)
+    outputs.dir(layout.buildDirectory.dir('generated/restored-res'))
+    commandLine 'python3', rootProject.file('tools/restore_ninepatch.py'),
+            file('src/main/res'), layout.buildDirectory.dir('generated/restored-res').get().asFile
+    doLast {
+        project.exec {
+            commandLine 'python3', rootProject.file('tools/restore_resource_values.py'),
+                    layout.buildDirectory.dir('generated/restored-res').get().asFile,
+                    '--framework-attrs', frameworkAttrs
+        }
+    }
+}
+
+def restoreResourceClasses = tasks.register('restoreResourceClasses', Exec) {
+    inputs.files(fileTree('src/main/java') { include '**/R.java' })
+    inputs.file('src/main/res/values/public.xml')
+    inputs.file(rootProject.file('tools/restore_resource_classes.py'))
+    outputs.dir(layout.buildDirectory.dir('generated/restored-java'))
+    commandLine 'python3', rootProject.file('tools/restore_resource_classes.py')
+}
+
+def prepareRestoredJavaSources = tasks.register('prepareRestoredJavaSources', Sync) {
+    dependsOn restoreResourceClasses
+    from('src/main/java') { exclude '**/R.java' }
+    from(layout.buildDirectory.dir('generated/restored-java'))
+    into(layout.buildDirectory.dir('generated/restored-java-sources'))
+}
+
+def generateStableResourceIds = tasks.register('generateStableResourceIds', Exec) {
+    inputs.file('src/main/res/values/public.xml')
+    inputs.file(rootProject.file('tools/generate_stable_ids.py'))
+    outputs.file(layout.buildDirectory.file('generated/restored-resources/stable-ids.txt'))
+    commandLine 'python3', rootProject.file('tools/generate_stable_ids.py')
+}
+
+tasks.named('preBuild') {
+    dependsOn restoreResources, prepareRestoredJavaSources, generateStableResourceIds
+}
+
+tasks.withType(JavaCompile).configureEach {
+    // Expose the complete decompiler error inventory instead of stopping after 100.
+    options.compilerArgs += ['-Xmaxerrs', '1000']
+}
+
+// An explicit binary baseline, separate from assembleDebug's Java compilation.
+// The original DEX is preserved, not recompiled or claimed as restored Java.
+tasks.register('assembleBaselineDebug', Exec) {
+    group = 'build'
+    description = 'Build a signed debug baseline preserving original game DEX/assets/native.'
+    dependsOn 'processDebugResources'
+    inputs.file(rootProject.file('green-farm-3.apk'))
+    inputs.file(rootProject.file('tools/build_binary_baseline.py'))
+    def resourceApk = layout.buildDirectory.file('intermediates/linked_resources_binary_format/debug/processDebugResources/linked-resources-binary-format-debug.ap_')
+    inputs.file(resourceApk)
+    def outputApk = layout.buildDirectory.file('outputs/apk/baseline/debug/app-baseline-debug.apk')
+    def debugKey = rootProject.file('.local/baseline-debug.keystore')
+    // Signing identity is local and persists across clean; rerun to verify it.
+    outputs.upToDateWhen { false }
+    commandLine 'python3', rootProject.file('tools/build_binary_baseline.py'),
+            '--original', rootProject.file('green-farm-3.apk'),
+            '--resources', resourceApk.get().asFile,
+            '--sdk', android.sdkDirectory,
+            '--output', outputApk.get().asFile,
+            '--keystore', debugKey
 }

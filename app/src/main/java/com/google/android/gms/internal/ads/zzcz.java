@@ -309,184 +309,60 @@ public class zzcz {
         }
     }
 
-    /* JADX WARN: Code duplicated, block: B:87:0x00d1 A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /* JADX WARN: Code duplicated, block: B:89:0x00cc A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r0v17, types: [boolean] */
-    /* JADX WARN: Type inference failed for: r1v10 */
-    /* JADX WARN: Type inference failed for: r1v12 */
-    /* JADX WARN: Type inference failed for: r1v14 */
-    /* JADX WARN: Type inference failed for: r1v17 */
-    /* JADX WARN: Type inference failed for: r1v18 */
-    /* JADX WARN: Type inference failed for: r1v19 */
-    /* JADX WARN: Type inference failed for: r1v2 */
-    /* JADX WARN: Type inference failed for: r1v3 */
-    /* JADX WARN: Type inference failed for: r1v4 */
-    /* JADX WARN: Type inference failed for: r1v6, types: [java.io.FileInputStream] */
-    /* JADX WARN: Type inference failed for: r4v10 */
-    /* JADX WARN: Type inference failed for: r4v11 */
-    /* JADX WARN: Type inference failed for: r4v12 */
-    /* JADX WARN: Type inference failed for: r4v13 */
-    /* JADX WARN: Type inference failed for: r4v14 */
-    /* JADX WARN: Type inference failed for: r4v15 */
-    /* JADX WARN: Type inference failed for: r4v2 */
-    /* JADX WARN: Type inference failed for: r4v3, types: [java.io.FileInputStream] */
-    /* JADX WARN: Type inference failed for: r4v4, types: [java.io.FileInputStream] */
-    /* JADX WARN: Type inference failed for: r4v5 */
-    /* JADX WARN: Type inference failed for: r4v6 */
-    /* JADX WARN: Type inference failed for: r4v7 */
-    /* JADX WARN: Type inference failed for: r4v8 */
-    /* JADX WARN: Type inference failed for: r4v9 */
-    private final boolean zzb(File file, String str) throws Throwable {
-        Throwable th;
-        FileOutputStream fileOutputStream;
-        ?? r4;
-        FileOutputStream fileOutputStream2;
-        ?? r1;
-        ?? fileInputStream;
-        boolean z;
-        FileOutputStream fileOutputStream3 = null;
-        IOException e = null;
-        File file2 = new File(String.format("%s/%s.tmp", file, str));
-        if (!file2.exists()) {
+    private final boolean zzb(File file, String str) {
+        // Restored from play-services-ads:15.0.0 bytecode; see docs/BYTECODE_RECOVERY.md.
+        File cache = new File(String.format("%s/%s.tmp", file, str));
+        if (!cache.exists()) {
             return false;
         }
-        Object[] objArr = {file, str};
-        File file3 = new File(String.format("%s/%s.dex", objArr));
-        if (file3.exists()) {
+        File dex = new File(String.format("%s/%s.dex", file, str));
+        if (dex.exists()) {
             return false;
         }
+        FileInputStream input = null;
+        FileOutputStream output = null;
         try {
-            long length = file2.length();
+            long length = cache.length();
             if (length <= 0) {
-                zzb(file2);
-                z = false;
-                fileInputStream = objArr;
-            } else {
-                byte[] bArr = new byte[(int) length];
-                fileInputStream = new FileInputStream(file2);
+                zzb(cache);
+                return false;
+            }
+            byte[] data = new byte[(int) length];
+            input = new FileInputStream(cache);
+            if (input.read(data) <= 0) {
+                Log.d(TAG, "Cannot read the cache data.");
+                zzb(cache);
+                return false;
+            }
+            zzbe entry = (zzbe) zzbfi.zza(new zzbe(), data);
+            if (!str.equals(new String(entry.zzgr))
+                    || !Arrays.equals(entry.zzgq, zzbk.zzb(entry.data))
+                    || !Arrays.equals(entry.zzgs, Build.VERSION.SDK.getBytes())) {
+                zzb(cache);
+                return false;
+            }
+            byte[] decoded = this.zzrw.zza(this.zzrx, new String(entry.data));
+            dex.createNewFile();
+            output = new FileOutputStream(dex);
+            output.write(decoded, 0, decoded.length);
+            return true;
+        } catch (zzcl | IOException | NoSuchAlgorithmException e) {
+            return false;
+        } finally {
+            if (input != null) {
                 try {
-                    if (fileInputStream.read(bArr) <= 0) {
-                        Log.d(TAG, "Cannot read the cache data.");
-                        zzb(file2);
-                        try {
-                            fileInputStream.close();
-                        } catch (IOException e2) {
-                        }
-                        z = false;
-                        fileInputStream = fileInputStream;
-                    } else {
-                        zzbe zzbeVar = (zzbe) zzbfi.zza(new zzbe(), bArr);
-                        if (str.equals(new String(zzbeVar.zzgr)) && Arrays.equals(zzbeVar.zzgq, zzbk.zzb(zzbeVar.data)) && Arrays.equals(zzbeVar.zzgs, Build.VERSION.SDK.getBytes())) {
-                            byte[] bArrZza = this.zzrw.zza(this.zzrx, new String(zzbeVar.data));
-                            file3.createNewFile();
-                            fileOutputStream2 = new FileOutputStream(file3);
-                            fileOutputStream3 = null;
-                            try {
-                                fileOutputStream2.write(bArrZza, 0, bArrZza.length);
-                                try {
-                                    fileInputStream.close();
-                                } catch (IOException e3) {
-                                    e = e3;
-                                }
-                                try {
-                                    fileOutputStream2.close();
-                                } catch (IOException e4) {
-                                }
-                                z = true;
-                                fileInputStream = fileInputStream;
-                            } catch (zzcl e5) {
-                                r1 = fileInputStream;
-                                if (r1 != 0) {
-                                    try {
-                                        r1.close();
-                                    } catch (IOException e6) {
-                                    }
-                                }
-                                if (fileOutputStream2 != null) {
-                                    try {
-                                        fileOutputStream2.close();
-                                    } catch (IOException e7) {
-                                    }
-                                }
-                                return e;
-                            } catch (IOException e8) {
-                                r1 = fileInputStream;
-                                if (r1 != 0) {
-                                    r1.close();
-                                }
-                                if (fileOutputStream2 != null) {
-                                    fileOutputStream2.close();
-                                }
-                                return e;
-                            } catch (NoSuchAlgorithmException e9) {
-                                r1 = fileInputStream;
-                                if (r1 != 0) {
-                                    r1.close();
-                                }
-                                if (fileOutputStream2 != null) {
-                                    fileOutputStream2.close();
-                                }
-                                return e;
-                            } catch (Throwable th2) {
-                                th = th2;
-                                fileOutputStream = fileOutputStream2;
-                                r4 = fileInputStream;
-                                if (r4 != 0) {
-                                    try {
-                                        r4.close();
-                                    } catch (IOException e10) {
-                                    }
-                                }
-                                if (fileOutputStream == null) {
-                                    throw th;
-                                }
-                                try {
-                                    fileOutputStream.close();
-                                    throw th;
-                                } catch (IOException e11) {
-                                    throw th;
-                                }
-                            }
-                        } else {
-                            zzb(file2);
-                            try {
-                                fileInputStream.close();
-                            } catch (IOException e12) {
-                            }
-                            z = false;
-                            fileInputStream = fileInputStream;
-                        }
-                    }
-                } catch (zzcl e13) {
-                    fileOutputStream2 = fileOutputStream3;
-                    r1 = fileInputStream;
-                } catch (IOException e14) {
-                    fileOutputStream2 = fileOutputStream3;
-                    r1 = fileInputStream;
-                } catch (NoSuchAlgorithmException e15) {
-                    fileOutputStream2 = fileOutputStream3;
-                    r1 = fileInputStream;
-                } catch (Throwable th3) {
-                    th = th3;
-                    fileOutputStream = fileOutputStream3;
-                    r4 = fileInputStream;
+                    input.close();
+                } catch (IOException e) {
+                    // The original SDK ignores cache cleanup failures.
                 }
             }
-            return z;
-        } catch (zzcl e16) {
-            fileOutputStream2 = fileOutputStream3;
-            r1 = fileOutputStream3;
-        } catch (IOException e17) {
-            fileOutputStream2 = fileOutputStream3;
-            r1 = fileOutputStream3;
-        } catch (NoSuchAlgorithmException e18) {
-            fileOutputStream2 = fileOutputStream3;
-            r1 = fileOutputStream3;
-        } catch (Throwable th4) {
-            th = th4;
-            fileOutputStream = fileOutputStream3;
-            r4 = fileOutputStream3;
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    // The original SDK ignores cache cleanup failures.
+                }
+            }
         }
     }
 
