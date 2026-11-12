@@ -89,7 +89,6 @@ class i {
                         com.gameloft.android2d.d.b.Qm().b(i, new String[]{bcVar2.cd("campaign_list").toString()});
                     }
                     break;
-                    break;
                 case 51853:
                     if (bcVar2.cb("pointcut_id") && bcVar2.cb("popup_id")) {
                         com.gameloft.android2d.d.b.Qm().b(i, new String[]{bcVar2.cd("pointcut_id").toString(), bcVar2.cd("popup_id").toString()});

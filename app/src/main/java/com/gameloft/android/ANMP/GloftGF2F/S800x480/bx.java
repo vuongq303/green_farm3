@@ -83,7 +83,7 @@ public class bx extends Thread {
             GLLib.b("cleanup tcp .. ", "TCP", 3);
         }
         if (this.akA != null) {
-            this.akA.akK = false;
+            by.a(this.akA, false);
         }
         try {
             if (this.akE != null) {
@@ -169,7 +169,7 @@ public class bx extends Thread {
                     }
                     this.akA = new by(this, this.akE, this.akB, this.akG, this);
                     this.akA.start();
-                    while (this.akx && this.akA.akK) {
+                    while (this.akx && by.a(this.akA)) {
                         synchronized (this.akC) {
                             if (this.akC.size() > 0) {
                                 byte[] bArr2 = (byte[]) this.akC.firstElement();
@@ -250,4 +250,7 @@ public class bx extends Thread {
             GLLib.d(e6);
         }
     }
+    // Original DEX synthetic accessors, inlined away by JADX.
+    static int eQ(int value) { akw = value; return value; }
+    static int nO() { return akw; }
 }

@@ -126,78 +126,52 @@ public class am implements Runnable {
         return this.BR;
     }
 
-    /* JADX WARN: Code duplicated, block: B:26:0x0054 A[Catch: all -> 0x0071, TRY_ENTER, TRY_LEAVE, TryCatch #1 {, blocks: (B:3:0x0001, B:5:0x0005, B:9:0x000e, B:11:0x0012, B:13:0x0016, B:14:0x003a, B:16:0x003e, B:17:0x0040, B:41:0x0076, B:20:0x0047, B:22:0x004b, B:23:0x004d, B:47:0x007e, B:26:0x0054, B:28:0x0058, B:29:0x005a, B:53:0x0086, B:33:0x0062, B:55:0x0088, B:49:0x0080, B:43:0x0078, B:34:0x0064), top: B:59:0x0001, inners: #0, #4, #5 }] */
-    /* JADX WARN: Code duplicated, block: B:57:0x004b A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /* JADX WARN: Code duplicated, block: B:60:0x005b A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /* JADX WARN: Code duplicated, block: B:64:0x0058 A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /* JADX WARN: Code duplicated, block: B:68:0x004e A[EXC_TOP_SPLITTER, SYNTHETIC] */
+    // Recovered from original cancel() exception regions and monitor boundaries.
     public synchronized void cancel() {
-        if (!this.BS) {
-            this.BS = true;
-            if (!w.XR) {
-                if (this.acD != null) {
-                    if (w.XZ) {
-                        GLLib.b("HTTP:[" + this.acJ + "]: cancel", "HTTP", 3);
-                    }
-                    if (this.BK != null) {
-                        try {
-                            synchronized (this.acD) {
-                                this.BK.close();
-                            }
-                        } catch (Exception e) {
-                            e(e);
-                        }
-                        if (this.acD != null) {
-                            try {
-                                synchronized (this.acD) {
-                                    this.acD.disconnect();
-                                }
-                            } catch (Exception e2) {
-                                e(e2);
-                            }
-                            if (this.BL != null) {
-                                try {
-                                    synchronized (this.BL) {
-                                        this.BL.close();
-                                    }
-                                } catch (Exception e3) {
-                                    e(e3);
-                                }
-                            }
-                            this.BL = null;
-                        } else {
-                            if (this.BL != null) {
-                                synchronized (this.BL) {
-                                    this.BL.close();
-                                }
-                            }
-                            this.BL = null;
-                        }
-                    } else if (this.acD != null) {
-                        synchronized (this.acD) {
-                            this.acD.disconnect();
-                            if (this.BL != null) {
-                                synchronized (this.BL) {
-                                    this.BL.close();
-                                }
-                            }
-                            this.BL = null;
-                        }
-                    } else {
-                        if (this.BL != null) {
-                            synchronized (this.BL) {
-                                this.BL.close();
-                            }
-                        }
-                        this.BL = null;
-                    }
-                }
-                this.BK = null;
-                this.acD = null;
-                this.BR = false;
-                this.BG = null;
-            }
+        if (this.BS) {
+            return;
         }
+        this.BS = true;
+        if (w.XR) {
+            return;
+        }
+        if (this.acD != null) {
+            if (w.XZ) {
+                GLLib.b("HTTP:[" + this.acJ + "]: cancel", "HTTP", 3);
+            }
+            if (this.BK != null) {
+                try {
+                    synchronized (this.acD) {
+                        this.BK.close();
+                    }
+                } catch (Exception failure) {
+                    e(failure);
+                }
+            }
+            if (this.acD != null) {
+                try {
+                    synchronized (this.acD) {
+                        this.acD.disconnect();
+                    }
+                } catch (Exception failure) {
+                    e(failure);
+                }
+            }
+            if (this.BL != null) {
+                try {
+                    synchronized (this.BL) {
+                        this.BL.close();
+                    }
+                } catch (Exception failure) {
+                    e(failure);
+                }
+            }
+            this.BL = null;
+        }
+        this.BK = null;
+        this.acD = null;
+        this.BR = false;
+        this.BG = null;
     }
 
     public void bM() {

@@ -1,0 +1,881 @@
+{
+  "format": "original-client-evidence-v1",
+  "purpose": "Bytecode-derived wire/consumption contract for Accept investigation; not a server policy, fabricated service response, or implementation.",
+  "provenance": {
+    "repository_checkpoint": "ce19d54ea6ef67504a7fe9a50daf7863cf31ef74",
+    "apk": "green-farm-3.apk",
+    "apk_sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b",
+    "smali_root": "/workspace/tooling/original-smali",
+    "line_number_kind": "physical file lines, not .line metadata",
+    "remote_observations": false
+  },
+  "type_interpretation": "Native JSON types describe natural representations expected by the named accessor. getString/optInt/optString/optBoolean use Android framework coercion; client bytecode does not enforce a strict JSON Schema.",
+  "transport": {
+    "request_method_ids": {
+      "0": "GET",
+      "1": "POST"
+    },
+    "parameter_encoding": {
+      "join": "&",
+      "pair": "literal_name=encoded_value",
+      "value_encoder": "java.net.URLEncoder.encode(value,\"UTF-8\")",
+      "null_values": "omitted by the reported Federation request builders"
+    },
+    "post": {
+      "content_type": "application/x-www-form-urlencoded",
+      "charset_parameter": null,
+      "body_bytes": "String.getBytes() with runtime default charset",
+      "explicit_content_length": "Java String.length()"
+    },
+    "explicit_auth_header": null,
+    "user_agent": "Only set explicitly when e.userAgent != null; no assignment found in original smali; platform User-Agent unknown",
+    "response_decode": "UTF-8",
+    "body_statuses": [
+      200,
+      202
+    ],
+    "error_body_read": false,
+    "non_body_status_behavior": "BT=true and no error-stream body; includes 201,204,304",
+    "redirect_302": "Explicit retry uses Location, preserving method and stored POST body; built-in runtime redirect defaults unconfigured",
+    "app_timeout_configuration": null,
+    "polling_deadline": null,
+    "service_base_normalization": "h.g(value,true): any lowercase http prefix unchanged, otherwise prepend https://; null stays null; no trimming or slash normalization",
+    "evidence": [
+      {
+        "file": "com/gameloft/a/b/e.smali",
+        "method": "Lcom/gameloft/a/b/e;->a(Ljava/lang/String;Ljava/lang/String;IZ)V",
+        "physical_lines": [
+          [
+            679,
+            834
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/a/b/e.smali",
+        "method": "Lcom/gameloft/a/b/e;->run()V",
+        "physical_lines": [
+          [
+            1216,
+            2256
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/a/b/h.smali",
+        "method": "Lcom/gameloft/a/b/h;->a(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Ljava/lang/String;",
+        "physical_lines": [
+          [
+            264,
+            417
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/a/b/h.smali",
+        "method": "Lcom/gameloft/a/b/h;->bc(Ljava/lang/String;)Ljava/lang/String;",
+        "physical_lines": [
+          [
+            3277,
+            3306
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/a/b/h.smali",
+        "method": "Lcom/gameloft/a/b/h;->g(Ljava/lang/String;Z)Ljava/lang/String;",
+        "physical_lines": [
+          [
+            3534,
+            3608
+          ]
+        ]
+      }
+    ]
+  },
+  "identity": {
+    "client_id": "[GAME-SPACE + ':', when nonnull] + GAME-PRODUCT-ID + ':' + GAME-GGI + ':' + MIDlet-Version + ':' + GAME-PLATFORM + [':' + GAME-SHOP, when nonnull/nonempty]",
+    "bootstrap_path_encoding": "client_id and datacenter name directly concatenated, not percent-encoded",
+    "username": "a.jv() + ':' + a.jt(); wrapper initializes type to anonymous and credential through a.j(true,true)",
+    "password": "a.ju(); wrapper initializes through a.aR(credential)",
+    "token": "opaque string from authorize.access_token; no token decode/expiry/refresh semantics in these methods",
+    "evidence": [
+      {
+        "file": "com/gameloft/a/b/a.smali",
+        "method": "Lcom/gameloft/a/b/a;->gX()Ljava/lang/String;",
+        "physical_lines": [
+          [
+            3266,
+            3424
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/a/b/a.smali",
+        "method": "Lcom/gameloft/a/b/a;->js()Ljava/lang/String;",
+        "physical_lines": [
+          [
+            4906,
+            4942
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/android/wrapper/au.smali",
+        "method": "Lcom/gameloft/android/wrapper/au;->Qh()V",
+        "physical_lines": [
+          [
+            7841,
+            7954
+          ]
+        ]
+      }
+    ]
+  },
+  "endpoints": [
+    {
+      "id": "datacenters",
+      "required_for": "normal wrapper bootstrap, before Ne readiness",
+      "method": "GET",
+      "url": "https://eve.gameloft.com/config/{client_id}/datacenters",
+      "query": [],
+      "body": null,
+      "explicit_authentication": null,
+      "response": {
+        "body_statuses": [
+          200,
+          202
+        ],
+        "native_json_type": "array",
+        "consumed_element_index": 0,
+        "consumed_element_native_type": "object",
+        "minimum_elements_for_wrapper_progress": 1,
+        "fields": {
+          "name": {
+            "native_json_type": "string",
+            "accessor": "JSONArray.getJSONObject(0).getString(\"name\")",
+            "requirement": "required and nonempty for wrapper progress"
+          },
+          "_datacenter_id": {
+            "native_json_type": "string",
+            "accessor": "JSONArray.getJSONObject(0).getString(\"_datacenter_id\")",
+            "requirement": "required and nonempty for wrapper progress"
+          }
+        },
+        "extra_object_fields": "ignored",
+        "remaining_array_elements": "ignored",
+        "parse_failure": "wrapper catches extraction exception and does not start jn unless both strings pass its nonempty checks",
+        "service_error_schema": "unknown; transport does not read non200/non202 bodies"
+      },
+      "evidence": [
+        {
+          "file": "com/gameloft/a/b/a.smali",
+          "method": "Lcom/gameloft/a/b/a;->Wm()Ljava/lang/String;",
+          "physical_lines": [
+            [
+              193,
+              329
+            ]
+          ]
+        },
+        {
+          "file": "com/gameloft/a/b/a.smali",
+          "method": "Lcom/gameloft/a/b/a;->aL(Ljava/lang/String;)Ljava/lang/String;",
+          "physical_lines": [
+            [
+              2369,
+              2481
+            ]
+          ]
+        },
+        {
+          "file": "com/gameloft/android/wrapper/ax.smali",
+          "method": "Lcom/gameloft/android/wrapper/ax;->a(ILjava/lang/String;ILjava/lang/String;Ljava/lang/Exception;Ljava/lang/String;)V",
+          "physical_lines": [
+            [
+              57,
+              118
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "datacenter_urls",
+      "required_for": "Ne readiness bootstrap; pandora needed by locator",
+      "method": "GET",
+      "url": "https://eve.gameloft.com/config/{client_id}/datacenters/{name}/urls",
+      "null_name_alternative": "https://eve.gameloft.com/config/{client_id}",
+      "query": [],
+      "body": null,
+      "explicit_authentication": null,
+      "response": {
+        "body_statuses": [
+          200,
+          202
+        ],
+        "text_transforms": [
+          "h.ht",
+          "h.hu",
+          "h.hs"
+        ],
+        "native_json_type": "object",
+        "tolerated_text_wrapper": "h.hs strips first/last character when trimmed string starts '['; not a general array contract",
+        "fields": {
+          "pandora": {
+            "native_json_type": "string",
+            "accessor": "JSONObject.getString(\"pandora\")",
+            "requirement": "required for complete exception-free parse",
+            "notes": "stored as locator root; operational prerequisite to following auth request"
+          },
+          "gllive-ope": {
+            "native_json_type": "string",
+            "accessor": "JSONObject.getString(\"gllive-ope\")",
+            "requirement": "required for complete exception-free parse",
+            "notes": "not a demonstrated gate on Ne after this field's parse"
+          },
+          "tapjoy": {
+            "native_json_type": "string",
+            "accessor": "JSONObject.getString(\"tapjoy\")",
+            "requirement": "required for complete exception-free parse",
+            "notes": "not a demonstrated gate on Ne after this field's parse"
+          },
+          "offline_items": {
+            "native_json_type": "string",
+            "accessor": "JSONObject.getString(\"offline_items\")",
+            "requirement": "required for complete exception-free parse",
+            "notes": "not a demonstrated gate on Ne after this field's parse"
+          },
+          "game_portal": {
+            "native_json_type": "string",
+            "accessor": "JSONObject.getString(\"game_portal\")",
+            "requirement": "required for complete exception-free parse",
+            "notes": "not a demonstrated gate on Ne after this field's parse"
+          },
+          "status": {
+            "native_json_type": "string",
+            "accessor": "JSONObject.getString(\"status\")",
+            "requirement": "required for complete exception-free parse",
+            "notes": "not a demonstrated gate on Ne after this field's parse"
+          },
+          "crm_iap": {
+            "native_json_type": "string",
+            "accessor": "JSONObject.getString(\"crm_iap\")",
+            "requirement": "required for complete exception-free parse",
+            "notes": "not a demonstrated gate on Ne after this field's parse"
+          },
+          "ads_agency": {
+            "native_json_type": "string",
+            "accessor": "JSONObject.getString(\"ads_agency\")",
+            "requirement": "required for complete exception-free parse",
+            "notes": "not a demonstrated gate on Ne after this field's parse"
+          },
+          "marketing_site": {
+            "native_json_type": "string",
+            "accessor": "JSONObject.getString(\"marketing_site\")",
+            "requirement": "required for complete exception-free parse",
+            "notes": "not a demonstrated gate on Ne after this field's parse"
+          },
+          "online_connectivity": {
+            "native_json_type": "string",
+            "accessor": "JSONObject.getString(\"online_connectivity\")",
+            "requirement": "required for complete exception-free parse",
+            "notes": "not a demonstrated gate on Ne after this field's parse"
+          }
+        },
+        "extra_fields": "ignored",
+        "missing_or_invalid_field": "single catch prints exception and continues; earlier assignments retained, later fields not assigned",
+        "empty_body": "returns empty; b.run stops before authorize",
+        "http_403": "sets global request-launch flag bwN false; returns null",
+        "service_error_schema": "unknown"
+      },
+      "evidence": [
+        {
+          "file": "com/gameloft/a/b/a.smali",
+          "method": "Lcom/gameloft/a/b/a;->Wn()Ljava/lang/String;",
+          "physical_lines": [
+            [
+              331,
+              612
+            ]
+          ]
+        },
+        {
+          "file": "com/gameloft/a/b/a.smali",
+          "method": "Lcom/gameloft/a/b/a;->aL(Ljava/lang/String;)Ljava/lang/String;",
+          "physical_lines": [
+            [
+              2369,
+              2481
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "locate",
+      "required_for": "auth before authorization and compliance; config before auxiliary config fetch",
+      "method": "GET",
+      "url": "{pandora}/locate/{service}",
+      "service_values_in_report": [
+        "auth",
+        "config"
+      ],
+      "query": [],
+      "body": null,
+      "explicit_authentication": null,
+      "response": {
+        "body_statuses": [
+          200,
+          202
+        ],
+        "wire_type": "plain text service base, not JSON-quoted string",
+        "text_transforms": [
+          "h.ht",
+          "h.hu"
+        ],
+        "consumer_normalization": "h.g(response,true)",
+        "extra_fields": "no JSON fields parsed",
+        "empty_or_invalid_value": "not proactively validated; normalization/openConnection can fail",
+        "missing_pandora": "launcher returns false but hq ignores return and polls never-started request without deadline",
+        "service_error_schema": "unknown"
+      },
+      "evidence": [
+        {
+          "file": "com/gameloft/a/b/a.smali",
+          "method": "Lcom/gameloft/a/b/a;->a(Ljava/lang/String;Lcom/gameloft/a/b/e;)Z",
+          "physical_lines": [
+            [
+              2237,
+              2356
+            ]
+          ]
+        },
+        {
+          "file": "com/gameloft/a/b/a.smali",
+          "method": "Lcom/gameloft/a/b/a;->hq(Ljava/lang/String;)Ljava/lang/String;",
+          "physical_lines": [
+            [
+              3453,
+              3523
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "authorize",
+      "required_for": "Ne readiness bootstrap and usable access token",
+      "method": "POST",
+      "url": "{normalized_auth_base}/authorize",
+      "query": [],
+      "body_media_type": "application/x-www-form-urlencoded",
+      "form_fields": [
+        {
+          "name": "client_id",
+          "wire_type": "string",
+          "value": "a.gX()",
+          "emitted": "always by clientId special branch"
+        },
+        {
+          "name": "username",
+          "wire_type": "string",
+          "value": "a.js()",
+          "emitted": "if nonnull; js is string concatenation"
+        },
+        {
+          "name": "password",
+          "wire_type": "string",
+          "value": "a.ju()",
+          "emitted": "if nonnull"
+        },
+        {
+          "name": "scope",
+          "wire_type": "string",
+          "value": "storage auth config asset transaction message",
+          "emitted": "always"
+        },
+        {
+          "name": "device_id",
+          "wire_type": "string",
+          "value": "LZ",
+          "emitted": "always after nonnull LZ guard"
+        },
+        {
+          "name": "access_token_only",
+          "wire_type": "string",
+          "value": null,
+          "emitted": "never in observed value-array construction"
+        }
+      ],
+      "explicit_authentication": "username/password/device_id form values; no Authorization header",
+      "response": {
+        "body_statuses": [
+          200,
+          202
+        ],
+        "text_transforms": [
+          "h.ht",
+          "h.hu",
+          "h.hs"
+        ],
+        "native_json_type": "object",
+        "fields": {
+          "access_token": {
+            "native_json_type": "string",
+            "accessor": "JSONObject.getString(\"access_token\")",
+            "requirement": "needed for usable subsequent token-authenticated requests",
+            "notes": "stored opaque in Ma; no nonempty/expiry/format check in this method"
+          }
+        },
+        "extra_fields": "ignored",
+        "parse_failure": "caught; Wo still returns true; b.run can set Ne=true without a usable newly parsed token",
+        "transport_failure": "Wo returns false",
+        "null_device_identifier": "returns false before locating auth",
+        "service_error_schema": "unknown"
+      },
+      "evidence": [
+        {
+          "file": "com/gameloft/a/b/a.smali",
+          "method": "Lcom/gameloft/a/b/a;->Wo()Z",
+          "physical_lines": [
+            [
+              614,
+              1101
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "compliance",
+      "required_for": "privacy callback when higher-level cache/country flow requires request",
+      "method": "POST",
+      "url": "{normalized_auth_base}/users/me/compliance",
+      "query": [],
+      "body_media_type": "application/x-www-form-urlencoded",
+      "form_fields": [
+        {
+          "name": "access_token",
+          "wire_type": "string",
+          "value": "a.Wp()",
+          "emitted": "if nonnull"
+        },
+        {
+          "name": "country",
+          "wire_type": "string",
+          "value": "argument0",
+          "emitted": "if nonnull",
+          "validation": "no format/country-list validation in this method"
+        },
+        {
+          "name": "age",
+          "wire_type": "decimal signed 32-bit integer rendered as string",
+          "value": "argument1",
+          "emitted": "always",
+          "validation": "no range or threshold validation in this method"
+        }
+      ],
+      "local_only_argument": "argument2 callback/diagnostic tag, not wire field",
+      "explicit_authentication": "access_token form value; no Authorization header",
+      "response": {
+        "callback_body_statuses": [
+          200
+        ],
+        "native_json_type": "object",
+        "root_keys": "arbitrary policy names; none required",
+        "each_examined_root_value": {
+          "native_json_type": "object",
+          "accessor": "root.optJSONObject(key)",
+          "fields": {
+            "compliant": {
+              "native_json_type": "boolean",
+              "accessor": "has(\"compliant\") then optBoolean(\"compliant\")",
+              "requirement": "key required in each examined policy object",
+              "notes": "no strict boolean type validation; framework coercion/default applies"
+            }
+          },
+          "extra_fields": "ignored inside policy object"
+        },
+        "root_extra_fields": "all treated as policy entries and therefore must satisfy the same object/key rules until first false",
+        "all_true": "commit submitted age/country/raw; callback status0",
+        "first_false": "set age0, stop iteration immediately, commit country/raw; callback status0",
+        "empty_object": "accepted by parser but is only a branch fact, not a real policy response, recommended policy or default design",
+        "known_named_policy_requirements": [],
+        "unused_initialized_names": [
+          "data",
+          "COPPA",
+          "GDPR"
+        ],
+        "empty_string": "callback status6",
+        "null_body": "dereferenced by isEmpty; not explicitly handled",
+        "malformed_json_or_examined_value_not_object_or_missing_compliant": "callback status7 with fresh default result",
+        "status202": "body is read then i.b clears outstanding callback without invoking it",
+        "transport_failure_including_non200_non202": "a.d returns before invoking i.b; callback can remain outstanding",
+        "service_error_schema": "unknown/unconsumed"
+      },
+      "evidence": [
+        {
+          "file": "com/gameloft/a/b/a.smali",
+          "method": "Lcom/gameloft/a/b/a;->d(Ljava/lang/String;ILjava/lang/String;)Lcom/gameloft/a/b/g;",
+          "physical_lines": [
+            [
+              2761,
+              3203
+            ]
+          ]
+        },
+        {
+          "file": "com/gameloft/a/b/i.smali",
+          "method": "Lcom/gameloft/a/b/i;->a(ILjava/lang/String;Lcom/gameloft/a/b/k;)Lcom/gameloft/a/b/l;",
+          "physical_lines": [
+            [
+              1085,
+              1166
+            ]
+          ]
+        },
+        {
+          "file": "com/gameloft/a/b/i.smali",
+          "method": "Lcom/gameloft/a/b/i;->b(Lcom/gameloft/a/b/g;)V",
+          "physical_lines": [
+            [
+              1168,
+              1193
+            ]
+          ]
+        },
+        {
+          "file": "com/gameloft/a/b/i.smali",
+          "method": "Lcom/gameloft/a/b/i;->c(Lcom/gameloft/a/b/g;)V",
+          "physical_lines": [
+            [
+              862,
+              1071
+            ]
+          ]
+        },
+        {
+          "file": "com/gameloft/a/b/i.smali",
+          "method": "Lcom/gameloft/a/b/i;->K(Lorg/json/JSONObject;)Lcom/gameloft/a/b/l;",
+          "physical_lines": [
+            [
+              199,
+              234
+            ]
+          ]
+        },
+        {
+          "file": "com/gameloft/a/b/i.smali",
+          "method": "Lcom/gameloft/a/b/i;->L(Lorg/json/JSONObject;)Z",
+          "physical_lines": [
+            [
+              236,
+              248
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "register_device",
+      "required_for": "auxiliary SDK operation; not b.run readiness gate",
+      "method": "POST",
+      "url": "{normalized_auth_base}/devices/mydevice",
+      "query": [],
+      "body_media_type": "application/x-www-form-urlencoded",
+      "form_fields": [
+        {
+          "name": "access_token",
+          "wire_type": "string",
+          "value": "a.Wp()",
+          "emitted": "if nonnull"
+        },
+        {
+          "name": "model",
+          "wire_type": "string",
+          "value": "argument3",
+          "emitted": "if nonnull"
+        },
+        {
+          "name": "carrier",
+          "wire_type": "string",
+          "value": "argument1",
+          "emitted": "if nonnull"
+        },
+        {
+          "name": "country",
+          "wire_type": "string",
+          "value": "argument2",
+          "emitted": "if nonnull"
+        },
+        {
+          "name": "language",
+          "wire_type": "string",
+          "value": "argument0",
+          "emitted": "if nonnull"
+        },
+        {
+          "name": "download_code",
+          "wire_type": "string",
+          "value": "argument4",
+          "emitted": "if nonnull"
+        },
+        {
+          "name": "resolution",
+          "wire_type": "string",
+          "value": "argument5",
+          "emitted": "if nonnull"
+        },
+        {
+          "name": "firmware",
+          "wire_type": "string",
+          "value": "argument6",
+          "emitted": "if nonnull"
+        }
+      ],
+      "local_only_argument": "argument7 callback tag",
+      "response": {
+        "native_type": "opaque UTF-8 text in g.bxa, code in g.bxb",
+        "schema": "not parsed by this Federation method; higher-level response use not established here"
+      },
+      "evidence": [
+        {
+          "file": "com/gameloft/a/b/a.smali",
+          "method": "Lcom/gameloft/a/b/a;->a(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/gameloft/a/b/g;",
+          "physical_lines": [
+            [
+              1133,
+              1620
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "user_config",
+      "required_for": "auxiliary SDK operation; not b.run readiness gate",
+      "method": "GET",
+      "url": "{normalized_config_base}/configs/users/me",
+      "query_fields": [
+        {
+          "name": "access_token",
+          "wire_type": "string",
+          "value": "a.Wp()",
+          "emitted": "if nonnull"
+        },
+        {
+          "name": "now",
+          "wire_type": "string",
+          "value": "argument3",
+          "emitted": "if nonnull"
+        }
+      ],
+      "body": null,
+      "request_headers": [
+        {
+          "name": "If-None-Match",
+          "value": "argument4",
+          "emitted": "if nonnull/nonempty"
+        }
+      ],
+      "unused_arguments": [
+        0,
+        1,
+        2
+      ],
+      "local_only_argument": "argument5 callback tag",
+      "response": {
+        "native_type": "opaque UTF-8 text in g.bxa, code in g.bxb",
+        "header": "Etag copied to g.bxc on body-success branch",
+        "schema": "not parsed by this Federation method; higher-level game-config schema not established here",
+        "status304": "transport failure; Etag not copied to g on failure branch"
+      },
+      "evidence": [
+        {
+          "file": "com/gameloft/a/b/a.smali",
+          "method": "Lcom/gameloft/a/b/a;->k(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/gameloft/a/b/g;",
+          "physical_lines": [
+            [
+              4974,
+              5445
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "library_readiness": {
+    "exact_chain": [
+      "a.jn",
+      "b.run",
+      "a.Wn nonnull/nonempty",
+      "a.Wo true",
+      "a.aq(true) sets Ne",
+      "d callback type3 synthetic HTTP200"
+    ],
+    "accessor": "a.fZ() returns Ne",
+    "not_gates": [
+      "register_device",
+      "user_config"
+    ],
+    "privacy_entry_guards": {
+      "Ne_false_status": 4,
+      "existing_callback_status": 3
+    },
+    "privacy_entry_timing": "synchronous caller blocks while a.d polls HTTP worker, parser/callback usually runs inside this call",
+    "evidence": [
+      {
+        "file": "com/gameloft/a/b/b.smali",
+        "method": "Lcom/gameloft/a/b/b;->run()V",
+        "physical_lines": [
+          [
+            19,
+            85
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/a/b/a.smali",
+        "method": "Lcom/gameloft/a/b/a;->aq(Z)Z",
+        "physical_lines": [
+          [
+            2683,
+            2691
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/a/b/a.smali",
+        "method": "Lcom/gameloft/a/b/a;->fZ()Z",
+        "physical_lines": [
+          [
+            3256,
+            3264
+          ]
+        ]
+      }
+    ]
+  },
+  "local_privacy_cache": {
+    "filename": "OF_PP.bin",
+    "directory": "Android Context.getFilesDir()",
+    "plaintext_fields": {
+      "m_age": {
+        "native_type": "integer",
+        "writer": "put(String,int)",
+        "reader": "optInt"
+      },
+      "m_privacyPolicyRawAnswer": {
+        "native_type": "string",
+        "writer": "put(String,Object)",
+        "reader": "optString"
+      },
+      "m_country": {
+        "native_type": "string",
+        "writer": "put(String,Object)",
+        "reader": "optString"
+      },
+      "m_privacyReceived": {
+        "native_type": "boolean",
+        "writer": "put(String,boolean)",
+        "reader": "optBoolean"
+      },
+      "m_privacyRequestedByGame": {
+        "native_type": "boolean",
+        "writer": "put(String,boolean)",
+        "reader": "optBoolean"
+      }
+    },
+    "load_requirements": "all five field names present; no strict type validation or reparse of saved policy body",
+    "pending_age_country_serialized": false,
+    "country_cache_gate": "supplied country equals saved country ignoring case AND saved country nonempty AND saved raw answer nonempty",
+    "cache_gate_ignores": [
+      "age",
+      "received flag",
+      "requested flag",
+      "policy JSON validity",
+      "timestamp",
+      "TTL",
+      "signature"
+    ],
+    "transforms": {
+      "write": "JSON bytes -> n.a(bytes,Wx(),true) -> n.e(bytes) text encoding -> file",
+      "read": "file -> n.bJ(text) -> n.b(bytes,Wx(),true) -> JSON"
+    },
+    "evidence": [
+      {
+        "file": "com/gameloft/a/b/i.smali",
+        "method": "Lcom/gameloft/a/b/i;->Wy()Lcom/gameloft/a/b/l;",
+        "physical_lines": [
+          [
+            414,
+            634
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/a/b/i.smali",
+        "method": "Lcom/gameloft/a/b/i;->Wz()Lcom/gameloft/a/b/l;",
+        "physical_lines": [
+          [
+            636,
+            781
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/a/b/i.smali",
+        "method": "Lcom/gameloft/a/b/i;->hv(Ljava/lang/String;)Z",
+        "physical_lines": [
+          [
+            1223,
+            1272
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/a/a/n.smali",
+        "method": "Lcom/gameloft/a/a/n;->hl(Ljava/lang/String;)[B",
+        "physical_lines": [
+          [
+            4603,
+            4634
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/a/a/n.smali",
+        "method": "Lcom/gameloft/a/a/n;->f(Ljava/lang/String;[B)Z",
+        "physical_lines": [
+          [
+            4711,
+            4740
+          ]
+        ]
+      },
+      {
+        "file": "com/gameloft/android/wrapper/au.smali",
+        "method": "Lcom/gameloft/android/wrapper/au;->Pq()Ljava/lang/String;",
+        "physical_lines": [
+          [
+            6505,
+            6537
+          ]
+        ]
+      }
+    ]
+  },
+  "explicitly_unknown": [
+    "live or historical remote service responses and server implementation",
+    "deployed client identity/datacenter/catalog values",
+    "server-side identity/password validation",
+    "token format, lifetime, refresh or revocation rules",
+    "country-specific policy and numeric age thresholds",
+    "legal/privacy text and policy contents",
+    "non200 error body schema",
+    "higher-level game-config payload and profile/transaction schemas",
+    "platform-generated HTTP headers/cookies/redirect and timeout defaults",
+    "game Accept/loading/offline state machine beyond the library calls documented here"
+  ]
+}

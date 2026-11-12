@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class bm {
     private int ajL;
     private bm ajM;
-    private ArrayList<ProfilerNode> ajN = new ArrayList<>();
+    private ArrayList<bm> ajN = new ArrayList<>();
     private String eventName;
 
     public bm(String str, int i) {

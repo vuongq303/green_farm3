@@ -1920,10 +1920,10 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
     private static void d(aj ajVar) {
         int i = agM[afs][0];
         int i2 = agM[afs][1];
-        boolean z = ahV;
+        int sprite = ahV ? 1 : 0;
         if (ahS) {
         }
-        d(ajVar, aeT, z, i, i2, 20);
+        d(ajVar, aeT, sprite, i, i2, 20);
     }
 
     private static void b(boolean z, boolean z2) {
@@ -1968,7 +1968,7 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
     }
 
     private static void d(aj ajVar, int i, int i2, int i3, int i4, int i5) {
-        ahf[i].a(ajVar, i2, i3, i4, 0);
+        ahf[i].a(ajVar, i2, (float) i3, (float) i4, 0);
     }
 
     private static void c(aj ajVar, int i, int i2, int i3, int i4) {

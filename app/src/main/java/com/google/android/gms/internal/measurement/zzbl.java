@@ -81,124 +81,44 @@ public final class zzbl extends zzar {
         }
     }
 
-    /* JADX INFO: Removed unreachable split cross block B:70:0x0033 */
-    /* JADX WARN: Code duplicated, block: B:68:0x00ab A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r2v0 */
-    /* JADX WARN: Type inference failed for: r2v2, types: [java.io.FileInputStream] */
-    /* JADX WARN: Type inference failed for: r2v27 */
-    private final String zzd(Context context) throws Throwable {
-        ?? r2;
-        FileInputStream fileInputStreamOpenFileInput;
-        FileInputStream fileInputStream;
-        Object obj;
-        Object obj2;
-        String str = null;
+    private final String zzd(Context context) {
+        // Restored from play-services-analytics-impl:15.0.0 bytecode; see docs/BYTECODE_RECOVERY.md.
         bf.hW("ClientId should be loaded from worker thread");
+        FileInputStream input = null;
         try {
-            try {
-                fileInputStreamOpenFileInput = context.openFileInput("gaClientId");
+            input = context.openFileInput("gaClientId");
+            byte[] data = new byte[36];
+            int count = input.read(data, 0, 36);
+            if (input.available() > 0) {
+                zzt("clientId file seems corrupted, deleting it.");
+                input.close();
+                context.deleteFile("gaClientId");
+                return null;
+            }
+            if (count < 14) {
+                zzt("clientId file is empty, deleting it.");
+                input.close();
+                context.deleteFile("gaClientId");
+                return null;
+            }
+            input.close();
+            String clientId = new String(data, 0, count);
+            zza("Read client id from disk", clientId);
+            return clientId;
+        } catch (FileNotFoundException e) {
+            return null;
+        } catch (IOException e) {
+            zze("Error reading client id file, deleting it", e);
+            context.deleteFile("gaClientId");
+            return null;
+        } finally {
+            if (input != null) {
                 try {
-                    byte[] bArr = new byte[36];
-                    int i = fileInputStreamOpenFileInput.read(bArr, 0, 36);
-                    if (fileInputStreamOpenFileInput.available() > 0) {
-                        zzt("clientId file seems corrupted, deleting it.");
-                        fileInputStreamOpenFileInput.close();
-                        context.deleteFile("gaClientId");
-                        if (fileInputStreamOpenFileInput != null) {
-                            try {
-                                obj = fileInputStreamOpenFileInput;
-                                fileInputStreamOpenFileInput.close();
-                                obj = fileInputStreamOpenFileInput;
-                            } catch (IOException e) {
-                                zze("Failed to close client id reading stream", e);
-                                obj = "Failed to close client id reading stream";
-                            }
-                        }
-                    } else if (i < 14) {
-                        zzt("clientId file is empty, deleting it.");
-                        fileInputStreamOpenFileInput.close();
-                        context.deleteFile("gaClientId");
-                        if (fileInputStreamOpenFileInput != null) {
-                            try {
-                                obj = fileInputStreamOpenFileInput;
-                                fileInputStreamOpenFileInput.close();
-                                obj = fileInputStreamOpenFileInput;
-                            } catch (IOException e2) {
-                                zze("Failed to close client id reading stream", e2);
-                                obj = "Failed to close client id reading stream";
-                            }
-                        }
-                    } else {
-                        fileInputStreamOpenFileInput.close();
-                        String str2 = new String(bArr, 0, i);
-                        zza("Read client id from disk", str2);
-                        if (fileInputStreamOpenFileInput != null) {
-                            try {
-                                obj2 = fileInputStreamOpenFileInput;
-                                fileInputStreamOpenFileInput.close();
-                                obj2 = fileInputStreamOpenFileInput;
-                            } catch (IOException e3) {
-                                zze("Failed to close client id reading stream", e3);
-                                obj2 = "Failed to close client id reading stream";
-                            }
-                        }
-                        obj2 = fileInputStreamOpenFileInput;
-                        str = str2;
-                        obj = obj2;
-                    }
-                } catch (FileNotFoundException e4) {
-                    fileInputStream = fileInputStreamOpenFileInput;
-                    if (fileInputStream != null) {
-                        try {
-                            fileInputStream.close();
-                        } catch (IOException e5) {
-                            zze("Failed to close client id reading stream", e5);
-                        }
-                    }
-                    return str;
-                } catch (IOException e6) {
-                    e = e6;
-                    zze("Error reading client id file, deleting it", e);
-                    context.deleteFile("gaClientId");
-                    obj = fileInputStreamOpenFileInput;
-                    if (fileInputStreamOpenFileInput != null) {
-                        try {
-                            fileInputStreamOpenFileInput.close();
-                            obj = fileInputStreamOpenFileInput;
-                        } catch (IOException e7) {
-                            zze("Failed to close client id reading stream", e7);
-                            obj = "Failed to close client id reading stream";
-                        }
-                    }
+                    input.close();
+                } catch (IOException e) {
+                    zze("Failed to close client id reading stream", e);
                 }
-            } catch (FileNotFoundException e8) {
-                fileInputStream = null;
-            } catch (IOException e9) {
-                e = e9;
-                fileInputStreamOpenFileInput = null;
-            } catch (Throwable th) {
-                th = th;
-                r2 = 0;
-                if (r2 != 0) {
-                    try {
-                        r2.close();
-                    } catch (IOException e10) {
-                        zze("Failed to close client id reading stream", e10);
-                    }
-                }
-                throw th;
             }
-            obj = fileInputStreamOpenFileInput;
-            obj = fileInputStreamOpenFileInput;
-            return str;
-        } catch (Throwable th2) {
-            th = th2;
-            r2 = obj;
-            if (r2 != 0) {
-                r2.close();
-            }
-            throw th;
         }
     }
 

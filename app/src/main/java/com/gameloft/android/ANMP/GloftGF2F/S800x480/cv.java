@@ -9,7 +9,7 @@ class cv implements ar {
     }
 
     @Override // com.gameloft.android.ANMP.GloftGF2F.S800x480.ar
-    public void D(int i, String str) throws Exception {
+    public void D(int i, String str) {
         if (i == 200) {
             String str2 = "[OnlineQuest]OnlineQuestGetLeaderboard Success " + str;
             if (ci.apC[ci.apB] == 52 && this.bbV == ci.aPZ) {

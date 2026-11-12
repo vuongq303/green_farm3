@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 /* JADX INFO: compiled from: ProfilerEvent.java */
 /* JADX INFO: loaded from: classes.dex */
-public class bl implements Comparable<ProfilerEvent> {
+public class bl implements Comparable {
     private long ajD;
     private long ajE;
     private long ajG;
@@ -123,8 +123,11 @@ public class bl implements Comparable<ProfilerEvent> {
     }
 
     @Override // java.lang.Comparable
-    /* JADX INFO: renamed from: a, reason: merged with bridge method [inline-methods] */
-    public int compareTo(bl blVar) {
+    public int compareTo(Object value) {
+        return a((bl) value);
+    }
+
+    public int a(bl blVar) {
         if (blVar == null) {
             return 1;
         }

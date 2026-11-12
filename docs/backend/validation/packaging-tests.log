@@ -1,0 +1,13 @@
+test_binds_patch_and_merge_reports_to_the_base_dex_bytes (test_build_local_backend.LocalBackendPackagingTest.test_binds_patch_and_merge_reports_to_the_base_dex_bytes) ... ok
+test_rejects_base_provenance_hashes_mode_and_false_semantic_proofs (test_build_local_backend.LocalBackendPackagingTest.test_rejects_base_provenance_hashes_mode_and_false_semantic_proofs) ... ok
+test_rejects_changed_original_or_base_apk (test_build_local_backend.LocalBackendPackagingTest.test_rejects_changed_original_or_base_apk) ... ok
+test_rejects_input_output_aliases_and_hardlinks_without_modifying_sources (test_build_local_backend.LocalBackendPackagingTest.test_rejects_input_output_aliases_and_hardlinks_without_modifying_sources) ... ok
+test_rejects_multiple_dex_or_duplicate_entries_even_with_matching_base_hash (test_build_local_backend.LocalBackendPackagingTest.test_rejects_multiple_dex_or_duplicate_entries_even_with_matching_base_hash) ... ok
+test_rejects_patch_hash_target_count_and_false_semantic_proofs (test_build_local_backend.LocalBackendPackagingTest.test_rejects_patch_hash_target_count_and_false_semantic_proofs) ... ok
+test_rejects_unverified_or_unbound_generated_revision_metadata (test_build_local_backend.LocalBackendPackagingTest.test_rejects_unverified_or_unbound_generated_revision_metadata) ... ok
+test_replaces_only_dex_and_resets_revision_preimage_while_preserving_base (test_build_local_backend.LocalBackendPackagingTest.test_replaces_only_dex_and_resets_revision_preimage_while_preserving_base) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.025s
+
+OK

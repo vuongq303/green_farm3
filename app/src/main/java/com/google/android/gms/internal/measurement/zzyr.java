@@ -82,7 +82,7 @@ final class zzyr<FieldDescriptorType extends zzyt<FieldDescriptorType>> {
     	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.visit(FixTypesVisitor.java:94)
      */
     private final void zza(FieldDescriptorType fielddescriptortype, Object obj) {
-        ?? arrayList;
+        Object arrayList;
         if (!fielddescriptortype.zzuc()) {
             zza(fielddescriptortype.zzub(), obj);
             arrayList = obj;
@@ -91,7 +91,7 @@ final class zzyr<FieldDescriptorType extends zzyt<FieldDescriptorType>> {
                 throw new IllegalArgumentException("Wrong object type used with protocol message reflection.");
             }
             arrayList = new ArrayList();
-            arrayList.addAll((List) obj);
+            ((ArrayList) arrayList).addAll((List) obj);
             ArrayList arrayList2 = (ArrayList) arrayList;
             int size = arrayList2.size();
             int i = 0;

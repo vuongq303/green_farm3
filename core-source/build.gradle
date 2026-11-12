@@ -1,0 +1,153 @@
+plugins {
+    id 'com.android.application'
+}
+
+def prepareCoreDependencies = tasks.register('prepareCoreDependencies', Exec) {
+    inputs.file(rootProject.file('green-farm-3.apk'))
+    inputs.file(rootProject.file('tools/prepare_core_dependencies.py'))
+    inputs.file(rootProject.file('tools/make_core_compile_view.py'))
+    inputs.file(rootProject.file('docs/ORIGINAL_BYTECODE_TOOLS.json'))
+    inputs.files(rootProject.fileTree('app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480') { include '*.java' })
+    outputs.dir(layout.buildDirectory.dir('original-dependencies'))
+    commandLine 'python3', rootProject.file('tools/prepare_core_dependencies.py'),
+            '--output-dir', layout.buildDirectory.dir('original-dependencies').get().asFile
+}
+
+configurations { dexMergeTool }
+
+def prepareCoreSources = tasks.register('prepareCoreSources', Sync) {
+    dependsOn ':app:restoreResourceClasses'
+    from(rootProject.file('app/src/main/java')) {
+        include 'com/gameloft/android/ANMP/GloftGF2F/S800x480/*.java'
+        exclude 'com/gameloft/android/ANMP/GloftGF2F/S800x480/l.java'
+    }
+    from(rootProject.file('app/build/generated/restored-java')) { include '**/R.java' }
+    into(layout.buildDirectory.dir('generated/core-java'))
+}
+
+android {
+    namespace 'com.gameloft.android.ANMP.GloftGF2F'
+    compileSdkVersion 28
+    useLibrary 'org.apache.http.legacy'
+    aaptOptions {
+        additionalParameters '--stable-ids',
+                rootProject.file('app/build/generated/restored-resources/stable-ids.txt').absolutePath
+    }
+    defaultConfig {
+        applicationId 'com.gameloft.android.ANMP.GloftGF2F'
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 44220
+        versionName '4.4.2'
+    }
+    signingConfigs {
+        researchDebug {
+            storeFile rootProject.file('.local/baseline-debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+    buildTypes {
+        debug { signingConfig signingConfigs.researchDebug }
+        release { minifyEnabled false }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures { buildConfig = false }
+    sourceSets {
+        main {
+            manifest.srcFile rootProject.file('app/src/main/AndroidManifest.xml')
+            java.srcDirs = [layout.buildDirectory.dir('generated/core-java')]
+            // DEX shrink removed DataInput methods from l; g is an empty synthetic
+            // token with no exported source. Both original classes stay in DEX.
+            res.srcDirs = [rootProject.file('app/build/generated/restored-res')]
+            assets.srcDirs = [rootProject.file('app/src/main/assets')]
+            jniLibs.srcDirs = [rootProject.file('app/src/main/lib')]
+        }
+    }
+}
+
+dependencies {
+    // Compile-only! The runtime SDK is merged directly from original DEX.
+    compileOnly files(layout.buildDirectory.file('original-dependencies/compile-view.jar')).builtBy(prepareCoreDependencies)
+    dexMergeTool 'org.smali:dexlib2:2.5.2'
+}
+
+tasks.named('preBuild') {
+    dependsOn prepareCoreDependencies, prepareCoreSources, ':app:restoreResources',
+            ':app:generateStableResourceIds'
+}
+tasks.matching { it.name == 'validateSigningDebug' }.configureEach {
+    dependsOn ':app:assembleBaselineDebug'
+}
+
+def compileDexMergeTool = tasks.register('compileDexMergeTool', JavaCompile) {
+    source rootProject.file('tools/MergeCoreDex.java')
+    source rootProject.file('tools/PatchBackendEndpoint.java')
+    classpath = configurations.dexMergeTool
+    destinationDirectory = layout.buildDirectory.dir('dex-merge-tool')
+    sourceCompatibility = '8'
+    targetCompatibility = '8'
+}
+
+def coreApk = layout.buildDirectory.file('outputs/apk/debug/core-source-debug.apk')
+def mergedDex = layout.buildDirectory.file('merged-original/classes.dex')
+def mergeCoreDex = tasks.register('mergeCoreDex', JavaExec) {
+    dependsOn 'assembleDebug', compileDexMergeTool
+    classpath = configurations.dexMergeTool + files(compileDexMergeTool.flatMap { it.destinationDirectory })
+    mainClass = 'MergeCoreDex'
+    inputs.file(rootProject.file('green-farm-3.apk'))
+    inputs.file(coreApk)
+    outputs.file(mergedDex)
+    outputs.file(layout.buildDirectory.file('merged-original/classes.dex.json'))
+    args rootProject.file('green-farm-3.apk'), coreApk.get().asFile, mergedDex.get().asFile
+}
+
+tasks.register('assembleRecoveredDebug', Exec) {
+    group = 'build'
+    description = 'Compile game core Java and merge unchanged original SDK/stream DEX dependencies.'
+    dependsOn mergeCoreDex
+    inputs.file(rootProject.file('tools/build_core_source.py'))
+    inputs.file(rootProject.file('tools/build_binary_baseline.py'))
+    inputs.file(rootProject.file('tools/UpdateBuildRevision.java'))
+    inputs.file(coreApk)
+    inputs.file(mergedDex)
+    outputs.upToDateWhen { false }
+    commandLine 'python3', rootProject.file('tools/build_core_source.py'),
+            '--original', rootProject.file('green-farm-3.apk'),
+            '--compiled', coreApk.get().asFile, '--merged-dex', mergedDex.get().asFile,
+            '--sdk', android.sdkDirectory,
+            '--keystore', rootProject.file('.local/baseline-debug.keystore'),
+            '--output', layout.buildDirectory.file('outputs/apk/recovered/debug/app-core-source-debug.apk').get().asFile
+}
+
+def patchLocalBackend = tasks.register('patchLocalBackend', JavaExec) {
+    dependsOn 'assembleRecoveredDebug', compileDexMergeTool
+    classpath = configurations.dexMergeTool + files(compileDexMergeTool.flatMap { it.destinationDirectory })
+    mainClass = 'PatchBackendEndpoint'
+    def backendUrl = providers.gradleProperty('localBackendUrl').orElse('http://10.0.2.2:8787/')
+    inputs.file(mergedDex)
+    inputs.property('backendUrl', backendUrl)
+    outputs.file(layout.buildDirectory.file('backend-local/classes.dex'))
+    outputs.file(layout.buildDirectory.file('backend-local/classes.dex.json'))
+    args mergedDex.get().asFile, layout.buildDirectory.file('backend-local/classes.dex').get().asFile,
+            backendUrl.get()
+}
+
+tasks.register('assembleLocalBackendDebug', Exec) {
+    group = 'build'
+    description = 'Build a separate research APK with only Janus discovery redirected to an independent backend.'
+    dependsOn patchLocalBackend
+    inputs.file(rootProject.file('tools/build_local_backend.py'))
+    outputs.upToDateWhen { false }
+    commandLine 'python3', rootProject.file('tools/build_local_backend.py'),
+            '--original', rootProject.file('green-farm-3.apk'),
+            '--base', layout.buildDirectory.file('outputs/apk/recovered/debug/app-core-source-debug.apk').get().asFile,
+            '--patched-dex', layout.buildDirectory.file('backend-local/classes.dex').get().asFile,
+            '--sdk', android.sdkDirectory,
+            '--keystore', rootProject.file('.local/baseline-debug.keystore'),
+            '--output', layout.buildDirectory.file('outputs/apk/backend-local/debug/app-local-backend-debug.apk').get().asFile
+}

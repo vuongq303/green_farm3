@@ -62,18 +62,18 @@ class cy extends Thread {
     }
 
     private void MR() {
-        synchronized (ci.aXG) {
-            if (this.bbY != ci.aXN) {
+        synchronized (ci.MM()) {
+            if (this.bbY != ci.MN()) {
                 this.Bj = -1;
                 return;
             }
-            if (this.Bj == 0 && !ci.aXH) {
+            if (this.Bj == 0 && !ci.MO()) {
                 String str = "oss: thread launching " + this.bbY;
                 this.Bj = 1;
                 if (!MQ()) {
                     mJ();
                 }
-            } else if (this.Bj == 1 && ci.aXL != 1) {
+            } else if (this.Bj == 1 && ci.MP() != 1) {
                 mJ();
             }
             if (this.Bj >= 0) {
@@ -131,9 +131,9 @@ class cy extends Thread {
 
     private void mJ() {
         this.Bj = -1;
-        synchronized (ci.aXG) {
-            if (this.bbY == ci.aXN) {
-                boolean unused = ci.adu = false;
+        synchronized (ci.MM()) {
+            if (this.bbY == ci.MN()) {
+                ci.bD(false);
             }
         }
     }

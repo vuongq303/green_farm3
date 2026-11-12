@@ -10,6 +10,12 @@ import java.util.Vector;
 
 /* JADX INFO: loaded from: classes.dex */
 public class ao {
+    // Transparent Java checked-exception bridge for calls with no DEX handler.
+    @SuppressWarnings("unchecked")
+    private static <Failure extends Throwable> RuntimeException propagateChecked(Throwable failure) throws Failure {
+        throw (Failure) failure;
+    }
+
     private static Vector acV;
     private static int adh;
     bc acQ;
@@ -319,7 +325,11 @@ public class ao {
 
     /* JADX INFO: Access modifiers changed from: private */
     public int ew(int i) {
-        return ms().ex(i);
+        try {
+            return ms().ex(i);
+        } catch (Exception failure) {
+            throw ao.<RuntimeException>propagateChecked(failure);
+        }
     }
 
     private int ey(int i) {
@@ -509,7 +519,13 @@ public class ao {
             }
             au.mN().eB(2);
             i.ic().ie();
-            if (i.ic().aw(strMI) != 0) {
+            int crmResult;
+            try {
+                crmResult = i.ic().aw(strMI);
+            } catch (Exception failure) {
+                throw ao.<RuntimeException>propagateChecked(failure);
+            }
+            if (crmResult != 0) {
                 this.adk += "\nCrmManager failed to initialize,";
             } else {
                 this.adn = true;
@@ -797,4 +813,10 @@ public class ao {
         }
         return acV.size();
     }
+    // Original DEX synthetic accessors, inlined away by JADX.
+    static int a(ao owner) { return owner.adv; }
+    static int a(ao owner, int value) { return owner.ew(value); }
+    static boolean a(ao owner, boolean value) { owner.adu = value; return value; }
+    static boolean b(ao owner, boolean value) { owner.adw = value; return value; }
+    static int access$302(int value) { adh = value; return value; }
 }

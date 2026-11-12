@@ -207,6 +207,16 @@ public class ak {
     }
 
     public static ak b(InputStream inputStream, OutputStream outputStream) {
-        return f(new cg(inputStream, false, 0), new cg(outputStream, true, 15));
+        try {
+            return f(new cg(inputStream, false, 0), new cg(outputStream, true, 15));
+        } catch (IOException failure) {
+            throw ak.<RuntimeException>propagateChecked(failure);
+        }
+    }
+
+    // The original DEX propagates the same IOException without a handler here.
+    @SuppressWarnings("unchecked")
+    private static <Failure extends Throwable> RuntimeException propagateChecked(Throwable failure) throws Failure {
+        throw (Failure) failure;
     }
 }

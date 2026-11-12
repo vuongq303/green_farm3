@@ -1,6 +1,5 @@
 package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.Vector;
 
 /* JADX INFO: compiled from: StoreOfflineItem.java */
@@ -19,11 +18,11 @@ public class bv {
             return -2147483646;
         }
         this.Ki = (String) objCd;
-        if (bcVar.cd(FirebaseAnalytics.Param.QUANTITY) == null) {
+        if (bcVar.cd("quantity") == null) {
             return -2147483646;
         }
         try {
-            this.akr = bcVar.ce(FirebaseAnalytics.Param.QUANTITY);
+            this.akr = bcVar.ce("quantity");
         } catch (Exception e) {
         }
         if (bcVar.cd("replaced_quantity") == null) {

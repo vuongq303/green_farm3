@@ -185,7 +185,6 @@ public class bc {
                             return stringBuffer.toString();
                         }
                         break;
-                        break;
                     case '\\':
                         z = true;
                         break;

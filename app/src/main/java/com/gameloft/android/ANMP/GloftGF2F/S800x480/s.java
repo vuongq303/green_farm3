@@ -10,7 +10,6 @@ import com.facebook.internal.ServerProtocol;
 import com.facebook.share.internal.MessengerShareContentUtility;
 import com.facebook.share.internal.ShareConstants;
 import com.gameloft.glads.GLURLConnection;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,6 +20,16 @@ import org.json.JSONException;
 /* JADX INFO: compiled from: Federation.java */
 /* JADX INFO: loaded from: classes.dex */
 public class s {
+    // Preserve DEX exception behavior despite missing binary Throws metadata.
+    private static byte[] decodeResponse(String value) throws IOException {
+        return GLLib.bJ(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <Failure extends Throwable> RuntimeException propagateChecked(Throwable failure) throws Failure {
+        throw (Failure) failure;
+    }
+
     private static bx LU;
     private static boolean LV;
     private static String LX;
@@ -94,7 +103,7 @@ public class s {
 
     private static String aL(String str) {
         String str2 = "https://eve.gameloft.com/";
-        if ("https://eve.gameloft.com/" != 0 && "https://eve.gameloft.com/".endsWith("/")) {
+        if ("https://eve.gameloft.com/" != null && "https://eve.gameloft.com/".endsWith("/")) {
             str2 = "" + "https://eve.gameloft.com/".substring(0, "https://eve.gameloft.com/".length() - 1);
         }
         String str3 = str2 + "/config/" + gX();
@@ -434,7 +443,7 @@ public class s {
             }
             bc bcVar = new bc();
             if (iCC == t.OG) {
-                bcVar.a(NativeProtocol.WEB_DIALOG_ACTION, FirebaseAnalytics.Event.LOGIN);
+                bcVar.a(NativeProtocol.WEB_DIALOG_ACTION, "login");
                 bcVar.a("access_token", Me);
                 bcVar.a("username", jt());
             } else if (iCC == t.OH) {
@@ -571,7 +580,7 @@ public class s {
             }
             bc bcVar = new bc();
             if (iCC == t.OT) {
-                bcVar.a(NativeProtocol.WEB_DIALOG_ACTION, FirebaseAnalytics.Event.LOGIN);
+                bcVar.a(NativeProtocol.WEB_DIALOG_ACTION, "login");
                 bcVar.a("access_token", Me);
                 bcVar.a("username", jt());
             } else if (iCC == t.OU) {
@@ -591,6 +600,8 @@ public class s {
             if (iCC == t.OS) {
                 if (a(i, bcVar2)) {
                     strCh = bcVar2.ch("nonce");
+                } else {
+                    strCh = null;
                 }
                 if (!I(i, 2)) {
                     H(i, 3);
@@ -1114,7 +1125,7 @@ public class s {
             int i = t.Qd;
             MH[i] = new Object[]{new Integer(12), bool2, num, bool2};
             MI[i] = new String[]{"alerts", "me"};
-            MJ[i] = new String[]{"access_token", FirebaseAnalytics.Param.CONTENT_TYPE, "push_method", "alert_types"};
+            MJ[i] = new String[]{"access_token", "content_type", "push_method", "alert_types"};
         }
         if (w.YQ) {
             int i2 = t.PD;
@@ -1197,7 +1208,7 @@ public class s {
             int i4 = t.PA;
             MH[i4] = new Object[]{new Integer(9), bool, num2, bool2};
             MI[i4] = new String[]{"configs", "clusters", null, null, null};
-            MJ[i4] = new String[]{"clusters_space", "line", "access_token", FirebaseAnalytics.Param.END_DATE, FirebaseAnalytics.Param.START_DATE, "campaign_name", "is_enable"};
+            MJ[i4] = new String[]{"clusters_space", "line", "access_token", "end_date", "start_date", "campaign_name", "is_enable"};
         }
         if (w.YO) {
             int i5 = t.PB;
@@ -1436,7 +1447,7 @@ public class s {
             int i47 = t.OX;
             MH[i47] = new Object[]{new Integer(3), bool, num2, bool2};
             MI[i47] = new String[]{"leaderboards", null, null, null};
-            MJ[i47] = new String[]{"access_token", FirebaseAnalytics.Param.SCORE, "replace_score_if", "display_name", "credential", "expiration_date", "expiration_duration"};
+            MJ[i47] = new String[]{"access_token", "score", "replace_score_if", "display_name", "credential", "expiration_date", "expiration_duration"};
         }
         if (w.YG) {
             int i48 = t.OY;
@@ -1622,7 +1633,7 @@ public class s {
             int i78 = t.NV;
             MH[i78] = new Object[]{new Integer(4), bool, num2, bool2};
             MI[i78] = new String[]{"events"};
-            MJ[i78] = new String[]{"access_token", FirebaseAnalytics.Param.END_DATE, FirebaseAnalytics.Param.START_DATE, "description", "category", "name", FirebaseAnalytics.Param.GROUP_ID};
+            MJ[i78] = new String[]{"access_token", "end_date", "start_date", "description", "category", "name", "group_id"};
         }
         if (w.Yo) {
             int i79 = t.NW;
@@ -1700,7 +1711,7 @@ public class s {
             int i91 = t.Oi;
             MH[i91] = new Object[]{new Integer(4), bool, num2, bool2};
             MI[i91] = new String[]{"events", null};
-            MJ[i91] = new String[]{"access_token", FirebaseAnalytics.Param.END_DATE, FirebaseAnalytics.Param.START_DATE, "description", "category", "name", FirebaseAnalytics.Param.GROUP_ID};
+            MJ[i91] = new String[]{"access_token", "end_date", "start_date", "description", "category", "name", "group_id"};
         }
         if (w.Yo) {
             int i92 = t.Oj;
@@ -1903,7 +1914,7 @@ public class s {
                 H(i, 3);
                 if (zBooleanValue2) {
                     try {
-                        return new String(GLLib.bJ(strD));
+                        return new String(decodeResponse(strD));
                     } catch (IOException e) {
                         GLLib.d(e);
                     }
@@ -2003,15 +2014,12 @@ public class s {
     }
 
     private static synchronized int cz(int i) {
-        int i2;
-        i2 = 0;
-        while (i2 < MQ.length) {
-            if (MQ[i2] != i) {
-                i2++;
+        for (int i2 = 0; i2 < MQ.length; i2++) {
+            if (MQ[i2] == i) {
+                return i2;
             }
         }
-        i2 = -1;
-        return i2;
+        return -1;
     }
 
     private static void F(int i, int i2) {
@@ -2128,7 +2136,11 @@ public class s {
                         int iCC = cC(i);
                         String strCJ = cJ(i);
                         if (w.YH && iCC == t.Pg) {
-                            G(iCC, ML);
+                            try {
+                                G(iCC, ML);
+                            } catch (JSONException failure) {
+                                throw s.<RuntimeException>propagateChecked(failure);
+                            }
                         }
                         cD(i);
                         if (w.Wm) {
@@ -2179,32 +2191,34 @@ public class s {
     }
 
     private static void G(int i, int i2) throws JSONException {
-        String str;
-        if (i2 == 200 || i2 == 202) {
-            try {
-                if (com.gameloft.android2d.d.b.Qm() == null) {
-                    GLLib.be("TrackingManager.GetManager(): null");
-                    return;
-                }
-                String[] strArr = (String[]) cv(cz(i));
-                String str2 = strArr[0];
-                String str3 = strArr[1];
-                if ("c2dm".equals(str2)) {
-                    str = "166046";
-                } else if ("gcm".equals(str2)) {
-                    str = "166050";
-                } else {
-                    str = "166067";
-                }
-                if (str3 == null || str3.equals("")) {
-                    str3 = AppEventsConstants.EVENT_PARAM_VALUE_NO;
-                }
-                com.gameloft.android2d.d.b.Qm().b(51935, new String[]{str3, "INT:" + str});
-            } catch (NoClassDefFoundError e) {
-                GLLib.be(e.toString());
-                GLLib.be("Call function: GlotAddEventPNTrackingEvent: Please enable GLOTv3 feature in Java-Android Wrapper(SET USE_GLOT3=1).");
-            }
+        if (i2 != 200 && i2 != 202) {
+            return;
         }
+        try {
+            if (com.gameloft.android2d.d.b.Qm() == null) {
+                GLLib.be("TrackingManager.GetManager(): null");
+                return;
+            }
+        } catch (NoClassDefFoundError e) {
+            GLLib.be(e.toString());
+            GLLib.be("Call function: GlotAddEventPNTrackingEvent: Please enable GLOTv3 feature in Java-Android Wrapper(SET USE_GLOT3=1).");
+            return;
+        }
+        String[] strArr = (String[]) cv(cz(i));
+        String str2 = strArr[0];
+        String str3 = strArr[1];
+        String str;
+        if ("c2dm".equals(str2)) {
+            str = "166046";
+        } else if ("gcm".equals(str2)) {
+            str = "166050";
+        } else {
+            str = "166067";
+        }
+        if (str3 == null || str3.equals("")) {
+            str3 = AppEventsConstants.EVENT_PARAM_VALUE_NO;
+        }
+        com.gameloft.android2d.d.b.Qm().b(51935, new String[]{str3, "INT:" + str});
     }
 
     private static boolean cE(int i) {

@@ -2,12 +2,10 @@ package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 
 import android.opengl.GLES20;
 import android.os.SystemClock;
-import com.facebook.R;
 import com.facebook.appevents.AppEventsConstants;
 import com.facebook.appevents.codeless.internal.Constants;
 import com.facebook.internal.FacebookRequestErrorClassification;
 import com.facebook.login.widget.ToolTipPopup;
-import com.gameloft.adsmanager.JavaUtils;
 import com.gameloft.glads.AndroidWebView;
 import com.gameloft.glads.GLURLConnection;
 import com.google.android.gms.ads.AdRequest;
@@ -40,6 +38,12 @@ import javax.microedition.midlet.MIDlet;
 
 /* JADX INFO: loaded from: classes.dex */
 public abstract class GLLib extends javax.microedition.lcdui.f implements Runnable {
+    // DEX has no Java checked-exception restriction; preserve the original thrown instance.
+    @SuppressWarnings("unchecked")
+    private static <Failure extends Throwable> RuntimeException propagateChecked(Throwable failure) throws Failure {
+        throw (Failure) failure;
+    }
+
     public static int QA;
     public static int QB;
     static int QC;
@@ -147,7 +151,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     private static int[][] TL;
     private static String[][] TM;
     private static javax.microedition.b.b TN;
-    private static HashMap<String, ProfilerEvent> TO;
+    private static HashMap<String, bl> TO;
     private static bm TP;
     private static ArrayList<String> TQ;
     private static boolean TT;
@@ -827,7 +831,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     public static void q(Object obj) {
         if (w.Zz) {
             if (Rh == null) {
-                Rh = new String[JavaUtils.Constants.NATIVE_HEIGHT_DP_300];
+                Rh = new String[300];
             }
             if (Ri == Rh.length) {
                 jP();
@@ -1160,7 +1164,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
         int iDG = dG(0);
         int iDH = dH(0);
         a(Qj, iDG - 11, iDH - 11, 22, 22, true);
-        a(iDG - 10, iDH - 10, 20.0f, 20.0f, 0, 360);
+        a((float) (iDG - 10), (float) (iDH - 10), 20.0f, 20.0f, 0, 360);
         dk(0);
         b(Qj, iDG - 1, iDH - 1, 2.0f, 2.0f, true);
         a(Qj, 0, i5, 101, 31, true);
@@ -1307,7 +1311,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     }
 
     private static byte[] cT(int i) {
-        byte[] bArr;
+        byte[] bArr = null;
         c(i >= 0, "Pack_ReadData.idx is invalid");
         c(i < RO, "Pack_ReadData.idx is invalid");
         int iDa = da(i);
@@ -1316,18 +1320,11 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
                 a(RJ, iDa);
                 RN = iDa + RN;
                 bArr = Sq;
-                try {
-                    Sq = null;
-                    return bArr;
-                } catch (Exception e) {
-                    e = e;
-                    c(false, "LZMA decompression failed : " + e.toString());
-                    return bArr;
-                }
-            } catch (Exception e2) {
-                e = e2;
-                bArr = null;
+                Sq = null;
+            } catch (Exception e) {
+                c(false, "LZMA decompression failed : " + e.toString());
             }
+            return bArr;
         } else {
             byte[] bArr2 = new byte[iDa];
             c(bArr2, 0, bArr2.length);
@@ -1384,44 +1381,49 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     }
 
     private static InputStream a(String str, int i, byte[] bArr, int i2) {
-        if (RJ != null) {
-            if (str != null && str.compareTo(RI) == 0) {
-                if (RC == i) {
-                    return RJ;
+        try {
+            if (RJ != null) {
+                if (str != null && str.compareTo(RI) == 0) {
+                    if (RC == i) {
+                        return RJ;
+                    }
+                    kb();
+                } else {
+                    kc();
                 }
-                kb();
-            } else {
-                kc();
             }
+            if (RJ == null) {
+                RI = str;
+                RL = bArr;
+                RM = i2;
+                if (i > 0) {
+                    try {
+                        str = str + "." + i;
+                    } catch (Throwable th) {
+                    }
+                }
+                InputStream inputStreamBl = bl(str);
+                RC = i;
+                if (i == 0) {
+                    RD = inputStreamBl.available();
+                    int i3 = (inputStreamBl.read() & 255) + ((inputStreamBl.read() & 255) << 8);
+                    RO = (short) i3;
+                    int i4 = i3 << 2;
+                    RP = new int[i3];
+                    for (int i5 = 0; i5 < i3; i5++) {
+                        RP[i5] = (inputStreamBl.read() & 255) + ((inputStreamBl.read() & 255) << 8) + ((inputStreamBl.read() & 255) << 16) + ((inputStreamBl.read() & 255) << 24);
+                    }
+                    RN = RP[0];
+                } else {
+                    RN = 0;
+                }
+                RJ = inputStreamBl;
+            }
+            return RJ;
+
+        } catch (IOException failure) {
+            throw GLLib.<RuntimeException>propagateChecked(failure);
         }
-        if (RJ == null) {
-            RI = str;
-            RL = bArr;
-            RM = i2;
-            if (i > 0) {
-                try {
-                    str = str + "." + i;
-                } catch (Throwable th) {
-                }
-            }
-            InputStream inputStreamBl = bl(str);
-            RC = i;
-            if (i == 0) {
-                RD = inputStreamBl.available();
-                int i3 = (inputStreamBl.read() & 255) + ((inputStreamBl.read() & 255) << 8);
-                RO = (short) i3;
-                int i4 = i3 << 2;
-                RP = new int[i3];
-                for (int i5 = 0; i5 < i3; i5++) {
-                    RP[i5] = (inputStreamBl.read() & 255) + ((inputStreamBl.read() & 255) << 8) + ((inputStreamBl.read() & 255) << 16) + ((inputStreamBl.read() & 255) << 24);
-                }
-                RN = RP[0];
-            } else {
-                RN = 0;
-            }
-            RJ = inputStreamBl;
-        }
-        return RJ;
     }
 
     private static void kb() {
@@ -1444,33 +1446,38 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     }
 
     private static int cV(int i) {
-        int i2 = 0;
-        c(RI != null, "Pack_PositionAtData_CORE: s_pack_filename is null!");
-        int iCX = cX(i);
-        int i3 = (RP[i + 1] - iCX) - 1;
-        int i4 = iCX;
-        while (i4 > RD) {
-            try {
-                i2++;
-                i4 -= RD;
-            } catch (Throwable th) {
+        try {
+            int i2 = 0;
+            c(RI != null, "Pack_PositionAtData_CORE: s_pack_filename is null!");
+            int iCX = cX(i);
+            int i3 = (RP[i + 1] - iCX) - 1;
+            int i4 = iCX;
+            while (i4 > RD) {
+                try {
+                    i2++;
+                    i4 -= RD;
+                } catch (Throwable th) {
+                }
             }
+            InputStream inputStreamH = h(RI, i2);
+            inputStreamH.available();
+            if (RN > i4) {
+                kb();
+                inputStreamH = h(RI, i2);
+            }
+            inputStreamH.skip(i4 - RN);
+            RT = ((byte) inputStreamH.read()) & 255;
+            if (w.Wj && RT >= 127) {
+                RT -= 127;
+                RU = true;
+            }
+            RU = false;
+            RN = i4 + 1;
+            return i3;
+
+        } catch (IOException failure) {
+            throw GLLib.<RuntimeException>propagateChecked(failure);
         }
-        InputStream inputStreamH = h(RI, i2);
-        inputStreamH.available();
-        if (RN > i4) {
-            kb();
-            inputStreamH = h(RI, i2);
-        }
-        inputStreamH.skip(i4 - RN);
-        RT = ((byte) inputStreamH.read()) & 255;
-        if (w.Wj && RT >= 127) {
-            RT -= 127;
-            RU = true;
-        }
-        RU = false;
-        RN = i4 + 1;
-        return i3;
     }
 
     private static byte[] cW(int i) {
@@ -1629,107 +1636,122 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     }
 
     private static InputStream b(String str, int i, byte[] bArr, int i2) {
-        if (RJ != null) {
-            if (str != null && str.compareTo(RI) == 0) {
-                if (RC == i) {
-                    return RJ;
-                }
-                kb();
-            } else {
-                kd();
-            }
-        }
-        if (RJ == null) {
-            RI = str;
-            RL = bArr;
-            RM = i2;
-            if (i > 0) {
-                try {
-                    str = str + "." + i;
-                } catch (Throwable th) {
+        try {
+            if (RJ != null) {
+                if (str != null && str.compareTo(RI) == 0) {
+                    if (RC == i) {
+                        return RJ;
+                    }
+                    kb();
+                } else {
+                    kd();
                 }
             }
-            InputStream inputStreamBl = bl(str);
-            RC = i;
-            if (w.Wi) {
-                be("Stream Id = " + RI);
-            }
-            RD = inputStreamBl.available();
-            if (i <= 0) {
-                int iB = b(inputStreamBl);
-                if (w.Wi) {
-                    be("read iniex version: " + iB);
-                }
-                int iB2 = b(inputStreamBl);
-                if (w.Wi) {
-                    be("read iniex count: " + iB2);
-                }
-                RO = (short) iB2;
-                int iB3 = b(inputStreamBl);
-                if (w.Wi) {
-                    be("read iniex subpackCount: " + iB3);
-                }
-                RQ = (short) iB3;
-                if (iB3 > 0) {
-                    RR = new short[iB3];
-                    for (int i3 = 0; i3 < iB3; i3++) {
-                        int iB4 = b(inputStreamBl);
-                        RR[i3] = (short) iB4;
-                        if (w.Wi) {
-                            be("read iniex subpack start index: " + iB4);
-                        }
+            if (RJ == null) {
+                RI = str;
+                RL = bArr;
+                RM = i2;
+                if (i > 0) {
+                    try {
+                        str = str + "." + i;
+                    } catch (Throwable th) {
                     }
                 }
-                RP = new int[iB2];
-                RF = new int[iB2];
-            }
-            if (RE == null) {
-                RE = new String[RG.length][];
-            }
-            if (RE[RH] == null) {
-                RE[RH] = new String[RO];
-            }
-            short s = i + 1 < RR.length ? RR[i + 1] : RO;
-            for (int i4 = RR[i]; i4 < s; i4++) {
-                int i5 = inputStreamBl.read();
+                InputStream inputStreamBl = bl(str);
+                RC = i;
                 if (w.Wi) {
-                    be("read iniex nameLength: " + i5);
+                    be("Stream Id = " + RI);
                 }
-                byte[] bArr2 = new byte[i5];
-                for (int i6 = 0; i6 < i5; i6++) {
-                    bArr2[i6] = (byte) inputStreamBl.read();
+                RD = inputStreamBl.available();
+                if (i <= 0) {
+                    int iB = b(inputStreamBl);
+                    if (w.Wi) {
+                        be("read iniex version: " + iB);
+                    }
+                    int iB2 = b(inputStreamBl);
+                    if (w.Wi) {
+                        be("read iniex count: " + iB2);
+                    }
+                    RO = (short) iB2;
+                    int iB3 = b(inputStreamBl);
+                    if (w.Wi) {
+                        be("read iniex subpackCount: " + iB3);
+                    }
+                    RQ = (short) iB3;
+                    if (iB3 > 0) {
+                        RR = new short[iB3];
+                        for (int i3 = 0; i3 < iB3; i3++) {
+                            int iB4 = b(inputStreamBl);
+                            RR[i3] = (short) iB4;
+                            if (w.Wi) {
+                                be("read iniex subpack start index: " + iB4);
+                            }
+                        }
+                    }
+                    RP = new int[iB2];
+                    RF = new int[iB2];
                 }
-                String str2 = new String(bArr2);
-                RE[RH][i4] = str2;
+                if (RE == null) {
+                    RE = new String[RG.length][];
+                }
+                if (RE[RH] == null) {
+                    RE[RH] = new String[RO];
+                }
+                short s = i + 1 < RR.length ? RR[i + 1] : RO;
+                for (int i4 = RR[i]; i4 < s; i4++) {
+                    int i5 = inputStreamBl.read();
+                    if (w.Wi) {
+                        be("read iniex nameLength: " + i5);
+                    }
+                    byte[] bArr2 = new byte[i5];
+                    for (int i6 = 0; i6 < i5; i6++) {
+                        bArr2[i6] = (byte) inputStreamBl.read();
+                    }
+                    String str2 = new String(bArr2);
+                    RE[RH][i4] = str2;
+                    if (w.Wi) {
+                        be("read iniex name: " + str2);
+                    }
+                    int iC = c(inputStreamBl);
+                    if (w.Wi) {
+                        be("read iniex offset: " + iC);
+                    }
+                    RP[i4] = iC;
+                    int iC2 = c(inputStreamBl);
+                    RF[i4] = iC2;
+                    if (w.Wi) {
+                        be("read iniex resLength: " + iC2);
+                    }
+                }
                 if (w.Wi) {
-                    be("read iniex name: " + str2);
+                    Thread.sleep(ToolTipPopup.DEFAULT_POPUP_DISPLAY_TIME);
                 }
-                int iC = c(inputStreamBl);
-                if (w.Wi) {
-                    be("read iniex offset: " + iC);
-                }
-                RP[i4] = iC;
-                int iC2 = c(inputStreamBl);
-                RF[i4] = iC2;
-                if (w.Wi) {
-                    be("read iniex resLength: " + iC2);
-                }
+                RN = RP[RR[i]];
+                RJ = inputStreamBl;
             }
-            if (w.Wi) {
-                Thread.sleep(ToolTipPopup.DEFAULT_POPUP_DISPLAY_TIME);
-            }
-            RN = RP[RR[i]];
-            RJ = inputStreamBl;
+            return RJ;
+
+        } catch (IOException | InterruptedException failure) {
+            throw GLLib.<RuntimeException>propagateChecked(failure);
         }
-        return RJ;
     }
 
     static int b(InputStream inputStream) {
-        return (inputStream.read() & 255) + ((inputStream.read() & 255) << 8);
+        try {
+            return (inputStream.read() & 255) + ((inputStream.read() & 255) << 8);
+
+        } catch (IOException failure) {
+            throw GLLib.<RuntimeException>propagateChecked(failure);
+        }
     }
 
     static int c(InputStream inputStream) {
-        return (inputStream.read() & 255) + ((inputStream.read() & 255) << 8) + ((inputStream.read() & 255) << 16) + ((inputStream.read() & 255) << 24);
+        try {
+            return (inputStream.read() & 255) + ((inputStream.read() & 255) << 8) + ((inputStream.read() & 255) << 16) + ((inputStream.read() & 255) << 24);
+
+        } catch (IOException failure) {
+            throw GLLib.<RuntimeException>propagateChecked(failure);
+        }
     }
 
     public static int bi(String str) {
@@ -2192,97 +2214,102 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     }
 
     private static InputStream d(String str, int i, int i2) {
-        if (RJ != null && str != null && str.compareTo(RI) == 0 && RC == i2) {
-            return RJ;
-        }
-        RK = 3;
-        if (i2 > 0) {
-            try {
-                str = str + "." + i2;
-            } catch (Throwable th) {
-                RK = 1;
-                throw th;
+        try {
+            if (RJ != null && str != null && str.compareTo(RI) == 0 && RC == i2) {
+                return RJ;
             }
-        }
-        InputStream inputStreamBl = bl(bq(str));
-        if (inputStreamBl == null) {
-            RK = 1;
-            return null;
-        }
-        kr();
-        if (w.Wi) {
-            be("Stream dlc Id = " + str);
-        }
-        if (i2 <= 0) {
-            int iB = b(inputStreamBl);
-            if (w.Wi) {
-                be("read dlc iniex version: " + iB);
-            }
-            int iB2 = b(inputStreamBl);
-            if (w.Wi) {
-                be("read dlc iniex count: " + iB2);
-            }
-            Se[i] = iB2;
-            RO = (short) (RO + ((short) iB2));
-            int iB3 = b(inputStreamBl);
-            if (w.Wi) {
-                be("read dlc iniex subpackCount: " + iB3);
-            }
-            RQ = (short) (RQ + ((short) iB3));
-            if (iB3 > 0) {
-                RR = a(RR, RZ, i, iB3);
-                for (int i3 = 0; i3 < iB3; i3++) {
-                    int iB4 = b(inputStreamBl);
-                    RR[RZ[i] + i3] = (short) iB4;
-                    if (w.Wi) {
-                        be("read dlc iniex subpack start index: " + iB4);
-                    }
+            RK = 3;
+            if (i2 > 0) {
+                try {
+                    str = str + "." + i2;
+                } catch (Throwable th) {
+                    RK = 1;
+                    throw th;
                 }
             }
-            RP = a(RP, Sa, i, iB2);
-            if (RE == null) {
-                RE = new String[RG.length][];
+            InputStream inputStreamBl = bl(bq(str));
+            if (inputStreamBl == null) {
+                RK = 1;
+                return null;
             }
-            if (Sc == null) {
-                Sc = (int[][]) Array.newInstance((Class<?>) Integer.TYPE, RG.length, Sf);
+            kr();
+            if (w.Wi) {
+                be("Stream dlc Id = " + str);
             }
-            RE[RH] = a(RE[RH], Sc[RH], i, RO - (RE[RH] == null ? 0 : RE[RH].length));
-            Sb = Sc[RH];
-            RF = a(RF, Sd, i, iB2);
+            if (i2 <= 0) {
+                int iB = b(inputStreamBl);
+                if (w.Wi) {
+                    be("read dlc iniex version: " + iB);
+                }
+                int iB2 = b(inputStreamBl);
+                if (w.Wi) {
+                    be("read dlc iniex count: " + iB2);
+                }
+                Se[i] = iB2;
+                RO = (short) (RO + ((short) iB2));
+                int iB3 = b(inputStreamBl);
+                if (w.Wi) {
+                    be("read dlc iniex subpackCount: " + iB3);
+                }
+                RQ = (short) (RQ + ((short) iB3));
+                if (iB3 > 0) {
+                    RR = a(RR, RZ, i, iB3);
+                    for (int i3 = 0; i3 < iB3; i3++) {
+                        int iB4 = b(inputStreamBl);
+                        RR[RZ[i] + i3] = (short) iB4;
+                        if (w.Wi) {
+                            be("read dlc iniex subpack start index: " + iB4);
+                        }
+                    }
+                }
+                RP = a(RP, Sa, i, iB2);
+                if (RE == null) {
+                    RE = new String[RG.length][];
+                }
+                if (Sc == null) {
+                    Sc = (int[][]) Array.newInstance((Class<?>) Integer.TYPE, RG.length, Sf);
+                }
+                RE[RH] = a(RE[RH], Sc[RH], i, RO - (RE[RH] == null ? 0 : RE[RH].length));
+                Sb = Sc[RH];
+                RF = a(RF, Sd, i, iB2);
+            }
+            int i4 = Se[i];
+            int i5 = RZ[i] + i2 + 1;
+            int i6 = i5 < RR.length ? RR[i5] : i4;
+            for (int i7 = RR[RZ[i] + i2]; i7 < i6; i7++) {
+                int i8 = inputStreamBl.read();
+                if (w.Wi) {
+                    be("read dlc iniex nameLength: " + i8);
+                }
+                byte[] bArr = new byte[i8];
+                for (int i9 = 0; i9 < i8; i9++) {
+                    bArr[i9] = (byte) inputStreamBl.read();
+                }
+                String str2 = new String(bArr);
+                RE[RH][Sb[i] + i7] = str2;
+                if (w.Wi) {
+                    be("read dlc iniex name: " + str2);
+                }
+                int iC = c(inputStreamBl);
+                if (w.Wi) {
+                    be("read dlc iniex offset: " + iC);
+                }
+                RP[Sa[i] + i7] = iC;
+                int iC2 = c(inputStreamBl);
+                RF[Sd[i] + i7] = iC2;
+                if (w.Wi) {
+                    be("read dlc iniex resLength: " + iC2);
+                }
+            }
+            if (w.Wi) {
+                Thread.sleep(ToolTipPopup.DEFAULT_POPUP_DISPLAY_TIME);
+            }
+            RK = 1;
+            return inputStreamBl;
+
+        } catch (IOException | InterruptedException failure) {
+            throw GLLib.<RuntimeException>propagateChecked(failure);
         }
-        int i4 = Se[i];
-        int i5 = RZ[i] + i2 + 1;
-        int i6 = i5 < RR.length ? RR[i5] : i4;
-        for (int i7 = RR[RZ[i] + i2]; i7 < i6; i7++) {
-            int i8 = inputStreamBl.read();
-            if (w.Wi) {
-                be("read dlc iniex nameLength: " + i8);
-            }
-            byte[] bArr = new byte[i8];
-            for (int i9 = 0; i9 < i8; i9++) {
-                bArr[i9] = (byte) inputStreamBl.read();
-            }
-            String str2 = new String(bArr);
-            RE[RH][Sb[i] + i7] = str2;
-            if (w.Wi) {
-                be("read dlc iniex name: " + str2);
-            }
-            int iC = c(inputStreamBl);
-            if (w.Wi) {
-                be("read dlc iniex offset: " + iC);
-            }
-            RP[Sa[i] + i7] = iC;
-            int iC2 = c(inputStreamBl);
-            RF[Sd[i] + i7] = iC2;
-            if (w.Wi) {
-                be("read dlc iniex resLength: " + iC2);
-            }
-        }
-        if (w.Wi) {
-            Thread.sleep(ToolTipPopup.DEFAULT_POPUP_DISPLAY_TIME);
-        }
-        RK = 1;
-        return inputStreamBl;
     }
 
     private static int[] df(int i) {
@@ -2936,6 +2963,8 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
                                 i25 = i29;
                                 z = true;
                                 i16 = i28;
+                                // Original DEX branches directly to the outer decode loop.
+                                continue;
                             } else {
                                 i13 = i17;
                             }
@@ -3769,7 +3798,8 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             }
         }
         a(f6, f5, f8, f9, i5);
-        a(i7, i8, i, i2, i3, i4);
+        // DEX calls a(IIFFFF)V, not the touch overload a(IIIIII)Z.
+        a(i7, i8, (float) i, (float) i2, (float) i3, (float) i4);
         if (w.Zo) {
             if ((TX & 262144) != 0) {
                 int i9 = TY[18][7];
@@ -3866,7 +3896,8 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
                     a(f, f2, f3, f4, f5, f6, f7, f8);
                     break;
             }
-            a(ayVar.aiq, ayVar.air, i, i2, i3, i4);
+            // Preserve the original texture-coordinate descriptor a(IIFFFF)V.
+            a(ayVar.aiq, ayVar.air, (float) i, (float) i2, (float) i3, (float) i4);
             SA += SM * 4;
         }
     }
@@ -4509,11 +4540,21 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     }
 
     static int h(InputStream inputStream) {
-        return (g(inputStream) & 255) | ((g(inputStream) & 255) << 8);
+        try {
+            return (g(inputStream) & 255) | ((g(inputStream) & 255) << 8);
+
+        } catch (IOException failure) {
+            throw GLLib.<RuntimeException>propagateChecked(failure);
+        }
     }
 
     static int i(InputStream inputStream) {
-        return (g(inputStream) & 255) | ((g(inputStream) & 255) << 8) | ((g(inputStream) & 255) << 16) | ((g(inputStream) & 255) << 24);
+        try {
+            return (g(inputStream) & 255) | ((g(inputStream) & 255) << 8) | ((g(inputStream) & 255) << 16) | ((g(inputStream) & 255) << 24);
+
+        } catch (IOException failure) {
+            throw GLLib.<RuntimeException>propagateChecked(failure);
+        }
     }
 
     static int b(InputStream inputStream, byte[] bArr, int i, int i2) {
@@ -5154,11 +5195,11 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
                 return "CN";
             case 9:
                 return "KR";
-            case R.styleable.CardView_contentPaddingRight /* 10 */:
+            case 10:
                 return "RU";
-            case R.styleable.CardView_contentPaddingTop /* 11 */:
+            case 11:
                 return "TR";
-            case R.styleable.CardView_contentPaddingBottom /* 12 */:
+            case 12:
                 return "PL";
             case 13:
                 return "CZ";
@@ -5234,33 +5275,27 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     }
 
     private static int j(InputStream inputStream) {
-        int iG;
+        int iG = 0;
         if (w.VS) {
             try {
                 c(TK != null, "Text_LoadTextFromStream: text_multiple_nbStrings is null");
                 iG = g(inputStream);
-                try {
-                    c(iG < w.VT, "Text_LoadTextFromStream: Trying to load a tab higher than GLLibConfig.text_maxPacks!");
-                    TK[iG] = i(inputStream);
-                    if (TK[iG] > (1 << w.VU)) {
-                        c(false, "WARNING! You are loading a text pack with more than " + (1 << w.VU) + " strings! All extras will be ignored");
-                        TK[iG] = 1 << w.VU;
-                    }
-                    TL[iG] = new int[TK[iG] + 1];
-                    for (int i = 1; i < TK[iG] + 1; i++) {
-                        TL[iG][i] = i(inputStream);
-                    }
-                    TJ[iG] = new byte[TL[iG][TK[iG]]];
-                    b(inputStream, TJ[iG], 0, TJ[iG].length);
-                    return iG;
-                } catch (Exception e) {
-                    e = e;
-                    d(e);
-                    return iG;
+                c(iG < w.VT, "Text_LoadTextFromStream: Trying to load a tab higher than GLLibConfig.text_maxPacks!");
+                TK[iG] = i(inputStream);
+                if (TK[iG] > (1 << w.VU)) {
+                    c(false, "WARNING! You are loading a text pack with more than " + (1 << w.VU) + " strings! All extras will be ignored");
+                    TK[iG] = 1 << w.VU;
                 }
-            } catch (Exception e2) {
-                e = e2;
-                iG = 0;
+                TL[iG] = new int[TK[iG] + 1];
+                for (int i = 1; i < TK[iG] + 1; i++) {
+                    TL[iG][i] = i(inputStream);
+                }
+                TJ[iG] = new byte[TL[iG][TK[iG]]];
+                b(inputStream, TJ[iG], 0, TJ[iG].length);
+                return iG;
+            } catch (Exception e) {
+                d(e);
+                return iG;
             }
         } else {
             try {
@@ -5430,9 +5465,6 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     /* JADX WARN: Code duplicated, block: B:38:0x007b A[SYNTHETIC] */
     /* JADX WARN: Code duplicated, block: B:40:0x0049 A[SYNTHETIC] */
     public static String a(long j, int i, String str) {
-        String str2;
-        long jAbs;
-        long j2;
         if (j < 1000) {
             return "" + j;
         }
@@ -5442,155 +5474,55 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             case 8:
             case 9:
             case 15:
-            case FacebookRequestErrorClassification.EC_USER_TOO_MANY_CALLS /* 17 */:
+            case 17:
                 str = ",";
-                str2 = "";
-                jAbs = Math.abs(j % 1000);
-                j2 = j / 1000;
-                while (true) {
-                    if (jAbs != 0 && j2 == 0) {
-                        return str2;
-                    }
-                    if (jAbs < 10) {
-                        str2 = "00" + Math.abs(jAbs) + str2;
-                    } else if (jAbs < 100) {
-                        str2 = AppEventsConstants.EVENT_PARAM_VALUE_NO + Math.abs(jAbs) + str2;
-                    } else {
-                        str2 = Math.abs(jAbs) + str2;
-                    }
-                    jAbs = j2 % 1000;
-                    j2 /= 1000;
-                    if (j2 != 0) {
-                        str2 = str + str2;
-                    } else if (jAbs != 0) {
-                        str2 = jAbs + str + str2;
-                        jAbs = 0;
-                    }
-                }
                 break;
             case 1:
             case 3:
             case 5:
             case 16:
                 str = ".";
-                str2 = "";
-                jAbs = Math.abs(j % 1000);
-                j2 = j / 1000;
-                while (true) {
-                    if (jAbs != 0) {
-                    }
-                    if (jAbs < 10) {
-                        str2 = "00" + Math.abs(jAbs) + str2;
-                    } else if (jAbs < 100) {
-                        str2 = AppEventsConstants.EVENT_PARAM_VALUE_NO + Math.abs(jAbs) + str2;
-                    } else {
-                        str2 = Math.abs(jAbs) + str2;
-                    }
-                    jAbs = j2 % 1000;
-                    j2 /= 1000;
-                    if (j2 != 0) {
-                        str2 = str + str2;
-                    } else if (jAbs != 0) {
-                        str2 = jAbs + str + str2;
-                        jAbs = 0;
-                    }
-                    break;
-                }
                 break;
             case 2:
             case 4:
             case 6:
-            case R.styleable.CardView_contentPaddingRight /* 10 */:
+            case 10:
             case 20:
                 if (j < 10000) {
                     str = "";
                 }
-                str2 = "";
-                jAbs = Math.abs(j % 1000);
-                j2 = j / 1000;
-                while (true) {
-                    if (jAbs != 0) {
-                    }
-                    if (jAbs < 10) {
-                        str2 = "00" + Math.abs(jAbs) + str2;
-                    } else if (jAbs < 100) {
-                        str2 = AppEventsConstants.EVENT_PARAM_VALUE_NO + Math.abs(jAbs) + str2;
-                    } else {
-                        str2 = Math.abs(jAbs) + str2;
-                    }
-                    jAbs = j2 % 1000;
-                    j2 /= 1000;
-                    if (j2 != 0) {
-                        str2 = str + str2;
-                    } else if (jAbs != 0) {
-                        str2 = jAbs + str + str2;
-                        jAbs = 0;
-                    }
-                    break;
-                }
                 break;
-            case R.styleable.CardView_contentPaddingTop /* 11 */:
+            case 11:
             case 14:
-                if (j >= 10000) {
-                    str = ".";
-                } else {
-                    str = "";
-                }
-                str2 = "";
-                jAbs = Math.abs(j % 1000);
-                j2 = j / 1000;
-                while (true) {
-                    if (jAbs != 0) {
-                    }
-                    if (jAbs < 10) {
-                        str2 = "00" + Math.abs(jAbs) + str2;
-                    } else if (jAbs < 100) {
-                        str2 = AppEventsConstants.EVENT_PARAM_VALUE_NO + Math.abs(jAbs) + str2;
-                    } else {
-                        str2 = Math.abs(jAbs) + str2;
-                    }
-                    jAbs = j2 % 1000;
-                    j2 /= 1000;
-                    if (j2 != 0) {
-                        str2 = str + str2;
-                    } else if (jAbs != 0) {
-                        str2 = jAbs + str + str2;
-                        jAbs = 0;
-                    }
-                    break;
-                }
+                str = j >= 10000 ? "." : "";
                 break;
-            case R.styleable.CardView_contentPaddingBottom /* 12 */:
+            case 12:
             case 13:
-                str2 = "";
-                jAbs = Math.abs(j % 1000);
-                j2 = j / 1000;
-                while (true) {
-                    if (jAbs != 0) {
-                    }
-                    if (jAbs < 10) {
-                        str2 = "00" + Math.abs(jAbs) + str2;
-                    } else if (jAbs < 100) {
-                        str2 = AppEventsConstants.EVENT_PARAM_VALUE_NO + Math.abs(jAbs) + str2;
-                    } else {
-                        str2 = Math.abs(jAbs) + str2;
-                    }
-                    jAbs = j2 % 1000;
-                    j2 /= 1000;
-                    if (j2 != 0) {
-                        str2 = str + str2;
-                    } else if (jAbs != 0) {
-                        str2 = jAbs + str + str2;
-                        jAbs = 0;
-                    }
-                    break;
-                }
                 break;
-            case 18:
-            case 19:
             default:
                 return "" + j;
         }
+        String result = "";
+        long group = Math.abs(j % 1000);
+        long remaining = j / 1000;
+        while (group != 0 || remaining != 0) {
+            if (group < 10) {
+                result = "00" + Math.abs(group) + result;
+            } else if (group < 100) {
+                result = "0" + Math.abs(group) + result;
+            } else {
+                result = Math.abs(group) + result;
+            }
+            group = remaining % 1000;
+            remaining /= 1000;
+            if (remaining != 0) {
+                result = str + result;
+            } else if (group != 0) {
+                result = group + str + result;
+                group = 0;
+            }
+        }
+        return result;
     }
 
     public static String a(String str, String[] strArr) {
@@ -5636,7 +5568,10 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
         if (TN != null) {
             try {
                 TN.akW();
-            } catch (javax.microedition.b.c e) {
+            } catch (Exception e) {
+                if (!(e instanceof javax.microedition.b.c)) {
+                    throw GLLib.<RuntimeException>propagateChecked(e);
+                }
                 be("ERROR! Failed closing RMS: " + e);
             }
             TN = null;
@@ -5671,7 +5606,10 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             if (TN.akX() > 0) {
                 bArrB = TN.pi(1);
             }
-        } catch (javax.microedition.b.c e) {
+        } catch (Exception e) {
+            if (!(e instanceof javax.microedition.b.c)) {
+                throw GLLib.<RuntimeException>propagateChecked(e);
+            }
             be("ERROR! Failed reading from RMS: " + e);
         }
         if (w.Wn && bArr != null) {
@@ -5724,7 +5662,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     public static void kW() {
         TR = true;
         if (TO != null && TT) {
-            Iterator<ProfilerEvent> it = TO.values().iterator();
+            Iterator<bl> it = TO.values().iterator();
             while (it.hasNext()) {
                 it.next().nz();
             }
@@ -5882,7 +5820,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
                     TY[9][2] = 0;
                 }
                 break;
-            case R.styleable.CardView_contentPaddingRight /* 10 */:
+            case 10:
                 if (w.Zk) {
                     TY[10][1] = 0;
                     TY[10][2] = 40;
@@ -5892,7 +5830,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
                     TY[10][0] = -1;
                 }
                 break;
-            case R.styleable.CardView_contentPaddingTop /* 11 */:
+            case 11:
                 if (w.Zc) {
                     TY[11][0] = 172;
                     TY[11][1] = 104;
@@ -5911,7 +5849,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
                     TY[11][14] = 3;
                 }
                 break;
-            case R.styleable.CardView_contentPaddingBottom /* 12 */:
+            case 12:
                 if (w.Zl) {
                     TY[12][1] = 255;
                     TY[12][0] = -1;
@@ -6717,7 +6655,12 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     }
 
     public static byte[] bJ(String str) {
-        return e(str, 0, str.length());
+        try {
+            return e(str, 0, str.length());
+
+        } catch (IOException failure) {
+            throw GLLib.<RuntimeException>propagateChecked(failure);
+        }
     }
 
     public static byte[] e(String str, int i, int i2) throws IOException {
@@ -7412,8 +7355,8 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
                         }
                         switch (iArr[i26]) {
                             case 9:
-                            case R.styleable.CardView_contentPaddingRight /* 10 */:
-                            case R.styleable.CardView_contentPaddingBottom /* 12 */:
+                            case 10:
+                            case 12:
                             case 14:
                                 iArr[i26] = 18;
                                 break;
@@ -7451,7 +7394,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
                                 break;
                             case 3:
                             case 8:
-                            case R.styleable.CardView_contentPaddingTop /* 11 */:
+                            case 11:
                                 i48 = 3;
                                 break;
                             case 14:
@@ -7812,7 +7755,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
                 case 8877:
                 case 8878:
                 case 8879:
-                case JavaUtils.Errors.ERROR_EXCEPTION_RAISED /* 8888 */:
+                case 8888:
                 case 8889:
                 case 8890:
                 case 8891:
@@ -8567,111 +8510,62 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     /* JADX WARN: Code duplicated, block: B:52:0x00ba A[ADDED_TO_REGION] */
     /* JADX WARN: Code duplicated, block: B:54:0x00be  */
     public static void a(char[] cArr, int i) {
-        int iG;
-        char c;
-        boolean z;
-        int i2 = 3;
-        for (int i3 = 0; i3 < i; i3++) {
-            char c2 = cArr[i3];
-            int iG2 = g(cArr[i3]);
-            if (iG2 != 5) {
-                int i4 = i3 + 1;
-                while (true) {
-                    if (i4 >= i) {
-                        iG = 3;
-                        c = 0;
-                    } else if (g(cArr[i4]) == 5) {
-                        i4++;
-                    } else {
-                        c = cArr[i4];
-                        iG = g(cArr[i4]);
-                    }
-                }
-                switch (iG2) {
-                    case 1:
-                        if (i2 == 0 || i2 == 2 || i2 == 4) {
-                            cArr[i3] = (char) (h(c2) + 1);
-                        } else {
-                            cArr[i3] = h(c2);
-                        }
-                        break;
-                    case 2:
-                        if (c2 == 1604) {
-                            if (i3 < i + 1) {
-                                switch (c) {
-                                    case 1570:
-                                        if (i2 == 0 || i2 == 2 || i2 == 4) {
-                                            cArr[i3] = 65270;
-                                            z = true;
-                                        } else {
-                                            cArr[i3] = 65269;
-                                            z = true;
-                                        }
-                                        break;
-                                    case 1571:
-                                        if (i2 == 0 || i2 == 2 || i2 == 4) {
-                                            cArr[i3] = 65272;
-                                            z = true;
-                                        } else {
-                                            cArr[i3] = 65271;
-                                            z = true;
-                                        }
-                                        break;
-                                    case 1572:
-                                    case 1574:
-                                    default:
-                                        z = false;
-                                        break;
-                                    case 1573:
-                                        if (i2 == 0 || i2 == 2 || i2 == 4) {
-                                            cArr[i3] = 65274;
-                                            z = true;
-                                        } else {
-                                            cArr[i3] = 65273;
-                                            z = true;
-                                        }
-                                        break;
-                                    case 1575:
-                                        if (i2 == 0 || i2 == 2 || i2 == 4) {
-                                            cArr[i3] = 65276;
-                                            z = true;
-                                        } else {
-                                            cArr[i3] = 65275;
-                                            z = true;
-                                        }
-                                        break;
-                                }
-                            } else {
-                                z = false;
-                            }
-                            if (z) {
-                                cArr[i3 + 1] = 31;
-                            } else if (i2 != 0) {
-                                if (iG != 1) {
-                                    cArr[i3] = (char) (h(c2) + 3);
-                                } else {
-                                    cArr[i3] = (char) (h(c2) + 3);
-                                }
-                            } else if (iG != 1) {
-                                cArr[i3] = (char) (h(c2) + 3);
-                            } else {
-                                cArr[i3] = (char) (h(c2) + 3);
-                            }
-                        } else if (i2 != 0 || i2 == 2 || i2 == 4) {
-                            if (iG != 1 || iG == 2 || iG == 4) {
-                                cArr[i3] = (char) (h(c2) + 3);
-                            } else {
-                                cArr[i3] = (char) (h(c2) + 1);
-                            }
-                        } else if (iG == 1 || iG == 2 || iG == 4) {
-                            cArr[i3] = (char) (h(c2) + 2);
-                        } else {
-                            cArr[i3] = h(c2);
-                        }
-                        break;
-                }
-                i2 = iG2;
+        int previous = 3;
+        for (int index = 0; index < i; index++) {
+            char current = cArr[index];
+            int category = g(current);
+            if (category == 5) {
+                continue;
             }
+            int nextCategory = 3;
+            char next = 0;
+            for (int lookahead = index + 1; lookahead < i; lookahead++) {
+                if (g(cArr[lookahead]) != 5) {
+                    next = cArr[lookahead];
+                    nextCategory = g(cArr[lookahead]);
+                    break;
+                }
+            }
+            switch (category) {
+                case 1:
+                    cArr[index] = previous == 0 || previous == 2 || previous == 4
+                            ? (char) (h(current) + 1) : h(current);
+                    break;
+                case 2:
+                    boolean ligature = false;
+                    if (current == 1604 && index < i + 1) {
+                        boolean connected = previous == 0 || previous == 2 || previous == 4;
+                        switch (next) {
+                            case 1570:
+                                cArr[index] = (char) (connected ? 65270 : 65269);
+                                ligature = true;
+                                break;
+                            case 1571:
+                                cArr[index] = (char) (connected ? 65272 : 65271);
+                                ligature = true;
+                                break;
+                            case 1573:
+                                cArr[index] = (char) (connected ? 65274 : 65273);
+                                ligature = true;
+                                break;
+                            case 1575:
+                                cArr[index] = (char) (connected ? 65276 : 65275);
+                                ligature = true;
+                                break;
+                        }
+                    }
+                    if (ligature) {
+                        cArr[index + 1] = 31;
+                    } else if (previous == 0 || previous == 2 || previous == 4) {
+                        cArr[index] = nextCategory == 1 || nextCategory == 2 || nextCategory == 4
+                                ? (char) (h(current) + 3) : (char) (h(current) + 1);
+                    } else {
+                        cArr[index] = nextCategory == 1 || nextCategory == 2 || nextCategory == 4
+                                ? (char) (h(current) + 2) : h(current);
+                    }
+                    break;
+            }
+            previous = category;
         }
     }
 }

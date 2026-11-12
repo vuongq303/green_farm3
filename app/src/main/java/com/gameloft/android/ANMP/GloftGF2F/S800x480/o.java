@@ -15,7 +15,7 @@ final class o implements Runnable {
         if (w.Vl) {
             jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
         }
-        long unused = n.LE = jCurrentTimeMillis;
+        n.p(jCurrentTimeMillis);
         n.setResult(12);
     }
 }

@@ -1110,4 +1110,7 @@ public class ac implements Runnable {
             }
         }
     }
+    // Original DEX synthetic accessors, inlined away by JADX.
+    static int[] ma() { return acd; }
+    static boolean[] mb() { return abl; }
 }

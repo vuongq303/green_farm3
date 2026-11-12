@@ -98,7 +98,7 @@ final class zzbk {
         return bArr3;
     }
 
-    public static byte[] zzb(byte[] bArr) {
+    public static byte[] zzb(byte[] bArr) throws NoSuchAlgorithmException {
         byte[] bArrDigest;
         synchronized (zzia) {
             MessageDigest messageDigestZzw = zzw();

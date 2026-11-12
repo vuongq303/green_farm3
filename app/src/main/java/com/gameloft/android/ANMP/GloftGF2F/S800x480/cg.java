@@ -145,7 +145,17 @@ class cg {
         if (this.alp) {
             throw new RuntimeException("Unaligned byte");
         }
-        return oE();
+        try {
+            return oE();
+        } catch (IOException failure) {
+            throw cg.<RuntimeException>propagateChecked(failure);
+        }
+    }
+
+    // Preserve the original no-handler DEX propagation of the same IOException instance.
+    @SuppressWarnings("unchecked")
+    private static <Failure extends Throwable> RuntimeException propagateChecked(Throwable failure) throws Failure {
+        throw (Failure) failure;
     }
 
     int read(byte[] bArr, int i, int i2) {

@@ -1,7 +1,6 @@
 package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 
 import javax.microedition.midlet.MIDlet;
-import org.json.JSONException;
 
 /* JADX INFO: loaded from: classes.dex */
 public class GloftGF2F extends MIDlet {
@@ -32,7 +31,7 @@ public class GloftGF2F extends MIDlet {
     }
 
     @Override // javax.microedition.midlet.MIDlet
-    public void al(boolean z) throws JSONException {
+    public void al(boolean z) {
         if (acw != null) {
             ci ciVar = acw;
             ci.HH();

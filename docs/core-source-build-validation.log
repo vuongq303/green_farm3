@@ -1,0 +1,151 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+Unable to initialize metrics, ensure /home/agent/.android is writable, details: /home/agent/.android/analytics.settings (Read-only file system)
+
+> Task :app:generateStableResourceIds UP-TO-DATE
+> Task :app:restoreResources UP-TO-DATE
+
+> Task :core-source:prepareCoreDependencies
+Prepared compile-only dependencies: /workspace/green_farm3/core-source/build/original-dependencies/compile-view.jar; 108 core classes excluded, 6250 binary class identities retained.
+
+> Task :app:restoreResourceClasses UP-TO-DATE
+> Task :core-source:prepareCoreSources
+> Task :core-source:preBuild
+> Task :core-source:preDebugBuild
+> Task :core-source:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :core-source:javaPreCompileDebug UP-TO-DATE
+> Task :core-source:checkDebugAarMetadata UP-TO-DATE
+> Task :core-source:generateDebugResValues UP-TO-DATE
+> Task :core-source:mapDebugSourceSetPaths UP-TO-DATE
+> Task :core-source:generateDebugResources UP-TO-DATE
+> Task :core-source:mergeDebugResources UP-TO-DATE
+> Task :core-source:packageDebugResources UP-TO-DATE
+> Task :core-source:parseDebugLocalResources UP-TO-DATE
+> Task :core-source:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :core-source:extractDeepLinksDebug UP-TO-DATE
+> Task :core-source:processDebugMainManifest UP-TO-DATE
+> Task :core-source:processDebugManifest UP-TO-DATE
+> Task :core-source:processDebugManifestForPackage UP-TO-DATE
+> Task :core-source:processDebugResources UP-TO-DATE
+
+> Task :core-source:compileDebugJavaWithJavac
+Java compiler version 21 has deprecated support for compiling with source/target version 8.
+Try one of the following options:
+    1. [Recommended] Use Java toolchain with a lower language version
+    2. Set a higher source/target version
+    3. Use a lower version of the JDK running the build (if you're not using Java toolchain)
+For more details on how to configure these settings, see https://developer.android.com/build/jdks.
+To suppress this warning, set android.javaCompile.suppressSourceTargetDeprecationWarning=true in gradle.properties.
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+/workspace/green_farm3/core-source/build/generated/core-java/com/gameloft/android/ANMP/GloftGF2F/S800x480/by.java:146: warning: 'yield' may become a restricted identifier in a future release
+            yield();
+            ^
+  (to invoke a method called yield, qualify the yield with a receiver or type name)
+Note: /workspace/green_farm3/core-source/build/generated/core-java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ac.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+4 warnings
+
+> Task :core-source:mergeDebugShaders UP-TO-DATE
+> Task :core-source:compileDebugShaders NO-SOURCE
+> Task :core-source:generateDebugAssets UP-TO-DATE
+> Task :core-source:mergeDebugAssets UP-TO-DATE
+> Task :core-source:compressDebugAssets UP-TO-DATE
+> Task :core-source:processDebugJavaRes NO-SOURCE
+> Task :core-source:mergeDebugJavaResource UP-TO-DATE
+> Task :core-source:checkDebugDuplicateClasses UP-TO-DATE
+> Task :core-source:dexBuilderDebug
+> Task :core-source:desugarDebugFileDependencies UP-TO-DATE
+> Task :core-source:mergeExtDexDebug UP-TO-DATE
+> Task :core-source:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core-source:mergeDebugNativeLibs UP-TO-DATE
+> Task :core-source:stripDebugDebugSymbols UP-TO-DATE
+> Task :core-source:mergeDexDebug
+> Task :app:prepareRestoredJavaSources
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+
+> Task :app:assembleBaselineDebug
+Verifies
+Verified using v1 scheme (JAR signing): true
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Built binary baseline: /workspace/green_farm3/app/build/outputs/apk/baseline/debug/app-baseline-debug.apk; 60 DEX/assets/native entries unchanged.
+
+> Task :core-source:validateSigningDebug UP-TO-DATE
+> Task :core-source:writeDebugAppMetadata UP-TO-DATE
+> Task :core-source:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :core-source:compileDexMergeTool UP-TO-DATE
+> Task :core-source:packageDebug
+> Task :core-source:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :core-source:assembleDebug
+
+> Task :core-source:mergeCoreDex
+{
+  "original_apk_sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b",
+  "overlay_apk_sha256": "447e5ae3647bcc29cbb6bdb4f16d4b7daacbeb1603f1fc75b2b19d6370b0ccf9",
+  "output_dex_sha256": "0f1b336e638ed5f6309e1d5c9743ff73e6945ab2446d47bb46f51c48f853c534",
+  "dex_version": 35,
+  "original_dex_entries": ["classes.dex"],
+  "overlay_dex_entries": ["classes.dex"],
+  "original_class_count": 6383,
+  "overlay_class_count": 147,
+  "retained_original_class_count": 6250,
+  "output_class_count": 6397,
+  "retained_original_canonical_sha256": "2c659128486480997144c698d2897ce31157258f15de91603d43aad5cdf6a2cb",
+  "compiled_overlay_canonical_sha256": "0f0d8341e31ef4e9e2db4bee39b02bb511455adecb726f5b3942fae34db1afa4",
+  "original_non_overlay_semantics_verified": true,
+  "compiled_overlay_semantics_verified": true,
+  "protected_original_stream_classes": ["Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/g;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/l;"],
+  "replaced_classes": ["Lcom/facebook/R$attr;", "Lcom/facebook/R$color;", "Lcom/facebook/R$dimen;", "Lcom/facebook/R$drawable;", "Lcom/facebook/R$id;", "Lcom/facebook/R$layout;", "Lcom/facebook/R$string;", "Lcom/facebook/R$style;", "Lcom/facebook/R$styleable;", "Lcom/facebook/R;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GLLib;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GloftGF2F;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/a;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/aa;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ab;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ac;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ad;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ae;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/af;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ag;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ah;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ai;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/aj;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ak;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/al;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/am;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/an;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ao;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ap;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/aq;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ar;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/as;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/at;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/au;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/av;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/aw;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ax;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ay;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/az;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/b;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ba;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bb;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bc;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bd;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/be;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bf;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bg;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bh;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bi;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bj;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bk;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bl;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bm;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bn;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bo;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bp;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bq;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/br;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bs;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bt;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bu;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bv;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bw;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bx;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/by;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bz;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/c;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ca;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cb;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cc;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cd;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ce;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cf;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cg;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ch;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cj;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ck;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cl;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cm;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cn;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/co;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cp;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cq;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cr;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cs;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ct;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cu;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cv;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cw;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cx;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cy;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cz;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/d;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/da;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/db;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/dc;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/dd;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/e;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/f;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/h;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/i;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/j;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/k;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/m;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/o;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/p;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/q;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/r;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/t;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/u;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/v;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/w;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/x;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/y;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/z;", "Lcom/google/android/gms/ads/R$attr;", "Lcom/google/android/gms/ads/R$integer;", "Lcom/google/android/gms/ads/R$string;", "Lcom/google/android/gms/ads/R$style;", "Lcom/google/android/gms/ads/R$styleable;", "Lcom/google/android/gms/ads/R;", "Lcom/google/android/gms/ads/impl/R$attr;", "Lcom/google/android/gms/ads/impl/R$integer;", "Lcom/google/android/gms/ads/impl/R$string;", "Lcom/google/android/gms/ads/impl/R$style;", "Lcom/google/android/gms/ads/impl/R$styleable;", "Lcom/google/android/gms/ads/impl/R;", "Lcom/google/firebase/messaging/R$integer;", "Lcom/google/firebase/messaging/R$string;", "Lcom/google/firebase/messaging/R;"],
+  "added_classes": ["Lcom/gameloft/android/ANMP/GloftGF2F/R$attr;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$color;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$dimen;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$drawable;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$id;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$integer;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$layout;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$menu;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$mipmap;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$raw;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$string;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$style;", "Lcom/gameloft/android/ANMP/GloftGF2F/R$xml;", "Lcom/gameloft/android/ANMP/GloftGF2F/R;"]
+}
+
+> Task :core-source:assembleRecoveredDebug
+{
+  "property": "REVISION-2408",
+  "original_dex_bytes": 7655124,
+  "rebuilt_dex_bytes": 7880852,
+  "original_revision": 7792744,
+  "rebuilt_revision": 8021544,
+  "size_xor": 140988,
+  "original_metadata_sha256": "58defca307864d420d0f7a32029407a7f56aebe7d1dce26bbe9c93602a082d9e",
+  "generated_metadata_sha256": "92244c2ddbf9a95453b6f286fd69eeef927f92460016442c610d93d3ec28e3c6",
+  "other_definition_bytes_preserved": true,
+  "original_guard_accepts_generated_revision": true
+}
+Verifies
+Verified using v1 scheme (JAR signing): true
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Built Java-core APK with original SDK DEX dependencies: /workspace/green_farm3/core-source/build/outputs/apk/recovered/debug/app-core-source-debug.apk
+[Incubating] Problems report is available at: file:///workspace/green_farm3/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 44s
+55 actionable tasks: 10 executed, 45 up-to-date

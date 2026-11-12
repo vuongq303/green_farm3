@@ -7,6 +7,12 @@ import java.io.IOException;
 /* JADX INFO: compiled from: Huffman.java */
 /* JADX INFO: loaded from: classes.dex */
 class at {
+    // Transparent Java checked-exception bridge for calls with no DEX handler.
+    @SuppressWarnings("unchecked")
+    private static <Failure extends Throwable> RuntimeException propagateChecked(Throwable failure) throws Failure {
+        throw (Failure) failure;
+    }
+
     private static final int[] adG = {3, 4, 5, 6, 7, 8, 9, 10, 523, 525, 527, 529, 1043, 1047, 1051, 1055, 1571, 1579, 1587, 1595, 2115, 2131, 2147, 2163, 2691, 2723, 2755, 2787, 258};
     private static final int[] adH = {1, 2, 3, 4, NativeProtocol.MESSAGE_GET_INSTALL_DATA_REPLY, NativeProtocol.MESSAGE_GET_LIKE_STATUS_REPLY, 131081, 131085, 196625, 196633, 262177, 262193, 327745, 327777, 393345, 393409, 459009, 459137, 524801, 525057, 590849, 591361, 657409, 658433, 724993, 727041, 794625, 798721, 868353, 876545};
     static final int[] adI;
@@ -165,7 +171,11 @@ class at {
         int i3 = i2 & 511;
         int i4 = i2 >>> 9;
         if (i4 > 0) {
-            return i3 + cgVar.eV(i4);
+            try {
+                return i3 + cgVar.eV(i4);
+            } catch (IOException failure) {
+                throw at.<RuntimeException>propagateChecked(failure);
+            }
         }
         return i3;
     }
@@ -175,7 +185,11 @@ class at {
         int i3 = 65535 & i2;
         int i4 = i2 >>> 16;
         if (i4 > 0) {
-            return i3 + cgVar.eV(i4);
+            try {
+                return i3 + cgVar.eV(i4);
+            } catch (IOException failure) {
+                throw at.<RuntimeException>propagateChecked(failure);
+            }
         }
         return i3;
     }

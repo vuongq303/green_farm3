@@ -1,0 +1,70 @@
+{
+  "device": {
+    "serial": "emulator-5554",
+    "api": 28,
+    "abi": "x86",
+    "display": "800x480",
+    "emulator_version": "37.2.13",
+    "acceleration": "TCG software (-accel off)",
+    "renderer": "SwiftShader",
+    "audio_output": "disabled (-no-audio)"
+  },
+  "original": {
+    "apk": "green-farm-3.apk",
+    "sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b",
+    "install": "passed",
+    "start": "passed",
+    "start_total_ms": 5072,
+    "splash_and_age_gate": "passed",
+    "age_input_and_gender_touch": "passed",
+    "accept_and_farm_entry": "blocked",
+    "fatal_exception_observed": false,
+    "evidence": [
+      "runtime-original/05-game-current.png",
+      "runtime-original/10-accept-long.png",
+      "runtime-original/start.log",
+      "runtime-original/logcat-final.log"
+    ]
+  },
+  "rebuilt": {
+    "apk": "app/build/outputs/apk/baseline/debug/app-baseline-debug.apk",
+    "sha256": "ea3622429f1b3c7d29bb06cf63058b692cbdfeec6bc758d47b3b8562ca7313d6",
+    "install": "passed",
+    "start": "passed",
+    "start_total_ms": 8486,
+    "splash_and_age_gate": "passed",
+    "age_input_and_gender_touch": "passed",
+    "accept_and_farm_entry": "blocked",
+    "fatal_exception_observed": false,
+    "debug_run_as": "passed",
+    "evidence": [
+      "runtime-rebuilt/03-current.png",
+      "runtime-rebuilt/04-game.png",
+      "runtime-rebuilt/05-age-touch-accept.png",
+      "runtime-rebuilt/start.log",
+      "runtime-rebuilt/logcat-final.log"
+    ]
+  },
+  "blocker": {
+    "observed": "Both builds stay at age/terms gate after age30 and Accept. Both log UnknownHostException for eve.gameloft.com; OF_PP.bin privacy cache absent. Host inherited-proxy curl CONNECT returned403.",
+    "interpretation": "Janus/config network prerequisite is unavailable in current cloud policy; this does not prove the remote server is retired.",
+    "not_attempted": [
+      "No fabricated privacy/cache reply",
+      "No TLS verification disable",
+      "No route around network denial"
+    ]
+  },
+  "unrun": [
+    "Farm/tutorial interactions",
+    "Gameplay progress save/load",
+    "Audio output",
+    "Modern Android compatibility"
+  ],
+  "preserved_original_data": {
+    "app_data": "/workspace/tooling/original-game-userdata",
+    "app_files_pulled": 149,
+    "avd_backup": "/workspace/tooling/GreenFarm28-original-backup.avd",
+    "procedure": "App force-stopped, data pulled, guest sync, emulator stopped, entire sparse AVD copied before original uninstall. Overlay/config checksums verified."
+  },
+  "caveat": "Without KVM first boot was slow and SystemUI (not game) ANR dialogs appeared and were dismissed. Do not treat these as application crashes."
+}

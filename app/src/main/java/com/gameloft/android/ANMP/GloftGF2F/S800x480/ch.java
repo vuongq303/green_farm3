@@ -6,7 +6,6 @@ import com.facebook.appevents.codeless.internal.Constants;
 import com.facebook.internal.FacebookRequestErrorClassification;
 import com.facebook.internal.NativeProtocol;
 import com.facebook.internal.Utility;
-import com.gameloft.adsmanager.JavaUtils;
 import com.gameloft.glads.GLURLConnection;
 import com.google.android.gms.ads.AdRequest;
 
@@ -1791,7 +1790,8 @@ class ch {
                         if (ci.aCe[ci.aCf] != null && (ci.aCe[ci.aCf].aoC == 0 || ci.aCe[ci.aCf].aoC == 51 || ci.aCe[ci.aCf].aoC == 52)) {
                             i5 = 22;
                             i2 = 3;
-                        } else if (ci.aCe[ci.aCf] == null || ci.aCe[ci.aCf].aoC == 1 || ci.aCe[ci.aCf].aoC == 53 || ci.aCe[ci.aCf].aoC == 54) {
+                        } else {
+                            // Original cond_c1 and cond_c5 both select (3, 40).
                             i5 = 40;
                             i2 = 3;
                         }
@@ -4088,7 +4088,7 @@ class ch {
                 if (this.aoO.lQ()) {
                     ci.aCl = false;
                     fg(0);
-                    ci.n(JavaUtils.Constants.NATIVE_HEIGHT_DP_300, 301, 15, 0, 1);
+                    ci.n(300, 301, 15, 0, 1);
                     if (ci.qN()) {
                         String str = "character jump. manor restored.:" + ci.aZD;
                         if (ci.aZD == 3 && ci.aTK) {
@@ -4504,7 +4504,7 @@ class ch {
                 int i4 = this.aot + this.amX + i;
                 int i5 = (this.aou + this.amY) - i;
                 if (ci.aYP == 100) {
-                    ci.atf[1].a(GLLib.Qj, this.anw ? 75 : 34, i4, i5, 0);
+                    ci.atf[1].a(GLLib.Qj, this.anw ? 75 : 34, (float) i4, (float) i5, 0);
                 } else {
                     GLLib.l(18, 5, 1);
                     ci.atf[1].b(GLLib.Qj, this.anw ? 75 : 34, i4, i5, 0, ci.aYP);
@@ -4567,7 +4567,7 @@ class ch {
                         int i7 = this.amX + this.aot;
                         int i8 = this.amY + this.aou;
                         if (ci.aYP == 100) {
-                            aVar.a(GLLib.Qj, i2, i7, i8, 0);
+                            aVar.a(GLLib.Qj, i2, (float) i7, (float) i8, 0);
                         } else {
                             GLLib.l(18, 5, 1);
                             aVar.b(GLLib.Qj, i2, i7, i8, 0, ci.aYP);
@@ -4595,7 +4595,7 @@ class ch {
                 int i9 = this.aot + 5;
                 int i10 = this.aou - 80;
                 if (ci.aYP == 100) {
-                    ci.atf[1].a(GLLib.Qj, 64, i9, i10, 0);
+                    ci.atf[1].a(GLLib.Qj, 64, (float) i9, (float) i10, 0);
                     return;
                 }
                 GLLib.l(18, 5, 1);
@@ -4753,14 +4753,14 @@ class ch {
                     ci.aMR = strDt;
                     if (ci.ayK[0]) {
                         String str = ci.aMR;
-                        String strDt2 = ci.dt(ci.EI() + JavaUtils.Constants.BANNER_WIDTH_DP);
+                        String strDt2 = ci.dt(ci.EI() + 320);
                         if (strDt2 == null) {
                             strDt2 = "";
                         }
                         ci.aMR = ci.l(str, "Acre", strDt2);
                     } else {
                         String str2 = ci.aMR;
-                        String strDt3 = ci.dt(JavaUtils.Constants.BANNER_WIDTH_DP);
+                        String strDt3 = ci.dt(320);
                         if (strDt3 == null) {
                             strDt3 = "";
                         }
@@ -5560,7 +5560,7 @@ class ch {
             }
             aVar.bQ(iHw);
             if (ci.aYP == 100 || this.aoo == 2) {
-                aVar.a(GLLib.Qj, i2, this.aot, this.aou, 0);
+                aVar.a(GLLib.Qj, i2, (float) this.aot, (float) this.aou, 0);
                 return;
             }
             GLLib.l(18, 5, 1);
@@ -5730,7 +5730,7 @@ class ch {
             GLLib.l(18, 5, 0);
             return;
         }
-        ci.aZf[i].a(GLLib.Qj, i2, i3, i4, 0);
+        ci.aZf[i].a(GLLib.Qj, i2, (float) i3, (float) i4, 0);
     }
 
     /* JADX WARN: Code duplicated, block: B:19:0x0048  */

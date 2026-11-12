@@ -3,7 +3,6 @@ package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 import android.os.SystemClock;
 import com.facebook.R;
 import com.facebook.share.internal.ShareConstants;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.Vector;
 import org.json.JSONException;
 
@@ -77,7 +76,6 @@ public class f {
                 }
                 this.KB.a("popup_id", bcVar.cd("popup_id").toString());
                 break;
-                break;
             case 7:
                 if (!bcVar.cb("tags")) {
                     return -34;
@@ -97,7 +95,6 @@ public class f {
                     e2.printStackTrace();
                     return -34;
                 }
-                break;
                 break;
             case 8:
                 if (!bcVar.cb("tags")) {
@@ -119,24 +116,21 @@ public class f {
                     return -34;
                 }
                 break;
-                break;
             case 9:
                 if (!bcVar.cb("item") || !bcVar.co("item")) {
                     return -34;
                 }
                 this.KB.a("item", bcVar.cd("item").toString());
-                if (!bcVar.cb(FirebaseAnalytics.Param.QUANTITY) || !bcVar.cm(FirebaseAnalytics.Param.QUANTITY)) {
+                if (!bcVar.cb("quantity") || !bcVar.cm("quantity")) {
                     return -34;
                 }
-                this.KB.a(FirebaseAnalytics.Param.QUANTITY, new Integer(Integer.parseInt(bcVar.cd(FirebaseAnalytics.Param.QUANTITY).toString())));
-                break;
+                this.KB.a("quantity", new Integer(Integer.parseInt(bcVar.cd("quantity").toString())));
                 break;
             case R.styleable.CardView_contentPaddingRight /* 10 */:
                 if (!bcVar.cb("url") || !bcVar.co("url")) {
                     return -34;
                 }
                 this.KB.a("url", bcVar.cd("url").toString());
-                break;
                 break;
         }
         if (bcVar.cb("pointcuts") && bcVar.cp("pointcuts")) {
@@ -246,7 +240,7 @@ public class f {
                     bc bcVar2 = new bc();
                     bcVar2.a("pointcut_id", this.KB.cd("pointcut_id"));
                     bcVar2.a("reward_name", this.KB.cd("item"));
-                    bcVar2.a("reward_amount", this.KB.cd(FirebaseAnalytics.Param.QUANTITY));
+                    bcVar2.a("reward_amount", this.KB.cd("quantity"));
                     bcVar.a(ShareConstants.WEB_DIALOG_PARAM_DATA, bcVar2);
                     a(12, true, bcVar);
                     break;
@@ -276,12 +270,23 @@ public class f {
         return this.KB;
     }
 
-    public void a(int i, boolean z, bc bcVar) throws JSONException {
-        if (i == 12 || i == 5) {
-            i.ic().a(z, bcVar);
-        } else {
-            i.ic().a(i, z, bcVar);
+    // The original DEX method has no exception handler or checked-throws annotation.
+    public void a(int i, boolean z, bc bcVar) {
+        try {
+            if (i == 12 || i == 5) {
+                com.gameloft.android.ANMP.GloftGF2F.S800x480.i.ic().a(z, bcVar);
+            } else {
+                com.gameloft.android.ANMP.GloftGF2F.S800x480.i.ic().a(i, z, bcVar);
+            }
+        } catch (JSONException failure) {
+            throw f.<RuntimeException>propagateChecked(failure);
         }
+    }
+
+    // Keep the same thrown instance; Java's checked-exception rules do not apply to DEX.
+    @SuppressWarnings("unchecked")
+    private static <Failure extends Throwable> RuntimeException propagateChecked(Throwable failure) throws Failure {
+        throw (Failure) failure;
     }
 
     private long hY() {

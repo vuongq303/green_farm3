@@ -39,15 +39,13 @@ public class as {
     }
 
     private static synchronized int jf() {
-        int i;
-        i = 0;
-        while (i < 3) {
-            if (!adE[i].mK()) {
-                i++;
+        for (int i = 0; i < 3; i++) {
+            if (adE[i].mK()) {
+                // Original goto_11 releases the class monitor and returns this slot.
+                return i;
             }
         }
-        i = -1;
-        return i;
+        return -1;
     }
 
     private static synchronized void mM() {

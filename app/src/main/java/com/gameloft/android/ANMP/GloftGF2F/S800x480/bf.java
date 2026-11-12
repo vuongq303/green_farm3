@@ -228,40 +228,46 @@ public class bf extends a {
                         i6 = i13;
                         iHA = i14;
                         i7 = i15;
-                    } else if (cA > ' ') {
-                        if (Io && cA == Ip) {
+                    } else if (cA > ' ' || cA == 2) {
+                        if (cA > ' ' && Io && cA == Ip) {
                             i6 = i13;
                             iHA = i14;
                             i7 = i15;
                         } else {
-                            iA = bN(cA);
+                            // Original char-2 escape joins the ordinary glyph at goto_26a.
+                            if (cA == 2) {
+                                i12++;
+                                iA = a(str, cArr, i12);
+                            } else {
+                                iA = bN(cA);
+                            }
                             i5 = i12;
-                            if (w.XA || iA <= hv()) {
+                            if (!w.XA || iA <= hv()) {
                                 i8 = iA;
                             } else {
                                 GLLib.be("Character not available: c = " + iA);
                                 i8 = 0;
                             }
-                            aVar.a(ajVar, i8, iHD, i14, 0);
+                            aVar.a(ajVar, i8, (float) iHD, (float) i14, 0);
                             if (this.IU) {
                                 int iBN = bN(95);
-                                aVar.a(ajVar, iBN, ((bP(i8) - bP(iBN)) >> 1) + iHD, i14, 0);
+                                aVar.a(ajVar, iBN, (float) (((bP(i8) - bP(iBN)) >> 1) + iHD), (float) i14, 0);
                             }
                             if (this.IV) {
                                 int i16 = iHD + 1;
-                                aVar.a(ajVar, i8, i16, i14, 0);
+                                aVar.a(ajVar, i8, (float) i16, (float) i14, 0);
                                 i9 = i16;
                             } else {
                                 i9 = iHD;
                             }
                             iHD = i9 + bP(i8) + hF();
-                            if (!w.XE && this.IN) {
+                            if (w.XE && this.IN) {
                                 int iBO = i14 + bO(i8);
                                 i12 = i5;
                                 i6 = i13;
                                 iHA = iBO;
                                 i7 = i15;
-                            } else if (w.XF || this.IS == 0) {
+                            } else if (!w.XF || this.IS == 0) {
                                 i12 = i5;
                                 i6 = i13;
                                 iHA = i14;
@@ -276,7 +282,7 @@ public class bf extends a {
                     } else if (cA == ' ') {
                         if (this.IU) {
                             int iBN2 = bN(95);
-                            aVar.a(ajVar, iBN2, ((hD() - bP(iBN2)) >> 1) + iHD, i14, 0);
+                            aVar.a(ajVar, iBN2, (float) (((hD() - bP(iBN2)) >> 1) + iHD), (float) i14, 0);
                         }
                         iHD += hD();
                         if (w.XE && this.IN) {
@@ -316,51 +322,6 @@ public class bf extends a {
                             i7 = i15;
                         } else {
                             bQ(cA3);
-                            i6 = i13;
-                            iHA = i14;
-                            i7 = i15;
-                        }
-                    } else if (cA == 2) {
-                        int i17 = i12 + 1;
-                        iA = a(str, cArr, i17);
-                        i5 = i17;
-                        if (w.XA) {
-                            i8 = iA;
-                        } else {
-                            i8 = iA;
-                        }
-                        aVar.a(ajVar, i8, iHD, i14, 0);
-                        if (this.IU) {
-                            int iBN3 = bN(95);
-                            aVar.a(ajVar, iBN3, ((bP(i8) - bP(iBN3)) >> 1) + iHD, i14, 0);
-                        }
-                        if (this.IV) {
-                            int i18 = iHD + 1;
-                            aVar.a(ajVar, i8, i18, i14, 0);
-                            i9 = i18;
-                        } else {
-                            i9 = iHD;
-                        }
-                        iHD = i9 + bP(i8) + hF();
-                        if (!w.XE) {
-                            if (w.XF) {
-                                i12 = i5;
-                                i6 = i13;
-                                iHA = i14;
-                                i7 = i15;
-                            } else {
-                                i12 = i5;
-                                i6 = i13;
-                                iHA = i14;
-                                i7 = i15;
-                            }
-                        } else if (w.XF) {
-                            i12 = i5;
-                            i6 = i13;
-                            iHA = i14;
-                            i7 = i15;
-                        } else {
-                            i12 = i5;
                             i6 = i13;
                             iHA = i14;
                             i7 = i15;

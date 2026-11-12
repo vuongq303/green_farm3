@@ -142,8 +142,7 @@ public class z {
                 GLLib.be("current node[" + i17 + "] is {" + (i19 + i6) + " (" + i19 + " + " + i6 + "), " + (i20 + i7) + " (" + i20 + " + " + i7 + ")}");
             }
             int i21 = i16;
-            int i22 = 0;
-            while (i22 < this.aaC) {
+            for (int i22 = 0; i22 < this.aaC; i22++) {
                 if (!z || (this.aaF[(this.aaD * i20) + i19] & this.aaG & (1 << i22)) != 0) {
                     int i23 = i19 + aat[(i22 << 1) + 0];
                     int i24 = i20 + aat[(i22 << 1) + 1];
@@ -163,47 +162,40 @@ public class z {
                             if (w.YW) {
                                 iA = a(i19 + i6, i20 + i7, i23 + i6, i24 + i7, i22, i17 == i13);
                             } else {
-                                int i26 = this.aaz;
-                                if (i22 >= 4) {
-                                    i26 = this.aaA;
-                                    if (z) {
-                                        if (z) {
+                                // Original cond_396 -> cond_3e1 -> cond_6fb joins the cost.
+                                int cost = i22 >= 4 ? this.aaA : this.aaz;
+                                if (i22 >= 4 && !z) {
+                                    int column = i17 % i8;
+                                    int row = i17 / i8;
+                                    if (i22 == 4) {
+                                        if ((this.aaF[(column - 1) + i6 + ((row + i7) * this.aaD)] & this.aaG) != 0
+                                                || (this.aaF[column + i6 + (((row - 1) + i7) * this.aaD)] & this.aaG) != 0) {
+                                            continue;
                                         }
-                                        iA = i26;
-                                    } else {
-                                        int i27 = i17 % i8;
-                                        int i28 = i17 / i8;
-                                        if (i22 == 4) {
-                                            if ((this.aaF[(i27 - 1) + i6 + ((i28 + i7) * this.aaD)] & this.aaG) == 0 && (this.aaF[i27 + i6 + (((i28 - 1) + i7) * this.aaD)] & this.aaG) == 0) {
-                                                if (!z || (this.aaF[i23 + i6 + ((i24 + i7) * this.aaD)] & this.aaG) == 0) {
-                                                    iA = i26;
-                                                } else if (w.YV) {
-                                                    GLLib.be("\tnode is a wall");
-                                                }
-                                            }
-                                        } else if (i22 == 5) {
-                                            if ((this.aaF[i27 + 1 + i6 + ((i28 + i7) * this.aaD)] & this.aaG) == 0 && (this.aaF[i27 + i6 + (((i28 - 1) + i7) * this.aaD)] & this.aaG) == 0) {
-                                                if (z) {
-                                                }
-                                                iA = i26;
-                                            }
-                                        } else if (i22 == 6) {
-                                            if ((this.aaF[(i27 - 1) + i6 + ((i28 + i7) * this.aaD)] & this.aaG) == 0 && (this.aaF[i27 + i6 + ((i28 + 1 + i7) * this.aaD)] & this.aaG) == 0) {
-                                                if (z) {
-                                                }
-                                                iA = i26;
-                                            }
-                                        } else if (i22 != 7 || ((this.aaF[i27 + 1 + i6 + ((i28 + i7) * this.aaD)] & this.aaG) == 0 && (this.aaF[i27 + i6 + ((i28 + 1 + i7) * this.aaD)] & this.aaG) == 0)) {
-                                            if (z) {
-                                            }
-                                            iA = i26;
+                                    } else if (i22 == 5) {
+                                        if ((this.aaF[column + 1 + i6 + ((row + i7) * this.aaD)] & this.aaG) != 0
+                                                || (this.aaF[column + i6 + (((row - 1) + i7) * this.aaD)] & this.aaG) != 0) {
+                                            continue;
+                                        }
+                                    } else if (i22 == 6) {
+                                        if ((this.aaF[(column - 1) + i6 + ((row + i7) * this.aaD)] & this.aaG) != 0
+                                                || (this.aaF[column + i6 + ((row + 1 + i7) * this.aaD)] & this.aaG) != 0) {
+                                            continue;
+                                        }
+                                    } else if (i22 == 7) {
+                                        if ((this.aaF[column + 1 + i6 + ((row + i7) * this.aaD)] & this.aaG) != 0
+                                                || (this.aaF[column + i6 + ((row + 1 + i7) * this.aaD)] & this.aaG) != 0) {
+                                            continue;
                                         }
                                     }
-                                } else {
-                                    if (z) {
-                                    }
-                                    iA = i26;
                                 }
+                                if (!z && (this.aaF[i23 + i6 + ((i24 + i7) * this.aaD)] & this.aaG) != 0) {
+                                    if (w.YV) {
+                                        GLLib.be("\tnode is a wall");
+                                    }
+                                    continue;
+                                }
+                                iA = cost;
                             }
                             int i29 = iA + s + (i18 == i22 ? 0 : this.aaB);
                             int iAbs = Math.abs(i23 - i14);
@@ -239,7 +231,6 @@ public class z {
                         GLLib.be("y position is not in the map");
                     }
                 }
-                i22++;
             }
             i17 = this.aaJ;
             if (w.YV) {
@@ -302,38 +293,33 @@ public class z {
         return this.aaH[i] / this.aaD;
     }
 
+    // Original ordered-open-list traversal uses the current node register throughout.
     private void dQ(int i) {
-        int i2;
         if (this.aaJ == -1) {
             this.aaJ = i;
             return;
         }
-        int i3 = this.aay[i] + this.aax[i];
-        int i4 = this.aaJ;
-        while (i2 != -1) {
-            if (i3 < this.aax[i2] + this.aay[i2]) {
-                i2 = i4;
-                if (this.aav[i2] == -1) {
+        int score = this.aay[i] + this.aax[i];
+        int current = this.aaJ;
+        while (current != -1) {
+            if (score < this.aax[current] + this.aay[current]) {
+                if (this.aav[current] == -1) {
                     this.aaJ = i;
                 } else {
-                    this.aaw[this.aav[i2]] = (short) i;
+                    this.aaw[this.aav[current]] = (short) i;
                 }
-                this.aav[i] = this.aav[i2];
-                this.aaw[i] = (short) i2;
-                this.aav[i2] = (short) i;
+                this.aav[i] = this.aav[current];
+                this.aaw[i] = (short) current;
+                this.aav[current] = (short) i;
                 return;
             }
-            if (this.aaw[i2] != -1) {
-                i2 = i4;
-                i2 = this.aaw[i2];
-            } else {
-                i2 = i4;
-                this.aaw[i2] = (short) i;
-                this.aav[i] = (short) i2;
+            if (this.aaw[current] == -1) {
+                this.aaw[current] = (short) i;
+                this.aav[i] = (short) current;
                 return;
             }
+            current = this.aaw[current];
         }
-        i2 = i4;
     }
 
     private void dR(int i) {

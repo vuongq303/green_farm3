@@ -29,75 +29,35 @@ public class b {
         return applicationInfo.sourceDir;
     }
 
-    /*  JADX ERROR: Type inference failed
-        jadx.core.utils.exceptions.JadxOverflowException: Type inference error: updates count limit reached with updateSeq = 1051. Try increasing type updates limit count.
-        	at jadx.core.utils.ErrorsCounter.addError(ErrorsCounter.java:59)
-        	at jadx.core.utils.ErrorsCounter.error(ErrorsCounter.java:31)
-        	at jadx.core.dex.attributes.nodes.NotificationAttrNode.addError(NotificationAttrNode.java:19)
-        	at jadx.core.dex.visitors.typeinference.TypeInferenceVisitor.visit(TypeInferenceVisitor.java:79)
-        */
-    public long ea(java.lang.String r7) {
-        /*
-            r6 = this;
-            r0 = 0
-            if (r7 == 0) goto La
-            boolean r2 = r7.isEmpty()
-            if (r2 == 0) goto Lb
-        La:
-            return r0
-        Lb:
-            java.lang.String r2 = r6.Ov()
-            java.util.zip.ZipFile r4 = new java.util.zip.ZipFile     // Catch: java.lang.Exception -> L22
-            r4.<init>(r2)     // Catch: java.lang.Exception -> L22
-            java.util.zip.ZipEntry r2 = r4.getEntry(r7)     // Catch: java.lang.Exception -> L22
-            if (r2 == 0) goto L24
-            long r0 = r2.getSize()     // Catch: java.lang.Exception -> L22
-        L1e:
-            r4.close()     // Catch: java.lang.Exception -> L22
-            goto La
-        L22:
-            r2 = move-exception
-            goto La
-        L24:
-            java.lang.String r2 = java.io.File.separator     // Catch: java.lang.Exception -> L22
-            boolean r2 = r7.endsWith(r2)     // Catch: java.lang.Exception -> L22
-            if (r2 == 0) goto L4e
-        L2c:
-            java.util.Enumeration r5 = r4.entries()     // Catch: java.lang.Exception -> L22
-            r2 = r0
-        L31:
-            boolean r0 = r5.hasMoreElements()     // Catch: java.lang.Exception -> L62
-            if (r0 == 0) goto L67
-            java.lang.Object r0 = r5.nextElement()     // Catch: java.lang.Exception -> L62
-            java.util.zip.ZipEntry r0 = (java.util.zip.ZipEntry) r0     // Catch: java.lang.Exception -> L62
-            java.lang.String r1 = r0.getName()     // Catch: java.lang.Exception -> L62
-            boolean r1 = r1.startsWith(r7)     // Catch: java.lang.Exception -> L62
-            if (r1 == 0) goto L65
-            long r0 = r0.getSize()     // Catch: java.lang.Exception -> L62
-            long r0 = r0 + r2
-        L4c:
-            r2 = r0
-            goto L31
-        L4e:
-            java.lang.StringBuilder r2 = new java.lang.StringBuilder     // Catch: java.lang.Exception -> L22
-            r2.<init>()     // Catch: java.lang.Exception -> L22
-            java.lang.StringBuilder r2 = r2.append(r7)     // Catch: java.lang.Exception -> L22
-            java.lang.String r3 = java.io.File.separator     // Catch: java.lang.Exception -> L22
-            java.lang.StringBuilder r2 = r2.append(r3)     // Catch: java.lang.Exception -> L22
-            java.lang.String r7 = r2.toString()     // Catch: java.lang.Exception -> L22
-            goto L2c
-        L62:
-            r0 = move-exception
-            r0 = r2
-            goto La
-        L65:
-            r0 = r2
-            goto L4c
-        L67:
-            r0 = r2
-            goto L1e
-        */
-        throw new UnsupportedOperationException("Method not decompiled: com.gameloft.android.wrapper.b.ea(java.lang.String):long");
+    // Recovered from the original APK classes.dex, method ea(String).
+    public long ea(String str) {
+        long size = 0;
+        if (str == null || str.isEmpty()) {
+            return size;
+        }
+        String apkPath = Ov();
+        try {
+            ZipFile zipFile = new ZipFile(apkPath);
+            ZipEntry entry = zipFile.getEntry(str);
+            if (entry != null) {
+                size = entry.getSize();
+            } else {
+                if (!str.endsWith(java.io.File.separator)) {
+                    str += java.io.File.separator;
+                }
+                Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                while (entries.hasMoreElements()) {
+                    ZipEntry child = entries.nextElement();
+                    if (child.getName().startsWith(str)) {
+                        size += child.getSize();
+                    }
+                }
+            }
+            zipFile.close();
+        } catch (Exception e) {
+            // The original returns the accumulated size if ZIP traversal fails.
+        }
+        return size;
     }
 
     public long eb(String str) {
