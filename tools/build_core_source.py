@@ -149,10 +149,10 @@ def main():
         verify_assets_native(args.original, unsigned)
         revision_report = regenerate_build_revision(args.original, unsigned, temp)
         subprocess.run([str(tools / 'zipalign'), '-f', '-P', '16', '4', str(unsigned), str(aligned)], check=True)
-        subprocess.run([str(tools / 'apksigner'), 'sign', '--ks', str(args.keystore),
+        subprocess.run([str(tools / ('apksigner.bat' if os.name == 'nt' else 'apksigner')), 'sign', '--ks', str(args.keystore),
                         '--ks-key-alias', 'androiddebugkey', '--ks-pass', 'pass:android',
                         '--key-pass', 'pass:android', '--out', str(signed), str(aligned)], check=True)
-        subprocess.run([str(tools / 'apksigner'), 'verify', '--verbose', str(signed)], check=True)
+        subprocess.run([str(tools / ('apksigner.bat' if os.name == 'nt' else 'apksigner')), 'verify', '--verbose', str(signed)], check=True)
         subprocess.run([str(tools / 'zipalign'), '-c', '-P', '16', '4', str(signed)], check=True)
         payload = verify_assets_native(args.original, signed)
         with zipfile.ZipFile(signed) as z:
