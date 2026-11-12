@@ -5600,22 +5600,10 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     }
 
     private static byte[] d(String str, byte[] bArr) {
-        byte[] bArrB = null;
-        try {
-            bE(str);
-            if (TN.akX() > 0) {
-                bArrB = TN.pi(1);
-            }
-        } catch (Exception e) {
-            if (!(e instanceof javax.microedition.b.c)) {
-                throw GLLib.<RuntimeException>propagateChecked(e);
-            }
-            be("ERROR! Failed reading from RMS: " + e);
-        }
+        byte[] bArrB = GameSaveStore.read(str);
         if (w.Wn && bArr != null) {
             bArrB = b(bArrB, bArr, true);
         }
-        kV();
         return bArrB;
     }
 
@@ -5644,19 +5632,11 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             bArr = a(bArr, bArr2, true);
             i2 = bArr.length;
         }
-        bE(str);
-        if (TN.akX() > 0) {
-            TN.c(1, bArr, i, i2);
-        } else {
-            TN.n(bArr, i, i2);
-        }
-        kV();
+        GameSaveStore.write(str, bArr, i, i2);
     }
 
     public static void bG(String str) {
-        if (bF(str) != null) {
-            javax.microedition.b.b.ji(str);
-        }
+        GameSaveStore.delete(str);
     }
 
     public static void kW() {

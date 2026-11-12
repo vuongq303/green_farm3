@@ -1,0 +1,10 @@
+{"number": 1, "command": "seed", "fixture": "s4_run_20261112_b1_main", "expected_exit": 0, "actual_exit": 1, "passed": false, "seconds": 27.462}
+{"passed":false,"probe_failure":true}
+java.lang.AssertionError: Production connection is not using synchronous=FULL
+	at GameSaveStoreProbe.check(GameSaveStoreProbe.java:64)
+	at GameSaveStoreProbe.seed(GameSaveStoreProbe.java:113)
+	at GameSaveStoreProbe.run(GameSaveStoreProbe.java:493)
+	at GameSaveStoreProbe.main(GameSaveStoreProbe.java:469)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:340)
+

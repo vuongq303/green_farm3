@@ -29,6 +29,7 @@ TOOL_SHA256 = 'ee7c45eb3c1d2474a6145d8d447e651a736a22d9664b6d3d3be5a5a817dda23a'
 TOOL_VERSION = '2.4'
 CLASS_COUNT = 6383
 CORE_SOURCE_COUNT = 108
+ADDED_CORE_SOURCES = frozenset({'GameSaveStore', 'ProgressSaveController', 'PendingRewardState', 'EntityPoseState'})
 CORE_PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480/'
 RESOURCE_CLASSES = (
     'com/gameloft/android/ANMP/GloftGF2F/R', 'com/facebook/R',
@@ -181,7 +182,11 @@ def convert_original(apk, tool_dir, cache, java):
 
 def source_classes(source_dir, expected_count=CORE_SOURCE_COUNT):
     paths = sorted(Path(source_dir).glob('*.java'))
-    names = {CORE_PACKAGE + path.stem + '.class' for path in paths if path.stem != 'l'}
+    # New progress helpers have no identity in the pinned original APK. Keep
+    # the 108 recovered identities strict and exclude only reviewed additions
+    # from this compile-only dependency filtering count.
+    names = {CORE_PACKAGE + path.stem + '.class' for path in paths
+             if path.stem != 'l' and path.stem not in ADDED_CORE_SOURCES}
     if CORE_PACKAGE + 'g.class' in names:
         raise ValueError('The original empty g class must remain a binary dependency')
     if len(names) != expected_count:

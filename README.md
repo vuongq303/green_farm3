@@ -4,7 +4,7 @@ Project hiện có một module ứng dụng Android: **`app`**. Mở thư mục
 (`D:\green_farm3` trên Windows), Sync Gradle, chọn cấu hình **Android App `app`**,
 chọn máy ảo/điện thoại rồi bấm **Run**.
 
-Pipeline chuẩn tự khôi phục resource, biên dịch 108 lớp Java lõi, ghép runtime
+Pipeline chuẩn tự khôi phục resource, biên dịch 108 lớp Java lõi và các helper SQLite, ghép runtime
 DEX gốc, cập nhật metadata kích thước DEX, ký và kiểm tra APK. AGP cung cấp đúng
 APK hoàn chỉnh cho `assembleDebug`, `installDebug` và Android Studio; APK trung
 gian nằm riêng trong `intermediates`, không dùng để cài.
@@ -61,8 +61,19 @@ trả 503, không chuyển sang RAM/JSON. Hướng dẫn lấy IPv4, migration
 và rule Windows Firewall đúng cổng nằm trong README backend.
 
 Tài khoản anonymous, access/refresh session và compliance hiện được lưu vào
-MySQL. Gameplay/save nông trại vẫn dùng RMS gốc trên thiết bị; chưa chuyển cloud
-farm save hoặc Facebook Connect sang giao thức mới không có bằng chứng.
+MySQL. Gameplay/save nông trại chuyển sang SQLite bền vững trên thiết bị
+(`greenfarm-progress.db`, schema 4), tự tạo/migration và nhập RMS cũ có CRC hợp lệ.
+Snapshot giữ codec gốc, gồm tutorial, quest, kho, farm, timestamp, thưởng đang chờ
+và hướng sprite. Lỗi đọc dừng tải để thử lại; lỗi ghi giữ bản lưu trước và hiện
+trạng thái lưu/thử lại. Đặt/di chuyển có ✓/✕, preview không được lưu như vị trí đã
+xác nhận. Chưa triển khai cloud farm save hoặc Facebook Connect mới.
+
+[Kiến trúc SQLite, migration và ma trận kiểm thử](docs/SQLITE_PROGRESS_RECOVERY.md).
+Đã tái hiện APK cũ mất XP 1/13→0/13 sau force-stop. Bản mới schema 4 đã tự
+nâng DB, vào lại farm, hiện “Đã lưu”, thu hoạch/tiếp tục tutorial và khôi phục
+farm sau force-stop trên emulator API28. Bộ mã có 116 test đạt và 13 test resource
+đạt; xem ma trận thiết bị/probe trong tài liệu trên. Chưa kiểm đủ toàn bộ XP,
+quest/reward, vật nuôi/công trình và thao tác di chuyển qua UI thực tế.
 
 [Kết quả hợp nhất và sửa crash khởi động](docs/APP_BUILD_AND_STARTUP.md).
 [Thư mục ghép APK và chẩn đoán lỗi build Windows](docs/WINDOWS_APK_MERGE_PATHS.md).

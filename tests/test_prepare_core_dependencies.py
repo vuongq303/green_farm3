@@ -82,6 +82,9 @@ class PrepareCoreDependenciesTest(unittest.TestCase):
             (source / (name + '.java')).write_text('source-placeholder')
         names = prepare.source_classes(source, expected_count=2)
         self.assertEqual(names, {prepare.CORE_PACKAGE + 'a.class', prepare.CORE_PACKAGE + 'ci.class'})
+        for helper in prepare.ADDED_CORE_SOURCES:
+            (source / (helper + '.java')).write_text('reviewed new helper, no original identity')
+        self.assertEqual(prepare.source_classes(source, expected_count=2), names)
         with self.assertRaisesRegex(ValueError, 'Expected 108 recovered core sources'):
             prepare.source_classes(source)
         (source / 'g.java').write_text('must-not-replace-original-empty-class')

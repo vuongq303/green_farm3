@@ -1,0 +1,97 @@
+{
+  "device": "emulator-5554 Android9/API28 x86 user0",
+  "apk": "Final source frozen by parent; cloud backend test URL; schema4",
+  "method": "Existing user0 retained, no wipe/uninstall/state injection/database writes. Normal touch/drag plus read-only SQLite metadata only.",
+  "database_upgrade": {
+    "from_schema": 3,
+    "to_schema": 4,
+    "observed": true,
+    "old_records_retained": true,
+    "entity_pose_record_added_automatically": true,
+    "entity_pose_initial_bytes": 204
+  },
+  "visible_save_status": {
+    "observed": true,
+    "text": "Đã lưu",
+    "screens": [
+      "06-farm-arrival.png",
+      "10-task-intro-dismissed.png"
+    ]
+  },
+  "gameplay": {
+    "observed": "Original tutorial/world resumed. Normal wheat-wheel touch then drag changed front plots; three front plots visibly empty; original New Task Available dialog appeared.",
+    "numeric_xp": "Not verified; HUD hidden by early tutorial.",
+    "quest_drawer": "One book-icon click opened drawer after delayed animation. Cow entry labeled New!, no claim/completion observed.",
+    "quest_images": [
+      "15-restored-stable.png",
+      "16-quest-book-open.png",
+      "17-final-state.png"
+    ],
+    "quest_detail_attempt": {
+      "input": "One stationary180ms touch cow icon(58,367) followed by10s wait",
+      "result": "Drawer remained New!; no detail title/counter/Claim displayed",
+      "image": "18-cow-task-detail.png",
+      "interpretation": "No false completion observed; no claim of correctness for unseen task predicates"
+    },
+    "quest_new_arrow_attempt": {
+      "input": "Exactly one stationary500ms touch New! arrow(180,372), then12s wait",
+      "result": "Task drawer collapsed. Farm visible; no task-detail title, objective counter, completion/Claim or reward visible.",
+      "image": "19-new-arrow-task-detail.png",
+      "interpretation": "Observable drawer-close transition only; cannot infer quest completion or verify predicate behavior."
+    }
+  },
+  "cold_restart": {
+    "force_stop": true,
+    "before_pid": 15667,
+    "after_pid": 16139,
+    "snapshot_before_and_after_startup": {
+      "generation": 129,
+      "complete_snapshot_generation": 129,
+      "snapshot_format": 1,
+      "save_farm0_bytes": 204800,
+      "save_farm0_generation": 119,
+      "save_gameplay_bytes": 51200,
+      "save_gameplay_generation": 129,
+      "entity_pose_v1_bytes": 204,
+      "entity_pose_v1_generation": 127,
+      "pending_rewards_v1_bytes": 12,
+      "pending_rewards_v1_generation": 128
+    },
+    "actual_world_restore": "After Not now/No game returned directly to farm, with same three empty front plots and advanced task-book tutorial; no letter/Welcome reset or failure dialog.",
+    "stable_resumed_snapshot": {
+      "generation": 135,
+      "complete_snapshot_generation": 135,
+      "snapshot_format": 1
+    },
+    "images": [
+      "08-plant-drag.png",
+      "09-before-restart.png",
+      "14-reloaded-farm.png",
+      "15-restored-stable.png"
+    ]
+  },
+  "crashes": {
+    "main_app_pid15667_buffer_bytes": 0,
+    "main_app_pid16139_buffer_bytes": 0,
+    "warning": "startup-crash.log includes unrelated cmd/native and isolated GameSaveStoreProbe process failures; do not attribute these to main app."
+  },
+  "not_verified": [
+    "Numeric XP and all resource balances after restore",
+    "Quest detail predicates/claim/reward deduplication",
+    "Animal/object move confirm/cancel, overlap and post-restart placement",
+    "Second final-APK cold restart",
+    "Low-storage/failure dialog through real game UI"
+  ],
+  "adb": "Yielded after final requested New! click; no ongoing commands or additional touches.",
+  "source_commit": "d27a6ca",
+  "tested_apk_sha256": "bdfc975452e0cccbb886eb47f52be5190e0ef93c058aab0689a72ddc6278d933",
+  "backend_url": "http://172.26.91.236:18787/",
+  "private_evidence_directory": ".local/sqlite-runtime/final/",
+  "published_images": [
+    "screenshots/sqlite-saved.png",
+    "screenshots/sqlite-tutorial.png",
+    "screenshots/sqlite-restored.png",
+    "screenshots/sqlite-quest-drawer.png",
+    "screenshots/sqlite-after-new-click.png"
+  ]
+}

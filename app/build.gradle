@@ -51,7 +51,7 @@ android {
 
     sourceSets {
         main {
-            // Compile the 108 restored game classes and generated SDK R aliases.
+            // Compile 108 restored game classes, progress helpers and SDK R aliases.
             // Every other runtime class, including Application, comes from original DEX.
             java.srcDirs = [layout.buildDirectory.dir('generated/core-java')]
             res.srcDirs = [layout.buildDirectory.dir('generated/restored-res')]
@@ -210,6 +210,7 @@ androidComponents {
             zipalignExecutable.set(new File(android.sdkDirectory,
                     "build-tools/35.0.0/${windows ? 'zipalign.exe' : 'zipalign'}"))
             packagingSources.from(rootProject.files('tools/build_core_source.py',
+                    'tools/prepare_core_dependencies.py',
                     'tools/build_binary_baseline.py', 'tools/build_local_backend.py',
                     'tools/UpdateBuildRevision.java', 'tools/verify_runtime_apk.py'))
             packagingSources.from(rootProject.fileTree('tools') { include '*build_tools.py' })

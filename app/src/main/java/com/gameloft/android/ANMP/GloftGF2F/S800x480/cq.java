@@ -14,11 +14,8 @@ class cq implements Runnable {
             try {
                 if (ci.bbG) {
                     ci.bbG = false;
-                    if (ci.aZB == 0) {
-                        ci.rr();
-                    } else {
-                        ci.rs();
-                    }
+                    // Serialize only after completed game-thread actions.
+                    ProgressSaveController.requestSave();
                 }
                 Thread.sleep(50L);
             } catch (Exception e) {

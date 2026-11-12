@@ -15,6 +15,7 @@ import zipfile
 
 from build_binary_baseline import EXPECTED_APK_SHA256, DEX, SIGNATURE, is_resource, sha256
 from android_build_tools import ensure_debug_keystore, jdk_tool, signing_tools
+from prepare_core_dependencies import ADDED_CORE_SOURCES
 
 
 def assemble(original, compiled, merged_dex, output):
@@ -37,9 +38,13 @@ def assemble(original, compiled, merged_dex, output):
         raise ValueError('Merger provenance does not verify these exact inputs and output')
     core = Path(__file__).resolve().parents[1] / 'app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480'
     required = {'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/' + p.stem + ';'
-                for p in core.glob('*.java') if p.stem != 'l'}
+                for p in core.glob('*.java') if p.stem != 'l' and p.stem not in ADDED_CORE_SOURCES}
     if not required.issubset(set(report.get('replaced_classes', []))):
         raise ValueError('Not every selected Java-core class was recompiled and replaced')
+    additions = {'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/' + p.stem + ';'
+                 for p in core.glob('*.java') if p.stem in ADDED_CORE_SOURCES}
+    if not additions.issubset(set(report.get('added_classes', []))):
+        raise ValueError('Not every reviewed progress helper was compiled and added')
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(compiled) as rebuilt:
         original_names, compiled_names = source.namelist(), rebuilt.namelist()
         if len(original_names) != len(set(original_names)):

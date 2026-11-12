@@ -1,0 +1,3 @@
+{"number": 1, "command": "seed", "fixture": "s4_1794497511_fad66a_main", "expected_exit": 0, "actual_exit": 137, "passed": false, "seconds": 13.174}
+Killed 
+

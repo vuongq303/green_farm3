@@ -1,11 +1,11 @@
 {
-  "source_commit": "28d273e176fe7b1285dede250aaa5a1dbc559879",
-  "built_at": "2026-11-12T19:47:56+07:00",
-  "build_command": "./gradlew --no-daemon --project-cache-dir /workspace/tooling/project-cache :app:assembleDebug --stacktrace",
-  "build_result": "BUILD SUCCESSFUL in 1m 11s; 42 tasks, 11 executed, 31 up-to-date",
+  "source_commit": "d27a6ca1c2c9e4ccea894ca41ce4ae3073003a93",
+  "built_at": "2026-11-12T15:50:43.801044+00:00",
+  "build_command": "./gradlew :app:assembleDebug -Pandroid.injected.build.api=24 --stacktrace",
+  "build_result": "BUILD SUCCESSFUL in 57s; 43 tasks, 13 executed, 30 up-to-date",
   "artifact": "green-farm-3-debug.apk",
-  "size_bytes": 14988771,
-  "sha256": "5a87fe01fdadae3bb0844cd5d39c91d824cba515fc50e691e4805b11b5ed637a",
+  "size_bytes": 15013347,
+  "sha256": "764393e453a751471a8ed714ac0fce88eff128a1465d676fba63ceee1bf21b98",
   "application_id": "com.gameloft.android.ANMP.GloftGF2F",
   "application_class": "javax.microedition.midlet.App",
   "launcher_activity": "com.gameloft.android.ANMP.GloftGF2F.Start",
@@ -31,7 +31,7 @@
     "declared_min_sdk": 16
   },
   "apk_verification": {
-    "defined_classes": 6397,
+    "defined_classes": 6412,
     "dex_files": 1,
     "original_assets_and_native_payload_files_preserved": 59,
     "network_policy": {
@@ -61,8 +61,35 @@
     "this_exact_windows_ip_apk_tested": false,
     "windows_lan_connectivity_tested": false,
     "same_source_cloud_ip_variant_tested_on_api28": true,
-    "tested_cloud_apk_sha256": "4068b7390bc42c457dee034a18487c94bda7ae7b49a1e2f34f76eb6b0b971400",
-    "evidence": "../docs/backend/lan-mysql-result.json",
-    "limitations": "Facebook login, automatic UI retry, full gameplay/save-load, physical devices and newer Android remain unverified"
+    "tested_cloud_apk_sha256": "bdfc975452e0cccbb886eb47f52be5190e0ef93c058aab0689a72ddc6278d933",
+    "evidence": "../docs/sqlite-validation/game-runtime.json",
+    "sqlite_probe_evidence": "../docs/sqlite-validation/probe-results.json",
+    "sqlite_probe_cases_passed": 26,
+    "python_tests_passed": 116,
+    "resource_tests_passed": 13,
+    "observed": [
+      "Original farm/tutorial resumed",
+      "SQLite schema3-to4 upgrade with existing data retained",
+      "Visible Saved indicator",
+      "Harvest interaction and tutorial advance",
+      "Modern snapshot restored after force-stop/reopen",
+      "Quest drawer opens with New label; no false completion observed"
+    ],
+    "limitations": "Numeric XP/all balances, task detail/completion/claim, movement confirm/cancel through device UI, complete inventory/animal/building matrix, backend restart in this milestone, physical devices and newer Android remain unverified"
+  },
+  "local_progress": {
+    "storage": "Android SQLite",
+    "database": "greenfarm-progress.db",
+    "schema_version": 4,
+    "slot": "device-local",
+    "migrations": "../docs/sqlite/",
+    "legacy_codec_preserved": true,
+    "helper_classes": [
+      "GameSaveStore",
+      "ProgressSaveController",
+      "PendingRewardState",
+      "EntityPoseState"
+    ],
+    "backend_mysql_role": "Anonymous accounts, sessions and compliance; local farm progress is separate"
   }
 }
