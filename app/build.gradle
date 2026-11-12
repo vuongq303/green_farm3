@@ -1,4 +1,6 @@
 import com.android.build.api.artifact.SingleArtifact
+import com.android.build.api.artifact.ScopedArtifact
+import com.android.build.api.variant.ScopedArtifacts
 import greenfarm.MergeOriginalSdkApk
 import greenfarm.PrepareDebugSigningKey
 
@@ -193,6 +195,15 @@ androidComponents {
             backendUrl.set(providers.gradleProperty('localBackendUrl').orElse('http://10.0.2.2:8787/'))
             mergeToolClasspath.from(configurations.dexMergeTool,
                     compileDexMergeTool.flatMap { it.destinationDirectory })
+            // Rebuild only this project's classfiles at its declared minSdk.
+            // Studio's device-specific carrier DEX is not a stable merge input.
+            overlayMinSdk.set(variant.minSdk.apiLevel)
+            overlayCompileClasspath.from(variant.compileClasspath)
+            androidBootClasspath.from(androidComponents.sdkComponents.bootClasspath)
+            d8Jar.set(new File(android.sdkDirectory, 'build-tools/35.0.0/lib/d8.jar'))
+            apkSignerJar.set(new File(android.sdkDirectory, 'build-tools/35.0.0/lib/apksigner.jar'))
+            zipalignExecutable.set(new File(android.sdkDirectory,
+                    "build-tools/35.0.0/${windows ? 'zipalign.exe' : 'zipalign'}"))
             packagingSources.from(rootProject.files('tools/build_core_source.py',
                     'tools/build_binary_baseline.py', 'tools/build_local_backend.py',
                     'tools/UpdateBuildRevision.java', 'tools/verify_runtime_apk.py'))
@@ -201,6 +212,11 @@ androidComponents {
                     new File(android.sdkDirectory, "build-tools/35.0.0/${windows ? 'aapt2.exe' : 'aapt2'}"),
                     new File(android.sdkDirectory, 'build-tools/35.0.0/lib/apksigner.jar'))
         }
+        // PROJECT deliberately excludes compile-only SDK/runtime dependencies.
+        // Include both class directories and AGP's generated project/R JARs.
+        variant.artifacts.forScope(ScopedArtifacts.Scope.PROJECT).use(mergeApk)
+                .toGet(ScopedArtifact.CLASSES.INSTANCE,
+                        { it.projectClassJars }, { it.projectClassDirectories })
         def transformation = variant.artifacts.use(mergeApk)
                 .wiredWithDirectories({ it.inputApks }, { it.outputApks })
                 .toTransformMany(SingleArtifact.APK.INSTANCE)
