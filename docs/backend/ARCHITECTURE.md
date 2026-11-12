@@ -59,11 +59,20 @@ mốc local không sửa TLS trust hoặc tắt kiểm tra chứng chỉ.
 | `GET /locate/auth` | Không token/body | Base URL thuần văn bản, không JSON quote hoặc newline |
 | `POST /authorize` | Form `client_id`, `username`, `password`, `scope`, `device_id` | Object có `access_token` string do backend mới phát hành |
 | `POST /users/me/compliance` | Form `access_token`, `country`, `age` | Object policy-name → object có `compliant` boolean; trả HTTP200 cho kết quả hợp lệ |
+| `GET /locate/storage` | Không token/body | Base URL thuần văn bản của storage do chủ dự án quản lý |
+| `GET /profiles/me/myprofile` | Query `access_token` | Object profile của phiên local, có `credential` đúng username đã xác thực |
 
 `GET /healthz` là API vận hành **mới**, không khôi phục từ APK.
 `devices/mydevice` và `configs/users/me` có bằng chứng wire nhưng không thuộc
 đường đặt readiness; payload config cấp cao chưa đủ để triển khai đúng. M0 trả
 lỗi rõ ràng cho chức năng chưa hỗ trợ. Không tự tạo schema config/kinh tế/IAP.
+
+Hai route storage/profile được bổ sung sau phép thử Android đầu tiên: chuỗi
+discovery/authorize đã trả200 nhưng Hestia chờ `o.mr()` từ profile-success ở
+loader38. SDK gốc không giải phóng vòng chờ khi profile trả lỗi. Vì vậy chúng
+không cần cho riêng cờ Janus readiness, nhưng cần cho đường khởi động thực tế
+đã quan sát. Profile chỉ chứa identity do server local quản lý, không dùng dữ
+liệu mẫu giả trong template `UserProfile` làm tiền/vật phẩm của người chơi.
 
 Policy M0 `LOCAL_RESEARCH_16_PLUS` là quy tắc nghiên cứu mới, chỉ cho phép từ16
 tuổi theo cấu hình thử nghiệm; kiểm thử chính dùng tuổi30. Không tự nhận là

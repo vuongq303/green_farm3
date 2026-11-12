@@ -1,0 +1,12 @@
+test_allows_explicit_loopback_and_https_bases (test_backend_endpoint_patch.BackendEndpointPatchTest.test_allows_explicit_loopback_and_https_bases) ... ok
+test_both_const_string_widths_preserve_instruction_layout (test_backend_endpoint_patch.BackendEndpointPatchTest.test_both_const_string_widths_preserve_instruction_layout) ... ok
+test_real_merged_dex_changes_one_sdk_literal_and_preserves_other_classes (test_backend_endpoint_patch.BackendEndpointPatchTest.test_real_merged_dex_changes_one_sdk_literal_and_preserves_other_classes) ... ok
+test_rejects_bad_or_nonlocal_cleartext_urls_without_publishing (test_backend_endpoint_patch.BackendEndpointPatchTest.test_rejects_bad_or_nonlocal_cleartext_urls_without_publishing) ... ok
+test_rejects_input_output_and_report_aliases_without_modifying_input (test_backend_endpoint_patch.BackendEndpointPatchTest.test_rejects_input_output_and_report_aliases_without_modifying_input) ... ok
+test_rejects_non_dex_and_preserves_existing_output_on_failure (test_backend_endpoint_patch.BackendEndpointPatchTest.test_rejects_non_dex_and_preserves_existing_output_on_failure) ... ok
+test_rejects_wrong_missing_duplicate_and_already_patched_targets (test_backend_endpoint_patch.BackendEndpointPatchTest.test_rejects_wrong_missing_duplicate_and_already_patched_targets) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 20.126s
+
+OK

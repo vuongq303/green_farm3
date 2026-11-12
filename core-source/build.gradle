@@ -86,6 +86,7 @@ tasks.matching { it.name == 'validateSigningDebug' }.configureEach {
 
 def compileDexMergeTool = tasks.register('compileDexMergeTool', JavaCompile) {
     source rootProject.file('tools/MergeCoreDex.java')
+    source rootProject.file('tools/PatchBackendEndpoint.java')
     classpath = configurations.dexMergeTool
     destinationDirectory = layout.buildDirectory.dir('dex-merge-tool')
     sourceCompatibility = '8'
@@ -121,4 +122,32 @@ tasks.register('assembleRecoveredDebug', Exec) {
             '--sdk', android.sdkDirectory,
             '--keystore', rootProject.file('.local/baseline-debug.keystore'),
             '--output', layout.buildDirectory.file('outputs/apk/recovered/debug/app-core-source-debug.apk').get().asFile
+}
+
+def patchLocalBackend = tasks.register('patchLocalBackend', JavaExec) {
+    dependsOn 'assembleRecoveredDebug', compileDexMergeTool
+    classpath = configurations.dexMergeTool + files(compileDexMergeTool.flatMap { it.destinationDirectory })
+    mainClass = 'PatchBackendEndpoint'
+    def backendUrl = providers.gradleProperty('localBackendUrl').orElse('http://10.0.2.2:8787/')
+    inputs.file(mergedDex)
+    inputs.property('backendUrl', backendUrl)
+    outputs.file(layout.buildDirectory.file('backend-local/classes.dex'))
+    outputs.file(layout.buildDirectory.file('backend-local/classes.dex.json'))
+    args mergedDex.get().asFile, layout.buildDirectory.file('backend-local/classes.dex').get().asFile,
+            backendUrl.get()
+}
+
+tasks.register('assembleLocalBackendDebug', Exec) {
+    group = 'build'
+    description = 'Build a separate research APK with only Janus discovery redirected to an independent backend.'
+    dependsOn patchLocalBackend
+    inputs.file(rootProject.file('tools/build_local_backend.py'))
+    outputs.upToDateWhen { false }
+    commandLine 'python3', rootProject.file('tools/build_local_backend.py'),
+            '--original', rootProject.file('green-farm-3.apk'),
+            '--base', layout.buildDirectory.file('outputs/apk/recovered/debug/app-core-source-debug.apk').get().asFile,
+            '--patched-dex', layout.buildDirectory.file('backend-local/classes.dex').get().asFile,
+            '--sdk', android.sdkDirectory,
+            '--keystore', rootProject.file('.local/baseline-debug.keystore'),
+            '--output', layout.buildDirectory.file('outputs/apk/backend-local/debug/app-local-backend-debug.apk').get().asFile
 }

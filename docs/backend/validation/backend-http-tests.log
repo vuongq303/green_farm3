@@ -1,0 +1,35 @@
+
+> green-farm-local-research-backend@0.1.0 test
+> node --test test/*.test.mjs
+
+✔ health, datacenter selection, ten URL keys, and plain auth locator use the configured base (52.180515ms)
+✔ authorization accepts the original UTF-16 password transform and all compatibility scope declarations (13.644925ms)
+✔ fresh sessions are distinct and accepted by the compliance route (5.506008ms)
+✔ the explicit local policy returns false below 16 and true from 16 through 120 (6.055355ms)
+✔ compliance requires a session token and rejects forged or changed tokens (6.641777ms)
+✔ expiry uses the injected clock and session TTL (3.947175ms)
+✔ tokens belong to the issuing server even when servers share an HMAC secret (3.514454ms)
+✔ profile credentials belong to the authorized session and stay isolated between users (7.060205ms)
+✔ profile reads require a valid unexpired session token (8.511417ms)
+✔ profile paths outside the implemented own-profile read remain unknown (9.824281ms)
+✔ authorization rejects missing fields, unsupported scope, and invalid credentials (8.015131ms)
+✔ compliance requires country and canonical integer age in the documented range (20.349306ms)
+✔ both POST routes reject content types other than URL-encoded forms (7.408019ms)
+✔ form parsing rejects duplicate fields, malformed percent escapes, and malformed UTF-8 (10.20229ms)
+✔ both POST routes reject bodies exceeding 8 KiB (4.35653ms)
+✔ known routes return 405 for the wrong method (5.356794ms)
+✔ unknown paths return 404 and explicit unsupported surfaces return 501 (4.009058ms)
+✔ request logs contain only method, redacted route path, and status (3.678761ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 405.325956
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

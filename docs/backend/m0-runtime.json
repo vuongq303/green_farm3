@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-12",
+  "milestone": "M0 local backend / Accept / opening farm tutorial",
+  "baseline_commit": "ce19d54",
+  "analysis_checkpoint": "f193242",
+  "apk_sha256": "0555a6845a5e9f35d0c80c4ade09408e66ac486e74aa5ec7229ba0e15dfdd0d9",
+  "apk_relative": "core-source/build/outputs/apk/backend-local/debug/app-local-backend-debug.apk",
+  "emulator": {
+    "android_api": 28,
+    "abi": "x86",
+    "software_emulation": true,
+    "audio_enabled": false
+  },
+  "backend": {
+    "runtime": "Node24 native TypeScript",
+    "host_bind": "127.0.0.1:8787",
+    "emulator_base_url": "http://10.0.2.2:8787/",
+    "upstream_forwarding": false,
+    "persistence": "memory sessions only; PostgreSQL not installed for M0",
+    "policy": "LOCAL_RESEARCH_16_PLUS; project research policy, not a recovered vendor rule"
+  },
+  "wire_routes_observed_200": [
+    "/config/:client/datacenters",
+    "/config/:client/datacenters/:name/urls",
+    "/locate/auth",
+    "/authorize",
+    "/locate/storage",
+    "/profiles/me/myprofile",
+    "/users/me/compliance"
+  ],
+  "unsupported_responses": 3,
+  "observed_android": {
+    "discovery_auth_profile": "passed against local backend",
+    "age30_accept": "passed, privacy HTTP200",
+    "after_accept": "original Connect / Not now screen, state47",
+    "guest_flow": "Not now then No to Facebook prompt",
+    "farm": "Cindy Lou Welcome tutorial and farm background visible",
+    "age_persisted_in_client": 30,
+    "gameplay_actions": "not verified",
+    "farm_save_load": "not verified",
+    "fatal_exception_in_final_log": false
+  },
+  "endpoint_patch": {
+    "input_dex_sha256": "0f1b336e638ed5f6309e1d5c9743ff73e6945ab2446d47bb46f51c48f853c534",
+    "output_dex_sha256": "5bddadeb42f1586090ce42cf31bc496961bb3ed35c1a668ecdf8799134b329d2",
+    "target_class": "Lcom/gameloft/a/b/a;",
+    "target_method": "aL(Ljava/lang/String;)Ljava/lang/String;",
+    "original_url": "https://eve.gameloft.com/",
+    "replacement_url": "http://10.0.2.2:8787/",
+    "replacement_count": 1,
+    "unchanged_other_classes_verified": true,
+    "reverse_patch_semantics_verified": true,
+    "unchanged_classes_canonical_sha256": "93ade81eb5b0c7a35d3c3d2c5c05b2e21ca0a1c4501a0c841532b06d84a81ced"
+  },
+  "payload": {
+    "core_java_changes_since_baseline": 0,
+    "assets_unchanged": 49,
+    "native_libraries_unchanged": 10,
+    "integrity_guard": "unchanged; DEX-size REVISION metadata regenerated"
+  },
+  "new_tests": {
+    "http_passed": 18,
+    "dex_patch_passed": 7,
+    "packaging_passed": 8,
+    "skipped": 0,
+    "old_81_tests": "reused ce19d54 validation; not rerun in this milestone"
+  },
+  "initial_experiment": "Five-route backend authorized correctly but Hestia blocked waiting for profile-success; added two routes only after original-smali proof",
+  "remaining": [
+    "Other legacy clients still attempt eve.gameloft.com/vgold.gameloft.com; full independence not achieved",
+    "PostgreSQL, durable accounts and snapshots not implemented",
+    "Movement/planting/harvesting/quests/inventory not verified",
+    "Gameplay save/load, audio and newer Android not verified",
+    "Research anonymous auth must be replaced before production"
+  ],
+  "user_data_backup": ".local/backend-m0/pre-m0-userdata.tar (ignored, not committed)"
+}

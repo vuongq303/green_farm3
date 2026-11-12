@@ -1,8 +1,15 @@
 # Green Farm 3 — phục hồi Android từ JADX
 
+Mục tiêu hiện tại là backend độc lập do chủ dự án quản lý. Xem
+[kiến trúc và API có bằng chứng](docs/backend/ARCHITECTURE.md) và
+[backend local](backend/README.md). Bản thử M0 dùng Node24, emulator và APK
+riêng; các client dịch vụ cũ khác chưa được di chuyển hết. Kết quả Android
+được ghi tại [checkpoint M0](docs/backend/M0_CHECKPOINT.md).
+
 Dự án đã build được **APK từ 108 lớp Java lõi**, gồm `ci`, `GLLib`, sprite,
 tile renderer và pathfinding; SDK/wrapper dùng DEX gốc làm dependency.
-Chưa xác nhận chơi được trang trại hoặc save/load; xem kết quả runtime trong báo cáo.
+M0 đã vượt Accept và hiển thị tutorial nông trại trên API28 qua backend local.
+Chưa xác nhận đầy đủ thao tác farm hoặc save/load; xem báo cáo M0.
 
 Công cụ đã kiểm tra: JDK 21.0.9, Gradle Wrapper 8.11.1, Android Gradle Plugin
 8.10.1, Android SDK Platform 28, Build Tools 35.0.0 và Python 3.10 trở lên.

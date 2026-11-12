@@ -1,0 +1,12 @@
+{
+  "input_dex_sha256": "0f1b336e638ed5f6309e1d5c9743ff73e6945ab2446d47bb46f51c48f853c534",
+  "output_dex_sha256": "5bddadeb42f1586090ce42cf31bc496961bb3ed35c1a668ecdf8799134b329d2",
+  "target_class": "Lcom/gameloft/a/b/a;",
+  "target_method": "aL(Ljava/lang/String;)Ljava/lang/String;",
+  "original_url": "https://eve.gameloft.com/",
+  "replacement_url": "http://10.0.2.2:8787/",
+  "replacement_count": 1,
+  "unchanged_other_classes_verified": true,
+  "reverse_patch_semantics_verified": true,
+  "unchanged_classes_canonical_sha256": "93ade81eb5b0c7a35d3c3d2c5c05b2e21ca0a1c4501a0c841532b06d84a81ced"
+}

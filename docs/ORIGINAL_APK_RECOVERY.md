@@ -1,5 +1,9 @@
 # Tiếp tục phục hồi từ APK gốc
 
+> Báo cáo đối chứng của checkpoint `ce19d54`. Mục tiêu mới dùng backend độc lập;
+> xem [kiến trúc/API](backend/ARCHITECTURE.md) và [mốc local M0](backend/M0_CHECKPOINT.md).
+> Hướng cho phép EVE ở lịch sử bên dưới không còn là kế hoạch hiện tại.
+
 ## Đầu vào đã xác minh
 
 Đã fast-forward checkout tới commit GitHub
