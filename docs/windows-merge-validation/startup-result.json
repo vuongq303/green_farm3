@@ -1,0 +1,12 @@
+{
+  "device": "emulator-5554, Android 9/API28 x86",
+  "installed_via": ":app:installDebug",
+  "pid": "10618",
+  "observed_at_least_seconds": 20,
+  "apk_sha256": "c1d503c7a9a7d29ecaa2756376d70a8eb3ff3b0b81b9fde0884f6dbedf11591a",
+  "installed_apk_sha256": "c1d503c7a9a7d29ecaa2756376d70a8eb3ff3b0b81b9fde0884f6dbedf11591a",
+  "installed_hash_method": "device shell sha256sum",
+  "fatal_exception": false,
+  "application_class_not_found": false,
+  "login_tested": false
+}

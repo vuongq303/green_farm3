@@ -1,0 +1,52 @@
+{
+  "source_commit": "b0f367448c8d582101fd3e9063eec9f77dc249b7",
+  "built_at": "2026-11-12T14:56:31+07:00",
+  "build_command": "./gradlew --no-daemon --project-cache-dir /workspace/tooling/project-cache :app:assembleDebug --rerun-tasks",
+  "build_result": "BUILD SUCCESSFUL; 42 tasks executed",
+  "artifact": "green-farm-3-debug.apk",
+  "size_bytes": 14988771,
+  "sha256": "c1d503c7a9a7d29ecaa2756376d70a8eb3ff3b0b81b9fde0884f6dbedf11591a",
+  "application_id": "com.gameloft.android.ANMP.GloftGF2F",
+  "application_class": "javax.microedition.midlet.App",
+  "launcher_activity": "com.gameloft.android.ANMP.GloftGF2F.Start",
+  "version_name": "4.4.2",
+  "version_code": 44220,
+  "variant": "debug",
+  "signing": {
+    "type": "local Android debug key (private key is not committed)",
+    "certificate_sha256": "52c1ce4cb6336e7c8122e7bfea44f1dd23262d2e48f08909684514539fc76d00",
+    "verified_signature_schemes": [
+      "v1",
+      "v2",
+      "v3"
+    ],
+    "zip_alignment_verified": true
+  },
+  "toolchain": {
+    "gradle": "9.7.1",
+    "jdk": "25",
+    "agp": "8.10.1",
+    "compile_sdk": 28,
+    "build_tools": "35.0.0"
+  },
+  "apk_verification": {
+    "defined_classes": 6397,
+    "dex_files": 1,
+    "original_assets_and_native_payload_files_preserved": 59,
+    "real_application_and_bootstrap_classes_present": true
+  },
+  "backend": {
+    "discovery_url": "http://10.0.2.2:8787/",
+    "mode": "local M0 research backend for Android Emulator",
+    "server_included_in_apk": false,
+    "instructions": "../backend/README.md",
+    "physical_device": "Requires rebuilding with a reachable localBackendUrl"
+  },
+  "runtime_evidence": {
+    "new_runtime_test_in_this_delivery": false,
+    "identical_apk_sha256_to_previous_api28_startup_test": true,
+    "previous_evidence": "../docs/app-unification/startup-after.json",
+    "previous_screenshot": "../docs/app-unification/startup-game-intro.png",
+    "limitations": "Full gameplay, save/load, account login, physical devices and newer Android remain unverified"
+  }
+}

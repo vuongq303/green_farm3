@@ -1,0 +1,48 @@
+{
+  "recorded_at": "2026-11-12T18:00:20+07:00",
+  "base_commit": "e751779c2cd39a60af6397fa875d93df63b48878",
+  "variant": "debug",
+  "android_modules": [
+    ":app"
+  ],
+  "guard_condition": "Canonical directory equality or ancestor/descendant relationship, using native Path.startsWith(Path)",
+  "original_windows_conflicting_pair": null,
+  "original_windows_paths_available": false,
+  "native_windows_build_verified": false,
+  "configured_cloud_paths": {
+    "carrier_input": "/workspace/green_farm3/app/build/intermediates/apk/debug/packageDebug",
+    "merged_output": "/workspace/green_farm3/app/build/outputs/apk/debug",
+    "merge_work": "/workspace/green_farm3/app/build/intermediates/original-sdk-merge/debug"
+  },
+  "checks": {
+    "literal_app_selector": "TaskSelectionException as expected: :app is not a task",
+    "assemble_debug": "BUILD SUCCESSFUL in 1m 7s",
+    "injected_apk_location": "/workspace/green_farm3/app/build/intermediates/original-sdk-merge/debug",
+    "assemble_and_install_with_injected_location": "BUILD SUCCESSFUL in 58s; standard output remained separate; installed on emulator-5554",
+    "invalid_output_equals_work": "Rejected by retained guard, before cleanup; sentinel file preserved",
+    "windows_style_path_comparisons_jimfs": "6 assertions passed; simulation only",
+    "apk_metadata_points_to_final_artifact": true,
+    "ide_apk_redirect": "../../../../outputs/apk/debug/output-metadata.json",
+    "actual_class_definitions": 6397,
+    "real_application_class": "javax.microedition.midlet.App",
+    "unchanged_assets_and_native_files": 59
+  },
+  "runtime": {
+    "device": "emulator-5554, Android 9/API28 x86",
+    "installed_via": ":app:installDebug",
+    "pid": "10618",
+    "observed_at_least_seconds": 20,
+    "apk_sha256": "c1d503c7a9a7d29ecaa2756376d70a8eb3ff3b0b81b9fde0884f6dbedf11591a",
+    "installed_apk_sha256": "c1d503c7a9a7d29ecaa2756376d70a8eb3ff3b0b81b9fde0884f6dbedf11591a",
+    "installed_hash_method": "device shell sha256sum",
+    "fatal_exception": false,
+    "application_class_not_found": false,
+    "login_tested": false
+  },
+  "git_apk_artifact_identical": true,
+  "not_verified": [
+    "Native Windows build/Android Studio GUI",
+    "Physical devices/newer Android",
+    "Login/account/network failure cases and full gameplay"
+  ]
+}

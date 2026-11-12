@@ -48,10 +48,11 @@ prepare resources + sources + compile-only dependencies
 ```
 
 Carrier: `app/build/intermediates/apk/debug/packageDebug/app-debug.apk`.
-Work ghép: `app/build/intermediates/original-sdk/debug/`.
+Work ghép hiện tại: `app/build/intermediates/original-sdk-merge/debug/`.
 APK hoàn chỉnh: `app/build/outputs/apk/debug/app-debug.apk`.
 Các thư mục được kiểm tra không chồng lấn; không overwrite carrier/input.
 Task ghép không phụ thuộc `assembleDebug`, nên không có vòng lặp.
+Xem [cập nhật đường dẫn và log chẩn đoán Windows](WINDOWS_APK_MERGE_PATHS.md).
 
 AGP tự cập nhật `output-metadata.json` và APK IDE listing/redirect. Task cài
 dùng final artifact; cấu hình `.run/app.run.xml` chỉ có before-run Gradle chuẩn,
