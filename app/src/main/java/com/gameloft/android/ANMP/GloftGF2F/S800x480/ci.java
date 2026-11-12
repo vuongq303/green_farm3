@@ -1470,6 +1470,7 @@ public final class ci extends GLLib implements av {
     private static int moveOriginalTransform;
     private static boolean moveConfirmRequested;
     private static boolean movePlacementConfirmed;
+    private static long tutorialUiCallbackEpoch;
     private static volatile boolean moveInterruptionRequested;
     private int moveSurfaceWidth = -1;
     private int moveSurfaceHeight = -1;
@@ -6000,6 +6001,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Es() {
+        if (!TutorialFlowController.beginStep(1, aYR, aYS, awV)) return;
         String str = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SwitchTutorialState @@@@@@@@@@@@@@@@@@@@@@@@@@ s_curTutorial== " + aYR;
         switch (aYR) {
             case 1:
@@ -6033,7 +6035,7 @@ public final class ci extends GLLib implements av {
                     axV = true;
                     axW = false;
                 }
-                if (axW) {
+                if (axW && axV) {
                     aZi.fx(8);
                     Er();
                 }
@@ -6102,9 +6104,7 @@ public final class ci extends GLLib implements av {
                 }
                 ch[] chVarArr3 = new ch[1];
                 ch.a(3, 47, chVarArr3, 1);
-                if (ayf >= 6 && chVarArr3[0] == null) {
-                    axW = true;
-                }
+                axW = ayf >= 6 && chVarArr3[0] == null;
                 if (axW) {
                     Er();
                     aYR = 6;
@@ -6181,9 +6181,7 @@ public final class ci extends GLLib implements av {
                 }
                 ch[] chVarArr5 = new ch[1];
                 ch.a(3, 47, chVarArr5, 1);
-                if (ayf >= 6 && chVarArr5[0] == null) {
-                    axW = true;
-                }
+                axW = ayf >= 6 && chVarArr5[0] == null;
                 if (axW) {
                     c(false, 0, avR);
                     aCi &= -2;
@@ -6263,9 +6261,7 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axV = true;
                 }
-                if (avE != null && avE.Kx == 54 && avE.aoC == 16) {
-                    axW = true;
-                }
+                axW = avE != null && avE.Kx == 54 && avE.aoC == 16;
                 if (axW) {
                     Er();
                     if (baf != null) {
@@ -6779,6 +6775,7 @@ public final class ci extends GLLib implements av {
                     Et();
                 }
                 int iB = ch.b(1, 49, 4, new ch[40], 40);
+                axW = false;
                 if (ayf >= 6 || iB == 0) {
                     ch[] chVarArr14 = new ch[1];
                     ch.a(3, 47, chVarArr14, 1);
@@ -6890,9 +6887,7 @@ public final class ci extends GLLib implements av {
                         aZj.y(avE.aol, avE.aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                     }
                 }
-                if (ayf >= 2) {
-                    axW = true;
-                }
+                axW = ayf >= 2;
                 if (axW) {
                     aMo = false;
                     e(1, 78, true);
@@ -6970,9 +6965,7 @@ public final class ci extends GLLib implements av {
                     aym = true;
                     Et();
                 }
-                if (ayf >= 8) {
-                    axW = true;
-                }
+                axW = ayf >= 8;
                 if (axW) {
                     Er();
                     aCi &= -2;
@@ -7184,9 +7177,7 @@ public final class ci extends GLLib implements av {
                 if (chVarArr20[0] != null) {
                     aym = true;
                 }
-                if (aym && chVarArr20[0] == null) {
-                    axW = true;
-                }
+                axW = aym && chVarArr20[0] == null;
                 if (axW) {
                     Er();
                 }
@@ -7274,9 +7265,7 @@ public final class ci extends GLLib implements av {
                     aC(true);
                     a(false, (ch) null);
                 }
-                if (FC() >= 2) {
-                    axW = true;
-                }
+                axW = FC() >= 2;
                 if (axW) {
                     Er();
                 }
@@ -8520,6 +8509,15 @@ public final class ci extends GLLib implements av {
                 aAH = -1;
             }
         }
+        if (aAJ > -1) {
+            tutorialUiCallbackEpoch = TutorialFlowController.captureCallback(aYR, aYS, awV);
+        }
+    }
+
+    private static boolean acceptTutorialUiCallback() {
+        long token = tutorialUiCallbackEpoch;
+        tutorialUiCallbackEpoch = 0;
+        return token == 0 || TutorialFlowController.callbackCurrent(token, aYR, aYS, awV);
     }
 
     static void Fj() {
@@ -18265,6 +18263,9 @@ public final class ci extends GLLib implements av {
     }
 
     static void a(int i, short[] sArr, int i2) {
+        if (MoreGamesRemoval.isWidget(i, i2)) {
+            return;
+        }
         switch (sArr[0]) {
             case 201:
                 a(i, sArr, 0, 0);
@@ -19427,18 +19428,11 @@ public final class ci extends GLLib implements av {
     }
 
     static void aH(boolean z) {
-        boolean z2 = z && aKx;
-        e(1, 34, z2);
-        f(1, 34, z2);
-        e(1, 38, z2);
-        f(1, 38, z2);
-        if (!z2) {
-            DI();
-        } else if (aYJ <= 1 || aYL) {
-            bp(0, -1);
-        } else {
-            DI();
-        }
+        e(1, 34, false);
+        f(1, 34, false);
+        e(1, 38, false);
+        f(1, 38, false);
+        DI();
     }
 
     static void aI(boolean z) {
@@ -19829,6 +19823,11 @@ public final class ci extends GLLib implements av {
     }
 
     static boolean aR(int i, int i2) {
+        if ((i == 2 || i == 8) && LanguageRestartController.blocksGameplay()) return false;
+        if (i == 8 && TutorialFlowController.inputConsumed(aYR, aYS, awV)) return true;
+        if (i == 0 && i2 >= 0 && (apC[i2] == 20 || apC[i2] == 27)) {
+            TutorialFlowController.modalActivated(apC[i2], aYR, aYS, awV);
+        }
         boolean zMl = false;
         if (i2 > -1) {
             try {
@@ -20546,49 +20545,30 @@ public final class ci extends GLLib implements av {
             return;
         }
         bbH = true;
-        String str = "RMS_SaveGameplay 00000 " + getDeviceName();
-        if (!asU && qD() != 35 && (getDeviceName().equals("GT-I9000") || getDeviceName().equals("GT-S5839i") || getDeviceName().equals("GT-S5830i") || getDeviceName().equals("LG-P500") || getDeviceName().equals("HUAWEI Y210-0151") || getDeviceName().equals("GT-S6810P") || getDeviceName().equals("ONE TOUCH 4007A") || getDeviceName().equals("SCH-R680") || getDeviceName().equals("XT303") || getDeviceName().equals("HTC Wildfire S A510e") || getDeviceName().equals("GT-S5560"))) {
-            asU = true;
-        }
-        if (asU && !ProgressSaveController.isForcedCheckpoint() && ((aYS != 1000 || axT) && !aTC)) {
-            asV++;
-            asU = false;
-            if (System.currentTimeMillis() - asW <= 10000 && asW != 0) {
-                bbH = false;
-                return;
-            } else if (asV > 0 || asW == 0) {
-                asW = System.currentTimeMillis();
-                asV = 0;
-            }
-        }
         if (aZB != 0 || avD != -1) {
             bbH = false;
             return;
         }
-        boolean committed = false;
         try {
-            GameSaveStore.beginSave();
-            ProgressSaveController.saving();
+            // Capture immutable records only; the single worker owns SQLite.
             ro();
             rt();
             ry();
             EntityPoseState.writeSnapshot();
             PendingRewardState.writeSnapshot();
-            GameSaveStore.commitSave();
-            committed = true;
-            ProgressSaveController.committed();
-            if (aXO) {
-                aZ(aXO);
-                aXO = false;
-            }
-            FZ();
-            aZZ = 0;
-        } catch (RuntimeException failure) {
-            ProgressSaveController.saveFailed();
         } finally {
-            if (!committed) GameSaveStore.abortSave();
             bbH = false;
         }
+    }
+
+    /** Optional legacy backup follows a durable, quiescent local snapshot. */
+    static void progressSaveCommitted() {
+        if (aXO) {
+            aZ(aXO);
+            aXO = false;
+        }
+        FZ();
+        aZZ = 0;
     }
 
     static boolean aw(boolean z) {
@@ -23249,6 +23229,7 @@ public final class ci extends GLLib implements av {
         for (int i3 = iDD - 1; i3 >= 0; i3--) {
             atc[i][i2][i3] = atd[i][i2][i3];
         }
+        MoreGamesRemoval.removeWidget(i, i2, atc[i][i2]);
     }
 
     public static void bd(boolean z) {
@@ -23388,6 +23369,9 @@ public final class ci extends GLLib implements av {
     }
 
     static boolean bg(int i, int i2) {
+        if (MoreGamesRemoval.isWidget(i, i2)) {
+            return false;
+        }
         if (atc[i][i2][0] == 205) {
             return atc[i][i2][10] != 0;
         }
@@ -23426,7 +23410,8 @@ public final class ci extends GLLib implements av {
     }
 
     static boolean bh(int i, int i2) {
-        return atc[i][i2][0] == 205 && atc[i][i2][18] != 0;
+        return !MoreGamesRemoval.isWidget(i, i2)
+                && atc[i][i2][0] == 205 && atc[i][i2][18] != 0;
     }
 
     static void bi(int i, int i2) {
@@ -25537,20 +25522,6 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    public static void dB(String str) {
-        if (str == null || str.equals("")) {
-            return;
-        }
-        try {
-            JSONObject jSONObject = new JSONObject(str);
-            if (jSONObject.has("launch")) {
-                String string = jSONObject.getString("launch");
-                aYJ = Integer.parseInt(string);
-                com.gameloft.android.wrapper.au.a("NumberLaunchAnimIGP", string, "GF3_IGP_ANIM_LAUNCH");
-            }
-        } catch (Exception e) {
-        }
-    }
 
     public static void dD(String str) {
         atI = str;
@@ -26452,6 +26423,9 @@ public final class ci extends GLLib implements av {
     }
 
     static void e(int i, int i2, boolean z) {
+        if (MoreGamesRemoval.isWidget(i, i2)) {
+            z = false;
+        }
         if (!aTK) {
             if (auR != i) {
                 auR = i;
@@ -26601,6 +26575,9 @@ public final class ci extends GLLib implements av {
     }
 
     static void f(int i, int i2, boolean z) {
+        if (MoreGamesRemoval.isWidget(i, i2)) {
+            z = false;
+        }
         if (!aTK) {
             if (auR != i) {
                 auR = i;
@@ -26819,6 +26796,8 @@ public final class ci extends GLLib implements av {
     }
 
     static void fI(int i) {
+        if ((i == 20 || i == 27)
+                && !TutorialFlowController.openModal(i, aYR, aYS, awV)) return;
         apz = i;
         apA = 6;
         Ff();
@@ -27525,7 +27504,7 @@ public final class ci extends GLLib implements av {
             if (i3 >= atc[i].length) {
                 return;
             }
-            if (atc[i][i3][0] == 205 && atc[i][i3][5] > -1 && atc[i][i3][18] == 1 && atc[i][i3][10] == 1) {
+            if (!MoreGamesRemoval.isWidget(i, i3) && atc[i][i3][0] == 205 && atc[i][i3][5] > -1 && atc[i][i3][18] == 1 && atc[i][i3][10] == 1) {
                 short s = atc[i][i3][5];
                 short s2 = atc[i][i3][6];
                 a aVar = s < 1000 ? atf[s] : aZf[s - 1000];
@@ -27706,6 +27685,9 @@ public final class ci extends GLLib implements av {
     }
 
     static void gO(int i) {
+        if (MoreGamesRemoval.isWidget((i >> 16) & 65535, i & 65535)) {
+            return;
+        }
         switch ((i >> 16) & 65535) {
             case 0:
                 switch (i) {
@@ -27733,9 +27715,6 @@ public final class ci extends GLLib implements av {
                         break;
                     case 65568:
                         rZ();
-                        break;
-                    case 65570:
-                        sn();
                         break;
                     case 65578:
                         rO();
@@ -29213,60 +29192,46 @@ public final class ci extends GLLib implements av {
             case 26:
                 switch (i) {
                     case 1703938:
-                        aYU = 2;
-                        Cf();
+                        LanguageRestartController.select(2);
                         break;
                     case 1703941:
-                        aYU = 0;
-                        Cf();
+                        LanguageRestartController.select(0);
                         break;
                     case 1703944:
-                        aYU = 1;
-                        Cf();
+                        LanguageRestartController.select(1);
                         break;
                     case 1703947:
-                        aYU = 4;
-                        Cf();
+                        LanguageRestartController.select(4);
                         break;
                     case 1703950:
-                        aYU = 3;
-                        Cf();
+                        LanguageRestartController.select(3);
                         break;
                     case 1703953:
-                        aYU = 5;
-                        Cf();
+                        LanguageRestartController.select(5);
                         break;
                     case 1703956:
-                        aYU = 10;
-                        Cf();
+                        LanguageRestartController.select(10);
                         break;
                     case 1703959:
-                        aYU = 11;
-                        Cf();
+                        LanguageRestartController.select(11);
                         break;
                     case 1703962:
-                        aYU = 16;
-                        Cf();
+                        LanguageRestartController.select(16);
                         break;
                     case 1703965:
-                        aYU = 15;
-                        Cf();
+                        LanguageRestartController.select(15);
                         break;
                     case 1703968:
-                        aYU = 9;
-                        Cf();
+                        LanguageRestartController.select(9);
                         break;
                     case 1703971:
-                        aYU = 7;
-                        Cf();
+                        LanguageRestartController.select(7);
                         break;
                     case 1703974:
-                        aYU = 20;
-                        Cf();
+                        LanguageRestartController.select(20);
                         break;
                     case 1703977:
-                        aYU = 12;
-                        Cf();
+                        LanguageRestartController.select(12);
                         break;
                     case 1703981:
                         if (aYU != -1) {
@@ -29340,9 +29305,6 @@ public final class ci extends GLLib implements av {
                         break;
                     case 1769492:
                         Ci();
-                        break;
-                    case 1769494:
-                        Cn();
                         break;
                 }
                 break;
@@ -37858,27 +37820,6 @@ public final class ci extends GLLib implements av {
                     e(27, 12, false);
                     f(27, 12, false);
                     e(27, 13, false);
-                    String strDt38 = dt(12501);
-                    if (strDt38 == null) {
-                        strDt38 = "";
-                    }
-                    ate[27][23] = strDt38;
-                    e(27, 22, true);
-                    f(27, 22, true);
-                    e(27, 23, true);
-                    if (aOR == 0) {
-                        aOR = atc[27][23][2];
-                    }
-                    if (aOS == 0) {
-                        aOS = atc[27][23][3];
-                    }
-                    if (aYU == 7) {
-                        a(27, 23, (short) (aOR + 35), (short) aOS);
-                    } else if (aYU == 9) {
-                        a(27, 23, (short) (aOR + 30), (short) (aOS - 30));
-                    } else {
-                        a(27, 23, (short) aOR, (short) aOS);
-                    }
                 }
                 if (aOG == 21) {
                     atc[27][9][2] = atc[27][13][2];
@@ -40939,8 +40880,27 @@ public final class ci extends GLLib implements av {
     }
 
     static void qB() {
+        if (TutorialFlowController.closeModal(qD())) consumeTutorialGesture();
         apA = 1;
         Ff();
+    }
+
+    private static void consumeTutorialGesture() {
+        // GLLib stores press, drag and release separately. Consume the gesture
+        // owned by this modal before exposing the underlying farm again.
+        GLLib.lb();
+        GLLib.lb();
+        GLLib.lb();
+        GLLib.la();
+        aAG = aAH = aAI = aAJ = aAK = -1;
+        aZn = null;
+    }
+
+    private static boolean acceptTutorialModal(int state) {
+        boolean owned = TutorialFlowController.ownsModal(state);
+        if (!TutorialFlowController.acceptModal(state, aYR, aYS, awV)) return false;
+        if (owned) consumeTutorialGesture();
+        return true;
     }
 
     static void qC() {
@@ -42838,25 +42798,12 @@ public final class ci extends GLLib implements av {
             bbH = false;
             return;
         }
-        boolean committed = false;
         try {
-            GameSaveStore.beginSave(false);
-            ProgressSaveController.saving();
             ro();
             if (aCw == null && aCx == null) ba(false);
             rt();
             PendingRewardState.writeSnapshot();
-            GameSaveStore.commitSave();
-            committed = true;
-            ProgressSaveController.committed();
-            aZ(aXO);
-            aXO = false;
-            FZ();
-            aZZ = 0;
-        } catch (RuntimeException failure) {
-            ProgressSaveController.saveFailed();
         } finally {
-            if (!committed) GameSaveStore.abortSave();
             bbH = false;
         }
     }
@@ -43957,6 +43904,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void tJ() {
+        if (qD() == 27 && !acceptTutorialModal(27)) return;
         qB();
         String str = "EXIT QUEST>cur totu:" + aYR + ",none tuto:-1";
         if (aYR == -1) {
@@ -44042,6 +43990,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void tN() {
+        if (qD() == 27 && !acceptTutorialModal(27)) return;
         int iIi;
         int iIi2;
         axU = true;
@@ -50282,26 +50231,8 @@ public final class ci extends GLLib implements av {
         if (com.gameloft.a.a.k.VR() != null) {
             com.gameloft.a.a.k.VR().VT();
         }
-        if (qD() <= 2 || aTO <= -1) {
-            return;
-        }
-        if (lF()) {
-            lG();
-        }
-        dM(aYU);
     }
 
-    static void bp(int i, int i2) {
-        if (ath == null) {
-            ath = new aa(atf[22], 0, 0);
-            ath.Y(i, i2);
-            short s = atc[1][34][2];
-            short s2 = atc[1][34][3];
-            aa aaVar = ath;
-            aaVar.aaL = s;
-            aaVar.aaM = s2;
-        }
-    }
 
     static void DQ() {
         if (avE == null) {
@@ -50887,7 +50818,7 @@ public final class ci extends GLLib implements av {
                 aAJ = -1;
                 aAO.ip();
             }
-            if (i > -1) {
+            if (i > -1 && acceptTutorialUiCallback()) {
                 gO(i);
             }
         } else if (aAK > -1) {
@@ -51844,6 +51775,7 @@ public final class ci extends GLLib implements av {
         if (aML == 2 || aML == 3 || aML == 4) {
             return;
         }
+        if (!acceptTutorialModal(20)) return;
         if (aYS == 1021 || aYS == 1020 || aYS == 1007 || aYS == 1008 || aYS == 1018 || aYS == 1026 || aYS == 1027 || aYS == 1028 || aYS == 1030 || aYS == 1032 || aYS == 1047 || aYS == 1048 || aYS == 1043 || aYS == 1044 || aYS == 1040 || aYS == 1024 || aYS == 1061 || aYS == 1068 || aYS == 1070 || aYS == 1072 || aYS == 1074 || aYS == 1076 || aYS == 1081 || aYS == 1062 || aYS == 1065 || aYS == 1083) {
             axW = true;
         } else if (aYS == 1010) {
@@ -52571,8 +52503,10 @@ public final class ci extends GLLib implements av {
         this.aYE = false;
         kG();
         baI = System.getProperty("getAvailableSpace");
-        bbF = new Thread(new cq(this));
-        bbF.start();
+        // ProgressSaveController owns the only save worker. The former cq
+        // thread polled every 50ms even when no save was requested.
+        bbF = null;
+        bbG = false;
         b(false, 50, 8);
         b(false, 52, 10);
         b(false, 54, 12);
@@ -58896,9 +58830,6 @@ public final class ci extends GLLib implements av {
                 bap = 0L;
                 bas++;
             }
-            if (FC() >= 3) {
-                dM(aYU);
-            }
             b(true, false, false);
             c(false, 0, avR);
             aC(true);
@@ -59181,6 +59112,7 @@ public final class ci extends GLLib implements av {
                 fE(19);
                 Ep();
             }
+            TutorialFlowController.restoreWorldUi();
             FE();
             ch.fa(1);
             if (bao != 116011) {
@@ -59718,28 +59650,6 @@ public final class ci extends GLLib implements av {
                 JW();
             } else if (bg(1, 73)) {
                 bs(false);
-            }
-            if (bg(1, 38)) {
-                if (ath != null) {
-                    try {
-                        ath.lR();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                String strDt12 = dt(12501);
-                if (strDt12 == null) {
-                    strDt12 = "";
-                }
-                ate[1][38] = strDt12;
-                short s = atc[1][38][2];
-                if (aYU == 7) {
-                    a(1, 38, s, (short) 99);
-                } else if (aYU == 9) {
-                    a(1, 38, s, (short) 72);
-                } else {
-                    a(1, 38, s, (short) 96);
-                }
             }
         }
         if (i == 6) {
@@ -61012,44 +60922,6 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void Cn() {
-        gX(60);
-        aYY = true;
-        if (qO()) {
-            if (aYZ) {
-                long jCurrentTimeMillis = System.currentTimeMillis();
-                if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
-                }
-                if (jCurrentTimeMillis - aZa > 1000) {
-                    aYZ = false;
-                }
-            }
-            if (!aYZ) {
-                aYZ = true;
-                long jCurrentTimeMillis2 = System.currentTimeMillis();
-                if (w.Vl) {
-                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
-                }
-                aZa = jCurrentTimeMillis2;
-                if (aYU == 20) {
-                    j(4, false);
-                } else {
-                    j(aYU, false);
-                }
-            }
-        } else {
-            StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
-            String strDt = dt(1006);
-            if (strDt == null) {
-                strDt = "";
-            }
-            bx(sbAppend.append(strDt).toString());
-        }
-        aLM = true;
-        aLN = MD();
-        DJ();
-    }
 
     static void Eb() {
         if (awx && bg(1, 54)) {
@@ -63555,43 +63427,6 @@ public final class ci extends GLLib implements av {
         ac.lX();
     }
 
-    static void sn() {
-        aYY = true;
-        if (qO()) {
-            if (aYZ) {
-                long jCurrentTimeMillis = System.currentTimeMillis();
-                if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
-                }
-                if (jCurrentTimeMillis - aZa > 1000) {
-                    aYZ = false;
-                }
-            }
-            if (!aYZ) {
-                aYZ = true;
-                long jCurrentTimeMillis2 = System.currentTimeMillis();
-                if (w.Vl) {
-                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
-                }
-                aZa = jCurrentTimeMillis2;
-                if (aYU == 20) {
-                    j(4, false);
-                } else {
-                    j(aYU, false);
-                }
-            }
-        } else {
-            StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
-            String strDt = dt(1006);
-            if (strDt == null) {
-                strDt = "";
-            }
-            bx(sbAppend.append(strDt).toString());
-        }
-        aLM = true;
-        aLN = MD();
-        DJ();
-    }
 
     static void tG() {
         gX(48);
@@ -63850,7 +63685,6 @@ public final class ci extends GLLib implements av {
             } else if (i == t.Nn && i2 == 200) {
                 if (i2 == 200) {
                     try {
-                        s.aN("igp_launch_value.json");
                         aWT = new bc(str).ch("access_token");
                         aWL = true;
                         String str7 = "[OnlineQuest]Token =" + aWT;
@@ -63921,9 +63755,6 @@ public final class ci extends GLLib implements av {
                     c(i, str, str2, i2, str3, exc);
                 }
             } else if (i == t.Pt) {
-                if (str != null && str != "") {
-                    dB(str);
-                }
                 arX = new bc(str);
             }
             if (i != t.Pr && i != t.OZ && i != t.Nn && i2 != 200 && (i != t.Pz || i2 != 304)) {
@@ -64092,7 +63923,9 @@ public final class ci extends GLLib implements av {
     public void jC() {
         synchronized (ci.class) {
         processPendingMoveInterruption();
+        TutorialFlowController.frameStarted();
         try {
+        if (LanguageRestartController.frameStarted()) return;
         if (ProgressSaveController.isLoadBlocked()) {
             if (qD() == 4) qV();
             return;
@@ -64232,21 +64065,6 @@ public final class ci extends GLLib implements av {
             b.hL().Init();
         }
         com.gameloft.a.a.k.VR().a(new ck(this));
-        if (qD() == 18) {
-            aYI = 18;
-        }
-        if (aYM && aYJ > 1 && qD() != 18 && aYI != qD()) {
-            aYK++;
-            aYI = qD();
-        }
-        if (aYJ <= 1) {
-            aYL = true;
-        } else if (aYM && aYK / aYJ > 0 && qD() == 18) {
-            aYK = 0;
-            aYL = true;
-        } else if (aYM && qD() != 18) {
-            aYL = false;
-        }
         if (qD() > 7 && aUb && !aYF) {
             Mo();
         }
@@ -64799,6 +64617,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Ei() {
+        if (!TutorialFlowController.beginStep(2, aYR, aYS, awV)) return;
         ch chVarHA;
         if (axY != null || axZ != -1) {
             En();
@@ -66811,41 +66630,7 @@ public final class ci extends GLLib implements av {
         aOJ = "";
         switch (aOG) {
             case 1:
-                aYY = true;
-                if (qO()) {
-                    if (aYZ) {
-                        long jCurrentTimeMillis = System.currentTimeMillis();
-                        if (w.Vl) {
-                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
-                        }
-                        if (jCurrentTimeMillis - aZa > 1000) {
-                            aYZ = false;
-                        }
-                    }
-                    if (!aYZ) {
-                        aYZ = true;
-                        long jCurrentTimeMillis2 = System.currentTimeMillis();
-                        if (w.Vl) {
-                            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
-                        }
-                        aZa = jCurrentTimeMillis2;
-                        if (aYU == 20) {
-                            j(4, false);
-                        } else {
-                            j(aYU, false);
-                        }
-                    }
-                } else {
-                    StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
-                    String strDt = dt(1006);
-                    if (strDt == null) {
-                        strDt = "";
-                    }
-                    bx(sbAppend.append(strDt).toString());
-                }
-                aLM = true;
-                aLN = MD();
-                DJ();
+                qB();
                 break;
             case 13:
                 if (qE() == 4) {
@@ -67690,6 +67475,8 @@ public final class ci extends GLLib implements av {
         if (i == 39 && lN(298)) {
             return;
         }
+        if ((i == 20 || i == 27) && apB < 15
+                && !TutorialFlowController.openModal(i, aYR, aYS, awV)) return;
         if (i == 20 && aML != 10) {
             e(4, 47, false);
         }
@@ -67912,11 +67699,8 @@ public final class ci extends GLLib implements av {
                 break;
             case 35:
                 cK("READING JAD PARAMS");
-                aMe = !GLLib.Qu.bY("URL-TEMPLATE-GAME").equals(AppEventsConstants.EVENT_PARAM_VALUE_NO);
-                if (aMe || (!aMe && bx("isConnectedWifi"))) {
-                    z = true;
-                }
-                aKx = z;
+                aMe = false;
+                aKx = false;
                 break;
             case 36:
                 cK("PICKING NEXT STATE");
@@ -68350,6 +68134,7 @@ public final class ci extends GLLib implements av {
                     EntityPoseState.restoreSnapshot();
                     PendingRewardState.restoreSnapshot();
                     ProgressSaveController.farmLoadFinished();
+                    TutorialFlowController.restoreAfterLoad();
                 }
                 break;
             case 48:
@@ -69607,7 +69392,7 @@ public final class ci extends GLLib implements av {
                             return true;
                         }
                     default:
-                        if (GLLib.dA(0) && (aYR == 3 || aYR == 6 || aYR == 47 || aYR == 49 || aYR == 39 || aYR == 44 || aYR == 59 || aYR == 60)) {
+                        if (GLLib.dA(0) && isIntroSpeechStep(aYR)) {
                             iDG = GLLib.dG(0);
                             int iDH = GLLib.dH(0);
                             s = atc[4][2][2];
@@ -69616,6 +69401,7 @@ public final class ci extends GLLib implements av {
                             String str2 = "npc talk. bubble" + ((int) s) + "," + ((int) s2);
                             if (iDG >= s - 68 && iDG < s + 375 && iDH > s2 - 20 && iDH < s2 + 200) {
                                 axW = true;
+                                consumeTutorialGesture();
                                 return true;
                             }
                         }
@@ -69631,15 +69417,16 @@ public final class ci extends GLLib implements av {
                             return true;
                         }
                     default:
-                        if (GLLib.dA(0)) {
+                        if (GLLib.dA(0) && isIntroSpeechStep(aYR)) {
                             iDG = GLLib.dG(0);
                             int iDH2 = GLLib.dH(0);
                             s = atc[4][2][2];
                             short s3 = atc[4][2][3];
                             String str3 = "npc talk.pointer " + iDG + "," + iDH2;
                             String str4 = "npc talk. bubble" + ((int) s) + "," + ((int) s3);
-                            if (iDG >= s - 68) {
+                            if (iDG >= s - 68 && iDG < s + 375 && iDH2 > s3 - 20 && iDH2 < s3 + 200) {
                                 axW = true;
+                                consumeTutorialGesture();
                                 return true;
                             }
                         }
@@ -69694,15 +69481,16 @@ public final class ci extends GLLib implements av {
                         break;
                 }
             }
-            if (GLLib.dA(0)) {
+            if (GLLib.dA(0) && isIntroSpeechStep(aYR)) {
                 iDG = GLLib.dG(0);
                 int iDH3 = GLLib.dH(0);
                 s = atc[4][2][2];
                 short s4 = atc[4][2][3];
                 String str5 = "npc talk.pointer " + iDG + "," + iDH3;
                 String str6 = "npc talk. bubble" + ((int) s) + "," + ((int) s4);
-                if (iDG >= s - 68) {
+                if (iDG >= s - 68 && iDG < s + 375 && iDH3 > s4 - 20 && iDH3 < s4 + 200) {
                     axW = true;
+                    consumeTutorialGesture();
                     return true;
                 }
             }
@@ -69748,6 +69536,13 @@ public final class ci extends GLLib implements av {
             c(false, 0, avR);
         }
         return false;
+    }
+
+    private static boolean isIntroSpeechStep(int step) {
+        // The original jN bytecode permits speech acknowledgement only at
+        // these steps; its shared jump was duplicated incorrectly by JADX.
+        return step == 3 || step == 6 || step == 47 || step == 49
+                || step == 39 || step == 44 || step == 59 || step == 60;
     }
 
     /* JADX WARN: Code duplicated, block: B:282:0x066d  */
@@ -72238,108 +72033,9 @@ public final class ci extends GLLib implements av {
     }
 
     static boolean lk(int i) {
-        int iKI;
-        int i2;
+        // Retire a stale legacy IGP state without initializing its catalog or network.
         if (i == 0) {
-            DJ();
-            Ff();
-            DF();
-            GloftGF2F gloftGF2F = GloftGF2F.acx;
-            GloftGF2F gloftGF2F2 = GloftGF2F.acx;
-            aw.a(gloftGF2F, GloftGF2F.acw, GLLib.kH(), GLLib.kI());
-            if (aw.isAvailable()) {
-                if (aYU == 0 || aYU == 18) {
-                    i2 = 0;
-                } else if (aYU == 2) {
-                    i2 = 1;
-                } else if (aYU == 1) {
-                    i2 = 2;
-                } else if (aYU == 3) {
-                    i2 = 3;
-                } else if (aYU == 4) {
-                    i2 = 4;
-                } else if (aYU == 5) {
-                    i2 = 5;
-                } else if (aYU == 11) {
-                    i2 = 6;
-                } else if (aYU == 10) {
-                    i2 = 7;
-                } else if (aYU == 12) {
-                    i2 = 8;
-                } else if (aYU == 15) {
-                    i2 = 9;
-                } else if (aYU == 16) {
-                    i2 = 10;
-                } else if (aYU == 17) {
-                    i2 = 11;
-                } else {
-                    i2 = (aYU == 9 || aYU == 7 || aYU != 20) ? 0 : 12;
-                }
-                if (aYU == 9 || aYU == 7) {
-                    aw.r("Loading", i2);
-                } else {
-                    String strDt = dt(46);
-                    if (strDt == null) {
-                        strDt = "";
-                    }
-                    aw.r(strDt, i2);
-                }
-            } else {
-                qB();
-            }
-        }
-        if (i == 1) {
-        }
-        if (i == 8) {
-        }
-        if (i == 2) {
-            if (jO() == 19) {
-                if (aw.mX() != 0) {
-                    qB();
-                } else {
-                    StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
-                    String strDt2 = dt(513);
-                    if (strDt2 == null) {
-                        strDt2 = "";
-                    }
-                    dC(sbAppend.append(strDt2).toString());
-                }
-            }
-            int iDG = GLLib.dG(0);
-            int iDH = GLLib.dH(0);
-            if (x.aan) {
-                iKI = GLLib.kI() - iDH;
-                iDH = iDG;
-            } else {
-                iKI = iDG;
-            }
-            if (GLLib.dy(0) == 1) {
-                aw.al(iKI, iDH);
-            } else if (GLLib.dy(0) == 2) {
-                aw.ak(iKI, iDH);
-            } else if (GLLib.dy(0) == 3) {
-                aw.am(iKI, iDH);
-            }
-            if (aw.eF(0)) {
-                qB();
-            }
-        }
-        if (i == 3 && aw.isAvailable()) {
-            aw.b(GLLib.Qj);
-        }
-        if (i == 6) {
-            aYW = false;
-            if (aw.isAvailable()) {
-                aw.ao(false);
-            }
-        }
-        if (i == 7) {
-            aYW = true;
-            if (aw.isAvailable()) {
-                aw.ao(true);
-            }
-        }
-        if (i == 5) {
+            qB();
         }
         return false;
     }
@@ -72411,6 +72107,8 @@ public final class ci extends GLLib implements av {
 
     @Override // com.gameloft.android.ANMP.GloftGF2F.S800x480.GLLib, javax.microedition.lcdui.f
     protected void V(int i, int i2) {
+        if (LanguageRestartController.blocksGameplay()) return;
+        if (Uu == 0) TutorialFlowController.pointerPressed();
         super.V(i, i2);
         int iDG = GLLib.dG(0);
         if (iDG < w.ZB) {
@@ -72440,6 +72138,7 @@ public final class ci extends GLLib implements av {
 
     @Override // com.gameloft.android.ANMP.GloftGF2F.S800x480.GLLib, javax.microedition.lcdui.f
     protected void W(int i, int i2) {
+        if (LanguageRestartController.blocksGameplay()) return;
         if (i < 0) {
             i = 0;
         }
@@ -72670,6 +72369,7 @@ public final class ci extends GLLib implements av {
             }
             return;
         }
+        if (LanguageRestartController.blocksGameplay()) return;
         aAu = GLLib.dI(0);
         aAv = GLLib.dJ(0);
         int iDI = GLLib.dI(0);

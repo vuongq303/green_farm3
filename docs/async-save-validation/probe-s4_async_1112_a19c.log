@@ -1,0 +1,81 @@
+{"number": 1, "command": "seed", "fixture": "s4_async_1112_a19c_main", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 18.285}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 2, "command": "verify", "fixture": "s4_async_1112_a19c_main", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 8.383}
+{"command":"verify","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 3, "command": "crash-uncommitted", "fixture": "s4_async_1112_a19c_main", "expected_exit": 17, "actual_exit": 17, "passed": true, "seconds": 10.923}
+{"command":"crash-uncommitted","transaction_written":true,"committed":false,"expected_exit":17}
+
+{"number": 4, "command": "verify", "fixture": "s4_async_1112_a19c_main", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 8.581}
+{"command":"verify","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 5, "command": "crash-committed", "fixture": "s4_async_1112_a19c_main", "expected_exit": 18, "actual_exit": 18, "passed": true, "seconds": 5.535}
+{"command":"crash-committed","committed":true,"expected_exit":18}
+
+{"number": 6, "command": "verify-committed", "fixture": "s4_async_1112_a19c_main", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 5.306}
+{"command":"verify-committed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 7, "command": "legacy", "fixture": "s4_async_1112_a19c_legacy", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 6.882}
+{"command":"legacy","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 8, "command": "legacy-no-header", "fixture": "s4_async_1112_a19c_noheader", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 7.239}
+{"command":"legacy-no-header","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 9, "command": "missing-records-and-imports", "fixture": "s4_async_1112_a19c_legacydamage", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 9.289}
+{"command":"missing-records-and-imports","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 10, "command": "missing-critical-legacy", "fixture": "s4_async_1112_a19c_criticalmissing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 5.57}
+{"command":"missing-critical-legacy","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 11, "command": "migrate-v1", "fixture": "s4_async_1112_a19c_migration1", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 5.135}
+{"command":"migrate-v1","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 12, "command": "migrate-v3", "fixture": "s4_async_1112_a19c_migration3", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 5.506}
+{"command":"migrate-v3","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 13, "command": "seed", "fixture": "s4_async_1112_a19c_corrupt", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 5.305}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 14, "command": "corrupt-read", "fixture": "s4_async_1112_a19c_corrupt", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 4.016}
+{"command":"corrupt-read","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 15, "command": "seed", "fixture": "s4_async_1112_a19c_missing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 5.043}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 16, "command": "missing-records", "fixture": "s4_async_1112_a19c_missing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 4.884}
+{"command":"missing-records","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 17, "command": "seed", "fixture": "s4_async_1112_a19c_allmissing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 5.238}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 18, "command": "missing-all-tables", "fixture": "s4_async_1112_a19c_allmissing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 4.182}
+{"command":"missing-all-tables","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 19, "command": "seed", "fixture": "s4_async_1112_a19c_posemissing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 8.196}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 20, "command": "missing-pose", "fixture": "s4_async_1112_a19c_posemissing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 6.178}
+{"command":"missing-pose","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 21, "command": "seed", "fixture": "s4_async_1112_a19c_writefailure", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 33.554}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 22, "command": "sqlite-write-error", "fixture": "s4_async_1112_a19c_writefailure", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 43.431}
+{"command":"sqlite-write-error","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 23, "command": "seed", "fixture": "s4_async_1112_a19c_physicalcorrupt", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 35.082}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 24, "command": "corrupt-file", "fixture": "s4_async_1112_a19c_physicalcorrupt", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 23.871}
+{"command":"corrupt-file","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 25, "command": "seed", "fixture": "s4_async_1112_a19c_repair", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 23.512}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 26, "command": "repair", "fixture": "s4_async_1112_a19c_repair", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 28.889}
+{"command":"repair","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 27, "command": "async-snapshots", "fixture": "s4_async_1112_a19c_async", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 30.772}
+{"command":"async-snapshots","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+

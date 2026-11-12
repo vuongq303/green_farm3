@@ -43,10 +43,10 @@ public class GloftGF2F extends MIDlet {
             ci.HH();
             ci ciVar2 = acw;
             ci.EZ();
-            if (!ProgressSaveController.flushForLifecycle()) return;
             ci ciVar3 = acw;
             ci.Ms();
             ci.rE();
+            if (!ProgressSaveController.flushForLifecycle()) return;
             ci ciVar4 = acw;
             GLLib.be("GLLib.quit");
             GLLib.Qn = -1;
