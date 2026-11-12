@@ -79,9 +79,23 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
         File incoming = inputApks.get().asFile.canonicalFile
         File outgoing = outputApks.get().asFile.canonicalFile
         File workspace = workDirectory.get().asFile.canonicalFile
-        if (overlaps(incoming, outgoing) || overlaps(incoming, workspace)
-                || overlaps(outgoing, workspace)) {
-            throw new GradleException('Carrier APKs, merged APKs and merge work must have separate directories')
+        logger.lifecycle('{} carrier APK input: {}', path, incoming)
+        logger.lifecycle('{} merged APK output: {}', path, outgoing)
+        logger.lifecycle('{} merge work: {}', path, workspace)
+        String conflicts = ''
+        if (overlaps(incoming, outgoing)) {
+            conflicts += '\ncarrier APK input overlaps merged APK output'
+        }
+        if (overlaps(incoming, workspace)) {
+            conflicts += '\ncarrier APK input overlaps merge work'
+        }
+        if (overlaps(outgoing, workspace)) {
+            conflicts += '\nmerged APK output overlaps merge work'
+        }
+        if (conflicts) {
+            throw new GradleException('Carrier APKs, merged APKs and merge work must have separate directories' +
+                    "\ncarrier APK input: ${incoming}\nmerged APK output: ${outgoing}\nmerge work: ${workspace}" +
+                    conflicts)
         }
         fileSystemOperations.delete { delete outgoing, workspace }
         outgoing.mkdirs()
@@ -122,6 +136,8 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
     }
 
     private static boolean overlaps(File left, File right) {
+        // Path compares components (not string prefixes) and uses the native
+        // Windows filesystem's case rules. Call only after canonicalFile above.
         left.toPath().startsWith(right.toPath()) || right.toPath().startsWith(left.toPath())
     }
 

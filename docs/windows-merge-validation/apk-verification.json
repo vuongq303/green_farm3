@@ -1,0 +1,9 @@
+{
+  "apk": "/workspace/green_farm3/app/build/outputs/apk/debug/app-debug.apk",
+  "package": "com.gameloft.android.ANMP.GloftGF2F",
+  "application": "javax.microedition.midlet.App",
+  "launcher": "com.gameloft.android.ANMP.GloftGF2F.Start",
+  "dex_count": 1,
+  "class_count": 6397,
+  "payload_count": 59
+}

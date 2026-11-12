@@ -43,6 +43,7 @@ Server cần Node24. Backend mặc định của APK là `http://10.0.2.2:8787/`
 bền vững. Xem [backend](backend/README.md).
 
 [Kết quả hợp nhất và sửa crash khởi động](docs/APP_BUILD_AND_STARTUP.md).
+[Thư mục ghép APK và chẩn đoán lỗi build Windows](docs/WINDOWS_APK_MERGE_PATHS.md).
 M0 từng vượt Accept và mở farm tutorial; chưa xác nhận đầy đủ thao tác farm,
 save/load, đăng nhập Facebook, âm thanh hoặc Android mới. Các báo cáo recovered
 cũ được giữ làm lịch sử checkpoint, không còn là hướng dẫn build hiện tại.

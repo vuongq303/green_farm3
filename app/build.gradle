@@ -180,13 +180,14 @@ androidComponents {
     }
 
     onVariants(selector().withBuildType('debug')) { variant ->
-        def mergeApk = tasks.register('mergeOriginalSdkDebugApk', MergeOriginalSdkApk) {
+        def mergedApkDirectory = layout.buildDirectory.dir("outputs/apk/${variant.name}")
+        def mergeApk = tasks.register("mergeOriginalSdk${variant.name.capitalize()}Apk", MergeOriginalSdkApk) {
             dependsOn compileDexMergeTool, prepareDebugSigningKey
             originalApk.set(rootProject.layout.projectDirectory.file('green-farm-3.apk'))
             keystore.set(debugKeystore)
             projectDirectory.set(rootProject.layout.projectDirectory)
             sdkDirectory.set(android.sdkDirectory)
-            workDirectory.set(layout.buildDirectory.dir("intermediates/original-sdk/${variant.name}"))
+            workDirectory.set(layout.buildDirectory.dir("intermediates/original-sdk-merge/${variant.name}"))
             pythonExecutable.set(pythonCommand)
             // Use -PlocalBackendUrl=original to retain the original discovery URL.
             backendUrl.set(providers.gradleProperty('localBackendUrl').orElse('http://10.0.2.2:8787/'))
@@ -203,8 +204,15 @@ androidComponents {
         def transformation = variant.artifacts.use(mergeApk)
                 .wiredWithDirectories({ it.inputApks }, { it.outputApks })
                 .toTransformMany(SingleArtifact.APK.INSTANCE)
-        mergeApk.configure { transformationRequest.set(transformation) }
-        // AGP moves the carrier into intermediates, publishes the complete APK
-        // at outputs/apk/debug, and points assemble/install/Studio at that artifact.
+        // Register this AFTER toTransformMany: AGP configures an output location
+        // during registration. Pin our final directory after that convention,
+        // including when Studio supplies android.injected.apk.location.
+        mergeApk.configure {
+            outputApks.set(mergedApkDirectory)
+            transformationRequest.set(transformation)
+        }
+        // AGP alone wires inputApks to the preceding producer in intermediates.
+        // Its final artifact/metadata still use this task's outputApks provider,
+        // so assemble/install/Studio consume the complete APK at outputs/apk.
     }
 }
