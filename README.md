@@ -1,41 +1,51 @@
-# Green Farm 3 — phục hồi Android từ JADX
+# Green Farm 3
 
-Mục tiêu hiện tại là backend độc lập do chủ dự án quản lý. Xem
-[kiến trúc và API có bằng chứng](docs/backend/ARCHITECTURE.md) và
-[backend local](backend/README.md). Bản thử M0 dùng Node24, emulator và APK
-riêng; các client dịch vụ cũ khác chưa được di chuyển hết. Kết quả Android
-được ghi tại [checkpoint M0](docs/backend/M0_CHECKPOINT.md).
+Project hiện có một module ứng dụng Android: **`app`**. Mở thư mục project
+(`D:\green_farm3` trên Windows), Sync Gradle, chọn cấu hình **Android App `app`**,
+chọn máy ảo/điện thoại rồi bấm **Run**.
 
-Dự án đã build được **APK từ 108 lớp Java lõi**, gồm `ci`, `GLLib`, sprite,
-tile renderer và pathfinding; SDK/wrapper dùng DEX gốc làm dependency.
-M0 đã vượt Accept và hiển thị tutorial nông trại trên API28 qua backend local.
-Chưa xác nhận đầy đủ thao tác farm hoặc save/load; xem báo cáo M0.
+Pipeline chuẩn tự khôi phục resource, biên dịch 108 lớp Java lõi, ghép runtime
+DEX gốc, cập nhật metadata kích thước DEX, ký và kiểm tra APK. AGP cung cấp đúng
+APK hoàn chỉnh cho `assembleDebug`, `installDebug` và Android Studio; APK trung
+gian nằm riêng trong `intermediates`, không dùng để cài.
 
-Công cụ đã kiểm tra: JDK 21.0.9, Gradle Wrapper 8.11.1, Android Gradle Plugin
-8.10.1, Android SDK Platform 28, Build Tools 35.0.0 và Python 3.10 trở lên.
-Giữ nguyên `minSdk=16`, `targetSdk=28` để phục hồi bản cơ sở trước.
-
-Sau khi đặt `JAVA_HOME` và `ANDROID_HOME` tới JDK/SDK trên máy:
-
-```sh
-./gradlew --no-daemon :core-source:assembleRecoveredDebug
+```powershell
+.\gradlew.bat :app:assembleDebug
+.\gradlew.bat :app:installDebug
 ```
 
-APK: `core-source/build/outputs/apk/recovered/debug/app-core-source-debug.apk`.
-Task kiểm tra chữ ký, zip alignment, DEX merge và giữ nguyên 49 assets, 10 native.
-Metadata kích thước DEX được sinh lại; phép kiểm tra integrity gốc vẫn giữ nguyên.
-Khóa debug riêng nằm trong `.local/`, không commit và được giữ qua `clean`.
+APK chuẩn: `app/build/outputs/apk/debug/app-debug.apk`.
+Không cần module `core-source`, task recovered riêng, cấu hình Run recovered
+hoặc cài APK thủ công. Không sửa file trong `app/build/generated`; sửa code
+gốc ở `app/src/main/java`.
 
-Đối chứng giữ toàn bộ DEX: `./gradlew :app:assembleBaselineDebug`, APK tại
-`app/build/outputs/apk/baseline/debug/app-baseline-debug.apk`.
-`./gradlew :app:assembleDebug` vẫn dùng toàn bộ source SDK export để nghiên cứu;
-đường này còn lỗi decompile và tách riêng với dependency DEX trong bản Java lõi.
+Giữ các phiên bản bạn đã cập nhật: Gradle9.7.1 có checksum, JDK25 theo daemon
+criteria, AGP8.10.1; cần SDK Platform28, Build Tools35.0.0 và Python3.10+.
+Trên Windows mặc định dùng `python`; có thể đặt `pythonExecutable` trong Gradle
+properties nếu Python nằm ở đường dẫn khác. Script chạy UTF-8 và gọi JDK/SDK
+bằng argument array, hỗ trợ đường dẫn có khoảng trắng. Khóa debug nằm trong
+`.local/`, không commit và không bị `clean` xóa. Release chưa bật trong pipeline
+nghiên cứu này.
 
-Gradle tự sinh resource/SDK R alias trong `app/build/generated`, không sửa resource
-gốc. Không chỉnh sửa file sinh tự động; sửa Java trong `app/src/main/java`.
+Backend M0 local vẫn là dịch vụ riêng, không phải task build Android. Khi dùng
+emulator, chạy một lần ở terminal PowerShell backend:
 
-Xem [tiến độ từ APK gốc](docs/ORIGINAL_APK_RECOVERY.md),
-[môi trường cloud đã lưu](docs/ENVIRONMENT_SETUP.md),
-[báo cáo giai đoạn đầu](docs/RESTORATION.md),
-[danh sách phương thức chưa phục hồi](docs/decompilation-blockers.json) và
-[checksum dữ liệu gốc](docs/original-payload.sha256).
+```powershell
+cd backend
+$env:PUBLIC_BASE_URL = "http://10.0.2.2:8787"
+npm start
+```
+
+Server cần Node24. Backend mặc định của APK là `http://10.0.2.2:8787/`.
+Điện thoại thật cần endpoint backend mà nó truy cập được; cấu hình
+`localBackendUrl` trước khi build. M0 dùng session RAM, chưa có tài khoản/DB
+bền vững. Xem [backend](backend/README.md).
+
+[Kết quả hợp nhất và sửa crash khởi động](docs/APP_BUILD_AND_STARTUP.md).
+M0 từng vượt Accept và mở farm tutorial; chưa xác nhận đầy đủ thao tác farm,
+save/load, đăng nhập Facebook, âm thanh hoặc Android mới. Các báo cáo recovered
+cũ được giữ làm lịch sử checkpoint, không còn là hướng dẫn build hiện tại.
+
+[Kiến trúc backend](docs/backend/ARCHITECTURE.md) ·
+[Mốc M0](docs/backend/M0_CHECKPOINT.md) ·
+[Dữ liệu gốc](docs/original-payload.sha256).

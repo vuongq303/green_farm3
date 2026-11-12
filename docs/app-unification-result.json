@@ -1,0 +1,66 @@
+{
+  "checkpoint": "single-app-complete-apk-and-startup-repair",
+  "recorded_at_utc": "2026-11-12T07:00:44.700394+00:00",
+  "user_baseline_commit": "a06649022f62f4f15cc49c3ee4d095e1f2c87002",
+  "preserved_without_changes": [
+    "app/src/main (Java, manifest, resources, assets, native)",
+    "gradle/wrapper",
+    "gradle/gradle-daemon-jvm.properties"
+  ],
+  "scope_correction": "User clarified immediate startup crash, before login",
+  "toolchain": {
+    "gradle": "9.7.1",
+    "daemon_jdk": "25",
+    "agp": "8.10.1",
+    "compile_sdk": 28,
+    "build_tools": "35.0.0"
+  },
+  "modules": [
+    ":app"
+  ],
+  "normal_run_configuration": ".run/app.run.xml (Android App: app)",
+  "full_apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "sha256": "c1d503c7a9a7d29ecaa2756376d70a8eb3ff3b0b81b9fde0884f6dbedf11591a",
+    "installed_apk_sha256": "c1d503c7a9a7d29ecaa2756376d70a8eb3ff3b0b81b9fde0884f6dbedf11591a",
+    "installed_via": ":app:installDebug",
+    "application": "javax.microedition.midlet.App",
+    "package": "com.gameloft.android.ANMP.GloftGF2F",
+    "dex_files": 1,
+    "defined_classes": 6397,
+    "unchanged_assets": 49,
+    "unchanged_native_libraries": 10,
+    "preserved_public_resource_ids": 1858
+  },
+  "reproduced_failure": {
+    "apk": "incomplete core carrier from old pipeline",
+    "sha256": "447e5ae3647bcc29cbb6bdb4f16d4b7daacbeb1603f1fc75b2b19d6370b0ccf9",
+    "process_pid": 8373,
+    "exception": "Unable to instantiate application javax.microedition.midlet.App",
+    "cause": "ClassNotFoundException: real Application class absent from carrier DEX",
+    "evidence": "app-unification/startup-before.log"
+  },
+  "checks_passed": {
+    "agp_v2_tooling_models_sync_errors": 0,
+    "ide_native_setup_task": "generateDebugSources",
+    "ide_artifact_redirect_resolves_to_full_apk_metadata": true,
+    "assemble_debug": true,
+    "install_debug": true,
+    "recovery_packaging_runtime_tests": 104,
+    "resource_tests": 13,
+    "skipped_tests": 0,
+    "runtime_device": "emulator-5554, Android 9 / API28, AOSP x86",
+    "application_pid_after_standard_install": 8718,
+    "fatal_exception_after_repair": false,
+    "observed_screen": "Original opening tutorial: Looks like someone sent me a letter"
+  },
+  "not_verified": [
+    "Clicking Run in Android Studio on the user Windows machine (AGP sync/deploy artifact and standard install tested instead)",
+    "Physical Android device and newer Android versions",
+    "Facebook/account login and account failure cases",
+    "Full farming actions, audio and save/load in this checkpoint",
+    "Persistent backend accounts/database (existing local M0 remains memory-backed)"
+  ],
+  "evidence_directory": "app-unification/",
+  "full_workspace_logcat_directory": "build/reports/app-unification/"
+}

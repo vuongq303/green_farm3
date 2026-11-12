@@ -1,3 +1,7 @@
+import com.android.build.api.artifact.SingleArtifact
+import greenfarm.MergeOriginalSdkApk
+import greenfarm.PrepareDebugSigningKey
+
 plugins {
     id 'com.android.application'
 }
@@ -8,13 +12,30 @@ interface GreenFarmExecServices {
 }
 
 def greenFarmExecServices = objects.newInstance(GreenFarmExecServices)
+def windows = System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')
+def pythonCommand = providers.gradleProperty('pythonExecutable').orElse(windows ? 'python' : 'python3')
+def debugKeystore = rootProject.layout.projectDirectory.file('.local/baseline-debug.keystore')
+
+// JADX Java/resources are UTF-8 regardless of the Windows system code page.
+tasks.withType(Exec).configureEach {
+    environment 'JAVA_HOME', System.getProperty('java.home')
+    environment 'PYTHONUTF8', '1'
+    environment 'PYTHONIOENCODING', 'utf-8'
+}
+
+def prepareDebugSigningKey = tasks.register('prepareDebugSigningKey', PrepareDebugSigningKey) {
+    keystore.set(debugKeystore)
+    keytoolExecutable.set(new File(System.getProperty('java.home'),
+            windows ? 'bin/keytool.exe' : 'bin/keytool').absolutePath)
+}
 
 android {
-	namespace "com.gameloft.android.ANMP.GloftGF2F"
+    namespace 'com.gameloft.android.ANMP.GloftGF2F'
     compileSdkVersion 28
+    buildToolsVersion '35.0.0'
     useLibrary 'org.apache.http.legacy'
 
-    // Some obfuscated R holders still contain literal original APK IDs.
+    // Preserve the IDs embedded in original SDK DEX and obfuscated R holders.
     aaptOptions {
         additionalParameters '--stable-ids',
                 layout.buildDirectory.file('generated/restored-resources/stable-ids.txt').get().asFile.absolutePath
@@ -22,30 +43,35 @@ android {
 
     sourceSets {
         main {
-            jniLibs.srcDirs = ['src/main/lib']
-            // Keep the JADX export intact; compile a staged tree without its R classes.
-            java.srcDirs = [layout.buildDirectory.dir('generated/restored-java-sources')]
+            // Compile the 108 restored game classes and generated SDK R aliases.
+            // Every other runtime class, including Application, comes from original DEX.
+            java.srcDirs = [layout.buildDirectory.dir('generated/core-java')]
             res.srcDirs = [layout.buildDirectory.dir('generated/restored-res')]
+            jniLibs.srcDirs = ['src/main/lib']
         }
     }
 
     defaultConfig {
         applicationId 'com.gameloft.android.ANMP.GloftGF2F'
         minSdkVersion 16
-        //noinspection ExpiringTargetSdkVersion,ExpiredTargetSdkVersion
         targetSdkVersion 28
         versionCode 44220
-        versionName "4.4.2"
+        versionName '4.4.2'
         vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    signingConfigs {
+        debug {
+            storeFile debugKeystore.asFile
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
     }
 
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
+        debug { signingConfig signingConfigs.debug }
     }
 
     compileOptions {
@@ -53,20 +79,20 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    lintOptions {
-        abortOnError false
-    }
-
-    buildFeatures {
-        buildConfig = false
-    }
+    lintOptions { abortOnError false }
+    buildFeatures { buildConfig = false }
 }
 
-dependencies {
-    // SDK sources are bundled in this JADX export. Adding their AARs blindly
-    // would duplicate classes and may change the obfuscated API used by the game.
-    // Legacy Google SDK sources reference JSR-305 annotations at compile time.
-    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+def prepareCoreDependencies = tasks.register('prepareCoreDependencies', Exec) {
+    inputs.file(rootProject.file('green-farm-3.apk'))
+    inputs.file(rootProject.file('tools/prepare_core_dependencies.py'))
+    inputs.file(rootProject.file('tools/make_core_compile_view.py'))
+    inputs.files(rootProject.fileTree('tools') { include '*build_tools.py' })
+    inputs.file(rootProject.file('docs/ORIGINAL_BYTECODE_TOOLS.json'))
+    inputs.files(fileTree('src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480') { include '*.java' })
+    outputs.dir(layout.buildDirectory.dir('original-dependencies'))
+    commandLine pythonCommand.get(), rootProject.file('tools/prepare_core_dependencies.py'),
+            '--output-dir', layout.buildDirectory.dir('original-dependencies').get().asFile
 }
 
 def restoreResources = tasks.register('restoreResources', Exec) {
@@ -76,11 +102,14 @@ def restoreResources = tasks.register('restoreResources', Exec) {
     def frameworkAttrs = new File(android.sdkDirectory, 'platforms/android-28/data/res/values/attrs.xml')
     inputs.file(frameworkAttrs)
     outputs.dir(layout.buildDirectory.dir('generated/restored-res'))
-    commandLine 'python3', rootProject.file('tools/restore_ninepatch.py'),
+    commandLine pythonCommand.get(), rootProject.file('tools/restore_ninepatch.py'),
             file('src/main/res'), layout.buildDirectory.dir('generated/restored-res').get().asFile
     doLast {
-       greenFarmExecServices.execOps.exec {
-            commandLine 'python3', rootProject.file('tools/restore_resource_values.py'),
+        greenFarmExecServices.execOps.exec {
+            environment 'JAVA_HOME', System.getProperty('java.home')
+            environment 'PYTHONUTF8', '1'
+            environment 'PYTHONIOENCODING', 'utf-8'
+            commandLine pythonCommand.get(), rootProject.file('tools/restore_resource_values.py'),
                     layout.buildDirectory.dir('generated/restored-res').get().asFile,
                     '--framework-attrs', frameworkAttrs
         }
@@ -92,50 +121,90 @@ def restoreResourceClasses = tasks.register('restoreResourceClasses', Exec) {
     inputs.file('src/main/res/values/public.xml')
     inputs.file(rootProject.file('tools/restore_resource_classes.py'))
     outputs.dir(layout.buildDirectory.dir('generated/restored-java'))
-    commandLine 'python3', rootProject.file('tools/restore_resource_classes.py')
+    commandLine pythonCommand.get(), rootProject.file('tools/restore_resource_classes.py')
 }
 
-def prepareRestoredJavaSources = tasks.register('prepareRestoredJavaSources', Sync) {
+def prepareCoreSources = tasks.register('prepareCoreSources', Sync) {
     dependsOn restoreResourceClasses
-    from('src/main/java') { exclude '**/R.java' }
-    from(layout.buildDirectory.dir('generated/restored-java'))
-    into(layout.buildDirectory.dir('generated/restored-java-sources'))
+    from('src/main/java') {
+        include 'com/gameloft/android/ANMP/GloftGF2F/S800x480/*.java'
+        // l and its synthetic g token must retain their original implementations.
+        exclude 'com/gameloft/android/ANMP/GloftGF2F/S800x480/l.java'
+    }
+    from(layout.buildDirectory.dir('generated/restored-java')) { include '**/R.java' }
+    into(layout.buildDirectory.dir('generated/core-java'))
 }
 
 def generateStableResourceIds = tasks.register('generateStableResourceIds', Exec) {
     inputs.file('src/main/res/values/public.xml')
     inputs.file(rootProject.file('tools/generate_stable_ids.py'))
     outputs.file(layout.buildDirectory.file('generated/restored-resources/stable-ids.txt'))
-    commandLine 'python3', rootProject.file('tools/generate_stable_ids.py')
+    commandLine pythonCommand.get(), rootProject.file('tools/generate_stable_ids.py')
+}
+
+configurations { dexMergeTool }
+
+dependencies {
+    // Lookup-only classfiles are excluded from D8 and from the packaged APK.
+    compileOnly files(layout.buildDirectory.file('original-dependencies/compile-view.jar')).builtBy(prepareCoreDependencies)
+    dexMergeTool 'org.smali:dexlib2:2.5.2'
 }
 
 tasks.named('preBuild') {
-    dependsOn restoreResources, prepareRestoredJavaSources, generateStableResourceIds
+    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds
 }
 
-tasks.withType(JavaCompile).configureEach {
-    // Expose the complete decompiler error inventory instead of stopping after 100.
-    options.compilerArgs += ['-Xmaxerrs', '1000']
+// Android Studio executes this native setup task after model sync. Populate
+// its generated source/resource roots and lookup-only jar on a clean checkout.
+tasks.matching { it.name == 'generateDebugSources' }.configureEach {
+    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds
 }
 
-// An explicit binary baseline, separate from assembleDebug's Java compilation.
-// The original DEX is preserved, not recompiled or claimed as restored Java.
-tasks.register('assembleBaselineDebug', Exec) {
-    group = 'build'
-    description = 'Build a signed debug baseline preserving original game DEX/assets/native.'
-    dependsOn 'processDebugResources'
-    inputs.file(rootProject.file('green-farm-3.apk'))
-    inputs.file(rootProject.file('tools/build_binary_baseline.py'))
-    def resourceApk = layout.buildDirectory.file('intermediates/linked_resources_binary_format/debug/processDebugResources/linked-resources-binary-format-debug.ap_')
-    inputs.file(resourceApk)
-    def outputApk = layout.buildDirectory.file('outputs/apk/baseline/debug/app-baseline-debug.apk')
-    def debugKey = rootProject.file('.local/baseline-debug.keystore')
-    // Signing identity is local and persists across clean; rerun to verify it.
-    outputs.upToDateWhen { false }
-    commandLine 'python3', rootProject.file('tools/build_binary_baseline.py'),
-            '--original', rootProject.file('green-farm-3.apk'),
-            '--resources', resourceApk.get().asFile,
-            '--sdk', android.sdkDirectory,
-            '--output', outputApk.get().asFile,
-            '--keystore', debugKey
+tasks.matching { it.name == 'validateSigningDebug' }.configureEach {
+    dependsOn prepareDebugSigningKey
+}
+
+def compileDexMergeTool = tasks.register('compileDexMergeTool', JavaCompile) {
+    source rootProject.file('tools/MergeCoreDex.java')
+    source rootProject.file('tools/PatchBackendEndpoint.java')
+    classpath = configurations.dexMergeTool
+    destinationDirectory = layout.buildDirectory.dir('dex-merge-tool')
+    sourceCompatibility = '8'
+    targetCompatibility = '8'
+}
+
+androidComponents {
+    // A release pipeline needs its own reviewed signing configuration.
+    beforeVariants(selector().withBuildType('release')) { variantBuilder ->
+        variantBuilder.enable = false
+    }
+
+    onVariants(selector().withBuildType('debug')) { variant ->
+        def mergeApk = tasks.register('mergeOriginalSdkDebugApk', MergeOriginalSdkApk) {
+            dependsOn compileDexMergeTool, prepareDebugSigningKey
+            originalApk.set(rootProject.layout.projectDirectory.file('green-farm-3.apk'))
+            keystore.set(debugKeystore)
+            projectDirectory.set(rootProject.layout.projectDirectory)
+            sdkDirectory.set(android.sdkDirectory)
+            workDirectory.set(layout.buildDirectory.dir("intermediates/original-sdk/${variant.name}"))
+            pythonExecutable.set(pythonCommand)
+            // Use -PlocalBackendUrl=original to retain the original discovery URL.
+            backendUrl.set(providers.gradleProperty('localBackendUrl').orElse('http://10.0.2.2:8787/'))
+            mergeToolClasspath.from(configurations.dexMergeTool,
+                    compileDexMergeTool.flatMap { it.destinationDirectory })
+            packagingSources.from(rootProject.files('tools/build_core_source.py',
+                    'tools/build_binary_baseline.py', 'tools/build_local_backend.py',
+                    'tools/UpdateBuildRevision.java', 'tools/verify_runtime_apk.py'))
+            packagingSources.from(rootProject.fileTree('tools') { include '*build_tools.py' })
+            buildToolsFiles.from(new File(android.sdkDirectory, "build-tools/35.0.0/${windows ? 'zipalign.exe' : 'zipalign'}"),
+                    new File(android.sdkDirectory, "build-tools/35.0.0/${windows ? 'aapt2.exe' : 'aapt2'}"),
+                    new File(android.sdkDirectory, 'build-tools/35.0.0/lib/apksigner.jar'))
+        }
+        def transformation = variant.artifacts.use(mergeApk)
+                .wiredWithDirectories({ it.inputApks }, { it.outputApks })
+                .toTransformMany(SingleArtifact.APK.INSTANCE)
+        mergeApk.configure { transformationRequest.set(transformation) }
+        // AGP moves the carrier into intermediates, publishes the complete APK
+        // at outputs/apk/debug, and points assemble/install/Studio at that artifact.
+    }
 }

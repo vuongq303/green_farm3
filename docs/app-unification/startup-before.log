@@ -1,0 +1,880 @@
+--------- beginning of main
+11-12 06:12:02.762  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e5b301b)
+11-12 06:12:02.773  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e5b301b)
+11-12 06:12:03.112  1802  1815 W system_server: Long monitor contention with owner Binder:1802_D (3825) at long android.content.res.ApkAssets.nativeOpenXml(long, java.lang.String)(ApkAssets.java:-2) waiters=0 in android.content.pm.PackageInstaller$SessionInfo com.android.server.pm.PackageInstallerSession.generateInfo(boolean) for 789ms
+11-12 06:12:03.748  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8e7a564)
+11-12 06:12:03.809  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8e7a564)
+11-12 06:12:03.834  1802  1815 W system_server: Long monitor contention with owner Binder:1802_D (3825) at void com.android.server.pm.PackageInstallerService$InternalCallback.onSessionSealedBlocking(com.android.server.pm.PackageInstallerSession)(PackageInstallerService.java:1136) waiters=0 in android.content.pm.PackageInstaller$SessionInfo com.android.server.pm.PackageInstallerService.getSessionInfo(int) for 669ms
+--------- beginning of system
+11-12 06:12:03.901  1802  1830 I ActivityManager: Force stopping com.gameloft.android.ANMP.GloftGF2F appid=10068 user=-1: installPackageLI
+11-12 06:12:04.067  1802  1844 I PackageManager: Update package com.gameloft.android.ANMP.GloftGF2F code path from /data/app/com.gameloft.android.ANMP.GloftGF2F-azPJftNj79FVZTWJD4XnpA== to /data/app/com.gameloft.android.ANMP.GloftGF2F-r0pH1iy4_pvEn86vWvpwdg==; Retain data and using new
+11-12 06:12:04.068  1802  1844 I PackageManager: Update package com.gameloft.android.ANMP.GloftGF2F resource path from /data/app/com.gameloft.android.ANMP.GloftGF2F-azPJftNj79FVZTWJD4XnpA== to /data/app/com.gameloft.android.ANMP.GloftGF2F-r0pH1iy4_pvEn86vWvpwdg==; Retain data and using new
+11-12 06:12:04.236  1802  1844 D PackageManager: Instant App installer not found with android.intent.action.INSTALL_INSTANT_APP_PACKAGE
+11-12 06:12:04.236  1802  1844 D PackageManager: Clear ephemeral installer activity
+11-12 06:12:04.559  1802  1844 I system_server: Explicit concurrent copying GC freed 41005(1964KB) AllocSpace objects, 14(664KB) LOS objects, 38% free, 9MB/15MB, paused 196us total 314.607ms
+11-12 06:12:04.588  1670  1896 E         : Couldn't opendir /data/app/vmdl103783507.tmp: No such file or directory
+11-12 06:12:04.590  1670  1896 E installd: Failed to delete /data/app/vmdl103783507.tmp: No such file or directory
+11-12 06:12:04.632  1802  1844 I ActivityManager: Force stopping com.gameloft.android.ANMP.GloftGF2F appid=10068 user=0: pkg removed
+11-12 06:12:04.754  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ce88a3d)
+11-12 06:12:04.857  1802  1889 I InputReader: Reconfiguring input devices.  changes=0x00000010
+11-12 06:12:04.938  1802  1831 W Looper  : Slow dispatch took 147ms android.ui h=com.android.server.am.ActivityManagerService$UiHandler c=null m=53
+11-12 06:12:04.952  1802  1830 W system_server: Long monitor contention with owner PackageManager (1844) at int com.android.server.am.ActivityManagerService.broadcastIntent(android.app.IApplicationThread, android.content.Intent, java.lang.String, android.content.IIntentReceiver, int, java.lang.String, android.os.Bundle, java.lang.String[], int, android.os.Bundle, boolean, boolean, int)(ActivityManagerService.java:21938) waiters=3 in void com.android.server.am.BroadcastQueue.processNextBroadcast(boolean) for 130ms
+11-12 06:12:04.954  1802  1844 W system_server: Long monitor contention with owner Binder:1802_1 (1815) at android.content.ComponentName com.android.server.am.ActivityManagerService.startService(android.app.IApplicationThread, android.content.Intent, java.lang.String, boolean, java.lang.String, int)(ActivityManagerService.java:20360) waiters=3 in int com.android.server.am.ActivityManagerService.broadcastIntent(android.app.IApplicationThread, android.content.Intent, java.lang.String, android.content.IIntentReceiver, int, java.lang.String, android.os.Bundle, java.lang.String[], int, android.os.Bundle, boolean, boolean, int) for 116ms
+11-12 06:12:04.969  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ce88a3d)
+11-12 06:12:05.086  1802  1802 W Looper  : Slow dispatch took 281ms main h=android.app.ActivityThread$H c=android.app.-$$Lambda$LoadedApk$ReceiverDispatcher$Args$_BumDX2UKsnxLVrE6UJsJZkotuA@751af7e m=0
+11-12 06:12:05.087  1802  1802 W Looper  : Slow delivery took 358ms main h=android.app.ActivityThread$H c=android.app.-$$Lambda$LoadedApk$ReceiverDispatcher$Args$_BumDX2UKsnxLVrE6UJsJZkotuA@ab44cdf m=0
+11-12 06:12:05.093  1802  1904 W system_server: Long monitor contention with owner main (1802) at android.content.ComponentName com.android.server.am.ActivityManagerService.startService(android.app.IApplicationThread, android.content.Intent, java.lang.String, boolean, java.lang.String, int)(ActivityManagerService.java:20360) waiters=2 in void com.android.server.am.ActivityManagerService$LocalService.notifyNetworkPolicyRulesUpdated(int, long) for 151ms
+11-12 06:12:05.146  1802  1889 I InputReader: Reconfiguring input devices.  changes=0x00000010
+11-12 06:12:05.276  1802  1831 W system_server: Long monitor contention with owner main (1802) at android.content.ComponentName com.android.server.am.ActivityManagerService.startService(android.app.IApplicationThread, android.content.Intent, java.lang.String, boolean, java.lang.String, int)(ActivityManagerService.java:20360) waiters=3 in void com.android.server.am.ActivityManagerService.dispatchUidsChanged() for 319ms
+11-12 06:12:05.278  2476  2499 I droid.launcher: Background concurrent copying GC freed 8487(447KB) AllocSpace objects, 1(16KB) LOS objects, 50% free, 2MB/4MB, paused 260us total 583.635ms
+11-12 06:12:05.292  1802  2078 W system_server: Long monitor contention with owner main (1802) at android.content.ComponentName com.android.server.am.ActivityManagerService.startService(android.app.IApplicationThread, android.content.Intent, java.lang.String, boolean, java.lang.String, int)(ActivityManagerService.java:20360) waiters=4 in void com.android.server.am.ActivityManagerService.finishReceiver(android.os.IBinder, int, java.lang.String, android.os.Bundle, boolean, int) for 331ms
+11-12 06:12:05.328  1802  2078 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_REMOVED dat=package:com.gameloft.android.ANMP.GloftGF2F flg=0x4000010 (has extras) } to com.android.musicfx/.Compatibility$Receiver
+11-12 06:12:05.335  1802  1802 W system_server: Long monitor contention with owner PackageManager (1844) at int com.android.server.am.ActivityManagerService.broadcastIntent(android.app.IApplicationThread, android.content.Intent, java.lang.String, android.content.IIntentReceiver, int, java.lang.String, android.os.Bundle, java.lang.String[], int, android.os.Bundle, boolean, boolean, int)(ActivityManagerService.java:21938) waiters=3 in int com.android.server.am.ActivityManagerService.getMemoryTrimLevel() for 120ms
+11-12 06:12:05.336  1802  1802 W Looper  : Slow dispatch took 121ms main h=com.android.server.job.JobSchedulerService$JobHandler c=null m=4
+11-12 06:12:05.364  1802  1889 I InputReader: Reconfiguring input devices.  changes=0x00000010
+11-12 06:12:05.381  1802  1831 W Looper  : Slow dispatch took 424ms android.ui h=com.android.server.am.ActivityManagerService$UiHandler c=null m=53
+11-12 06:12:05.436  1802  2078 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.gameloft.android.ANMP.GloftGF2F flg=0x4000010 (has extras) } to com.android.musicfx/.Compatibility$Receiver
+11-12 06:12:05.437  1802  1830 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_REPLACED dat=package:com.gameloft.android.ANMP.GloftGF2F flg=0x4000010 (has extras) } to com.android.musicfx/.Compatibility$Receiver
+11-12 06:12:05.581  1802  1802 I Telecom : DefaultDialerCache: Refreshing default dialer for user 0: now com.android.dialer: DDC.oR@AMA
+11-12 06:12:05.625  1802  1802 V BackupManagerConstants: getFullBackupIntervalMilliseconds(...) returns 86400000
+11-12 06:12:05.679  2070  2070 D CarrierSvcBindHelper: No carrier app for: 0
+11-12 06:12:05.705  2070  2070 D CarrierSvcBindHelper: No carrier app for: 0
+11-12 06:12:05.748  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8f57cad)
+11-12 06:12:05.798  1802  1831 D AutofillUI: destroySaveUiUiThread(): already destroyed
+11-12 06:12:05.798  1802  1828 D AutofillManagerServiceImpl: Reset component for user 0 ()
+11-12 06:12:05.799  1802  1828 D FieldClassificationStrategy: reset(): service is not bound. Do nothing.
+11-12 06:12:05.801  1802  1828 W VoiceInteractionManagerService: no available voice recognition services found for user 0
+11-12 06:12:05.807  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8f57cad)
+11-12 06:12:05.832  1802  1802 W Looper  : Slow dispatch took 135ms main h=com.android.server.notification.NotificationManagerService$WorkerHandler c=null m=3
+11-12 06:12:05.865  2070  2070 D CarrierConfigLoader: mHandler: 9 phoneId: 0
+11-12 06:12:06.248  1802  5757 I ActivityManager: START u0 {flg=0x10000000 cmp=com.gameloft.android.ANMP.GloftGF2F/.Start} from uid 0
+11-12 06:12:06.358  1802  1802 W Looper  : Drained
+11-12 06:12:06.488  1559  1609 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 1540096
+11-12 06:12:06.648  1559  1609 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 1540096
+11-12 06:12:06.764  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@61beb1d)
+11-12 06:12:06.766  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@61beb1d)
+11-12 06:12:06.784  1802  1832 W ActivityManager: Slow operation: 279ms so far, now at startProcess: returned from zygote!
+11-12 06:12:06.785  1802  1832 W ActivityManager: Slow operation: 279ms so far, now at startProcess: done updating battery stats
+11-12 06:12:06.785  1802  1832 W ActivityManager: Slow operation: 280ms so far, now at startProcess: building log message
+11-12 06:12:06.785  1802  1832 I ActivityManager: Start proc 8373:com.gameloft.android.ANMP.GloftGF2F/u0a68 for activity com.gameloft.android.ANMP.GloftGF2F/.Start
+11-12 06:12:06.786  1802  1832 W ActivityManager: Slow operation: 280ms so far, now at startProcess: starting to update pids map
+11-12 06:12:06.786  1802  1832 W ActivityManager: Slow operation: 280ms so far, now at startProcess: done updating pids map
+11-12 06:12:06.795  8373  8373 I .ANMP.GloftGF2: Late-enabling -Xcheck:jni
+11-12 06:12:06.903  8373  8373 W .ANMP.GloftGF2: Unexpected CPU variant for X86 using defaults: x86
+11-12 06:12:07.104  1802  1815 W ActivityManager: Slow operation: 115ms so far, now at attachApplicationLocked: after mServices.attachApplicationLocked
+11-12 06:12:07.142  2476  2532 D EGL_emulation: eglMakeCurrent: 0xdce05660: ver 3 0 (tinfo 0xdce037d0)
+11-12 06:12:07.231  1981  2229 D EGL_emulation: eglMakeCurrent: 0xdce05360: ver 3 0 (tinfo 0xdce03580)
+11-12 06:12:07.278  1802  1839 W system_server: Long monitor contention with owner android.anim (1867) at void com.android.server.wm.WindowSurfacePlacer.lambda$new$0(com.android.server.wm.WindowSurfacePlacer)(WindowSurfacePlacer.java:117) waiters=0 in void com.android.server.wm.WindowManagerService$H.handleMessage(android.os.Message) for 172ms
+11-12 06:12:07.325  1981  2229 D EGL_emulation: eglMakeCurrent: 0xdce05360: ver 3 0 (tinfo 0xdce03580)
+11-12 06:12:07.616  8373  8373 I .ANMP.GloftGF2: The ClassLoaderContext is a special shared library.
+11-12 06:12:07.744  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@419a6bf)
+11-12 06:12:07.747  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@419a6bf)
+11-12 06:12:07.830  8373  8373 D AndroidRuntime: Shutting down VM
+--------- beginning of crash
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: FATAL EXCEPTION: main
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: Process: com.gameloft.android.ANMP.GloftGF2F, PID: 8373
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: java.lang.RuntimeException: Unable to instantiate application javax.microedition.midlet.App: java.lang.ClassNotFoundException: Didn't find class "javax.microedition.midlet.App" on path: DexPathList[[zip file "/system/framework/org.apache.http.legacy.boot.jar", zip file "/data/app/com.gameloft.android.ANMP.GloftGF2F-r0pH1iy4_pvEn86vWvpwdg==/base.apk"],nativeLibraryDirectories=[/data/app/com.gameloft.android.ANMP.GloftGF2F-r0pH1iy4_pvEn86vWvpwdg==/lib/x86, /data/app/com.gameloft.android.ANMP.GloftGF2F-r0pH1iy4_pvEn86vWvpwdg==/base.apk!/lib/x86, /system/lib]]
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at android.app.LoadedApk.makeApplication(LoadedApk.java:1069)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at android.app.ActivityThread.handleBindApplication(ActivityThread.java:5842)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at android.app.ActivityThread.access$1100(ActivityThread.java:199)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1650)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:106)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:193)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:6669)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:493)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:858)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: Caused by: java.lang.ClassNotFoundException: Didn't find class "javax.microedition.midlet.App" on path: DexPathList[[zip file "/system/framework/org.apache.http.legacy.boot.jar", zip file "/data/app/com.gameloft.android.ANMP.GloftGF2F-r0pH1iy4_pvEn86vWvpwdg==/base.apk"],nativeLibraryDirectories=[/data/app/com.gameloft.android.ANMP.GloftGF2F-r0pH1iy4_pvEn86vWvpwdg==/lib/x86, /data/app/com.gameloft.android.ANMP.GloftGF2F-r0pH1iy4_pvEn86vWvpwdg==/base.apk!/lib/x86, /system/lib]]
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:134)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at java.lang.ClassLoader.loadClass(ClassLoader.java:379)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at java.lang.ClassLoader.loadClass(ClassLoader.java:312)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at android.app.AppComponentFactory.instantiateApplication(AppComponentFactory.java:50)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at android.app.Instrumentation.newApplication(Instrumentation.java:1120)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	at android.app.LoadedApk.makeApplication(LoadedApk.java:1061)
+11-12 06:12:07.844  8373  8373 E AndroidRuntime: 	... 9 more
+11-12 06:12:07.902  1802  1815 W ActivityManager:   Force finishing activity com.gameloft.android.ANMP.GloftGF2F/.Start
+11-12 06:12:07.966  8373  8373 I Process : Sending signal. PID: 8373 SIG: 9
+11-12 06:12:08.015  2476  2503 E droid.launcher: No package ID ff found for ID 0xffffffff.
+11-12 06:12:08.018  2476  2503 E IconLoader: Could not find icon drawable from resource
+11-12 06:12:08.018  2476  2503 E IconLoader: android.content.res.Resources$NotFoundException: Resource ID #0xffffffff
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at android.content.res.ResourcesImpl.getValueForDensity(ResourcesImpl.java:225)
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at android.content.res.Resources.getDrawableForDensity(Resources.java:887)
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at android.content.res.Resources.getDrawable(Resources.java:827)
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at com.android.systemui.shared.recents.model.IconLoader.createNewIconForTask(IconLoader.java:118)
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at com.android.systemui.shared.recents.model.IconLoader.getAndInvalidateIfModified(IconLoader.java:94)
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at com.android.systemui.shared.recents.model.RecentsTaskLoader.getAndUpdateActivityIcon(RecentsTaskLoader.java:325)
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at com.android.systemui.shared.recents.model.RecentsTaskLoadPlan.executePlan(RecentsTaskLoadPlan.java:188)
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at com.android.systemui.shared.recents.model.RecentsTaskLoader.loadTasks(RecentsTaskLoader.java:173)
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at com.android.quickstep.RecentsModel.onTaskStackChangedBackground(RecentsModel.java:214)
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at com.android.systemui.shared.system.TaskStackChangeListeners.onTaskStackChanged(TaskStackChangeListeners.java:80)
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at android.app.ITaskStackListener$Stub.onTransact(ITaskStackListener.java:50)
+11-12 06:12:08.018  2476  2503 E IconLoader: 	at android.os.Binder.execTransact(Binder.java:731)
+11-12 06:12:08.026  1802  3825 I ActivityManager: Process com.gameloft.android.ANMP.GloftGF2F (pid 8373) has died: fore TOP
+11-12 06:12:08.034  1666  1666 I Zygote  : Process 8373 exited due to signal (9)
+11-12 06:12:08.071  1802  3825 D         : HostConnection::get() New Host Connection established 0xc84de040, tid 3825
+11-12 06:12:08.137  1802  1833 W libprocessgroup: kill(-8373, 9) failed: No such process
+11-12 06:12:08.137  1802  1833 W libprocessgroup: kill(8373, 9) failed: No such process
+11-12 06:12:08.142  1802  1867 W WindowManager: Failed looking up window callers=com.android.server.wm.WindowManagerService.windowForClientLocked:5513 com.android.server.wm.WindowManagerService.removeWindow:1642 com.android.server.wm.Session.remove:226
+11-12 06:12:08.146  1548  1640 E audio_hw_generic: pcm_write failed cannot write stream data: I/O error
+11-12 06:12:08.149  1665  1711 W SurfaceFlinger: Attempting to destroy on removed layer: AppWindowToken{306f42e token=Token{99a36a9 ActivityRecord{49d5a30 u0 com.gameloft.android.ANMP.GloftGF2F/.Start t19}}}#0
+11-12 06:12:08.172  1802  2426 V BackupManagerConstants: getFullBackupRequiredNetworkType(...) returns 2
+11-12 06:12:08.183  1802  2426 V BackupManagerConstants: getFullBackupRequireCharging(...) returns true
+11-12 06:12:08.193  1802  1833 W libprocessgroup: kill(-8373, 9) failed: No such process
+11-12 06:12:08.193  1802  1833 I libprocessgroup: Successfully killed process cgroup uid 10068 pid 8373 in 163ms
+11-12 06:12:08.416  1802  1830 W system_server: Long monitor contention with owner Binder:1802_D (3825) at void com.android.server.am.ActivityManagerService$AppDeathRecipient.binderDied()(ActivityManagerService.java:1884) waiters=1 in void com.android.server.am.ActivityStack$ActivityStackHandler.handleMessage(android.os.Message) for 390ms
+11-12 06:12:08.418  1802  1839 W system_server: Long monitor contention with owner Binder:1802_D (3825) at void com.android.server.am.ActivityManagerService$AppDeathRecipient.binderDied()(ActivityManagerService.java:1884) waiters=4 in void com.android.server.am.ActivityManagerService$LocalService.notifyAppTransitionFinished() for 303ms
+11-12 06:12:08.445  1802  4117 W ActivityManager: getTaskSnapshot: taskId=19 not found
+11-12 06:12:08.454  1802  1831 W Looper  : Slow dispatch took 422ms android.ui h=com.android.server.am.ActivityManagerService$UiHandler c=null m=53
+11-12 06:12:08.454  1802  1831 W Looper  : Slow delivery took 208ms android.ui h=com.android.server.am.ActivityManagerService$UiHandler c=null m=30
+11-12 06:12:08.480  1802  1815 W system_server: Long monitor contention with owner Binder:1802_D (3825) at void com.android.server.am.ActivityManagerService$AppDeathRecipient.binderDied()(ActivityManagerService.java:1884) waiters=3 in android.app.ActivityManager$StackInfo com.android.server.am.ActivityManagerService.getStackInfo(int, int) for 384ms
+11-12 06:12:08.486  1802  1831 W Looper  : Drained
+11-12 06:12:08.488  1802  2426 W system_server: Long monitor contention with owner Binder:1802_D (3825) at void com.android.server.am.ActivityManagerService$AppDeathRecipient.binderDied()(ActivityManagerService.java:1884) waiters=6 in boolean com.android.server.am.ActivityManagerService.isAppStartModeDisabled(int, java.lang.String) for 267ms
+11-12 06:12:08.517  1559  1609 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 1540096
+11-12 06:12:08.565  1559  1609 I chatty  : uid=1000(system) HwBinder:1559_1 identical 1 line
+11-12 06:12:08.580  1559  1609 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 1540096
+11-12 06:12:08.586  1981  2229 D EGL_emulation: eglMakeCurrent: 0xdce05360: ver 3 0 (tinfo 0xdce03580)
+11-12 06:12:08.722  2476  2532 D EGL_emulation: eglMakeCurrent: 0xdce05660: ver 3 0 (tinfo 0xdce037d0)
+11-12 06:12:08.749  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bb2d58d)
+11-12 06:12:08.750  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bb2d58d)
+11-12 06:12:09.745  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d9301a8)
+11-12 06:12:09.748  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d9301a8)
+11-12 06:12:10.443  1802  1940 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+11-12 06:12:10.745  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@20914c1)
+11-12 06:12:10.747  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@20914c1)
+11-12 06:12:11.746  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@76d466)
+11-12 06:12:11.748  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@76d466)
+11-12 06:12:12.746  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@433b3a7)
+11-12 06:12:12.749  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@433b3a7)
+11-12 06:12:13.746  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4ea9054)
+11-12 06:12:13.749  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4ea9054)
+11-12 06:12:13.897  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.898  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.905  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.905  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.906  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.906  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.907  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.907  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.908  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.908  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.915  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.916  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.925  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.926  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.930  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.930  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.944  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.944  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.953  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.953  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.966  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.966  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.973  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.973  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.977  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.977  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:13.988  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:13.988  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.024  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.027  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.033  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.036  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.056  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.057  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.067  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.067  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.074  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.074  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.084  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.084  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.095  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.095  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.103  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.103  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.109  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.109  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.117  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.118  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.125  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.125  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.134  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.134  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.144  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.144  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.150  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.152  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.157  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.157  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.177  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.177  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.180  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.180  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.186  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.186  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.190  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.190  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.193  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.193  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.196  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.196  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.199  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.199  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.200  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.200  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.219  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.219  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.271  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.271  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.288  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.289  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.306  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.306  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.313  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.313  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.320  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.320  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.328  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.328  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.337  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.337  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.357  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.357  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.369  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.370  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.391  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.391  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.408  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.408  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.424  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.424  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.430  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.430  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.440  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.440  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.467  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.467  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.478  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.478  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.499  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.499  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.505  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.505  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.507  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.507  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.513  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.513  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.526  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.526  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.529  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.529  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.532  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.532  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.536  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.536  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.541  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.541  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.546  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.546  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.549  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.549  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.554  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.554  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.558  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.559  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.619  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.619  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.623  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.623  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.626  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.626  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.637  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.638  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.707  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.707  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.752  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4d13bfd)
+11-12 06:12:14.778  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.778  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.836  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.836  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.895  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.895  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:14.954  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:14.954  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.010  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:15.010  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.073  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:15.073  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.129  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:15.129  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.190  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:15.190  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.248  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:15.248  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.305  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:15.305  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.363  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:15.363  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.421  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:15.421  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.476  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:15.476  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.549  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:15.549  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.622  1802  1828 E memtrack: Couldn't load memtrack module
+11-12 06:12:15.622  1802  1828 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:15.731  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4d13bfd)
+11-12 06:12:15.747  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bd0f2)
+11-12 06:12:15.749  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bd0f2)
+11-12 06:12:16.749  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bdde343)
+11-12 06:12:16.754  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bdde343)
+11-12 06:12:17.754  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@18a5dc0)
+11-12 06:12:17.758  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@18a5dc0)
+11-12 06:12:18.718  1677  8346 W SocketClient: write error (Broken pipe)
+11-12 06:12:18.749  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2fa9af9)
+11-12 06:12:18.752  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2fa9af9)
+11-12 06:12:19.750  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5820a3e)
+11-12 06:12:19.753  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5820a3e)
+11-12 06:12:20.750  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@171709f)
+11-12 06:12:20.754  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@171709f)
+11-12 06:12:21.753  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8908c4a)
+11-12 06:12:21.755  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8908c4a)
+11-12 06:12:22.750  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b8677bb)
+11-12 06:12:22.753  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b8677bb)
+11-12 06:12:23.752  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@65e24d8)
+11-12 06:12:23.754  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@65e24d8)
+11-12 06:12:24.753  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c5fb031)
+11-12 06:12:24.756  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c5fb031)
+11-12 06:12:24.895  1802  2163 D WificondControl: Scan result ready event
+11-12 06:12:25.756  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3532316)
+11-12 06:12:25.763  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3532316)
+11-12 06:12:26.753  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@81ad497)
+11-12 06:12:26.757  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@81ad497)
+11-12 06:12:27.754  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3fcb684)
+11-12 06:12:27.757  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3fcb684)
+11-12 06:12:28.753  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4e1e6d)
+11-12 06:12:28.755  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4e1e6d)
+11-12 06:12:29.757  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3d65aa2)
+11-12 06:12:29.760  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3d65aa2)
+11-12 06:12:30.754  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d2e2333)
+11-12 06:12:30.757  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d2e2333)
+11-12 06:12:31.754  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7d0b6f0)
+11-12 06:12:31.758  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7d0b6f0)
+11-12 06:12:32.755  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@93b3469)
+11-12 06:12:32.757  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@93b3469)
+11-12 06:12:33.763  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a637eee)
+11-12 06:12:33.768  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a637eee)
+11-12 06:12:34.757  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@71dbf8f)
+11-12 06:12:34.758  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@71dbf8f)
+11-12 06:12:35.758  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fa2521c)
+11-12 06:12:35.760  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fa2521c)
+11-12 06:12:36.758  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ac9ae25)
+11-12 06:12:36.762  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ac9ae25)
+11-12 06:12:37.759  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8c9bfa)
+11-12 06:12:37.762  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8c9bfa)
+11-12 06:12:38.328  1802  2163 E memtrack: Couldn't load memtrack module
+11-12 06:12:38.328  1802  2163 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:12:38.759  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c0c5ab)
+11-12 06:12:38.764  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c0c5ab)
+11-12 06:12:39.758  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b907408)
+11-12 06:12:39.762  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b907408)
+11-12 06:12:40.764  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@60c07a1)
+11-12 06:12:40.767  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@60c07a1)
+11-12 06:12:41.762  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4f87dc6)
+11-12 06:12:41.767  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4f87dc6)
+11-12 06:12:42.763  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1441187)
+11-12 06:12:42.765  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1441187)
+11-12 06:12:43.764  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cbcc8b4)
+11-12 06:12:43.766  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cbcc8b4)
+11-12 06:12:44.766  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c07cdd)
+11-12 06:12:44.774  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c07cdd)
+11-12 06:12:45.763  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7eeb052)
+11-12 06:12:45.766  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7eeb052)
+11-12 06:12:46.763  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bc63f23)
+11-12 06:12:46.764  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bc63f23)
+11-12 06:12:47.763  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2b7bc20)
+11-12 06:12:47.766  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2b7bc20)
+11-12 06:12:48.763  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@44d09d9)
+11-12 06:12:48.767  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@44d09d9)
+11-12 06:12:49.763  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4a37f9e)
+11-12 06:12:49.767  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4a37f9e)
+11-12 06:12:50.765  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cb3aa7f)
+11-12 06:12:50.768  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cb3aa7f)
+11-12 06:12:51.765  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3ac7a4c)
+11-12 06:12:51.768  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3ac7a4c)
+11-12 06:12:52.766  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7b6a95)
+11-12 06:12:52.769  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7b6a95)
+11-12 06:12:53.765  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@343f7aa)
+11-12 06:12:53.768  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@343f7aa)
+11-12 06:12:54.765  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e26f9b)
+11-12 06:12:54.766  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e26f9b)
+11-12 06:12:55.765  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b4cef38)
+11-12 06:12:55.768  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b4cef38)
+11-12 06:12:56.503  1679  1792 E storaged: getDiskStats failed with result NOT_SUPPORTED and size 0
+11-12 06:12:56.766  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@df51b11)
+11-12 06:12:56.768  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@df51b11)
+11-12 06:12:57.766  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fc1e476)
+11-12 06:12:57.768  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fc1e476)
+11-12 06:12:58.766  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@26e6a77)
+11-12 06:12:58.769  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@26e6a77)
+11-12 06:12:59.766  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c7dc6e4)
+11-12 06:12:59.768  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c7dc6e4)
+11-12 06:13:00.051  1981  2229 D EGL_emulation: eglMakeCurrent: 0xdce05360: ver 3 0 (tinfo 0xdce03580)
+11-12 06:13:00.050  1691  1695 D hwcomposer: hw_composer sent 36 syncs in 81s
+11-12 06:13:00.767  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@15fd202)
+11-12 06:13:00.769  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@15fd202)
+11-12 06:13:01.768  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7553713)
+11-12 06:13:01.772  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7553713)
+11-12 06:13:02.767  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1c26d50)
+11-12 06:13:02.769  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1c26d50)
+11-12 06:13:03.767  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8f71b49)
+11-12 06:13:03.769  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8f71b49)
+11-12 06:13:04.772  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@efd0c4e)
+11-12 06:13:04.776  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@efd0c4e)
+11-12 06:13:05.769  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@dd2316f)
+11-12 06:13:05.772  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@dd2316f)
+11-12 06:13:06.769  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8690e7c)
+11-12 06:13:06.773  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8690e7c)
+11-12 06:13:07.768  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@70d2305)
+11-12 06:13:07.770  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@70d2305)
+11-12 06:13:08.769  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c219f5a)
+11-12 06:13:08.773  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c219f5a)
+11-12 06:13:09.769  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@27a758b)
+11-12 06:13:09.772  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@27a758b)
+11-12 06:13:10.770  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2769668)
+11-12 06:13:10.773  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2769668)
+11-12 06:13:11.770  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ac1ea81)
+11-12 06:13:11.773  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ac1ea81)
+11-12 06:13:12.771  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@aca5726)
+11-12 06:13:12.774  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@aca5726)
+11-12 06:13:13.771  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c18df67)
+11-12 06:13:13.774  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c18df67)
+11-12 06:13:14.773  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b52b114)
+11-12 06:13:14.777  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b52b114)
+11-12 06:13:15.772  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@da1adbd)
+11-12 06:13:15.775  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@da1adbd)
+11-12 06:13:16.775  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@df4bfb2)
+11-12 06:13:16.777  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@df4bfb2)
+11-12 06:13:17.773  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@94a0b03)
+11-12 06:13:17.777  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@94a0b03)
+11-12 06:13:18.773  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b33ca80)
+11-12 06:13:18.775  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b33ca80)
+11-12 06:13:19.773  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bc068b9)
+11-12 06:13:19.776  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bc068b9)
+11-12 06:13:20.773  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8eb24fe)
+11-12 06:13:20.775  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8eb24fe)
+11-12 06:13:21.776  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@54b0eac)
+11-12 06:13:21.777  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@54b0eac)
+11-12 06:13:22.774  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@475d775)
+11-12 06:13:22.777  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@475d775)
+11-12 06:13:23.774  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@750930a)
+11-12 06:13:23.778  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@750930a)
+11-12 06:13:24.775  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@dd7d77b)
+11-12 06:13:24.778  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@dd7d77b)
+11-12 06:13:25.774  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cb06998)
+11-12 06:13:25.779  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cb06998)
+11-12 06:13:26.774  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ad975f1)
+11-12 06:13:26.777  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ad975f1)
+11-12 06:13:27.776  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9ecd5d6)
+11-12 06:13:27.779  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9ecd5d6)
+11-12 06:13:28.775  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c827057)
+11-12 06:13:28.778  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c827057)
+11-12 06:13:29.775  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c0e8744)
+11-12 06:13:29.776  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c0e8744)
+11-12 06:13:30.777  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1fe802d)
+11-12 06:13:30.780  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1fe802d)
+11-12 06:13:31.776  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4387962)
+11-12 06:13:31.780  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4387962)
+11-12 06:13:32.777  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4d3baf3)
+11-12 06:13:32.782  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4d3baf3)
+11-12 06:13:33.777  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c0ed3b0)
+11-12 06:13:33.781  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c0ed3b0)
+11-12 06:13:34.777  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@eff229)
+11-12 06:13:34.779  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@eff229)
+11-12 06:13:35.777  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6a8c9ae)
+11-12 06:13:35.780  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6a8c9ae)
+11-12 06:13:36.778  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@de5134f)
+11-12 06:13:36.782  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@de5134f)
+11-12 06:13:37.777  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4857adc)
+11-12 06:13:37.779  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4857adc)
+11-12 06:13:38.482  1802  1815 E memtrack: Couldn't load memtrack module
+11-12 06:13:38.482  1802  1815 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:13:38.784  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a6c87e5)
+11-12 06:13:38.789  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a6c87e5)
+11-12 06:13:39.778  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1bbd2ba)
+11-12 06:13:39.782  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1bbd2ba)
+11-12 06:13:40.784  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d09956b)
+11-12 06:13:40.789  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d09956b)
+11-12 06:13:41.779  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@45d68c8)
+11-12 06:13:41.783  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@45d68c8)
+11-12 06:13:42.809  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@462bd61)
+11-12 06:13:42.813  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@462bd61)
+11-12 06:13:43.784  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@dc46086)
+11-12 06:13:43.786  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@dc46086)
+11-12 06:13:44.784  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@faa1d47)
+11-12 06:13:44.786  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@faa1d47)
+11-12 06:13:45.788  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c444974)
+11-12 06:13:45.793  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c444974)
+11-12 06:13:46.784  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b2cce9d)
+11-12 06:13:46.786  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b2cce9d)
+11-12 06:13:47.788  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@375ff12)
+11-12 06:13:47.792  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@375ff12)
+11-12 06:13:48.787  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6e146e3)
+11-12 06:13:48.790  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6e146e3)
+11-12 06:13:49.785  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@81688e0)
+11-12 06:13:49.788  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@81688e0)
+11-12 06:13:50.785  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c8cb799)
+11-12 06:13:50.787  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c8cb799)
+11-12 06:13:51.788  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@130fa5e)
+11-12 06:13:51.792  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@130fa5e)
+11-12 06:13:52.786  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d76e3f)
+11-12 06:13:52.788  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d76e3f)
+11-12 06:13:53.787  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@30b530c)
+11-12 06:13:53.789  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@30b530c)
+11-12 06:13:54.796  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6683455)
+11-12 06:13:54.802  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6683455)
+11-12 06:13:55.790  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@90e5e6a)
+11-12 06:13:55.799  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@90e5e6a)
+11-12 06:13:56.506  1679  1792 E storaged: getDiskStats failed with result NOT_SUPPORTED and size 0
+11-12 06:13:56.794  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bdeaf5b)
+11-12 06:13:56.796  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bdeaf5b)
+11-12 06:13:57.792  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2a093f8)
+11-12 06:13:57.796  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2a093f8)
+11-12 06:13:58.790  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@544c0d1)
+11-12 06:13:58.796  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@544c0d1)
+11-12 06:13:59.794  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3abf736)
+11-12 06:13:59.809  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f4ee637)
+11-12 06:13:59.810  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3abf736)
+11-12 06:13:59.820  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f4ee637)
+11-12 06:14:00.080  1691  1695 D hwcomposer: hw_composer sent 6 syncs in 60s
+11-12 06:14:00.184  1802  1828 I UsageStatsService: User[0] Flushing usage stats to disk
+11-12 06:14:00.799  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e83990d)
+11-12 06:14:00.833  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e83990d)
+11-12 06:14:01.801  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3b850c2)
+11-12 06:14:01.803  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3b850c2)
+11-12 06:14:01.807  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@621aed3)
+11-12 06:14:01.809  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@621aed3)
+11-12 06:14:02.806  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9cdea10)
+11-12 06:14:02.812  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9cdea10)
+11-12 06:14:03.809  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@25db909)
+11-12 06:14:03.817  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@25db909)
+11-12 06:14:04.808  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@63eb70e)
+11-12 06:14:04.814  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@63eb70e)
+11-12 06:14:05.809  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@74e652f)
+11-12 06:14:05.818  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@74e652f)
+11-12 06:14:06.809  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8f973c)
+11-12 06:14:06.812  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8f973c)
+11-12 06:14:07.807  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@19fdcc5)
+11-12 06:14:07.814  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@19fdcc5)
+11-12 06:14:08.811  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bb3361a)
+11-12 06:14:08.819  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bb3361a)
+11-12 06:14:09.820  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7e6254b)
+11-12 06:14:09.824  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7e6254b)
+11-12 06:14:10.815  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f5ceb28)
+11-12 06:14:10.828  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f5ceb28)
+11-12 06:14:11.819  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3268041)
+11-12 06:14:11.828  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3268041)
+11-12 06:14:12.817  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5be99e6)
+11-12 06:14:12.821  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5be99e6)
+11-12 06:14:13.812  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2efcb27)
+11-12 06:14:13.823  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2efcb27)
+11-12 06:14:14.812  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@72991d4)
+11-12 06:14:14.814  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@72991d4)
+11-12 06:14:15.815  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@519df7d)
+11-12 06:14:15.819  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@519df7d)
+11-12 06:14:16.814  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5ca6e72)
+11-12 06:14:16.817  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5ca6e72)
+11-12 06:14:17.816  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@303f2c3)
+11-12 06:14:17.819  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@303f2c3)
+11-12 06:14:18.817  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@277f740)
+11-12 06:14:18.820  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@277f740)
+11-12 06:14:19.817  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5e9f679)
+11-12 06:14:19.819  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5e9f679)
+11-12 06:14:20.817  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@84cffbe)
+11-12 06:14:20.820  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@84cffbe)
+11-12 06:14:21.817  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9a8f81f)
+11-12 06:14:21.822  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9a8f81f)
+11-12 06:14:22.818  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f85476c)
+11-12 06:14:22.823  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f85476c)
+11-12 06:14:23.819  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@10a8135)
+11-12 06:14:23.823  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@10a8135)
+11-12 06:14:24.824  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8d559ca)
+11-12 06:14:24.830  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8d559ca)
+11-12 06:14:25.821  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6ef73b)
+11-12 06:14:25.825  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6ef73b)
+11-12 06:14:26.822  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1356e58)
+11-12 06:14:26.826  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1356e58)
+11-12 06:14:27.822  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b6efbb1)
+11-12 06:14:27.825  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b6efbb1)
+11-12 06:14:28.860  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ad74896)
+11-12 06:14:28.866  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ad74896)
+11-12 06:14:29.822  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fcbcc17)
+11-12 06:14:29.824  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fcbcc17)
+11-12 06:14:30.823  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2bf1804)
+11-12 06:14:30.825  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2bf1804)
+11-12 06:14:31.825  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bc6a1ed)
+11-12 06:14:31.826  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@bc6a1ed)
+11-12 06:14:32.824  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3375822)
+11-12 06:14:32.826  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3375822)
+11-12 06:14:33.824  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7b712b3)
+11-12 06:14:33.827  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7b712b3)
+11-12 06:14:34.825  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a17b070)
+11-12 06:14:34.827  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a17b070)
+11-12 06:14:35.826  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@51f639c)
+11-12 06:14:35.829  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@51f639c)
+11-12 06:14:36.825  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@55f21a5)
+11-12 06:14:36.828  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@55f21a5)
+11-12 06:14:37.829  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5fc97a)
+11-12 06:14:37.833  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5fc97a)
+11-12 06:14:38.682  1802  2163 E memtrack: Couldn't load memtrack module
+11-12 06:14:38.683  1802  2163 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:14:38.826  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@688252b)
+11-12 06:14:38.829  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@688252b)
+11-12 06:14:39.830  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d8d1d88)
+11-12 06:14:39.835  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d8d1d88)
+11-12 06:14:40.827  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3453321)
+11-12 06:14:40.829  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3453321)
+11-12 06:14:41.832  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6910346)
+11-12 06:14:41.838  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6910346)
+11-12 06:14:42.828  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8e1e907)
+11-12 06:14:42.833  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8e1e907)
+11-12 06:14:43.830  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f9a8a34)
+11-12 06:14:43.832  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f9a8a34)
+11-12 06:14:44.828  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@320e05d)
+11-12 06:14:44.831  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@320e05d)
+11-12 06:14:45.836  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e4a0dd2)
+11-12 06:14:45.839  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e4a0dd2)
+11-12 06:14:46.830  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@82a0ea3)
+11-12 06:14:46.836  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@82a0ea3)
+11-12 06:14:47.835  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f7015a0)
+11-12 06:14:47.839  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f7015a0)
+11-12 06:14:48.832  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3102559)
+11-12 06:14:48.835  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3102559)
+11-12 06:14:49.832  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@517351e)
+11-12 06:14:49.835  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@517351e)
+11-12 06:14:50.832  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@44f1ff)
+11-12 06:14:50.835  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@44f1ff)
+11-12 06:14:51.832  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@950ebcc)
+11-12 06:14:51.836  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@950ebcc)
+11-12 06:14:52.833  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b14be15)
+11-12 06:14:52.834  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b14be15)
+11-12 06:14:53.836  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2fd852a)
+11-12 06:14:53.838  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2fd852a)
+11-12 06:14:54.834  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d00af1b)
+11-12 06:14:54.836  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d00af1b)
+11-12 06:14:55.835  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@886f8b8)
+11-12 06:14:55.839  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@886f8b8)
+11-12 06:14:56.508  1679  1792 E storaged: getDiskStats failed with result NOT_SUPPORTED and size 0
+11-12 06:14:56.841  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7902691)
+11-12 06:14:56.844  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7902691)
+11-12 06:14:57.840  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@946c9f6)
+11-12 06:14:57.844  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@946c9f6)
+11-12 06:14:58.839  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ef121f7)
+11-12 06:14:58.842  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ef121f7)
+11-12 06:14:59.839  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@10ee864)
+11-12 06:14:59.865  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@10ee864)
+11-12 06:15:00.025  1691  1695 D hwcomposer: hw_composer sent 12 syncs in 60s
+11-12 06:15:00.841  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@20d8f82)
+11-12 06:15:00.845  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@20d8f82)
+11-12 06:15:01.839  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@27816c9)
+11-12 06:15:01.842  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@27816c9)
+11-12 06:15:02.843  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c8921ce)
+11-12 06:15:02.848  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c8921ce)
+11-12 06:15:03.840  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@20458ef)
+11-12 06:15:03.843  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@20458ef)
+11-12 06:15:04.844  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6ccdffc)
+11-12 06:15:04.847  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6ccdffc)
+11-12 06:15:04.929  1802  2163 D WificondControl: Scan result ready event
+11-12 06:15:05.841  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a625685)
+11-12 06:15:05.843  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a625685)
+11-12 06:15:06.842  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2198cda)
+11-12 06:15:06.845  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2198cda)
+11-12 06:15:07.842  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@867950b)
+11-12 06:15:07.843  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@867950b)
+11-12 06:15:08.858  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@505ffe8)
+11-12 06:15:08.862  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@505ffe8)
+11-12 06:15:09.842  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cf6d601)
+11-12 06:15:09.846  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cf6d601)
+11-12 06:15:10.873  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@139ca6)
+11-12 06:15:10.877  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@139ca6)
+11-12 06:15:11.847  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7876e7)
+11-12 06:15:11.850  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7876e7)
+11-12 06:15:12.847  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@52f3294)
+11-12 06:15:12.850  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@52f3294)
+11-12 06:15:13.859  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8f9d13d)
+11-12 06:15:13.870  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8f9d13d)
+11-12 06:15:14.852  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@24cdd32)
+11-12 06:15:14.853  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@24cdd32)
+11-12 06:15:15.853  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ccb9a83)
+11-12 06:15:15.856  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ccb9a83)
+11-12 06:15:16.855  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@16e400)
+11-12 06:15:16.864  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@16e400)
+11-12 06:15:17.855  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b374439)
+11-12 06:15:17.858  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b374439)
+11-12 06:15:18.862  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a679a7e)
+11-12 06:15:18.864  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a679a7e)
+11-12 06:15:19.860  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@aa35bdf)
+11-12 06:15:19.867  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@aa35bdf)
+11-12 06:15:20.858  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b06402c)
+11-12 06:15:20.860  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b06402c)
+11-12 06:15:21.860  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@73eeaf5)
+11-12 06:15:21.863  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@73eeaf5)
+11-12 06:15:22.862  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fdee08a)
+11-12 06:15:22.868  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fdee08a)
+11-12 06:15:23.864  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f0bd6fb)
+11-12 06:15:23.868  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f0bd6fb)
+11-12 06:15:24.864  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4ad3318)
+11-12 06:15:24.869  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4ad3318)
+11-12 06:15:25.863  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fe04171)
+11-12 06:15:25.865  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fe04171)
+11-12 06:15:26.863  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4d27b56)
+11-12 06:15:26.866  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4d27b56)
+11-12 06:15:27.866  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9b6e7d7)
+11-12 06:15:27.874  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9b6e7d7)
+11-12 06:15:28.868  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4ce68c4)
+11-12 06:15:28.874  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4ce68c4)
+11-12 06:15:29.868  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b6683ad)
+11-12 06:15:29.877  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b6683ad)
+11-12 06:15:30.868  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b92f6e2)
+11-12 06:15:30.871  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b92f6e2)
+11-12 06:15:31.872  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9982a73)
+11-12 06:15:31.875  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9982a73)
+11-12 06:15:32.873  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@aab4d30)
+11-12 06:15:32.878  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@aab4d30)
+11-12 06:15:33.874  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f94ada9)
+11-12 06:15:33.879  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f94ada9)
+11-12 06:15:34.873  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8ed9f2e)
+11-12 06:15:34.877  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8ed9f2e)
+11-12 06:15:35.877  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f40facf)
+11-12 06:15:35.884  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f40facf)
+11-12 06:15:36.871  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6300c5c)
+11-12 06:15:36.878  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6300c5c)
+11-12 06:15:37.871  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1617b65)
+11-12 06:15:37.877  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1617b65)
+11-12 06:15:38.882  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f38803a)
+11-12 06:15:38.886  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f38803a)
+11-12 06:15:38.909  1802  1815 E memtrack: Couldn't load memtrack module
+11-12 06:15:38.909  1802  1815 W android.os.Debug: failed to get memory consumption info: -1
+11-12 06:15:39.872  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8fc74eb)
+11-12 06:15:39.874  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8fc74eb)
+11-12 06:15:40.883  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7df9248)
+11-12 06:15:40.887  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7df9248)
+11-12 06:15:41.872  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@47368e1)
+11-12 06:15:41.875  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@47368e1)
+11-12 06:15:42.873  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e1e6606)
+11-12 06:15:42.877  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e1e6606)
+11-12 06:15:43.875  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4ab74c7)
+11-12 06:15:43.879  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@4ab74c7)
+11-12 06:15:44.872  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@37f8af4)
+11-12 06:15:44.875  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@37f8af4)
+11-12 06:15:45.873  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@65cb21d)
+11-12 06:15:45.875  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@65cb21d)
+11-12 06:15:46.873  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@32adc92)
+11-12 06:15:46.875  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@32adc92)
+11-12 06:15:47.879  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3609663)
+11-12 06:15:47.883  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3609663)
+11-12 06:15:48.875  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1846260)
+11-12 06:15:48.879  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1846260)
+11-12 06:15:49.873  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1975319)
+11-12 06:15:49.876  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@1975319)
+11-12 06:15:50.875  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7162fde)
+11-12 06:15:50.877  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7162fde)
+11-12 06:15:51.878  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@abc35bf)
+11-12 06:15:51.883  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@abc35bf)
+11-12 06:15:52.877  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b3d448c)
+11-12 06:15:52.880  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@b3d448c)
+11-12 06:15:53.877  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@44107d5)
+11-12 06:15:53.881  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@44107d5)
+11-12 06:15:54.875  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3d16bea)
+11-12 06:15:54.877  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3d16bea)
+11-12 06:15:55.876  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@86edb)
+11-12 06:15:55.879  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@86edb)
+11-12 06:15:56.510  1679  1792 E storaged: getDiskStats failed with result NOT_SUPPORTED and size 0
+11-12 06:15:56.877  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@dc01d78)
+11-12 06:15:56.879  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@dc01d78)
+11-12 06:15:57.883  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6974c51)
+11-12 06:15:57.886  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@6974c51)
+11-12 06:15:58.878  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f525cb6)
+11-12 06:15:58.882  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f525cb6)
+11-12 06:15:59.878  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9151db7)
+11-12 06:15:59.880  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9151db7)
+11-12 06:16:00.050  1691  1695 D hwcomposer: hw_composer sent 6 syncs in 60s
+11-12 06:16:00.878  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d335c8d)
+11-12 06:16:00.883  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@d335c8d)
+11-12 06:16:01.908  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ed3de53)
+11-12 06:16:01.909  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@ed3de53)
+11-12 06:16:02.879  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5252390)
+11-12 06:16:02.881  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5252390)
+11-12 06:16:03.879  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3063489)
+11-12 06:16:03.881  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@3063489)
+11-12 06:16:04.879  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@89c4c8e)
+11-12 06:16:04.881  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@89c4c8e)
+11-12 06:16:05.880  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@db40caf)
+11-12 06:16:05.882  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@db40caf)
+11-12 06:16:06.886  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fe0e8bc)
+11-12 06:16:06.898  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fe0e8bc)
+11-12 06:16:07.887  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7149045)
+11-12 06:16:07.899  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7149045)
+11-12 06:16:08.888  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@214a39a)
+11-12 06:16:08.893  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@214a39a)
+11-12 06:16:09.883  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fbec4cb)
+11-12 06:16:09.885  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@fbec4cb)
+11-12 06:16:10.890  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@431d4a8)
+11-12 06:16:10.894  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@431d4a8)
+11-12 06:16:11.884  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9f2ebc1)
+11-12 06:16:11.887  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9f2ebc1)
+11-12 06:16:12.886  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8895f66)
+11-12 06:16:12.889  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@8895f66)
+11-12 06:16:13.886  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c72e2a7)
+11-12 06:16:13.890  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c72e2a7)
+11-12 06:16:14.884  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2239354)
+11-12 06:16:14.894  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@2239354)
+11-12 06:16:15.885  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@70182fd)
+11-12 06:16:15.887  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@70182fd)
+11-12 06:16:16.886  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e3c0bf2)
+11-12 06:16:16.889  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e3c0bf2)
+11-12 06:16:17.886  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a610243)
+11-12 06:16:17.888  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a610243)
+11-12 06:16:18.886  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cd090c0)
+11-12 06:16:18.889  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cd090c0)
+11-12 06:16:19.886  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@56851f9)
+11-12 06:16:19.888  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@56851f9)
+11-12 06:16:20.887  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5faf53e)
+11-12 06:16:20.890  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@5faf53e)
+11-12 06:16:21.886  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e877f9f)
+11-12 06:16:21.889  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e877f9f)
+11-12 06:16:22.886  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c8df8ec)
+11-12 06:16:22.889  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c8df8ec)
+11-12 06:16:23.889  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cd314b5)
+11-12 06:16:23.892  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@cd314b5)
+11-12 06:16:24.887  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f2d274a)
+11-12 06:16:24.888  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@f2d274a)
+11-12 06:16:25.887  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@56e76bb)
+11-12 06:16:25.890  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@56e76bb)
+11-12 06:16:26.887  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7d7b7d8)
+11-12 06:16:26.890  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@7d7b7d8)
+11-12 06:16:27.888  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9ed4731)
+11-12 06:16:27.890  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9ed4731)
+11-12 06:16:28.887  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@69e6e16)
+11-12 06:16:28.889  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@69e6e16)
+11-12 06:16:29.889  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@203c397)
+11-12 06:16:29.892  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@203c397)
+11-12 06:16:30.888  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@efc7984)
+11-12 06:16:30.892  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@efc7984)
+11-12 06:16:31.888  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e9e256d)
+11-12 06:16:31.890  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e9e256d)
+11-12 06:16:32.889  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@80b55a2)
+11-12 06:16:32.892  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@80b55a2)
+11-12 06:16:33.889  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e370233)
+11-12 06:16:33.894  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@e370233)
+11-12 06:16:34.888  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@689a9f0)
+11-12 06:16:34.891  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@689a9f0)
+11-12 06:16:35.889  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a04ab69)
+11-12 06:16:35.892  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@a04ab69)
+11-12 06:16:36.889  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c6d29ee)
+11-12 06:16:36.892  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c6d29ee)
+11-12 06:16:37.889  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9558e8f)
+11-12 06:16:37.892  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@9558e8f)
+11-12 06:16:38.890  1802  2925 I GnssLocationProvider: WakeLock acquired by sendMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c77751c)
+11-12 06:16:38.894  1802  1828 I GnssLocationProvider: WakeLock released by handleMessage(REPORT_SV_STATUS, 0, com.android.server.location.GnssLocationProvider$SvStatusInfo@c77751c)
+11-12 06:16:39.365  1802  2163 E memtrack: Couldn't load memtrack module
+11-12 06:16:39.366  1802  2163 W android.os.Debug: failed to get memory consumption info: -1

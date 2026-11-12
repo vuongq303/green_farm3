@@ -10,6 +10,7 @@ from pathlib import Path
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 import zipfile
@@ -18,8 +19,11 @@ from test_aa_tile_renderer import extract_method
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+from asm_tools import asm_jar
+from android_build_tools import executable_name
+
 PACKAGE = "com/gameloft/android/ANMP/GloftGF2F/S800x480"
-EXPORT = "--add-exports=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED"
 
 SHELL = r'''
 package com.gameloft.android.ANMP.GloftGF2F.S800x480;
@@ -53,7 +57,7 @@ public class ci {
 
 COPIER = r'''
 import java.nio.file.*;
-import jdk.internal.org.objectweb.asm.*;
+import org.objectweb.asm.*;
 public class OriginalStartupFixture {
  public static void main(String[] args)throws Exception {
   ClassWriter output=new ClassWriter(0);
@@ -124,9 +128,10 @@ class CIStartupContinuationTest(unittest.TestCase):
     def test_crm_success_caught_exception_and_error_continuation(self):
         home = Path(os.environ.get("JAVA_HOME", "/workspace/tooling/jdk-21.0.9+10"))
         original = Path(os.environ.get("GREENFARM_ORIGINAL_JAR", "/workspace/tooling/recovery-bytecode/greenfarm-original.jar"))
-        java, javac = home / "bin/java", home / "bin/javac"
+        java, javac = (home / 'bin' / executable_name(name) for name in ('java', 'javac'))
         if not original.is_file() or not java.is_file() or not javac.is_file():
             self.skipTest("Requires verified original conversion and JDK")
+        asm = asm_jar()
         source = (ROOT / "app/src/main/java" / PACKAGE / "ci.java").read_text()
         method = extract_method(source, "static void fM(int i)")
         start = method.index("            case 38:")
@@ -156,9 +161,10 @@ class CIStartupContinuationTest(unittest.TestCase):
             copier.write_text(COPIER)
             runner = root / "StartupContinuationComparison.java"
             runner.write_text(RUNNER)
-            result = subprocess.run([str(javac), EXPORT, str(copier), str(runner)], capture_output=True, text=True)
+            result = subprocess.run([str(javac), '-cp', str(asm), str(copier), str(runner)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            result = subprocess.run([str(java), EXPORT, "-cp", str(root), "OriginalStartupFixture",
+            classpath = os.pathsep.join((str(root), str(asm)))
+            result = subprocess.run([str(java), "-cp", classpath, "OriginalStartupFixture",
                                      str(baseline / PACKAGE / "ci.class"), str(original_class)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             result = subprocess.run([str(java), "-cp", str(root), "StartupContinuationComparison",

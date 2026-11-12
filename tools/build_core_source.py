@@ -7,7 +7,6 @@ Java. Assets/native remain original. Do not label it an all-Java SDK rebuild.
 
 import argparse
 import json
-import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -15,6 +14,7 @@ import tempfile
 import zipfile
 
 from build_binary_baseline import EXPECTED_APK_SHA256, DEX, SIGNATURE, is_resource, sha256
+from android_build_tools import ensure_debug_keystore, jdk_tool, signing_tools
 
 
 def assemble(original, compiled, merged_dex, output):
@@ -92,11 +92,7 @@ def regenerate_build_revision(original, unsigned, directory):
     directory = Path(directory)
     old, new = directory / 'original-content.bin', directory / 'generated-content.bin'
     old.write_bytes(original_metadata)
-    java = Path(os.environ.get('JAVA_HOME', '')) / 'bin/java'
-    if not java.is_file():
-        java = shutil.which('java')
-    if not java:
-        raise ValueError('A JDK with source-file launch support is required for build metadata')
+    java = jdk_tool('java')
     tool = Path(__file__).resolve().with_name('UpdateBuildRevision.java')
     subprocess.run([str(java), str(tool), str(old), str(new),
                     str(original_size), str(compiled_size)], check=True)
@@ -138,9 +134,6 @@ def main():
            or (output.exists() and source.exists() and output.samefile(source)) for source in inputs):
         raise ValueError('Output must not overwrite any input, signing key or merger report')
     output.parent.mkdir(parents=True, exist_ok=True)
-    tools = args.sdk / 'build-tools/35.0.0'
-    if not args.keystore.is_file():
-        raise ValueError('Run :app:assembleBaselineDebug to create the local debug key first')
     with tempfile.TemporaryDirectory(prefix='core-source-', dir=output.parent) as directory:
         temp = Path(directory)
         unsigned, aligned, signed = (temp / name for name in ('unsigned.apk', 'aligned.apk', 'signed.apk'))
@@ -148,12 +141,14 @@ def main():
         # Reject corrupted payloads before invoking zipalign or the signing key.
         verify_assets_native(args.original, unsigned)
         revision_report = regenerate_build_revision(args.original, unsigned, temp)
-        subprocess.run([str(tools / 'zipalign'), '-f', '-P', '16', '4', str(unsigned), str(aligned)], check=True)
-        subprocess.run([str(tools / ('apksigner.bat' if os.name == 'nt' else 'apksigner')), 'sign', '--ks', str(args.keystore),
+        tools = signing_tools(args.sdk)
+        keystore = ensure_debug_keystore(args.keystore)
+        subprocess.run([str(tools.zipalign), '-f', '-P', '16', '4', str(unsigned), str(aligned)], check=True)
+        subprocess.run([*tools.apksigner, 'sign', '--ks', str(keystore),
                         '--ks-key-alias', 'androiddebugkey', '--ks-pass', 'pass:android',
                         '--key-pass', 'pass:android', '--out', str(signed), str(aligned)], check=True)
-        subprocess.run([str(tools / ('apksigner.bat' if os.name == 'nt' else 'apksigner')), 'verify', '--verbose', str(signed)], check=True)
-        subprocess.run([str(tools / 'zipalign'), '-c', '-P', '16', '4', str(signed)], check=True)
+        subprocess.run([*tools.apksigner, 'verify', '--verbose', str(signed)], check=True)
+        subprocess.run([str(tools.zipalign), '-c', '-P', '16', '4', str(signed)], check=True)
         payload = verify_assets_native(args.original, signed)
         with zipfile.ZipFile(signed) as z:
             if z.read('classes.dex') != args.merged_dex.read_bytes():

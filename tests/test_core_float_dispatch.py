@@ -11,16 +11,20 @@ from collections import Counter
 from pathlib import Path
 import os
 import subprocess
+import sys
 import tempfile
 import unittest
 import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+from asm_tools import asm_jar
+from android_build_tools import executable_name
+
 PACKAGE = "com/gameloft/android/ANMP/GloftGF2F/S800x480"
 AJ = "L" + PACKAGE + "/aj;"
 AY = "L" + PACKAGE + "/ay;"
-EXPORT = "--add-exports=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED"
 SPRITE_FLOAT = "(" + AJ + "IFFI)V"
 SPRITE_INT = "(" + AJ + "IIII)V"
 SPRITE_FLOAT_EXTRA = "(" + AJ + "IFFII)V"
@@ -57,7 +61,7 @@ CASES = [
 CLASSES = {case[0] for case in CASES}
 
 SCANNER = r'''
-import java.nio.file.*;import java.util.*;import jdk.internal.org.objectweb.asm.*;
+import java.nio.file.*;import java.util.*;import org.objectweb.asm.*;
 public class CoreFloatDispatchScanner {
  public static void main(String[] args)throws Exception {
   Map<String,Set<String>> selected=new HashMap<>();
@@ -86,25 +90,26 @@ class CoreFloatDispatchTest(unittest.TestCase):
     def test_proven_float_calls_never_select_the_conflicting_integer_overload(self):
         home = Path(os.environ.get("JAVA_HOME", "/workspace/tooling/jdk-21.0.9+10"))
         original = Path(os.environ.get("GREENFARM_ORIGINAL_JAR", "/workspace/tooling/recovery-bytecode/greenfarm-original.jar"))
-        java, javac = home / "bin/java", home / "bin/javac"
-        classes = ROOT / "core-source/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes"
+        java, javac = (home / 'bin' / executable_name(name) for name in ('java', 'javac'))
+        classes = ROOT / "app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes"
         if not original.is_file() or not java.is_file() or not javac.is_file():
             self.skipTest("Requires verified original conversion and JDK")
+        asm = asm_jar()
         for name in sorted(CLASSES):
             source = ROOT / "app/src/main/java" / PACKAGE / (name + ".java")
-            staged = ROOT / "core-source/build/generated/core-java" / PACKAGE / (name + ".java")
+            staged = ROOT / "app/build/generated/core-java" / PACKAGE / (name + ".java")
             compiled = classes / PACKAGE / (name + ".class")
             if not compiled.is_file():
-                self.skipTest("Requires compiled core-source " + name)
+                self.skipTest("Requires compiled app core " + name)
             self.assertEqual(source.read_bytes(), staged.read_bytes(),
-                             "Compile core-source after changing " + name)
+                             "Compile app after changing " + name)
             self.assertGreaterEqual(compiled.stat().st_mtime_ns, staged.stat().st_mtime_ns,
                                     "Compiled " + name + " predates the staged source")
         with tempfile.TemporaryDirectory(prefix="core-float-dispatch-") as temp:
             root = Path(temp)
             scanner = root / "CoreFloatDispatchScanner.java"
             scanner.write_text(SCANNER)
-            result = subprocess.run([str(javac), EXPORT, str(scanner)], capture_output=True, text=True)
+            result = subprocess.run([str(javac), '-cp', str(asm), str(scanner)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             manifest = root / "methods.tsv"
             manifest.write_text("".join(name + "\t" + method + "\n"
@@ -116,7 +121,8 @@ class CoreFloatDispatchTest(unittest.TestCase):
                     (baseline / (name + ".class")).write_bytes(archive.read(PACKAGE + "/" + name + ".class"))
 
             def invocations(directory):
-                result = subprocess.run([str(java), EXPORT, "-cp", str(root), "CoreFloatDispatchScanner",
+                classpath = os.pathsep.join((str(root), str(asm)))
+                result = subprocess.run([str(java), "-cp", classpath, "CoreFloatDispatchScanner",
                                          str(manifest), str(directory)], capture_output=True, text=True, timeout=30)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 methods = {}

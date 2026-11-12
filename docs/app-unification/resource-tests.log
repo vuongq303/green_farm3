@@ -1,0 +1,18 @@
+test_all_png_row_filters_decode_the_same_pixels (test_restore_ninepatch.NinePatchRecoveryTest.test_all_png_row_filters_decode_the_same_pixels) ... ok
+test_corrupt_crc_is_rejected (test_restore_ninepatch.NinePatchRecoveryTest.test_corrupt_crc_is_rejected) ... ok
+test_disjoint_stretch_runs_and_content_padding_are_encoded (test_restore_ninepatch.NinePatchRecoveryTest.test_disjoint_stretch_runs_and_content_padding_are_encoded) ... ok
+test_interior_alpha_and_pixels_survive_reconstruction (test_restore_ninepatch.NinePatchRecoveryTest.test_interior_alpha_and_pixels_survive_reconstruction) ... ok
+test_invalid_stretch_coordinates_fail_closed (test_restore_ninepatch.NinePatchRecoveryTest.test_invalid_stretch_coordinates_fail_closed) ... ok
+test_unsupported_optical_layout_bounds_fail_closed (test_restore_ninepatch.NinePatchRecoveryTest.test_unsupported_optical_layout_bounds_fail_closed) ... ok
+test_conversion_is_idempotent_and_preserves_whitespace (test_restore_resource_values.RestoreResourceValuesTest.test_conversion_is_idempotent_and_preserves_whitespace) ... ok
+test_invalid_or_duplicate_public_ids_are_rejected (test_restore_resource_values.RestoreResourceValuesTest.test_invalid_or_duplicate_public_ids_are_rejected) ... ok
+test_proven_enum_flag_and_dimension_values (test_restore_resource_values.RestoreResourceValuesTest.test_proven_enum_flag_and_dimension_values) ... ok
+test_public_ids_define_missing_tag_id_without_inventing_values (test_restore_resource_values.RestoreResourceValuesTest.test_public_ids_define_missing_tag_id_without_inventing_values) ... ok
+test_resources_references_comments_and_non_style_items_stay_unchanged (test_restore_resource_values.RestoreResourceValuesTest.test_resources_references_comments_and_non_style_items_stay_unchanged) ... ok
+test_unknown_enum_is_rejected (test_restore_resource_values.RestoreResourceValuesTest.test_unknown_enum_is_rejected) ... ok
+test_unknown_flag_combination_is_rejected (test_restore_resource_values.RestoreResourceValuesTest.test_unknown_flag_combination_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.002s
+
+OK

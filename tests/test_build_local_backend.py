@@ -29,7 +29,7 @@ class LocalBackendPackagingTest(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         self.directory = Path(temporary.name)
         self.original = self.directory / "original.apk"
-        self.base = self.directory / "core-source.apk"
+        self.base = self.directory / "base.apk"
         self.dex = self.directory / "endpoint.dex"
         self.output = self.directory / "prepared.apk"
         self.base_report_path = self.base.with_suffix(".provenance.json")

@@ -9,6 +9,7 @@ from pathlib import Path
 import os
 import re
 import subprocess
+import sys
 import tempfile
 import unittest
 import zipfile
@@ -17,9 +18,12 @@ from test_aa_tile_renderer import extract_method
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+from asm_tools import asm_jar
+from android_build_tools import executable_name
+
 PACKAGE = "com/gameloft/android/ANMP/GloftGF2F/S800x480"
 OWNER = PACKAGE + "/GLLib"
-EXPORT = "--add-exports=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED"
 NORMAL = "(L" + PACKAGE + "/aj;L" + PACKAGE + "/ay;IIIIIFFI)V"
 UV = "(L" + PACKAGE + "/aj;L" + PACKAGE + "/ay;IIIIIFFFFFFFF)V"
 TEXTURE = "(IIFFFF)V"
@@ -30,7 +34,7 @@ SIGNATURES = (
 )
 
 SCANNER = r'''
-import java.nio.file.*;import jdk.internal.org.objectweb.asm.*;
+import java.nio.file.*;import org.objectweb.asm.*;
 public class TextureDispatchScanner {
  public static void main(String[] args)throws Exception {
   final String owner="com/gameloft/android/ANMP/GloftGF2F/S800x480/GLLib";
@@ -76,25 +80,27 @@ class GLLibTextureDispatchTest(unittest.TestCase):
     def test_compiled_draw_paths_keep_original_float_texture_overload(self):
         home = Path(os.environ.get("JAVA_HOME", "/workspace/tooling/jdk-21.0.9+10"))
         original = Path(os.environ.get("GREENFARM_ORIGINAL_JAR", "/workspace/tooling/recovery-bytecode/greenfarm-original.jar"))
-        java, javac = home / "bin/java", home / "bin/javac"
-        classes = ROOT / "core-source/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes"
+        java, javac = (home / 'bin' / executable_name(name) for name in ('java', 'javac'))
+        classes = ROOT / "app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes"
         restored = classes / (OWNER + ".class")
         source = ROOT / "app/src/main/java" / (OWNER + ".java")
-        staged = ROOT / "core-source/build/generated/core-java" / (OWNER + ".java")
+        staged = ROOT / "app/build/generated/core-java" / (OWNER + ".java")
         if not original.is_file() or not restored.is_file() or not java.is_file() or not javac.is_file():
-            self.skipTest("Requires verified original conversion, compiled core-source GLLib and JDK")
-        self.assertEqual(source.read_bytes(), staged.read_bytes(), "Compile core-source after changing GLLib")
+            self.skipTest("Requires verified original conversion, compiled app core GLLib and JDK")
+        asm = asm_jar()
+        self.assertEqual(source.read_bytes(), staged.read_bytes(), "Compile app after changing GLLib")
         self.assertGreaterEqual(restored.stat().st_mtime_ns, staged.stat().st_mtime_ns,
                                 "Compiled GLLib predates the staged source")
         with tempfile.TemporaryDirectory(prefix="gllib-texture-dispatch-") as temp:
             root = Path(temp)
             scanner = root / "TextureDispatchScanner.java"
             scanner.write_text(SCANNER)
-            result = subprocess.run([str(javac), EXPORT, str(scanner)], capture_output=True, text=True)
+            result = subprocess.run([str(javac), '-cp', str(asm), str(scanner)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
             def dispatch(path):
-                result = subprocess.run([str(java), EXPORT, "-cp", str(root), "TextureDispatchScanner", str(path)],
+                classpath = os.pathsep.join((str(root), str(asm)))
+                result = subprocess.run([str(java), "-cp", classpath, "TextureDispatchScanner", str(path)],
                                         capture_output=True, text=True, timeout=30)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 methods = {}
