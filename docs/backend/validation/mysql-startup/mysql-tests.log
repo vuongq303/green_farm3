@@ -1,0 +1,18 @@
+✔ real HTTP/MySQL authorization, profile and compliance survive a backend process restart (672.317756ms)
+✔ an unavailable MySQL server fails startup without opening HTTP (214.667704ms)
+✔ incorrect MySQL credentials fail startup without opening HTTP or exposing the password (175.3989ms)
+✔ real MySQL migrations are additive, checksum tracked and idempotent (52.573724ms)
+✔ accounts, sessions, profile identity and compliance survive store restart (402.444245ms)
+✔ wrong stored password and failed session insert roll back related account writes (326.388641ms)
+✔ concurrent first authorizations retain one account identity (236.752875ms)
+✔ refresh preserves the account, rotates atomically and rejects replay (116.86912ms)
+✔ expired refresh sessions cannot rotate or generate a new session (56.982863ms)
+✔ an unavailable database returns explicit sanitized errors without memory fallback (13.419136ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1374.864836

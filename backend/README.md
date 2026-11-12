@@ -54,6 +54,13 @@ npm start
 npm run dev
 ```
 
+Backend kiểm tra kết nối MySQL, migration và các bảng cần thiết **trước khi mở
+cổng HTTP**. Chỉ khi kiểm tra thành công mới ghi `database_ready` rồi `listening`.
+Nếu MySQL không truy cập được, sai thông tin kết nối hoặc schema chưa sẵn sàng,
+backend ghi `startup_database_error`, hướng dẫn kiểm tra `DB_*`/chạy migration,
+đóng pool và thoát với mã **1**; không báo server đã chạy. Sửa cấu hình/khởi động
+MySQL, chạy `npm run migrate` nếu cần, rồi chạy lại `npm start`.
+
 Migration có khóa chống chạy đồng thời, lưu checksum, tạo bảng nếu chưa có và
 không DROP/TRUNCATE/reset dữ liệu. Sau lần đầu, chạy lại giữ nguyên ID/nội dung.
 Một schema có checksum không khớp sẽ bị từ chối thay vì tự viết lại lịch sử.
@@ -92,8 +99,9 @@ Khi MySQL và migration sẵn sàng, `/health` trả HTTP200:
 {"status":"ok","backend":{"status":"running"},"mysql":{"status":"ready","schemaVersion":1}}
 ```
 
-Khi MySQL/schema không sẵn sàng, server vẫn phản hồi HTTP503 với backend
-`running`, MySQL `unavailable`. Đăng nhập/đọc/ghi phụ thuộc DB cũng trả lỗi503;
+Nếu MySQL/schema mất sẵn sàng **sau khi server đã khởi động thành công**,
+server phản hồi HTTP503 với backend `running`, MySQL `unavailable`.
+Đăng nhập/đọc/ghi phụ thuộc DB cũng trả lỗi503;
 không chuyển sang RAM/JSON hoặc trả đăng nhập thành công. `/healthz` là alias.
 
 Chỉ khi Windows Firewall chặn kết nối, mở **đúng cổng TCP 8787** trên profile
@@ -178,8 +186,8 @@ không phải fallback runtime. `test:mysql` yêu cầu MySQL thật, migration 
 không skip nếu thiếu DB; kiểm tra restart, account/session/profile/compliance,
 refresh/replay, transaction rollback và concurrent identity. Nó cũng khởi động
 process Node riêng, gọi HTTP thật, restart process rồi xác minh token/profile và
-row MySQL còn nguyên; một process khác dùng cổng DB không lắng nghe để xác minh
-HTTP503 khi DB lỗi. Nó chỉ xóa các row
+row MySQL còn nguyên; kiểm tra từ chối khởi động khi DB không truy cập được hoặc
+sai mật khẩu. Runtime DB lỗi trả503 vẫn được kiểm tra trong bộ HTTP. Nó chỉ xóa các row
 thuộc namespace ngẫu nhiên nó đã tạo trong DB `_test`, không reset database.
 
 Các kiểm tra HTTP/DB riêng không thay thế việc chạy APK: cần xác nhận host và

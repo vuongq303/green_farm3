@@ -55,8 +55,9 @@ npm start
 
 Listener mặc định `HOST=0.0.0.0`, `PORT=8787`. App chỉ gọi HTTP; tài khoản MySQL
 chỉ ở `backend/.env`, không nằm trong APK. Kiểm tra từ Windows **và** emulator:
-`http://10.37.233.55:8787/health`. Endpoint báo cả backend và MySQL; DB/schema
-chưa sẵn sàng trả 503, không chuyển sang RAM/JSON. Hướng dẫn lấy IPv4, migration
+`http://10.37.233.55:8787/health`. Backend kiểm tra MySQL/schema trước khi mở
+cổng; lỗi thì báo rõ và thoát mã 1. Nếu DB mất kết nối sau khi đã chạy, endpoint
+trả 503, không chuyển sang RAM/JSON. Hướng dẫn lấy IPv4, migration
 và rule Windows Firewall đúng cổng nằm trong README backend.
 
 Tài khoản anonymous, access/refresh session và compliance hiện được lưu vào

@@ -100,7 +100,8 @@ npm start
 ```
 
 Kiểm tra `/health` từ host và emulator bằng cùng IPv4 cấu hình. Listener mặc
-định `0.0.0.0:8787`; MySQL/schema lỗi trả 503 và không fallback RAM. Đổi URL phải
+định `0.0.0.0:8787`; kiểm tra MySQL/schema trước khi listen, lỗi thì thoát mã1.
+Nếu DB mất sẵn sàng sau khi đã chạy, trả503 và không fallback RAM. Đổi URL phải
 build/cài lại APK. Accounts, access/refresh session và compliance lưu MySQL;
 farm vẫn lưu RMS gốc trên thiết bị. Facebook, cloud farm save và các dịch vụ
 phụ legacy chưa hoàn tất, nên chưa khẳng định toàn bộ game độc lập khỏi Gameloft.
