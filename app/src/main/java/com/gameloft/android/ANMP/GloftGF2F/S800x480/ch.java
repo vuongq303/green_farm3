@@ -3636,6 +3636,7 @@ class ch {
                 pG();
                 break;
         }
+        EntityPoseState.spriteUpdated(this);
         if (this.Kx == 10 || this.Kx == 13) {
             return;
         }

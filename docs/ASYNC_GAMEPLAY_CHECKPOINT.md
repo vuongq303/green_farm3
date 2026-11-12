@@ -14,6 +14,10 @@ cho account/session; nông trại nằm trong SQLite riêng trên thiết bị. 
 - Tutorial `jN` có nhánh nhận click lời thoại đặt `axW` cho cả bước gameplay;
   một số điều kiện chỉ đặt true mà không loại bỏ cờ cũ. Callback modal, animation
   và nút GUI bị trễ chưa xác minh bước/phiên hiện tại.
+- Pose restore từng yêu cầu sprite phải có ngay; building17 hợp lệ chỉ tạo sprite
+  theo animation. Bản lưu thật có10/10 key khớp farm nhưng sprite này vắng khi decode.
+  Helper nay giữ transform chờ rồi áp dụng khi code gốc tạo sprite, không xóa pose
+  hay bỏ kiểm tra identity. Chính dữ liệu lỗi đã mở lại được không sửa SQL.
 - Lưu giữa tutorial làm lộ hai khoảng phục hồi trước đây bị chặn bởi game gốc:
   bước12 mất nút nhiệm vụ sau `Ep()`, bước18 có con vật trưởng thành nhưng mất
   hiệu ứng `aoR` mà bước hướng dẫn đang chờ.
@@ -75,7 +79,7 @@ cadence200/500ms của controller; cadence được kiểm tra bằng test deter
 
 ## Kiểm thử và phạm vi
 
-128/128 test mã và20/20 test công cụ/ngôn ngữ đạt.
+129/129 test mã và20/20 test công cụ/ngôn ngữ đạt.
 Bằng chứng mã/controller: `tests/test_async_save_queue.py`,
 `tests/test_progress_save_controller.py`, `tests/test_tutorial_sequence.py`,
 `tests/test_more_games_removal.py`, `tools/test_language_restart_source.py`.
@@ -96,7 +100,9 @@ UI đã mở Farm Diary “Big Shoes to Fill” với ba mục tiêu0/1, Go/Find
 mua/đặt bê✓ trừ đúng100xu (2000→1900, cash50). MENU mở Pause Menu/Options,
 không có MoreGames. Chọn VI cho native confirmation tiếng Anh đang dùng; Cancel
 giữ PID và byte ngôn ngữ/generation không đổi. Bốn OK nhanh đã dẫn đến tiến trình
-mới tự động; ngôn ngữ và farm sau restart đang được ghi nhận. Chưa xác nhận50–100 lượt thu hoạch thật, số dư/XP toàn bộ, FPS,
+mới tự động. Lần kiểm thử đó phát hiện lỗi sprite lazy đã sửa ở trên. Bản sửa
+đã mở đúng dữ liệu cũ thành farm với lời thoại tiếng Việt; đang kiểm tra vòng đổi
+ngược và cold restart cuối. Chưa xác nhận50–100 lượt thu hoạch thật, số dư/XP toàn bộ, FPS,
 14 ngôn ngữ trên thiết bị, repeated restart/timer qua UI hoặc Android mới.
 Không xóa bản lưu để vượt tutorial.
 

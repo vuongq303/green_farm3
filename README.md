@@ -72,7 +72,7 @@ xác nhận. Chưa triển khai cloud farm save hoặc Facebook Connect mới.
 Đã bỏ nhãn lưu thông thường và phần đề cử Trò chơi+/Welcome cross-promotion.
 Đổi ngôn ngữ có xác nhận bằng ngôn ngữ hiện tại, chờ lưu trước khi tự khởi động lại;
 trong tutorial, phím Menu Android mở màn hình Options hiện có. Không reset farm.
-128 test mã,20 test công cụ/ngôn ngữ và27 kiểm tra SQLite Android đã đạt.
+129 test mã,20 test công cụ/ngôn ngữ và27 kiểm tra SQLite Android đã đạt.
 Bài tải cùng100snapshot tổng hợp giảm100→6commit; đây không phải100thu hoạch/FPS.
 Các mốc UI và phần chưa xác minh ghi rõ trong checkpoint, không coi unit/build là
 kiểm thử gameplay toàn bộ. [Lịch sử SQLite](docs/SQLITE_PROGRESS_RECOVERY.md).

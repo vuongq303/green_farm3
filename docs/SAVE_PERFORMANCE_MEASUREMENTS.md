@@ -79,3 +79,18 @@ python3 tools/run_game_save_performance.py \
 Choose a fresh prefix for each run. After installing the new APK, add `--delivery async` and choose a new output path. `--capture-local-db PATH` creates the binary fixture from an already preserved **local** SQLite database. Optional `--runtime-apk PATH` loads a preserved APK without installing it; ART may need a cold whole-APK compilation before the timed workload, so this can exceed the command timeout on this emulator. `--timeout` allows an owned-process deadline from 5–180 seconds, and timeout reports/logs are retained. `--variant unchanged` retains all source bytes as a no-op control.
 
 The requested 50–100 real-harvest before/after frame and action validation needs a separate controlled gameplay fixture. Storage replay alone does not establish that result or prove the controller's 200/500 ms scheduling bounds.
+
+## Uncontrolled live-game diagnostic
+
+One cumulative actual-game log (`ui/15-step12-blocker-save.log`, private test
+artifacts) contains75 captures: wall median95.257ms, p951168.008ms, max3030.676ms.
+It overlapped software-emulator rendering, other storage probes and/or compilation;
+there is no caller CPU profile for those captures or matching before scenario. Do
+not add the overlapping log copies, attribute these delays to SQLite, or use them
+as an FPS comparison. The original codec still runs at the game-thread boundary,
+with about563KB of scratch allocations and308KB of detached record copies for
+this nine-record live workload. The examined ro/rC/rw/Mh/Mj/rt/ry paths all enter
+the capture fast path before SQLite/its writer lock; no direct disk bypass was
+found. The synthetic five-record benchmark excludes this original codec work.
+A controlled50–100harvest frame/CPU test remains necessary before claiming smooth
+full-game rendering or deciding which codec allocation to optimize next.
