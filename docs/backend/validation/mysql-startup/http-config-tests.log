@@ -1,0 +1,42 @@
+
+> green-farm-local-research-backend@0.2.0 test
+> node --test test/*.test.mjs
+
+✔ base URL accepts only canonical unicast IPv4 origins and normalizes a slash (13.688611ms)
+✔ backend reads the same one root property and fails on missing/duplicate/bad values (2.189822ms)
+✔ runtime config rejects split endpoint variables, mismatched port and missing MySQL credentials (1.372573ms)
+✔ health, datacenter selection, ten URL keys, and plain auth locator use the configured base (30.014236ms)
+✔ authorization accepts the original UTF-16 password transform and all compatibility scope declarations (6.881682ms)
+✔ fresh sessions are distinct and accepted by the compliance route (6.541014ms)
+✔ the explicit local policy returns false below 16 and true from 16 through 120 (5.150734ms)
+✔ compliance requires a session token and rejects forged or changed tokens (6.685302ms)
+✔ expiry uses the injected clock and session TTL (5.067248ms)
+✔ tokens belong to the issuing server even when servers share an HMAC secret (3.052199ms)
+✔ profile credentials belong to the authorized session and stay isolated between users (4.39589ms)
+✔ profile reads require a valid unexpired session token (5.983545ms)
+✔ profile paths outside the implemented own-profile read remain unknown (5.742834ms)
+✔ authorization rejects missing fields, unsupported scope, and invalid credentials (7.01747ms)
+✔ compliance requires country and canonical integer age in the documented range (16.756203ms)
+✔ both POST routes reject content types other than URL-encoded forms (4.820197ms)
+✔ form parsing rejects duplicate fields, malformed percent escapes, and malformed UTF-8 (7.340155ms)
+✔ both POST routes reject bodies exceeding 8 KiB (3.221193ms)
+✔ known routes return 405 for the wrong method (7.067987ms)
+✔ unknown paths return 404 and explicit unsupported surfaces return 501 (5.675693ms)
+✔ request logs contain only method, redacted route path, and status (4.657693ms)
+✔ core client scope declarations and durable refresh grant follow original request fields (5.844577ms)
+✔ refresh rejects wrong namespace, invalid, expired and access tokens (5.033608ms)
+✔ MySQL failures are observable and never produce successful login/profile/compliance responses (5.112897ms)
+✔ a production server cannot silently substitute an in-memory repository (0.666963ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 300.334662
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

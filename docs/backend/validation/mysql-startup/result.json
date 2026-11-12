@@ -1,0 +1,28 @@
+{
+  "base_commit": "b1b0696",
+  "behavior": "Check MySQL connection and required schema before creating/listening HTTP server",
+  "ready_event_order": [
+    "database_ready",
+    "listening"
+  ],
+  "database_startup_failure": {
+    "event": "startup_database_error",
+    "code": "DATABASE_UNAVAILABLE",
+    "process_exit_code": 1,
+    "http_listener_opened": false,
+    "pool_closed": true
+  },
+  "tests": {
+    "http_config": 25,
+    "real_mysql_and_child_process": 10,
+    "failures": 0,
+    "skipped": 0
+  },
+  "real_startup_scenarios": [
+    "MySQL ready: authorization/profile/compliance survive backend restart",
+    "Unavailable MySQL port: exit1 and no HTTP listener",
+    "Incorrect MySQL password: exit1 and no HTTP listener; password redacted"
+  ],
+  "runtime_database_loss": "HTTP503 behavior preserved and tested",
+  "android_changes": false
+}

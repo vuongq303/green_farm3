@@ -96,7 +96,7 @@ async function fixture(t) {
   const ownedChildren = new Set();
   const logs = [];
 
-  async function start(overrides = {}) {
+  async function launch(overrides = {}) {
     const child = spawn(process.execPath, [join(backendDirectory, 'src/main.js')], {
       cwd: backendDirectory, env: { ...env, ...overrides }, stdio: ['ignore', 'pipe', 'pipe'],
     });
@@ -104,13 +104,24 @@ async function fixture(t) {
     let output = '';
     child.stdout.on('data', data => { output += data.toString(); });
     child.stderr.on('data', data => { output += data.toString(); });
+    const closed = once(child, 'close');
     await once(child, 'spawn');
+    return { child, closed, output: () => output };
+  }
+
+  async function start(overrides = {}) {
+    const launched = await launch(overrides);
+    const { child } = launched;
     const deadline = Date.now() + 10000;
-    while (!output.includes('"event":"listening"')) {
+    while (!launched.output().includes('"event":"listening"')) {
       if (child.exitCode !== null || child.signalCode !== null) throw new Error('Owned backend exited before listening');
       if (Date.now() > deadline) throw new Error('Owned backend did not start within ten seconds');
       await new Promise(resolve => setTimeout(resolve, 20));
     }
+    const events = launched.output().split('\n').filter(Boolean).map(line => JSON.parse(line).event);
+    assert.ok(events.indexOf('database_ready') >= 0, 'successful startup must confirm MySQL readiness');
+    assert.ok(events.indexOf('database_ready') < events.indexOf('listening'),
+      'MySQL readiness must precede opening the HTTP listener');
     return {
       async stop() {
         if (!ownedChildren.has(child)) return;
@@ -125,10 +136,32 @@ async function fixture(t) {
             assert.equal(code, 0, 'owned backend should exit successfully');
           } finally { clearTimeout(timeout); }
         }
-        logs.push(output);
+        logs.push(launched.output());
         ownedChildren.delete(child);
       },
     };
+  }
+
+  async function rejectsStartup(overrides = {}) {
+    const launched = await launch(overrides);
+    const timeout = setTimeout(() => launched.child.kill('SIGKILL'), 10000);
+    timeout.unref();
+    let code, signal;
+    try { [code, signal] = await launched.closed; }
+    finally { clearTimeout(timeout); }
+    const output = launched.output();
+    logs.push(output);
+    ownedChildren.delete(launched.child);
+    assert.equal(signal, null, 'failed startup must exit itself instead of hanging');
+    assert.equal(code, 1, 'unavailable MySQL must fail the backend process');
+    const entries = output.split('\n').filter(Boolean).map(line => JSON.parse(line));
+    const failure = entries.find(entry => entry.event === 'startup_database_error');
+    assert.ok(failure, 'startup must report its database error');
+    assert.match(failure.message, /MySQL|database/u);
+    assert.ok(!entries.some(entry => ['database_ready', 'listening'].includes(entry.event)),
+      'failed database startup must never announce readiness or HTTP listening');
+    await assert.rejects(request(port, '/health'), { code: 'ECONNREFUSED' },
+      'failed startup must not leave an HTTP listener');
   }
 
   t.after(async () => {
@@ -147,7 +180,7 @@ async function fixture(t) {
     await pool.execute('DELETE FROM gf_accounts WHERE client_id = ?', [clientId]);
     await rm(directory, { recursive: true, force: true });
   });
-  return { port, baseUrl, fields, clientId, credential, start, logs,
+  return { port, baseUrl, fields, clientId, credential, start, rejectsStartup, logs,
     request: (path, options) => request(port, path, options),
     post: (path, fields) => request(port, path, { method: 'POST', fields }),
   };
@@ -211,20 +244,22 @@ test('real HTTP/MySQL authorization, profile and compliance survive a backend pr
     tokens.refresh_token, renewed.access_token, renewed.refresh_token, database.password]);
 });
 
-test('a real backend with an unavailable MySQL server reports HTTP503 without successful authorization', async t => {
+test('an unavailable MySQL server fails startup without opening HTTP', async t => {
   const f = await fixture(t);
   let unavailablePort;
   do { unavailablePort = await unusedPort(); } while (unavailablePort === f.port);
-  const server = await f.start({ DB_HOST: '127.0.0.1', DB_PORT: String(unavailablePort) });
-  const health = await f.request('/health');
-  assert.equal(health.status, 503);
-  assert.deepEqual(json(health), { status: 'degraded', backend: { status: 'running' }, mysql: { status: 'unavailable' } });
-  const authorized = await f.post('/authorize', f.fields);
-  assert.equal(authorized.status, 503);
-  assert.deepEqual(json(authorized), { error: 'database_unavailable' });
+  await f.rejectsStartup({ DB_HOST: '127.0.0.1', DB_PORT: String(unavailablePort) });
   const [[count]] = await pool.execute('SELECT COUNT(*) AS total FROM gf_accounts WHERE client_id = ?', [f.clientId]);
   assert.equal(Number(count.total), 0);
-  await server.stop();
   const log = f.logs.join('\n');
   assertLogsRedacted(log, [f.clientId, f.credential, f.fields.password, database.password]);
+});
+
+test('incorrect MySQL credentials fail startup without opening HTTP or exposing the password', async t => {
+  const f = await fixture(t);
+  const wrongPassword = 'owned-incorrect-password-' + randomBytes(16).toString('hex');
+  await f.rejectsStartup({ DB_PASSWORD: wrongPassword });
+  const [[count]] = await pool.execute('SELECT COUNT(*) AS total FROM gf_accounts WHERE client_id = ?', [f.clientId]);
+  assert.equal(Number(count.total), 0);
+  assertLogsRedacted(f.logs.join('\n'), [f.clientId, f.credential, f.fields.password, database.password, wrongPassword]);
 });
