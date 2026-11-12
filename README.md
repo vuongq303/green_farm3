@@ -15,6 +15,7 @@ gian nằm riêng trong `intermediates`, không dùng để cài.
 ```
 
 APK chuẩn: `app/build/outputs/apk/debug/app-debug.apk`.
+Bản APK debug đã build để tải nằm trong [artifacts/](artifacts/README.md).
 Không cần module `core-source`, task recovered riêng, cấu hình Run recovered
 hoặc cài APK thủ công. Không sửa file trong `app/build/generated`; sửa code
 gốc ở `app/src/main/java`.
