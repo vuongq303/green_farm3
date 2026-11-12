@@ -47,14 +47,16 @@ class CoreSourcePackagingTest(unittest.TestCase):
         patch.start(); self.addCleanup(patch.stop)
         core = ROOT / "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480"
         selected = {"Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/" + source.stem + ";"
-                    for source in core.glob("*.java") if source.stem != "l"}
+                    for source in core.glob("*.java") if source.stem != "l" and source.stem not in build.ADDED_CORE_SOURCES}
         self.assertEqual(len(selected), 108, "Update the reviewed source profile explicitly if its coverage changes")
         self.report = {"original_apk_sha256": self.original_hash,
                        "overlay_apk_sha256": build.sha256(self.compiled.read_bytes()),
                        "output_dex_sha256": build.sha256(self.merged.read_bytes()),
                        "original_non_overlay_semantics_verified": True,
                        "compiled_overlay_semantics_verified": True,
-                       "replaced_classes": sorted(selected)}
+                       "replaced_classes": sorted(selected),
+                       "added_classes": sorted("Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/" + name + ";"
+                                               for name in build.ADDED_CORE_SOURCES)}
         self.write_report()
 
     def make_compiled(self, omit=(), duplicate_manifest=False, unsafe=False):
@@ -124,6 +126,14 @@ class CoreSourcePackagingTest(unittest.TestCase):
         self.report["replaced_classes"].remove("Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GLLib;")
         self.write_report()
         with self.assertRaisesRegex(ValueError, "every selected Java-core"): self.assemble()
+        self.assertFalse(self.output.exists())
+
+    def test_progress_helpers_must_be_verified_as_additions_not_replacements(self):
+        helper = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GameSaveStore;"
+        self.report["added_classes"].remove(helper)
+        self.report["replaced_classes"].append(helper)
+        self.write_report()
+        with self.assertRaisesRegex(ValueError, "reviewed progress helper"): self.assemble()
         self.assertFalse(self.output.exists())
 
     def test_rejects_changed_original_apk(self):

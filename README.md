@@ -61,8 +61,17 @@ trả 503, không chuyển sang RAM/JSON. Hướng dẫn lấy IPv4, migration
 và rule Windows Firewall đúng cổng nằm trong README backend.
 
 Tài khoản anonymous, access/refresh session và compliance hiện được lưu vào
-MySQL. Gameplay/save nông trại vẫn dùng RMS gốc trên thiết bị; chưa chuyển cloud
-farm save hoặc Facebook Connect sang giao thức mới không có bằng chứng.
+MySQL. Gameplay/save nông trại chuyển sang SQLite bền vững trên thiết bị
+(`greenfarm-progress.db`, schema 4), tự tạo/migration và nhập RMS cũ có CRC hợp lệ.
+Snapshot giữ codec gốc, gồm tutorial, quest, kho, farm, timestamp, thưởng đang chờ
+và hướng sprite. Lỗi đọc dừng tải để thử lại; lỗi ghi giữ bản lưu trước và hiện
+trạng thái lưu/thử lại. Đặt/di chuyển có ✓/✕, preview không được lưu như vị trí đã
+xác nhận. Chưa triển khai cloud farm save hoặc Facebook Connect mới.
+
+[Kiến trúc SQLite, migration và ma trận kiểm thử](docs/SQLITE_PROGRESS_RECOVERY.md).
+Đã tái hiện APK cũ mất XP 1/13→0/13 sau force-stop; prototype đã ghi snapshot
+SQLite thật. Bản cuối schema 4 và toàn bộ luồng farm/quest/move vẫn cần đối chiếu
+kết quả chạy thiết bị; build/unit test đạt không đồng nghĩa gameplay đã kiểm đủ.
 
 [Kết quả hợp nhất và sửa crash khởi động](docs/APP_BUILD_AND_STARTUP.md).
 [Thư mục ghép APK và chẩn đoán lỗi build Windows](docs/WINDOWS_APK_MERGE_PATHS.md).

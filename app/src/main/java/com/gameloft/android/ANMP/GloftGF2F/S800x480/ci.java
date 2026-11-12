@@ -1464,6 +1464,15 @@ public final class ci extends GLLib implements av {
     static long avC;
     static int avD;
     static ch avE;
+    // A drag edits avE for rendering only. avM/avN and this facing remain committed
+    // until the explicit confirmation button accepts the placement.
+    private static ch moveOriginalActor;
+    private static int moveOriginalTransform;
+    private static boolean moveConfirmRequested;
+    private static boolean movePlacementConfirmed;
+    private static volatile boolean moveInterruptionRequested;
+    private int moveSurfaceWidth = -1;
+    private int moveSurfaceHeight = -1;
     static ch avF;
     static ch avG;
     static ch[] avH;
@@ -4481,14 +4490,132 @@ public final class ci extends GLLib implements av {
                     atc[1][83][18] = 1;
                     f(1, 83, true);
                 }
-                if (aYS == 1003 || aYS == 1042 || aYS == 1029 || aYS == 1009) {
+                if (avD != -1) {
+                    e(1, 83, true);
+                    e(1, 84, true);
+                    f(1, 84, true);
+                } else if (aYS == 1003 || aYS == 1042 || aYS == 1029 || aYS == 1009) {
                     e(1, 84, false);
                     f(1, 84, false);
                 }
-                bk(1, 83);
-                bk(1, 84);
+                if (avD != -1) {
+                    positionMoveControls(iArr[0] - 67, iArr[1] + ((aYP * 75) / 100));
+                } else {
+                    bk(1, 83);
+                    bk(1, 84);
+                }
             }
         }
+    }
+
+    private static int[] moveButtonBounds(int item) {
+        int[] bounds = new int[4];
+        atf[atc[1][item][5]].a(atc[1][item][6], 0, bounds, 0);
+        // Keep the original artwork, with at least a 48px touch target.
+        int width = Math.max(48, bounds[2]);
+        int height = Math.max(48, bounds[3]);
+        bounds[0] -= (width - bounds[2]) / 2;
+        bounds[1] -= (height - bounds[3]) / 2;
+        bounds[2] = width;
+        bounds[3] = height;
+        return bounds;
+    }
+
+    static int[] layoutMoveControls(int desiredX, int desiredY, int width, int height,
+            int[] confirm, int[] cancel) {
+        final int margin = 4;
+        final int gap = 12;
+        int left = desiredX + confirm[0];
+        int top = desiredY + confirm[1];
+        boolean horizontal = confirm[2] + cancel[2] + gap <= width - margin * 2;
+        int groupWidth = horizontal ? confirm[2] + gap + cancel[2] : Math.max(confirm[2], cancel[2]);
+        int groupHeight = horizontal ? Math.max(confirm[3], cancel[3]) : confirm[3] + gap + cancel[3];
+        left = Math.max(margin, Math.min(left, width - margin - groupWidth));
+        top = Math.max(margin, Math.min(top, height - margin - groupHeight));
+        return new int[]{left - confirm[0], top - confirm[1],
+                left + (horizontal ? confirm[2] + gap : 0) - cancel[0],
+                top + (horizontal ? 0 : confirm[3] + gap) - cancel[1]};
+    }
+
+    private static void positionMoveControls(int desiredX, int desiredY) {
+        int[] confirm = moveButtonBounds(83);
+        int[] cancel = moveButtonBounds(84);
+        int[] positions = layoutMoveControls(desiredX, desiredY, kH(), kI(), confirm, cancel);
+        for (int i = 0; i < 2; i++) {
+            int item = 83 + i;
+            int[] bounds = i == 0 ? confirm : cancel;
+            atc[1][item][2] = (short) positions[i * 2];
+            atc[1][item][3] = (short) positions[(i * 2) + 1];
+            int id = 65536 | item;
+            boolean found = false;
+            if (aAF != null) {
+                for (int index = 0; index < aAF.length; index++) {
+                    if (aAF[index] != null && aAF[index][5] == id) {
+                        if (atc[1][item][18] == 0) {
+                            hx(index);
+                        } else {
+                            aAF[index][0] = positions[i * 2] + bounds[0];
+                            aAF[index][1] = positions[(i * 2) + 1] + bounds[1];
+                            aAF[index][2] = bounds[2];
+                            aAF[index][3] = bounds[3];
+                            found = true;
+                        }
+                    }
+                }
+                if (!found && atc[1][item][18] != 0) {
+                    d(id, 0, positions[i * 2] + bounds[0], positions[(i * 2) + 1] + bounds[1], bounds[2], bounds[3], 0);
+                }
+            }
+        }
+    }
+
+    static boolean isMovePreviewActive() {
+        return avD != -1;
+    }
+
+    static void cancelMovePreviewForInterruption() {
+        if (avD != -1 && avE != null) {
+            sv();
+        }
+        avI = false;
+        avO = false;
+    }
+
+    private static void processPendingMoveInterruption() {
+        if (!moveInterruptionRequested) {
+            return;
+        }
+        moveInterruptionRequested = false;
+        // Each lb drains one of press/drag/release per pointer. Three drains
+        // empty all pending types, then la returns every pointer to idle.
+        GLLib.lb();
+        GLLib.lb();
+        GLLib.lb();
+        GLLib.la();
+        aAG = aAH = aAI = aAJ = aAK = -1;
+        aZn = null;
+        aZp = 0;
+        aAi = false;
+        aAj = false;
+        cancelMovePreviewForInterruption();
+    }
+
+    @Override
+    public void onSurfaceChanged(javax.microedition.khronos.opengles.GL10 gl10, int width, int height) {
+        if (moveSurfaceWidth != -1 && (width != moveSurfaceWidth || height != moveSurfaceHeight)) {
+            moveInterruptionRequested = true;
+        }
+        moveSurfaceWidth = width;
+        moveSurfaceHeight = height;
+        super.onSurfaceChanged(gl10, width, height);
+    }
+
+    static boolean movePositionChanged(int oldX, int oldY, int newX, int newY) {
+        return oldX != newX || oldY != newY;
+    }
+
+    static boolean canConfirmMovePlacement() {
+        return (avD != 0 && avD != 3 && avD != 4) || moveConfirmRequested;
     }
 
     static void DT() {
@@ -6172,7 +6299,7 @@ public final class ci extends GLLib implements av {
                     Ff();
                     gM(1);
                 }
-                axW = avE == null;
+                axW = avE == null && movePlacementConfirmed;
                 if (axW) {
                     Er();
                 }
@@ -6969,7 +7096,7 @@ public final class ci extends GLLib implements av {
                     gM(1);
                     axV = true;
                 }
-                axW = avE == null;
+                axW = avE == null && movePlacementConfirmed;
                 if (axW) {
                     Er();
                     aCi &= -2;
@@ -19256,7 +19383,7 @@ public final class ci extends GLLib implements av {
         }
         e(1, 83, z);
         f(1, 83, z);
-        if (aYR != -1 || b.Ka) {
+        if ((aYR != -1 || b.Ka) && avD == -1) {
             e(1, 84, false);
             f(1, 84, false);
         } else {
@@ -19930,6 +20057,9 @@ public final class ci extends GLLib implements av {
                 if (avE.Kx == 54) {
                     avE.fp(0);
                 }
+                if (avE == moveOriginalActor && avE.aoO != null) {
+                    avE.aoO.aaN = moveOriginalTransform;
+                }
                 if (!avE.oO()) {
                     k(avE);
                 }
@@ -19939,6 +20069,7 @@ public final class ci extends GLLib implements av {
             }
         }
         avE = null;
+        moveOriginalActor = null;
         awf = null;
         awg = null;
         if (avD == 3) {
@@ -20406,6 +20537,11 @@ public final class ci extends GLLib implements av {
     }
 
     static void av(boolean z) {
+        if (!ProgressSaveController.atSnapshotBoundary()) {
+            ProgressSaveController.requestSave();
+            return;
+        }
+        if (!ProgressSaveController.canSerialize()) return;
         if (bbH) {
             return;
         }
@@ -20414,7 +20550,7 @@ public final class ci extends GLLib implements av {
         if (!asU && qD() != 35 && (getDeviceName().equals("GT-I9000") || getDeviceName().equals("GT-S5839i") || getDeviceName().equals("GT-S5830i") || getDeviceName().equals("LG-P500") || getDeviceName().equals("HUAWEI Y210-0151") || getDeviceName().equals("GT-S6810P") || getDeviceName().equals("ONE TOUCH 4007A") || getDeviceName().equals("SCH-R680") || getDeviceName().equals("XT303") || getDeviceName().equals("HTC Wildfire S A510e") || getDeviceName().equals("GT-S5560"))) {
             asU = true;
         }
-        if (asU && ((aYS != 1000 || axT) && !aTC)) {
+        if (asU && !ProgressSaveController.isForcedCheckpoint() && ((aYS != 1000 || axT) && !aTC)) {
             asV++;
             asU = false;
             if (System.currentTimeMillis() - asW <= 10000 && asW != 0) {
@@ -20429,20 +20565,30 @@ public final class ci extends GLLib implements av {
             bbH = false;
             return;
         }
-        if (!z && (FC() < 3 || aYR != -1)) {
+        boolean committed = false;
+        try {
+            GameSaveStore.beginSave();
+            ProgressSaveController.saving();
+            ro();
+            rt();
+            ry();
+            EntityPoseState.writeSnapshot();
+            PendingRewardState.writeSnapshot();
+            GameSaveStore.commitSave();
+            committed = true;
+            ProgressSaveController.committed();
+            if (aXO) {
+                aZ(aXO);
+                aXO = false;
+            }
+            FZ();
+            aZZ = 0;
+        } catch (RuntimeException failure) {
+            ProgressSaveController.saveFailed();
+        } finally {
+            if (!committed) GameSaveStore.abortSave();
             bbH = false;
-            return;
         }
-        ro();
-        rt();
-        ry();
-        if (aXO) {
-            aZ(aXO);
-            aXO = false;
-        }
-        FZ();
-        aZZ = 0;
-        bbH = false;
     }
 
     static boolean aw(boolean z) {
@@ -40820,8 +40966,45 @@ public final class ci extends GLLib implements av {
         return fJ(8);
     }
 
+    static boolean isPersistedWorldState(int state) {
+        return state == 18 || state == 37;
+    }
+
+    /** Mirrors qG's pop boundaries without mutating its pending command. */
+    static boolean pendingTransitionUnloadsWorld() {
+        if (apB < 0) return false;
+        if (apA == 1 || apA == 3) return isPersistedWorldState(apC[apB]);
+        if (apA == 2) {
+            for (int index = apB; index >= 0; index--) {
+                if (isPersistedWorldState(apC[index])) return true;
+            }
+        } else if (apA == 4) {
+            for (int index = apB; index >= 0 && apC[index] != apz; index--) {
+                if (isPersistedWorldState(apC[index])) return true;
+            }
+        } else if (apA == 6) {
+            int index = apB;
+            if (apC[index] == apz) {
+                if (isPersistedWorldState(apC[index])) return true;
+                index--;
+            }
+            for (; index > 0 && apC[index] != apz; index--) {
+                if (isPersistedWorldState(apC[index])) return true;
+            }
+        }
+        return false;
+    }
+
     static void qG() {
         if (apA != -1) {
+            boolean unloadsWorld = pendingTransitionUnloadsWorld();
+            // fJ(5) clears the live entity lists. Save before consuming apA,
+            // changing the stack, or letting the next loader read an old save.
+            if (unloadsWorld && !ProgressSaveController.prepareWorldUnload()) return;
+            // Settling XP can enqueue the original level-up screen instead of
+            // navigation. Disarm saving only if the command now dispatched
+            // really removes a world; preserve that gameplay callback's UI.
+            unloadsWorld = pendingTransitionUnloadsWorld();
             if (apB > -1 && apC[apB] > -1) {
                 int i = apV[apC[apB]];
                 String str = "state idx:" + apB + ",stack:" + apC[apB];
@@ -40939,6 +41122,7 @@ public final class ci extends GLLib implements av {
                     fJ(1);
                 }
             }
+            if (unloadsWorld) ProgressSaveController.worldUnloaded();
             if (baf == null || apB <= -1 || apC[apB] <= -1) {
                 return;
             }
@@ -41547,12 +41731,19 @@ public final class ci extends GLLib implements av {
     }
 
     static void qV() {
+        if (!ProgressSaveController.allowLoadStep()) return;
         try {
+            if (!GameSaveStore.isLoading()) GameSaveStore.beginLoading();
             if (asj >= 0 && ash != null && ash.length > 0 && asj < ash.length) {
                 fM(ash[asj]);
             }
         } catch (Exception e) {
             String str = "Exception during loading at step " + asj;
+            int failedStep = ash != null && asj >= 0 && asj < ash.length ? ash[asj] : -1;
+            if (ProgressSaveController.isCriticalLoadFailure(failedStep, e)) {
+                ProgressSaveController.loadingFailed(failedStep, e);
+                return;
+            }
         }
         if (asm) {
             return;
@@ -42137,7 +42328,7 @@ public final class ci extends GLLib implements av {
     static void rU() {
         ch chVarFm;
         aTD = (short) 0;
-        if (t(avE)) {
+        if (avE == null || t(avE)) {
             return;
         }
         if (avE.anw && (((chVarFm = Fm()) != null && (chVarFm.Bj == 13 || chVarFm.Bj == 3 || chVarFm.Bj == 7 || chVarFm.Bj == 8)) || axK)) {
@@ -42150,7 +42341,7 @@ public final class ci extends GLLib implements av {
         }
         String str = "finish act button. done button.tuto state:" + aYR + ",moveState:" + avD;
         if (avD == 0) {
-            DP();
+            confirmMovePlacement();
             aT(false);
             aD(false);
             aC(true);
@@ -42160,7 +42351,7 @@ public final class ci extends GLLib implements av {
                 case 20:
                     String str2 = "check money:" + aBy;
                     if ((aBy > 0 && hO(aBy)) || (aBz > 0 && hP(aBz))) {
-                        DP();
+                        confirmMovePlacement();
                     } else {
                         if (aBy == 0) {
                             aE(false);
@@ -42186,11 +42377,11 @@ public final class ci extends GLLib implements av {
                     if (avE.aoC == 0 && ((aBy > 0 && hO(aBy)) || (aBz > 0 && hP(aBz)))) {
                         avE.fj(8);
                         a(5, avE);
-                        DP();
+                        confirmMovePlacement();
                     } else if ((avV > 0 && hO(avV)) || (avW > 0 && hP(avW))) {
                         avE.fj(8);
                         a(5, avE);
-                        DP();
+                        confirmMovePlacement();
                     } else {
                         if (aBy == 0) {
                             aE(false);
@@ -42214,17 +42405,28 @@ public final class ci extends GLLib implements av {
                     break;
             }
         } else if (avD != 4 || avE == null) {
-            DP();
+            confirmMovePlacement();
             aT(false);
             aD(false);
         } else {
             if (aYR == 53) {
                 axW = true;
             }
-            DP();
+            confirmMovePlacement();
             aE(false);
         }
         su();
+    }
+
+    private static void confirmMovePlacement() {
+        moveConfirmRequested = true;
+        try {
+            DP();
+            movePlacementConfirmed = avE == null;
+            ProgressSaveController.requestSave();
+        } finally {
+            moveConfirmRequested = false;
+        }
     }
 
     static void rV() {
@@ -42504,6 +42706,11 @@ public final class ci extends GLLib implements av {
             iRm = l(bArrBF, 0);
         }
         asL = gk(iRm);
+        if (GameSaveStore.hasGameplaySave()
+                && (bArrBF == null || (bArrBF.length < 35 && iRm == rm()))) {
+            GameSaveStore.failLoad("Saved progress header is missing or truncated");
+            throw new IllegalStateException("Saved progress header is missing or truncated");
+        }
         if (asL < 406) {
             asM = true;
             asN = asM;
@@ -42614,13 +42821,15 @@ public final class ci extends GLLib implements av {
     }
 
     static void rr() {
-        if (FC() < 3) {
-            return;
-        }
         av(false);
     }
 
     static void rs() {
+        if (!ProgressSaveController.atSnapshotBoundary()) {
+            ProgressSaveController.requestSave();
+            return;
+        }
+        if (!ProgressSaveController.canSerialize()) return;
         if (bbH) {
             return;
         }
@@ -42629,20 +42838,27 @@ public final class ci extends GLLib implements av {
             bbH = false;
             return;
         }
-        if (FC() < 3) {
+        boolean committed = false;
+        try {
+            GameSaveStore.beginSave(false);
+            ProgressSaveController.saving();
+            ro();
+            if (aCw == null && aCx == null) ba(false);
+            rt();
+            PendingRewardState.writeSnapshot();
+            GameSaveStore.commitSave();
+            committed = true;
+            ProgressSaveController.committed();
+            aZ(aXO);
+            aXO = false;
+            FZ();
+            aZZ = 0;
+        } catch (RuntimeException failure) {
+            ProgressSaveController.saveFailed();
+        } finally {
+            if (!committed) GameSaveStore.abortSave();
             bbH = false;
-            return;
         }
-        ro();
-        if (aCw == null && aCx == null) {
-            ba(false);
-        }
-        rt();
-        aZ(aXO);
-        aXO = false;
-        FZ();
-        aZZ = 0;
-        bbH = false;
     }
 
     static boolean ru() {
@@ -42706,7 +42922,11 @@ public final class ci extends GLLib implements av {
     }
 
     static void ry() {
-        if (FC() >= 3 && avD == -1 && aZB == 0) {
+        if (!ProgressSaveController.atSnapshotBoundary()) {
+            ProgressSaveController.requestSave();
+            return;
+        }
+        if (ProgressSaveController.atSnapshotBoundary() && ProgressSaveController.canSerialize() && avD == -1 && aZB == 0) {
             FY();
             byte[] bArr = new byte[204800];
             int iD = d(bArr, 0, rm());
@@ -43479,9 +43699,10 @@ public final class ci extends GLLib implements av {
     }
 
     static void sv() {
-        if (avD == -1 || aYR != -1) {
+        if (avD == -1 || avE == null) {
             return;
         }
+        int tutorial = aYR;
         boolean z = false;
         if (avD == 4) {
             int iQp = avE.qp();
@@ -43505,6 +43726,20 @@ public final class ci extends GLLib implements av {
             n(avE);
         }
         aE(z);
+        movePlacementConfirmed = false;
+        // The next step originally inferred success merely from avE becoming
+        // null. Cancel must return to selection, rather than finish the move.
+        if (tutorial == 15) {
+            aYR = 13;
+            axV = false;
+            axW = false;
+        } else if (tutorial == 53) {
+            aYR = 51;
+            axV = false;
+            axW = false;
+            aCi &= -2;
+            fE(29);
+        }
     }
 
     static void sw() {
@@ -49765,6 +50000,7 @@ public final class ci extends GLLib implements av {
 
     @Override // com.gameloft.android.ANMP.GloftGF2F.S800x480.GLLib
     protected void Pause() {
+        ProgressSaveController.flushForLifecycle();
         if (aYY) {
             aYY = false;
         }
@@ -52126,7 +52362,11 @@ public final class ci extends GLLib implements av {
                 aZn = null;
                 return;
             }
+            ProgressSaveController.checkpointBeforeMove();
             avE = chVar;
+            moveOriginalActor = chVar;
+            moveOriginalTransform = chVar.aoO == null ? 0 : chVar.aoO.aaN;
+            movePlacementConfirmed = false;
             avE.aoT = true;
             avJ = avE.fz(16777216);
             if (avJ) {
@@ -52194,9 +52434,7 @@ public final class ci extends GLLib implements av {
             } else if (avE.Kx == 50) {
                 l(avE);
             }
-            if (avD != 3) {
-                aD(true);
-            }
+            aD(true);
             aC(false);
             a(false, -1, (char) 0);
             if (z && avE.fz(2)) {
@@ -52208,6 +52446,9 @@ public final class ci extends GLLib implements av {
             atc[1][83][3] = (short) (avE.aou + 75);
             atc[1][84][2] = (short) (avE.aot + 23);
             atc[1][84][3] = (short) (avE.aou + 75);
+            if (avD != -1) {
+                positionMoveControls(avE.aot - 67, avE.aou + 75);
+            }
             if (avD == 3 && !lN(1)) {
                 b(true, chVar);
             }
@@ -58527,6 +58768,7 @@ public final class ci extends GLLib implements av {
         int i3;
         int i4;
         if (i == 0) {
+            ProgressSaveController.enterWorld();
             if (qO()) {
                 String str = "AdsManager.s_VIDEO_BUBBLE_State enter: " + b.JP;
                 b.JP = 1;
@@ -59017,7 +59259,9 @@ public final class ci extends GLLib implements av {
                         int[] iArr2 = {GLLib.dG(0), GLLib.dH(0)};
                         c(iArr2, iArr);
                         f(iArr, iArr2);
-                        if (avE != null && bE(iArr2[0], iArr2[1]) > -1) {
+                        if (avE != null && bE(iArr2[0], iArr2[1]) > -1
+                                && (avD == 1 || (aAI == -1 && aAH == -1 && aAK == -1
+                                && !isMoveControlTouch(GLLib.dG(0), GLLib.dH(0))))) {
                             g(iArr2, iArr);
                             avE.aol = iArr[0];
                             avE.aom = iArr[1];
@@ -63846,6 +64090,13 @@ public final class ci extends GLLib implements av {
     /* JADX WARN: Code duplicated, block: B:84:0x0233  */
     @Override // com.gameloft.android.ANMP.GloftGF2F.S800x480.GLLib
     public void jC() {
+        synchronized (ci.class) {
+        processPendingMoveInterruption();
+        try {
+        if (ProgressSaveController.isLoadBlocked()) {
+            if (qD() == 4) qV();
+            return;
+        }
         long jCurrentTimeMillis;
         if (w.Vg) {
             bbp += Qy;
@@ -63856,64 +64107,8 @@ public final class ci extends GLLib implements av {
         }
         as.dV(Qy);
         wL();
-        if (My() && ((qD() != 18 && qD() != 37) || !GLLib.dC(0))) {
-            if (axP) {
-                baa = false;
-                bab = false;
-            }
-            if (baa && !bac) {
-                long jCurrentTimeMillis3 = System.currentTimeMillis();
-                if (w.Vl) {
-                    jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
-                }
-                if (jCurrentTimeMillis3 - baU > 8000 || !(qD() == 18 || qD() == 37 || qD() == 28 || qD() == 12 || qD() == 10)) {
-                    bac = true;
-                    baa = false;
-                    if (!bbE) {
-                        bbE = true;
-                    }
-                    try {
-                        if ((qD() == 18 || qD() == 37 || qD() == 28 || qD() == 12 || qD() == 10) && bbF != null) {
-                            bbG = true;
-                            if (!bbF.isAlive()) {
-                                bbF.start();
-                            }
-                        } else if (aZB == 0) {
-                            rr();
-                        } else {
-                            rs();
-                        }
-                    } catch (Exception e) {
-                    }
-                    bac = false;
-                    long jCurrentTimeMillis4 = System.currentTimeMillis();
-                    if (w.Vl) {
-                        jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
-                    }
-                    baU = jCurrentTimeMillis4;
-                } else if (bab) {
-                    bac = true;
-                    bab = false;
-                    aXO = true;
-                    if (aZB == 0) {
-                        rr();
-                    } else {
-                        rs();
-                    }
-                    bac = false;
-                }
-            } else if (bab && !bac && qN() && arg) {
-                bac = true;
-                bab = false;
-                aXO = true;
-                if (aZB == 0) {
-                    rr();
-                } else {
-                    rs();
-                }
-                bac = false;
-            }
-        }
+        // Dirty state is retained until the frame's complete SQLite commit.
+        // The former cq worker could observe halfway-applied gameplay actions.
         long jCurrentTimeMillis5 = System.currentTimeMillis();
         if (w.Vl) {
             jCurrentTimeMillis5 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
@@ -64062,10 +64257,15 @@ public final class ci extends GLLib implements av {
             return;
         }
         fE(59);
+        } finally {
+            ProgressSaveController.frameFinished();
+        }
+        }
     }
 
     @Override // com.gameloft.android.ANMP.GloftGF2F.S800x480.GLLib, javax.microedition.lcdui.f
     public void jF() {
+        ProgressSaveController.flushForLifecycle();
         baF = true;
         super.jF();
         rE();
@@ -64148,6 +64348,9 @@ public final class ci extends GLLib implements av {
             com.gameloft.a.a.k.VR().VS();
         }
         aOO = false;
+        // Hide callbacks above can settle pending rewards after Pause().
+        // Persist that completed state before Android can kill the process.
+        ProgressSaveController.flushForLifecycle();
     }
 
     static void DK() {
@@ -64211,6 +64414,9 @@ public final class ci extends GLLib implements av {
         boolean z2;
         boolean z3;
         ch chVarFm;
+        if (!canConfirmMovePlacement()) {
+            return;
+        }
         if (avE != null) {
             int i = avE.aoU;
             int i2 = avE.Kx;
@@ -64247,7 +64453,7 @@ public final class ci extends GLLib implements av {
                     String str2 = "add tuto action count:" + ayf;
                 }
             } else if (avD == 3 || avD == 4) {
-                if (avM != avE.aol && avN != avE.aom) {
+                if (movePositionChanged(avM, avN, avE.aol, avE.aom)) {
                     aa(avE.aoU, 1, 6);
                 }
                 if (avD == 4) {
@@ -67915,7 +68121,9 @@ public final class ci extends GLLib implements av {
                     aZD = 0;
                     aJn = (short) 0;
                 }
-                ax(false);
+                boolean hadStoredGameplay = GameSaveStore.hasGameplaySave();
+                boolean gameplayLoaded = ax(false);
+                ProgressSaveController.globalLoadFinished(hadStoredGameplay, gameplayLoaded);
                 if (aMs > 0) {
                     String str12 = "KKKKKKKlaunchtime update minus " + aMs;
                     aMs--;
@@ -68099,6 +68307,12 @@ public final class ci extends GLLib implements av {
                 break;
             case 47:
                 cK("LOADING ENTITIES - GRID RESET");
+                if (aZB == 0) {
+                    // Visiting another farm discards these entities too. Each
+                    // reconstruction must restore the current own-farm snapshot.
+                    EntityPoseState.resetForLoad();
+                    PendingRewardState.resetForLoad();
+                }
                 Fr();
                 aXe = false;
                 fN(3);
@@ -68115,7 +68329,9 @@ public final class ci extends GLLib implements av {
                     fN(aZB + 4);
                     ch.fd(1);
                 } else {
-                    az(false);
+                    if (!az(false) && aZB == 0) {
+                        throw new IllegalStateException("Existing farm record could not be restored");
+                    }
                 }
                 if (asO) {
                     asO = false;
@@ -68129,7 +68345,11 @@ public final class ci extends GLLib implements av {
                 if (aZj != null && aZi != null) {
                     aZj.aol = aZi.aol - (kH() >> 1);
                     aZj.aom = aZi.aom - (kI() >> 1);
-                    break;
+                }
+                if (aZB == 0) {
+                    EntityPoseState.restoreSnapshot();
+                    PendingRewardState.restoreSnapshot();
+                    ProgressSaveController.farmLoadFinished();
                 }
                 break;
             case 48:
@@ -68850,10 +69070,14 @@ public final class ci extends GLLib implements av {
     }
 
     static void rt() {
+        if (!ProgressSaveController.atSnapshotBoundary()) {
+            ProgressSaveController.requestSave();
+            return;
+        }
         int iD;
         int iD2;
         String str = "================================================================[rms_saveglobalgameplay::: " + aOP;
-        if (FC() >= 3 && avD == -1) {
+        if (ProgressSaveController.atSnapshotBoundary() && ProgressSaveController.canSerialize() && avD == -1) {
             FX();
             byte[] bArr = new byte[51200];
             aCA = 0;
@@ -69361,7 +69585,8 @@ public final class ci extends GLLib implements av {
             gM(1);
         }
         if (i == 8) {
-            if (GLLib.dA(0) && aMo && (avD == 0 || avD == 1 || avD == 4)) {
+            if (GLLib.dA(0) && aMo && aAI == -1 && aAH == -1 && aAK == -1
+                    && (avD == 0 || avD == 1 || avD == 4)) {
                 int[] iArr = new int[2];
                 int[] iArr2 = {GLLib.dG(0), GLLib.dH(0)};
                 c(iArr2, iArr);
@@ -70136,6 +70361,7 @@ public final class ci extends GLLib implements av {
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
     static boolean jP(int i) {
         if (i == 0) {
+            ProgressSaveController.enterWorld();
             aBF = false;
             avk = false;
             if (auj) {
@@ -71041,7 +71267,69 @@ public final class ci extends GLLib implements av {
     /* JADX WARN: Code duplicated, block: B:180:0x03de  */
     /* JADX WARN: Code duplicated, block: B:181:0x03e1  */
     /* JADX WARN: Code duplicated, block: B:182:0x03e4  */
+    private static boolean isMoveControlTouch(int x, int y) {
+        for (int item = 83; item <= 84; item++) {
+            if (bg(1, item)) {
+                int[] bounds = moveButtonBounds(item);
+                int left = atc[1][item][2] + bounds[0];
+                int top = atc[1][item][3] + bounds[1];
+                if (x >= left && x < left + bounds[2] && y >= top && y < top + bounds[3]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean updateMovePreviewInput() {
+        // Mr/Fi dispatch GUI releases before gameplay input. Consume captured
+        // GUI events here; dispatching the buttons again would double-confirm.
+        if (aAH != -1 || aAI != -1 || aAK != -1
+                || isMoveControlTouch(GLLib.dG(0), GLLib.dH(0))) {
+            avI = false;
+            avO = false;
+            return true;
+        }
+        if (GLLib.dB(0)) {
+            avI = avE == aZk;
+            avO = avI;
+            avK = GLLib.dG(0);
+            avL = GLLib.dH(0);
+            if (!avI) {
+                aZj.pb();
+            }
+        } else if (GLLib.dC(0) || GLLib.dA(0)) {
+            if (!avI) {
+                aZj.pb();
+            } else if (GLLib.dC(0) || !avO) {
+                int[] world = new int[2];
+                int[] grid = {GLLib.dG(0), GLLib.dH(0)};
+                c(grid, world);
+                f(world, grid);
+                if (bE(grid[0], grid[1]) >= 0) {
+                    if (aYR == -1 && GLLib.dC(0)) {
+                        aZj.pc();
+                    }
+                    g(grid, world);
+                    avE.aol = world[0];
+                    avE.aom = world[1];
+                    avO = false;
+                }
+            }
+            if (GLLib.dA(0)) {
+                avI = false;
+                avO = false;
+            }
+        }
+        // A map tap/drag changes only the preview. These placement modes reach
+        // DP only through rU's explicit valid confirmation.
+        return true;
+    }
+
     static boolean DO() {
+        if ((avD == 0 || avD == 3 || avD == 4) && avE != null) {
+            return updateMovePreviewInput();
+        }
         boolean z;
         boolean z2;
         boolean z3;
@@ -72199,7 +72487,7 @@ public final class ci extends GLLib implements av {
             case 1003:
             case 1009:
             case 1029:
-                if (GLLib.dA(0)) {
+                if (GLLib.dA(0) && aAI == -1 && aAH == -1 && aAK == -1) {
                     if (aZo != null && aYR != 35 && aYR != 18) {
                         a(false, (ch) null);
                     }
@@ -72370,6 +72658,18 @@ public final class ci extends GLLib implements av {
     /* JADX WARN: Code duplicated, block: B:32:0x00e1  */
     @Override // com.gameloft.android.ANMP.GloftGF2F.S800x480.GLLib, javax.microedition.lcdui.f
     protected void U(int i, int i2) {
+        if (Uu == 0 && i == -1 && i2 == -1) {
+            // The original Android motion handler maps ACTION_CANCEL (and a
+            // release after losing focus) to this sentinel. Do not dispatch
+            // it as a GUI release or serialize state on the Android UI thread.
+            synchronized (ci.class) {
+                moveInterruptionRequested = true;
+                aAG = aAH = aAI = aAJ = aAK = -1;
+                avI = false;
+                avO = false;
+            }
+            return;
+        }
         aAu = GLLib.dI(0);
         aAv = GLLib.dJ(0);
         int iDI = GLLib.dI(0);

@@ -207,7 +207,7 @@ class GLLibRecoveredAlgorithmsTest(unittest.TestCase):
             sources = project / "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480"
             compile_result = subprocess.run([str(home / "bin/javac"), "-source", "8", "-target", "8",
                                             "-proc:none", "-sourcepath", "", "-cp", f"{android}{os.pathsep}{view}",
-                                            "-d", str(classes), *[str(sources / f"{name}.java") for name in ("GLLib","bm","bl")]],
+                                            "-d", str(classes), *[str(sources / f"{name}.java") for name in ("GLLib","bm","bl","GameSaveStore")]],
                                            capture_output=True, text=True)
             self.assertEqual(compile_result.returncode, 0, compile_result.stdout + compile_result.stderr)
             restored = classes / CLASS
