@@ -1,0 +1,29 @@
+{
+  "source_commit": "d27a6ca",
+  "cloud_apk": {
+    "apk_sha256": "bdfc975452e0cccbb886eb47f52be5190e0ef93c058aab0689a72ddc6278d933",
+    "size_bytes": 15013347,
+    "backend_url": "http://172.26.91.236:18787/",
+    "source_base": "eb8635d",
+    "command": ":app:installDebug --rerun-tasks -PBACKEND_BASE_URL=http://172.26.91.236:18787/ --stacktrace",
+    "result": "BUILD SUCCESSFUL in 1m 12s; 43 tasks executed; installed on emulator-5554"
+  },
+  "delivery_apk": {
+    "path": "artifacts/green-farm-3-debug.apk",
+    "sha256": "764393e453a751471a8ed714ac0fce88eff128a1465d676fba63ceee1bf21b98",
+    "backend_url": "http://10.37.233.55:8787/",
+    "command": ":app:assembleDebug -Pandroid.injected.build.api=24 --stacktrace",
+    "result": "BUILD SUCCESSFUL in 57s; 43 tasks, 13 executed, 30 up-to-date",
+    "windows_url_runtime_tested": false
+  },
+  "python": {
+    "passed": 116,
+    "skipped": 0
+  },
+  "resource": {
+    "passed": 13
+  },
+  "sqlite_android": {
+    "passed": 26
+  }
+}

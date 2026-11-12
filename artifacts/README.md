@@ -1,24 +1,29 @@
 # APK debug đã build
 
 [Tải green-farm-3-debug.apk](green-farm-3-debug.apk) — khoảng 15 MB, phiên bản 4.4.2.
-Đây là APK hoàn chỉnh của module `app`, gồm runtime DEX gốc và 108 lớp Java lõi.
+APK hoàn chỉnh của module **app**, gồm runtime DEX gốc, 108 lớp Java lõi và các
+helper SQLite. Nguồn app: checkpoint `d27a6ca`.
 
-Nguồn: commit `28d273e`. Đã build bằng task chuẩn `:app:assembleDebug`,
-kiểm tra lớp Application thật, DEX, assets/native, chữ ký và ZIP alignment.
-Chi tiết phiên bản, SHA-256 và chứng thư debug trong [build-info.json](build-info.json).
-Checksum riêng: [green-farm-3-debug.apk.sha256](green-farm-3-debug.apk.sha256).
+Đã build bằng `:app:assembleDebug`, cả khi IDE inject API24; DEX cuối vẫn 035,
+minSdk16. Kiểm tra Application thật, DEX, 59 assets/native payload giữ nguyên,
+chữ ký v1/v2/v3 và ZIP alignment đều đạt. Thông tin/SHA-256/chứng thư debug:
+[build-info.json](build-info.json), [checksum](green-farm-3-debug.apk.sha256).
 
-APK dùng **`http://10.37.233.55:8787/`**, IPv4 Windows người dùng cung cấp.
-Chạy [backend JavaScript/MySQL](../backend/README.md) trên máy đó và kiểm tra
-`/health` từ cả Windows lẫn emulator. APK không chứa server hoặc credential DB.
-Địa chỉ chung ở `gradle.properties`, biến `BACKEND_BASE_URL`; đổi IP cần restart
-backend, build và cài lại APK. Không dùng biến `localBackendUrl` cũ.
+APK dùng **http://10.37.233.55:8787/** từ `BACKEND_BASE_URL` trong root
+`gradle.properties`. Chạy [backend JavaScript/MySQL](../backend/README.md) trên
+máy Windows đó, kiểm tra `/health` từ cả Windows và emulator. APK không chứa
+server hoặc credential DB; đổi địa chỉ cần build/cài lại.
 
-Đã kiểm thử một bản cùng source, chỉ override URL sang IPv4 cloud, trên emulator
-API 28: bootstrap/authorize/profile nhận200 từ MySQL-backed server, app mở tới
-Connect/Not now. Đã build cả khi IDE inject API24; overlay/final vẫn DEX035 theo
-minSdk16. [Checkpoint và giới hạn](../docs/backend/LAN_MYSQL_CHECKPOINT.md).
+Farm được lưu vào SQLite trên thiết bị, schema4; MySQL backend lưu tài khoản,
+session và compliance. Mở project, chọn **Android App app**, chọn máy rồi **Run**.
 
-Mạng Windows `10.37.233.55` và chính APK nhúng IP đó chưa được chạy thử từ cloud.
-Facebook Connect, UI retry đầy đủ, cloud farm save, gameplay/save-load toàn bộ
-và Android mới chưa được xác nhận. Khóa ký riêng không được commit.
+Cùng mã nguồn app, dùng URL cloud, đã chạy trên emulator API28: tự nâng DB3→4,
+hiện “Đã lưu”, thu hoạch/tiếp tục tutorial và khôi phục farm sau force-stop.
+**116/116** test mã, **13/13** test resource, **26/26** kiểm tra SQLite Android đạt.
+[Báo cáo và ma trận kiểm chứng](../docs/SQLITE_PROGRESS_RECOVERY.md).
+
+Windows LAN và chính APK nhúng IP Windows chưa chạy được từ cloud. XP số/toàn
+bộ số dư, quest detail/claim, di chuyển ✓/✕ qua UI, ma trận vật nuôi/công trình,
+restart backend ở mốc này, thiết bị thật và Android mới chưa được xác nhận đủ.
+Mở sách quest đã hiện drawer “New!”; chưa tái hiện lỗi quest cụ thể tự hoàn thành.
+Khóa ký riêng, database người chơi và credential không được commit.

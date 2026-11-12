@@ -1,0 +1,40 @@
+{"number": 1, "command": "seed", "fixture": "s4_fix_20261112_a1_main", "expected_exit": 0, "actual_exit": 1, "passed": false, "seconds": 19.909}
+{"passed":false,"probe_failure":true}
+com.gameloft.android.ANMP.GloftGF2F.S800x480.GameSaveStore$Failure: Cannot open or migrate the game progress database
+	at com.gameloft.android.ANMP.GloftGF2F.S800x480.GameSaveStore.failed(GameSaveStore.java:525)
+	at com.gameloft.android.ANMP.GloftGF2F.S800x480.GameSaveStore.openLocked(GameSaveStore.java:193)
+	at com.gameloft.android.ANMP.GloftGF2F.S800x480.GameSaveStore.initialize(GameSaveStore.java:75)
+	at GameSaveStoreProbe.seed(GameSaveStoreProbe.java:105)
+	at GameSaveStoreProbe.run(GameSaveStoreProbe.java:479)
+	at GameSaveStoreProbe.main(GameSaveStoreProbe.java:461)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:340)
+Caused by: java.lang.SecurityException: Unable to find app for caller android.app.IApplicationThread$Stub$Proxy@c1bca7e (pid=16062) when getting content provider settings
+	at android.os.Parcel.createException(Parcel.java:1942)
+	at android.os.Parcel.readException(Parcel.java:1910)
+	at android.os.Parcel.readException(Parcel.java:1860)
+	at android.app.IActivityManager$Stub$Proxy.getContentProvider(IActivityManager.java:4181)
+	at android.app.ActivityThread.acquireProvider(ActivityThread.java:5970)
+	at android.app.ContextImpl$ApplicationContentResolver.acquireProvider(ContextImpl.java:2573)
+	at android.content.ContentResolver.acquireProvider(ContentResolver.java:1812)
+	at android.provider.Settings$ContentProviderHolder.getProvider(Settings.java:1964)
+	at android.provider.Settings$NameValueCache.getStringForUser(Settings.java:2056)
+	at android.provider.Settings$Global.getStringForUser(Settings.java:12212)
+	at android.provider.Settings$Global.getString(Settings.java:12201)
+	at android.database.sqlite.SQLiteCompatibilityWalFlags.initIfNeeded(SQLiteCompatibilityWalFlags.java:88)
+	at android.database.sqlite.SQLiteCompatibilityWalFlags.areFlagsSet(SQLiteCompatibilityWalFlags.java:52)
+	at android.database.sqlite.SQLiteDatabase.<init>(SQLiteDatabase.java:299)
+	at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java:738)
+	at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java:729)
+	at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:355)
+	at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:298)
+	at com.gameloft.android.ANMP.GloftGF2F.S800x480.GameSaveStore.openLocked(GameSaveStore.java:119)
+	... 6 more
+Caused by: android.os.RemoteException: Remote stack trace:
+	at com.android.server.am.ActivityManagerService.getContentProviderImpl(ActivityManagerService.java:12152)
+	at com.android.server.am.ActivityManagerService.getContentProvider(ActivityManagerService.java:12585)
+	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:357)
+	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:3291)
+	at android.os.Binder.execTransact(Binder.java:731)
+
+
