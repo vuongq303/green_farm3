@@ -1,0 +1,15 @@
+{
+  "apk": "/workspace/green_farm3/artifacts/green-farm-3-debug.apk",
+  "package": "com.gameloft.android.ANMP.GloftGF2F",
+  "application": "javax.microedition.midlet.App",
+  "launcher": "com.gameloft.android.ANMP.GloftGF2F.Start",
+  "dex_count": 1,
+  "class_count": 6397,
+  "payload_count": 59,
+  "network_policy": {
+    "internet_permission": true,
+    "debuggable": true,
+    "uses_cleartext_traffic": true,
+    "network_security_config": null
+  }
+}

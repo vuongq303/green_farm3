@@ -1,0 +1,22 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/workspace/tooling/android-sdk/build-tools/35.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Verifies
+Verified using v1 scheme (JAR signing): true
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=Android Debug, O=Android, C=US
+Signer #1 certificate SHA-256 digest: 52c1ce4cb6336e7c8122e7bfea44f1dd23262d2e48f08909684514539fc76d00
+Signer #1 certificate SHA-1 digest: 2e830dac16cb51b509c3281d29db3d6de6980700
+Signer #1 certificate MD5 digest: df2a5d4bf139399f399c8c21803ebb6f
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 2048
+Signer #1 public key SHA-256 digest: fff932a77441a11f72433a1759f50fec1880adade0c914afe86693dbe222cc16
+Signer #1 public key SHA-1 digest: 9099de4952dc16ba2e6c4881a3546e40ed65eca4
+Signer #1 public key MD5 digest: eff2f8c995b0ca75b8b7660898dc4d4b
