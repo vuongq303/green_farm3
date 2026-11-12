@@ -16,14 +16,16 @@ from pathlib import Path
 import subprocess
 import tempfile
 
+from asm_tools import asm_jar
+from android_build_tools import executable_name
+
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPORT = '--add-exports=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED'
 JAVA_SOURCE = r'''
 import java.nio.file.*;
 import java.util.*;
 import java.util.jar.*;
-import jdk.internal.org.objectweb.asm.*;
+import org.objectweb.asm.*;
 
 public class AuditFloatDispatch {
  static class Call {
@@ -64,7 +66,7 @@ public class AuditFloatDispatch {
   Path directory=Paths.get(args[1]);int checked=0;
   try(JarFile jar=new JarFile(args[0]);var paths=Files.walk(directory)){
    for(Path path:(Iterable<Path>)paths.filter(p->p.toString().endsWith(".class")).sorted()::iterator){
-    String relative=directory.relativize(path).toString();JarEntry entry=jar.getJarEntry(relative);
+    String relative=directory.relativize(path).toString().replace(java.io.File.separatorChar,'/');JarEntry entry=jar.getJarEntry(relative);
     if(entry==null)continue;checked++;
     byte[] originalBytes;
     try(var input=jar.getInputStream(entry)){originalBytes=input.readAllBytes();}
@@ -92,13 +94,17 @@ public class AuditFloatDispatch {
 
 
 def audit(original_jar, classes_directory, java_home):
+    asm = asm_jar()
     with tempfile.TemporaryDirectory(prefix='float-dispatch-audit-') as temporary:
         directory = Path(temporary)
         source = directory/'AuditFloatDispatch.java'
         source.write_text(JAVA_SOURCE)
-        subprocess.run([str(java_home/'bin/javac'), EXPORT, str(source)], check=True,
+        javac = Path(java_home) / 'bin' / executable_name('javac')
+        java = Path(java_home) / 'bin' / executable_name('java')
+        subprocess.run([str(javac), '-cp', str(asm), str(source)], check=True,
                        capture_output=True, text=True)
-        result = subprocess.run([str(java_home/'bin/java'), EXPORT, '-cp', str(directory),
+        classpath = os.pathsep.join((str(directory), str(asm)))
+        result = subprocess.run([str(java), '-cp', classpath,
                                  'AuditFloatDispatch', str(original_jar), str(classes_directory)],
                                 check=True, capture_output=True, text=True)
     findings = []
@@ -121,7 +127,7 @@ def main():
     parser.add_argument('--original-jar', type=Path, default=Path(os.environ.get(
         'GREENFARM_ORIGINAL_JAR', '/workspace/tooling/recovery-bytecode/greenfarm-original.jar')))
     parser.add_argument('--classes-directory', type=Path, default=ROOT/
-                        'core-source/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes')
+                        'app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes')
     parser.add_argument('--java-home', type=Path, default=Path(os.environ.get(
         'JAVA_HOME', '/workspace/tooling/jdk-21.0.9+10')))
     parser.add_argument('--json-output', type=Path)

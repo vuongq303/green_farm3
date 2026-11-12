@@ -1,0 +1,52 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by net.rubygrapefruit.platform.internal.NativeLibraryLoader in an unnamed module (file:/workspace/tooling/gradle-home/wrapper/dists/gradle-9.7.1-bin/1w1c7tv4s851m17nbqdsro2tv/gradle-9.7.1/lib/native-platform-0.22-milestone-29.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+Configuration 'androidTestUtil' was resolved during configuration time.
+This is a build performance and scalability issue.
+See https://github.com/gradle/gradle/issues/2298
+Run with --info for a stacktrace.
+Configuration 'androidApis' was resolved during configuration time.
+This is a build performance and scalability issue.
+See https://github.com/gradle/gradle/issues/2298
+Run with --info for a stacktrace.
+Configuration 'lintChecks' was resolved during configuration time.
+This is a build performance and scalability issue.
+See https://github.com/gradle/gradle/issues/2298
+Run with --info for a stacktrace.
+Configuration 'lintPublish' was resolved during configuration time.
+This is a build performance and scalability issue.
+See https://github.com/gradle/gradle/issues/2298
+Run with --info for a stacktrace.
+
+[Incubating] Problems report is available at: file:///workspace/green_farm3/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+CONFIGURE SUCCESSFUL in 2s
+2 actionable tasks: 2 up-to-date
+ROOT_NAME=Green Farm 3
+GRADLE_APP_NAME=app
+AGP=8.10.1
+PROJECT_PATH=:app
+NAMESPACE=com.gameloft.android.ANMP.GloftGF2F
+APPLICATION_ID=com.gameloft.android.ANMP.GloftGF2F
+BUILD_TOOLS=35.0.0
+MAIN_JAVA_DIRS=[/workspace/green_farm3/app/build/generated/core-java]
+BASIC_VARIANTS=[debug]
+VARIANT=debug
+VARIANT_APPLICATION_ID=com.gameloft.android.ANMP.GloftGF2F
+ASSEMBLE_TASK=assembleDebug
+IDE_APK_LISTING=/workspace/green_farm3/app/build/intermediates/apk_ide_redirect_file/debug/createDebugApkListingFileRedirect/redirect.txt
+IDE_SETUP_TASKS=[generateDebugSources]
+SYNC_ERRORS=0

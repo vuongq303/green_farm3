@@ -11,6 +11,7 @@ import zipfile
 
 from build_binary_baseline import EXPECTED_APK_SHA256, SIGNATURE, sha256
 from build_core_source import regenerate_build_revision, verify_assets_native
+from android_build_tools import ensure_debug_keystore, signing_tools
 
 
 TARGET_CLASS = 'Lcom/gameloft/a/b/a;'
@@ -87,18 +88,19 @@ def main():
     if any(output == p.resolve() or (output.exists() and p.exists() and output.samefile(p)) for p in inputs):
         raise ValueError('Output must not overwrite an input, key or provenance report')
     output.parent.mkdir(parents=True, exist_ok=True)
-    build_tools = args.sdk / 'build-tools/35.0.0'
     with tempfile.TemporaryDirectory(prefix='local-backend-', dir=output.parent) as directory:
         temp = Path(directory)
         unsigned, aligned, signed = [temp / n for n in ('unsigned.apk', 'aligned.apk', 'signed.apk')]
         baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned)
         revision = regenerate_build_revision(args.original, unsigned, temp)
-        subprocess.run([str(build_tools / 'zipalign'), '-f', '-P', '16', '4', str(unsigned), str(aligned)], check=True)
-        subprocess.run([str(build_tools / 'apksigner'), 'sign', '--ks', str(args.keystore),
+        tools = signing_tools(args.sdk)
+        keystore = ensure_debug_keystore(args.keystore)
+        subprocess.run([str(tools.zipalign), '-f', '-P', '16', '4', str(unsigned), str(aligned)], check=True)
+        subprocess.run([*tools.apksigner, 'sign', '--ks', str(keystore),
                         '--ks-key-alias', 'androiddebugkey', '--ks-pass', 'pass:android',
                         '--key-pass', 'pass:android', '--out', str(signed), str(aligned)], check=True)
-        subprocess.run([str(build_tools / 'apksigner'), 'verify', '--verbose', str(signed)], check=True)
-        subprocess.run([str(build_tools / 'zipalign'), '-c', '-P', '16', '4', str(signed)], check=True)
+        subprocess.run([*tools.apksigner, 'verify', '--verbose', str(signed)], check=True)
+        subprocess.run([str(tools.zipalign), '-c', '-P', '16', '4', str(signed)], check=True)
         payload = verify_assets_native(args.original, signed)
         with zipfile.ZipFile(signed) as apk:
             if sha256(apk.read('classes.dex')) != patch['output_dex_sha256']:

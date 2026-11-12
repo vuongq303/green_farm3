@@ -9,13 +9,14 @@ and manifest pipeline. No ad, purchase, root or online checks are patched.
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
 import tempfile
 import zipfile
+
+from android_build_tools import ensure_debug_keystore, signing_tools
 
 
 EXPECTED_APK_SHA256 = '34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b'
@@ -95,30 +96,19 @@ def main():
     output = args.output.resolve()
     if output in (original, args.resources.resolve()):
         raise ValueError('Output must not overwrite an input APK')
-    tools = args.sdk / 'build-tools/35.0.0'
-    keytool = Path(os.environ.get('JAVA_HOME', '')) / 'bin/keytool'
-    if not keytool.is_file():
-        keytool = shutil.which('keytool')
-    if not keytool:
-        raise ValueError('JDK keytool is required')
-    keystore = args.keystore.resolve()
-    keystore.parent.mkdir(parents=True, exist_ok=True)
-    if not keystore.exists():
-        subprocess.run([str(keytool), '-genkeypair', '-keystore', str(keystore),
-                        '-storepass', 'android', '-alias', 'androiddebugkey', '-keypass', 'android',
-                        '-keyalg', 'RSA', '-keysize', '2048', '-validity', '10000',
-                        '-dname', 'CN=Android Debug,O=Android,C=US'], check=True)
+    tools = signing_tools(args.sdk)
+    keystore = ensure_debug_keystore(args.keystore)
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='baseline-', dir=output.parent) as temp:
         temp = Path(temp)
         unsigned, aligned, signed = (temp / n for n in ('unsigned.apk', 'aligned.apk', 'signed.apk'))
         assemble_unsigned(original, args.resources, unsigned)
-        subprocess.run([str(tools / 'zipalign'), '-f', '-P', '16', '4', str(unsigned), str(aligned)], check=True)
-        subprocess.run([str(tools / ('apksigner.bat' if os.name == 'nt' else 'apksigner')), 'sign', '--ks', str(keystore),
+        subprocess.run([str(tools.zipalign), '-f', '-P', '16', '4', str(unsigned), str(aligned)], check=True)
+        subprocess.run([*tools.apksigner, 'sign', '--ks', str(keystore),
                         '--ks-key-alias', 'androiddebugkey', '--ks-pass', 'pass:android',
                         '--key-pass', 'pass:android', '--out', str(signed), str(aligned)], check=True)
-        subprocess.run([str(tools / ('apksigner.bat' if os.name == 'nt' else 'apksigner')), 'verify', '--verbose', str(signed)], check=True)
-        subprocess.run([str(tools / 'zipalign'), '-c', '-P', '16', '4', str(signed)], check=True)
+        subprocess.run([*tools.apksigner, 'verify', '--verbose', str(signed)], check=True)
+        subprocess.run([str(tools.zipalign), '-c', '-P', '16', '4', str(signed)], check=True)
         hashes = verify_payload(original, signed)
         shutil.copyfile(signed, output)
     provenance = {'mode': 'binary-baseline-not-java-source-build',

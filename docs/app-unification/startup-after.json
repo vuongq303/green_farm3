@@ -1,0 +1,9 @@
+{
+  "apk_sha256": "c1d503c7a9a7d29ecaa2756376d70a8eb3ff3b0b81b9fde0884f6dbedf11591a",
+  "installed_apk_sha256": "c1d503c7a9a7d29ecaa2756376d70a8eb3ff3b0b81b9fde0884f6dbedf11591a",
+  "installed_via": ":app:installDebug",
+  "pid": "8718",
+  "observed_seconds": 21.644337997000548,
+  "fatal_exception": false,
+  "application_class_not_found": false
+}

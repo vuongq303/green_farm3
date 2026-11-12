@@ -1,6 +1,6 @@
 """Compare recovered pure CI methods with original converted DEX bytecode.
 
-Requires a current :core-source:compileDebugJavaWithJavac output. A source/staging
+Requires a current :app:compileDebugJavaWithJavac output. A source/staging
 identity check prevents testing a class produced before the latest source edits.
 Unrelated Android/game initialization is omitted from the fixture shells.
 """
@@ -65,13 +65,13 @@ class CIRecoveredFlowTest(unittest.TestCase):
         project = Path(__file__).resolve().parents[1]
         home = Path(os.environ.get("JAVA_HOME", "/workspace/tooling/jdk-21.0.9+10"))
         original = Path(os.environ.get("GREENFARM_ORIGINAL_JAR", "/workspace/tooling/recovery-bytecode/greenfarm-original.jar"))
-        directory = project / "core-source/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes"
+        directory = project / "app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes"
         restored = directory / BASE / "ci.class"
         source = project / "app/src/main/java" / BASE / "ci.java"
-        staged = project / "core-source/build/generated/core-java" / BASE / "ci.java"
+        staged = project / "app/build/generated/core-java" / BASE / "ci.java"
         if not original.exists() or not restored.exists() or not (home / "bin/javac").exists():
-            self.skipTest("Requires verified original conversion and compiled core-source CI")
-        self.assertEqual(source.read_bytes(), staged.read_bytes(), "Compile core-source after changing CI")
+            self.skipTest("Requires verified original conversion and compiled app core CI")
+        self.assertEqual(source.read_bytes(), staged.read_bytes(), "Compile app after changing CI")
         self.assertGreaterEqual(restored.stat().st_mtime_ns, staged.stat().st_mtime_ns,
                                 "Compiled CI predates the staged source")
         with tempfile.TemporaryDirectory(prefix="ci-flow-") as temp, zipfile.ZipFile(original) as archive:

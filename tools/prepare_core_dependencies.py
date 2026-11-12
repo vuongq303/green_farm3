@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
 import re
 import shutil
@@ -20,6 +19,7 @@ import urllib.request
 import zipfile
 
 import make_core_compile_view
+from android_build_tools import jdk_tool
 
 
 APK_SHA256 = '34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b'
@@ -217,7 +217,7 @@ def filter_dependencies(source, output, core_classes):
 def prepare(project_root, original=None, output_dir=None, cache=None, tool_archive=None, java=None):
     root = Path(project_root).resolve()
     original = Path(original or root / 'green-farm-3.apk').resolve()
-    output_dir = Path(output_dir or root / 'core-source/build/original-dependencies').resolve()
+    output_dir = Path(output_dir or root / 'app/build/original-dependencies').resolve()
     cache = Path(cache or root / '.local/bytecode-tools').resolve()
     if output_dir / 'compile-view.jar' == original:
         raise ValueError('Compile view must not overwrite the original APK')
@@ -225,10 +225,7 @@ def prepare(project_root, original=None, output_dir=None, cache=None, tool_archi
     verify_original(original)
     tool_dir = ensure_tool(cache, tool_archive)
     if java is None:
-        candidate = Path(os.environ.get('JAVA_HOME', '')) / 'bin/java'
-        java = candidate if candidate.is_file() else shutil.which('java')
-    if not java:
-        raise ValueError('Java is required for dex2jar')
+        java = jdk_tool('java')
     converted, conversion = convert_original(original, tool_dir, cache, java)
     core = source_classes(root / 'app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480')
     output_dir.mkdir(parents=True, exist_ok=True)

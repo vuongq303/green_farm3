@@ -188,7 +188,7 @@ class BackendEndpointPatchTest(unittest.TestCase):
         self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), before)
 
     def test_real_merged_dex_changes_one_sdk_literal_and_preserves_other_classes(self):
-        source = Path(os.environ.get("GREEN_FARM_MERGED_DEX", ROOT / "core-source/build/merged-original/classes.dex"))
+        source = Path(os.environ.get("GREEN_FARM_MERGED_DEX", ROOT / "app/build/intermediates/original-sdk/debug/app-debug/merged/classes.dex"))
         if not source.exists():
             self.skipTest("Build the recovered merged DEX first, or set GREEN_FARM_MERGED_DEX")
         self.verify_patch(source, self.path / "actual-patched.dex")
