@@ -16,6 +16,14 @@ MIDlet còn gọi `AdsManager.IsFullScreenAdOnScreen()` hai lần và
 `AdsManager.HandleBackKey()` một lần trong `onKeyUp`. Phải gỡ cả những lời gọi
 này khi tắt lifecycle quảng cáo để phím Back không gọi native chưa khởi tạo.
 
+Chạy Android thật còn phát hiện `UnsatisfiedLinkError` từ
+`JW_PrivacyPolicyChecker` (`com.gameloft.a.b.i.bQ`) truyền tuổi sang native
+`AdsManager.SetAge`. Vì vậy không đủ chỉ tắt nút và lifecycle. Audit toàn bộ APK
+xác định thêm sáu lời gọi void trong SDK cần bỏ: SetAge ở privacy checker, hai
+native factory/initialize trong AdsManager, tracking event trong GLAds.init và
+native Pause/Resume trong child quảng cáo. Các bước lưu tuổi, điều khoản, consent
+và xác thực Janus xung quanh giữ nguyên; không nạp lại thư viện quảng cáo để che lỗi.
+
 `AdMob`, `AdMobBanner`, `AdMobInterstitial`, `AdMobNative` trong APK là các lớp
 wrapper rỗng có sẵn từ bản gốc. Phần lựa chọn provider còn ở native AdsManager;
 chưa có bằng chứng đủ để ánh xạ an toàn từng cờ provider. Phiên bản này tạm dừng
@@ -36,14 +44,19 @@ bridge chỉ phục vụ provider đó**; không đóng gói lớp Facebook gi�
 relocate package. Nó chỉ sửa lớp MIDlet thật, giữ nguyên Application, các lớp
 SDK và thư viện native:
 
-1. Đòi hỏi đúng 24 lời gọi lifecycle, hai truy vấn boolean và một handler Back,
-   đúng caller/chữ ký/kiểu lệnh đã xác minh. Sai hoặc thiếu vị trí làm build lỗi.
+1. Đòi hỏi đúng 33 vị trí: 24 lifecycle, hai truy vấn boolean, một handler Back,
+   sáu native propagation/factory/pause/resume trong năm owner đã review. Sai
+   caller/chữ ký/kiểu lệnh hoặc thiếu vị trí làm build lỗi.
 2. Thay void invoke bằng ba NOP; truy vấn boolean dùng ba NOP và const false ở
    đúng thanh ghi nhận kết quả. Số code unit không đổi; giữ nhánh, try range và
    địa chỉ debug.
 3. Đọc lại DEX đã ghi, xác nhận không còn dispatch của ba owner SDK trong MIDlet.
-4. Đảo ngược các vị trí sửa và so sánh canonical semantics của MIDlet; so sánh
+4. Đảo ngược các vị trí sửa và so sánh canonical semantics riêng từng owner; so sánh
    tất cả lớp còn lại. Chỉ xuất DEX và report sau khi các kiểm tra đạt.
+5. Audit mọi class/method trong DEX, gồm alias/subclass của AdsManager, đòi hỏi
+   không còn bất kỳ invoke nào đến native AdsManager. Game adapter không giữ
+   lời gọi trong nhánh false. Kiểm tra này chạy lại trên DEX cuối sau khi bỏ
+   Facebook, trước khi đóng gói/ký APK; report được ràng buộc bằng hash.
 
 `PruneGoogleAds.java` sau đó loại đúng 1.880 lớp theo namespace đã kiểm kê, trừ
 allowlist sáu lớp identifier. Bộ audit kiểm tra superclass/interface, kiểu field,

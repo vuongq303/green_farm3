@@ -22,6 +22,10 @@ public final class PruneFacebookOracle {
  static ClassDef withoutAvatar(ClassDef c){List<Method>methods=new ArrayList<>();for(Method m:c.getMethods())if(!m.getName().equals("UN"))methods.add(m);return copy(c,c.getFields(),methods);}
  public static void main(String[]a)throws Exception{
   Map<String,ClassDef>before=PruneGoogleAds.classes(Files.readAllBytes(Paths.get(a[1])),OPS);
+  if(a[0].equals("source_profile")){
+   before.remove("Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;");before.remove("Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/b;");
+   Files.write(Paths.get(a[2]),RelocateGamePackage.serialize(before.values(),OPS));return;
+  }
   if(a[0].equals("verify")){
    Map<String,ClassDef>after=PruneGoogleAds.classes(Files.readAllBytes(Paths.get(a[2])),OPS);Set<String>removed=new TreeSet<>();
    for(String name:before.keySet())if(name.startsWith("Lcom/facebook/")||PruneFacebookSdk.WRAPPERS.contains(name))removed.add(name);
@@ -66,7 +70,8 @@ class FacebookSdkPruningTest(unittest.TestCase):
         if result.returncode: raise AssertionError(result.stderr)
         original = cls.path / 'original.dex'
         with zipfile.ZipFile(ROOT / 'green-farm-3.apk') as apk: original.write_bytes(apk.read('classes.dex'))
-        lifecycle = cls.path / 'lifecycle.dex'; cls.require(cls.command('PatchDisabledSdkLifecycle', original, lifecycle))
+        source_profile = cls.path / 'source-profile.dex'; cls.require(cls.command('PruneFacebookOracle', 'source_profile', original, source_profile))
+        lifecycle = cls.path / 'lifecycle.dex'; cls.require(cls.command('PatchDisabledSdkLifecycle', source_profile, lifecycle))
         cls.source = cls.path / 'google-free.dex'; cls.require(cls.command('PruneGoogleAds', lifecycle, cls.source))
         cls.fixture = cls.path / 'source-compatible-fixture.dex'
         cls.require(cls.command('PruneFacebookOracle', 'fixture', cls.source, 'valid', cls.fixture))

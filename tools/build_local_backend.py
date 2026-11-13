@@ -20,6 +20,8 @@ CORE_TARGET_CLASS = 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;'
 TARGET_CLASSES = [TARGET_CLASS, CORE_TARGET_CLASS]
 TARGET_METHOD = 'aL(Ljava/lang/String;)Ljava/lang/String;'
 ORIGINAL_URL = 'https://eve.gameloft.com/'
+SDK_RETIREMENT_OWNERS = sorted(('Ljavax/microedition/midlet/MIDlet;', 'Ljavax/microedition/midlet/o;',
+    'Lcom/gameloft/a/b/i;', 'Lcom/gameloft/adsmanager/AdsManager;', 'Lcom/gameloft/glads/GLAds;'))
 
 
 def prepare(original, base, patched_dex, output, relocated_dex=None, disabled_sdk_dex=None, pruned_ads_dex=None, pruned_facebook_dex=None):
@@ -57,9 +59,16 @@ def prepare(original, base, patched_dex, output, relocated_dex=None, disabled_sd
         policy = json.loads(disabled_sdk_dex.with_suffix(disabled_sdk_dex.suffix + '.json').read_text())
         expected_counts = {'facebook_lifecycle_calls_disabled': 12, 'ads_lifecycle_calls_disabled': 12,
                            'native_fullscreen_queries_disabled': 2, 'native_back_handlers_disabled': 1}
-        if (policy.get('schema_version') != 1
+        if (policy.get('schema_version') != 2
                 or policy.get('policy') != 'facebook-and-ads-lifecycle-disabled'
                 or policy.get('target_class') != 'Ljavax/microedition/midlet/MIDlet;'
+                or policy.get('target_classes') != SDK_RETIREMENT_OWNERS
+                or policy.get('native_bridge_calls_disabled') != 6
+                or policy.get('total_sdk_invocation_sites_disabled') != 33
+                or type(policy.get('native_ads_manager_invocations_remaining')) is not int
+                or policy.get('native_ads_manager_invocations_remaining') != 0
+                or policy.get('all_native_ads_manager_invocations_audited') is not True
+                or policy.get('per_owner_inverse_semantics_verified') is not True
                 or any(type(policy.get(key)) is not int or policy.get(key) != value
                        for key, value in expected_counts.items())
                 or policy.get('instruction_widths_preserved') is not True
@@ -95,7 +104,10 @@ def prepare(original, base, patched_dex, output, relocated_dex=None, disabled_sd
                 or any(facebook.get(key) is not True for key in (
                     'retained_structural_reference_audit_verified', 'retained_reflection_string_audit_verified',
                     'retired_nullable_avatar_method_verified', 'other_profile_data_and_methods_preserved',
-                    'retained_class_semantics_verified', 'inverse_class_set_and_method_semantics_verified'))
+                    'retained_class_semantics_verified', 'inverse_class_set_and_method_semantics_verified',
+                    'global_ad_native_invocation_audit_verified'))
+                or type(facebook.get('native_ads_manager_invocations_remaining')) is not int
+                or facebook.get('native_ads_manager_invocations_remaining') != 0
                 or facebook.get('input_dex_sha256') != sha256(packaged_dex.read_bytes())
                 or facebook.get('output_dex_sha256') != sha256(pruned_facebook_dex.read_bytes())):
             raise ValueError('Facebook SDK pruning provenance mismatch')

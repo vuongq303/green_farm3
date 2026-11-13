@@ -1,0 +1,9 @@
+test_actual_controllers_and_transition (test_progress_save_controller.ProgressSaveControllerTest.test_actual_controllers_and_transition) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 14.622s
+
+OK
+PASS cold no-writer lifecycle flush: engine class was not initialized without MIDlet
+PASS initial player barrier: immediate frozen config capture, failed retry, delayed SDK writes and later gameplay
+PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff

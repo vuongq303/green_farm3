@@ -1,0 +1,14 @@
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: FATAL EXCEPTION: GLThread 419
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: Process: com.quanhoang.greenfarm3, PID: <app-pid>
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: java.lang.UnsatisfiedLinkError: No implementation found for void com.gameloft.adsmanager.AdsManager.SetAge(int) (tried Java_com_gameloft_adsmanager_AdsManager_SetAge and Java_com_gameloft_adsmanager_AdsManager_SetAge__I)
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: 	at com.gameloft.adsmanager.AdsManager.SetAge(Native Method)
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: 	at com.gameloft.a.b.i.bQ(JW_PrivacyPolicyChecker.java:1099)
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: 	at com.gameloft.a.b.i.Init(JW_PrivacyPolicyChecker.java:850)
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: 	at com.gameloft.a.b.i.Wv(JW_PrivacyPolicyChecker.java:669)
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: 	at com.quanhoang.greenfarm3.S800x480.FarmGameEngine.jC(FarmGameEngine.java:64022)
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: 	at com.quanhoang.greenfarm3.S800x480.GameRuntime.a(GameRuntime.java:674)
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: 	at com.quanhoang.greenfarm3.S800x480.GameRuntime.jJ(GameRuntime.java:551)
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: 	at com.quanhoang.greenfarm3.S800x480.GameRuntime.onDrawFrame(GameRuntime.java:619)
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: 	at javax.microedition.lcdui.d.onDrawFrame(AndroidView_Renderer.java:664)
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: 	at javax.microedition.lcdui.af.guardedRun(GLSurfaceView.java:2001)
+11-13 12:59:38.785 <app-pid> 21319 E AndroidRuntime: 	at javax.microedition.lcdui.af.run(GLSurfaceView.java:1761)

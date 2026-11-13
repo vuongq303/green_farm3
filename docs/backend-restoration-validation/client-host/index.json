@@ -1,0 +1,37 @@
+{
+  "scope": "Host fixtures and a Kotlin compilation preflight; actual Android/cloud HTTP results are recorded separately.",
+  "runs": [
+    {
+      "command": "JAVA_HOME=/workspace/tooling/jdk-25 GRADLE_USER_HOME=/workspace/tooling/gradle-home python -m unittest discover -s tests -p test_progress_save_controller.py -v",
+      "log": "progress-controller.log",
+      "result": "passed",
+      "tests": 1,
+      "elapsed_seconds": 14.622,
+      "assertions": "Existing batching/durability/language/cold receiver; initial config/tutorial0 capture before later mutations, failed absolute retry, SDK buffer release only after local acknowledgement."
+    },
+    {
+      "command": "JAVA_HOME=/workspace/tooling/jdk-25 GRADLE_USER_HOME=/workspace/tooling/gradle-home python -m unittest discover -s tests -p test_cloud_quit_checkpoint.py -v",
+      "log": "quit-checkpoint.log",
+      "result": "passed",
+      "tests": 1,
+      "elapsed_seconds": 4.902,
+      "assertions": "Production extracted requestQuit/frameFinished methods: reward settlement, duplicate quit, local failure, bounded busy network, stale job, game-thread continuation; clean ACK does not serialize an unnecessary timestamp snapshot, later dirty SDK mutation still becomes locally durable before cleanup."
+    },
+    {
+      "log": "kotlin-preflight.log",
+      "result": "passed",
+      "assertions": "All project Kotlin compiled against SDK28/original compile view and existing JVM peer classes. This preflight preceded the final small operator-approval UI changes; final Gradle build must validate the delivered source."
+    }
+  ],
+  "quit_method_sha256": {
+    "@JvmStatic fun requestQuit(continuation: Runnable)": "4aab3b787104ea395754b8ff2110ab2404b6e272172fb60499506b59ff52ef00",
+    "@JvmStatic fun requestQuit(preparation: Runnable, continuation: Runnable)": "f478927eebc731b25ad51ef052aab0df5c5e23138b17fec3f93f157fae95d027",
+    "@JvmStatic fun frameFinished()": "4fa676f47275a16e05ef1fe76d04278a852ab1c94a04fd14833595805926426e"
+  },
+  "progress_source_sha256": "d4967d2a06273d60f2f7a6183a10a904fd5fa1e7fa6a04e0d2466804d7c70faf",
+  "log_sha256": {
+    "progress-controller.log": "c6d343794fb05fa17df6bdc533f29877306bad3b4c91f7d8d69aba3f07268719",
+    "kotlin-preflight.log": "4ba69d66208f82ceface3f54770a6abd65e004dbfb3aab1dc462eb98ba842ced",
+    "quit-checkpoint.log": "366b59120c7bb7ed0b04430f37fb32f79c7aedae6938f7489ec047b5f9f4cb38"
+  }
+}

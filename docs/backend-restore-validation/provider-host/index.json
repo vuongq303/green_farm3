@@ -49,6 +49,26 @@
       ],
       "unavailable_abi": "No logged-in identity, token, friend data, image or fabricated completion; null inputs remain safe",
       "retained_checks": "6000 actual reward callbacks and 8165 packed GUI checks"
+    },
+    {
+      "id": "advertising-jni-source-reference-removal",
+      "exit_code": 0,
+      "tests": 3,
+      "duration_seconds": 16.608,
+      "log": "removed-ad-sdk-references.log",
+      "sdk_reference_scan": [
+        "b.class",
+        "b$Companion.class",
+        "bt.class",
+        "bt$Companion.class",
+        "cm.class"
+      ],
+      "additional_forbidden_constant_pool_references": [
+        "com/gameloft/adsmanager/",
+        "com/gameloft/android2d/adsmanager/",
+        "com/gameloft/android2d/c/a"
+      ],
+      "scope": "Source/JVM verification only; separate SDK privacy propagation patch and new APK runtime checks required"
     }
   ]
 }

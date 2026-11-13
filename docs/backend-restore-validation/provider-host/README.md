@@ -55,3 +55,17 @@ and scans the compiled `bt`, `bt$Companion` and `cm` constant pools for removed
 SDK references. The first fixture attempt used package-private Java `ai`/`ay`
 peers, which Kotlin correctly rejected as public return types; making those
 fixture types public fixed the fixture without changing application behavior.
+
+Advertising JNI reference-removal rerun after the runtime privacy propagation
+fault was found:
+
+```sh
+JAVA_HOME=/workspace/tooling/jdk-25 ANDROID_HOME=/workspace/tooling/android-sdk GRADLE_USER_HOME=/workspace/tooling/gradle-home GREENFARM_ORIGINAL_JAR=/workspace/green_farm3/.local/bytecode-tools/greenfarm-original.jar PYTHONPATH=tests python -m unittest test_retired_provider_services test_kotlin_medium_models -v
+```
+
+Result: exit 0, 3 tests in 16.608 seconds, archived as
+`removed-ad-sdk-references.log`. The real Kotlin bridge constant pools now have
+no advertising SDK/identity-adapter references, and the existing callback and
+GUI checks still pass. The five unchanged model groups retain their original
+bytecode-comparison results. The separate packaging patch and rebuilt APK must
+still be tested; this host run does not claim the Android fault is resolved.

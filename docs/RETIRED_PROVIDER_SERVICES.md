@@ -28,9 +28,12 @@ now selects the existing own-farm state 18, or visiting-farm state 37, after the
 normal backend/privacy continuation. The backend-enabled predicate `qN()` and
 the legacy guest client `s.java` have not been disabled to achieve this.
 
-`b.kt` prevents creation, initialization, availability queries, display and
-callbacks of the rewarded-ad bridge. `FarmGameEngine` also retires ad-only CRM
-refresh, native queries and four ad screens (61, 62, 63, 65). Incoming stale
+`b.kt` retains only the removed provider's compatibility signatures/flags. Its
+SDK initialization, availability, display and callback dispatch bodies have
+been removed, including structural references to the advertising SDK and its
+identity adapter. `FarmGameEngine.Mm()` no longer contains the retired native
+configuration calls. The engine also retires ad-only CRM refresh, native
+queries and four ad screens (61, 62, 63, 65). Incoming stale
 ad-view/reward callbacks return before reading account data or mutating money,
 reward flags or game navigation. Purchased items and ordinary shop actions are
 not converted into free rewards.
@@ -70,6 +73,17 @@ Advertising starts through `MIDlet -> o.onCreate -> AdsManager.Init`. Therefore
 source-level UI guards alone must not be reported as removing SDK bootstrap.
 The final APK inventory and packaging verifier determine which definitions and
 compatibility bridges remain.
+
+An Android runtime check of candidate `1064f870` exposed a separate retained
+SDK path: privacy checker `i.Init -> i.bQ -> AdsManager.SetAge` attempted JNI
+after advertising native loading was removed. This was an actual startup
+`UnsatisfiedLinkError`, not a network failure or a successful release check.
+Packaging owns the exact SDK propagation-call removal while preserving all
+privacy, consent and Janus behavior. The owned source was tightened in the same
+fix: all nine advertising-native call sites and the advertising configuration
+body were removed rather than left in guarded branches. Final runtime success
+must be established against the rebuilt APK; the failed candidate is not a
+validated delivery artifact.
 
 ## Exit and legacy cloud bridge
 
@@ -118,3 +132,10 @@ container, retirement of the old restore action and prevention of the legacy
 online upload. These host tests do not test real
 backend acknowledgement, Android lifecycle timing, rendering or player SQLite
 durability; those results must be reported separately.
+
+After removal of the remaining source-level advertising calls, 3 focused tests
+passed in 16.608 seconds. The emitted `b`/`b$Companion` constant pools contain no
+advertising SDK or advertising identity-adapter references. Existing callback,
+GUI and five unchanged model/algorithm comparisons still passed. During an
+explicit quit the `jC()` guard freezes simulation/input updates inside its
+existing `try/finally`; completion polling still runs in `frameFinished()`.

@@ -10,8 +10,6 @@ import com.facebook.internal.FacebookRequestErrorClassification;
 import com.facebook.internal.NativeProtocol;
 import com.facebook.internal.ServerProtocol;
 import com.facebook.share.internal.ShareConstants;
-import com.gameloft.adsmanager.JavaUtils;
-import com.gameloft.android2d.adsmanager.AdsManager;
 import com.gameloft.glads.AndroidWebView;
 import com.gameloft.glads.GLURLConnection;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -16910,61 +16908,8 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     private static void Mm() {
-        if (!ServiceAvailability.advertisementsEnabled()) return;
-        int iMy = com.gameloft.a.a.o.VW().my();
-        while (iMy != 0 && iMy != 1) {
-            try {
-                iMy = com.gameloft.a.a.o.VW().my();
-                Thread.sleep(100L);
-            } catch (InterruptedException e) {
-            } catch (Exception e2) {
-            }
-        }
-        String str = "DEBUG CRM :: CRM Config: " + com.gameloft.a.a.o.VW().VX();
-        JSONObject jSONObjectVX = com.gameloft.a.a.o.VW().VX();
-        try {
-            JSONObject jSONObject = jSONObjectVX.getJSONObject("game_config");
-            String str2 = "DEBUG CRM :: check location==========================CRM game config==" + jSONObjectVX;
-            if (jSONObject != null) {
-                try {
-                    if (jSONObject.has("usePurpleButtonAds")) {
-                        String str3 = "DEBUG CRM :: usePurpleButtonAds :" + jSONObject.getBoolean("usePurpleButtonAds");
-                        aYy = jSONObject.getBoolean("usePurpleButtonAds");
-                    }
-                } catch (Exception e3) {
-                    e3.printStackTrace();
-                }
-                String str4 = "DEBUG CRM :: s_isPurpleAdsButton : " + aYy;
-            }
-        } catch (Exception e4) {
-            e4.printStackTrace();
-        }
-        try {
-            JSONObject jSONObject2 = new JSONObject(ao.ms().mI());
-            String str5 = "DEBUG CRM :: currentConfig...==" + jSONObject2;
-            if (jSONObject2 != null) {
-                try {
-                    String string = jSONObject2.has(aYA) ? jSONObject2.getJSONObject(aYA).toString() : "";
-                    String string2 = jSONObject2.has(aYB) ? jSONObject2.getJSONObject(aYB).toString() : "";
-                    if (AdsManager.IsAdsManagerInitialized() && !string.equals("") && !string2.equals("")) {
-                        String str6 = "#UpdateSettings AdsManager adsStr" + string;
-                        String str7 = "#UpdateSettings AdsManager gameStr" + string2;
-                        AdsManager.UpdateSettings(string, string2);
-                    } else if (!aYz && !AdsManager.IsAdsManagerInitialized() && !string.equals("") && !string2.equals("")) {
-                        String str8 = "#IsAdsManagerInitialized AdsManager adsStr" + string;
-                        String str9 = "#IsAdsManagerInitialized AdsManager gameStr" + string2;
-                        AdsManager.InitializeAdsManager(string, string2);
-                        aYz = true;
-                    }
-                } catch (Exception e5) {
-                    e5.printStackTrace();
-                }
-                String str10 = "DEBUG CRM :: s_isPurpleAdsButton : " + aYy;
-            }
-        } catch (Exception e6) {
-            e6.printStackTrace();
-        }
-        aYw = true;
+        // Advertising configuration and native initialization were removed.
+        // Privacy/Janus readiness is handled independently by the original SDK.
     }
 
     public static void Mn() {
@@ -63963,6 +63908,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         TutorialFlowController.frameStarted();
         try {
         if (ProgressSaveController.isInitializationPending()) return;
+        if (BackendCloudController.isQuitPending()) return;
         if (LanguageRestartController.frameStarted()) return;
         if (ProgressSaveController.isLoadBlocked()) {
             if (currentEngineState() == 4) qV();

@@ -11,7 +11,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
@@ -36,6 +38,20 @@ public final class PatchDisabledSdkLifecycle {
     static final String ADS = "Ljavax/microedition/midlet/o;";
     static final String ADS_NATIVE = "Lcom/gameloft/adsmanager/AdsManager;";
     static final String BACK = "onKeyUp(ILandroid/view/KeyEvent;)Z";
+    static final Map<String, Map<String, String>> NATIVE_RETIREMENT = new TreeMap<>();
+    static {
+        nativeSite("Lcom/gameloft/a/b/i;", "bQ(Z)V", "SetAge(I)V");
+        nativeSite(ADS_NATIVE, "CreateSingleAdsManagerInstance()V", "NativeCreateSingleAdsManagerInstance()V");
+        nativeSite(ADS_NATIVE, "InitializeAdsManager(Ljava/lang/String;Ljava/lang/String;)V",
+            "NativeInitializeAdsManager(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
+        nativeSite("Lcom/gameloft/glads/GLAds;", "init()V", "SetGLAdsServerTrackingEvents(Ljava/lang/String;)V");
+        nativeSite(ADS, "onPause()V", "OnPause()V");
+        nativeSite(ADS, "onResume()V", "OnResume()V");
+    }
+    static void nativeSite(String owner, String caller, String target) {
+        if (!NATIVE_RETIREMENT.containsKey(owner)) NATIVE_RETIREMENT.put(owner, new TreeMap<>());
+        NATIVE_RETIREMENT.get(owner).put(caller, target);
+    }
     static final List<String> LIFECYCLE = Collections.unmodifiableList(Arrays.asList(
         "onActivityResult(IILandroid/content/Intent;)V", "onConfigurationChanged(Landroid/content/res/Configuration;)V",
         "onCreate(Landroid/os/Bundle;)V", "onDestroy()V", "onNewIntent(Landroid/content/Intent;)V",
@@ -121,6 +137,58 @@ public final class PatchDisabledSdkLifecycle {
         return result;
     }
 
+    /** Optional ad propagation only: never remove surrounding privacy/consent logic. */
+    static Map<String, List<Edit>> planNativeRetirement(ClassDef definition) throws IOException {
+        if (definition == null || !NATIVE_RETIREMENT.containsKey(definition.getType())) throw new IOException("Missing reviewed ad-native caller class");
+        Map<String, String> expected = NATIVE_RETIREMENT.get(definition.getType());
+        Map<String, List<Edit>> result = new TreeMap<>();
+        for (Method method : definition.getMethods()) {
+            if (method.getImplementation() == null) continue;
+            String caller = signature(method); int offset = 0;
+            for (Instruction instruction : method.getImplementation().getInstructions()) {
+                MethodReference ref = reference(instruction);
+                if (ref != null && ref.getDefiningClass().equals(ADS_NATIVE) && expected.containsKey(caller)
+                        && signature(ref).equals(expected.get(caller))) {
+                    if ((instruction.getOpcode() != Opcode.INVOKE_STATIC && instruction.getOpcode() != Opcode.INVOKE_STATIC_RANGE)
+                            || instruction.getCodeUnits() != 3 || !ref.getReturnType().equals("V")) throw new IOException("Unreviewed ad-native propagation encoding");
+                    if (result.containsKey(caller)) throw new IOException("Duplicate reviewed ad-native propagation site");
+                    result.put(caller, Collections.singletonList(new Edit(offset, Collections.singletonList(instruction), -1)));
+                }
+                offset += instruction.getCodeUnits();
+            }
+        }
+        if (!result.keySet().equals(expected.keySet())) throw new IOException("Missing reviewed ad-native propagation site in " + definition.getType());
+        return result;
+    }
+
+    static List<String> nativeInvocations(Map<String, ClassDef> definitions) throws IOException {
+        ClassDef bridge = definitions.get(ADS_NATIVE);
+        if (bridge == null) throw new IOException("Missing original AdsManager native declaration surface");
+        Set<String> methods = new TreeSet<>(), owners = new TreeSet<>(); owners.add(ADS_NATIVE);
+        for (Method method : bridge.getMethods()) if ((method.getAccessFlags() & 256) != 0) methods.add(signature(method));
+        if (methods.isEmpty()) throw new IOException("Original AdsManager native declarations missing");
+        boolean changed;
+        do {
+            changed = false;
+            for (ClassDef definition : definitions.values()) if (definition.getSuperclass() != null
+                    && owners.contains(definition.getSuperclass()) && owners.add(definition.getType())) changed = true;
+        } while (changed);
+        List<String> result = new ArrayList<>();
+        for (ClassDef definition : definitions.values()) for (Method method : definition.getMethods()) if (method.getImplementation() != null) {
+            for (Instruction instruction : method.getImplementation().getInstructions()) {
+                MethodReference ref = reference(instruction);
+                if (ref != null && owners.contains(ref.getDefiningClass()) && methods.contains(signature(ref))) {
+                    result.add(definition.getType() + "->" + signature(method) + " invokes " + ref.getDefiningClass() + "->" + signature(ref));
+                }
+            }
+        }
+        return result;
+    }
+    static void assertNoAdNativeInvocations(Map<String, ClassDef> definitions) throws IOException {
+        List<String> calls = nativeInvocations(definitions);
+        if (!calls.isEmpty()) throw new IOException("Native AdsManager invocation remains in program DEX: " + calls);
+    }
+
     static ClassDef apply(ClassDef definition, Map<String, List<Edit>> edits, boolean reverse) throws IOException {
         List<Method> methods = new ArrayList<>();
         for (Method method : definition.getMethods()) {
@@ -187,8 +255,10 @@ public final class PatchDisabledSdkLifecycle {
         Opcodes ops = Opcodes.forDexVersion(Integer.parseInt(new String(before, 4, 3, StandardCharsets.US_ASCII)));
         if (ops == null) throw new IOException("Unsupported DEX version");
         Map<String, ClassDef> original = classes(before, ops), modified = new TreeMap<>(original);
-        Map<String, List<Edit>> edits = plan(original.get(OWNER));
-        modified.put(OWNER, apply(original.get(OWNER), edits, false));
+        Map<String, Map<String, List<Edit>>> edits = new TreeMap<>();
+        edits.put(OWNER, plan(original.get(OWNER)));
+        for (String owner : NATIVE_RETIREMENT.keySet()) edits.put(owner, planNativeRetirement(original.get(owner)));
+        for (String owner : edits.keySet()) modified.put(owner, apply(original.get(owner), edits.get(owner), false));
         byte[] bytes = RelocateGamePackage.serialize(modified.values(), ops);
         Map<String, ClassDef> actual = classes(bytes, ops);
         if (!original.keySet().equals(actual.keySet())) throw new IOException("SDK policy changed class definitions");
@@ -200,17 +270,24 @@ public final class PatchDisabledSdkLifecycle {
                 }
             }
         }
-        ClassDef restored = apply(actual.get(OWNER), edits, true);
-        if (!Arrays.equals(RelocateGamePackage.semanticBytes(Collections.singletonList(original.get(OWNER)), ops),
-                RelocateGamePackage.semanticBytes(Collections.singletonList(restored), ops))) throw new IOException("SDK policy inverse semantics mismatch");
+        assertNoAdNativeInvocations(actual);
+        for (String owner : edits.keySet()) {
+            ClassDef restored = apply(actual.get(owner), edits.get(owner), true);
+            if (!Arrays.equals(RelocateGamePackage.semanticBytes(Collections.singletonList(original.get(owner)), ops),
+                    RelocateGamePackage.semanticBytes(Collections.singletonList(restored), ops))) throw new IOException("SDK policy inverse semantics mismatch: " + owner);
+        }
         Map<String, ClassDef> oldOthers = new TreeMap<>(original), newOthers = new TreeMap<>(actual);
-        oldOthers.remove(OWNER); newOthers.remove(OWNER);
+        for (String owner : edits.keySet()) { oldOthers.remove(owner); newOthers.remove(owner); }
         byte[] canonical = RelocateGamePackage.semanticBytes(oldOthers.values(), ops);
         if (!Arrays.equals(canonical, RelocateGamePackage.semanticBytes(newOthers.values(), ops))) throw new IOException("SDK policy changed another class");
-        String json = "{\n  \"schema_version\": 1,\n  \"policy\": \"facebook-and-ads-lifecycle-disabled\",\n"
+        List<String> targetOwners = new ArrayList<>(); for (String owner : edits.keySet()) targetOwners.add("\"" + owner + "\"");
+        String json = "{\n  \"schema_version\": 2,\n  \"policy\": \"facebook-and-ads-lifecycle-disabled\",\n"
             + "  \"input_dex_sha256\": \"" + sha256(before) + "\",\n  \"output_dex_sha256\": \"" + sha256(bytes) + "\",\n"
             + "  \"target_class\": \"" + OWNER + "\",\n  \"facebook_lifecycle_calls_disabled\": 12,\n"
             + "  \"ads_lifecycle_calls_disabled\": 12,\n  \"native_fullscreen_queries_disabled\": 2,\n"
+            + "  \"native_bridge_calls_disabled\": 6,\n  \"total_sdk_invocation_sites_disabled\": 33,\n"
+            + "  \"native_ads_manager_invocations_remaining\": 0,\n  \"all_native_ads_manager_invocations_audited\": true,\n"
+            + "  \"target_classes\": [" + String.join(",", targetOwners) + "],\n  \"per_owner_inverse_semantics_verified\": true,\n"
             + "  \"native_back_handlers_disabled\": 1,\n  \"instruction_widths_preserved\": true,\n"
             + "  \"inverse_target_semantics_verified\": true,\n  \"unchanged_other_classes_verified\": true,\n"
             + "  \"unchanged_classes_canonical_sha256\": \"" + sha256(canonical) + "\"\n}\n";

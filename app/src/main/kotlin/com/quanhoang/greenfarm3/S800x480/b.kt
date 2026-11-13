@@ -1,61 +1,25 @@
 package com.quanhoang.greenfarm3.S800x480
 
-import com.gameloft.android2d.adsmanager.AdsManager
-import java.util.Locale
 import org.json.JSONObject
 
-/** Retained rewarded-ad JVM adapter. Retired providers never produce reward callbacks. */
+/** Retired ad-provider ABI. No SDK dispatch, initialization or reward callback remains. */
 open class b {
     private var Jo: JSONObject? = null
     private var Jp = false
     private var Jq = false
     private var Jr = false
     private var Js = false
-    open fun CreateSingleAdsManagerInstance() {
-        if (ServiceAvailability.advertisementsEnabled()) AdsManager.CreateSingleAdsManagerInstance()
-    }
-    open fun Init() {
-        if (!ServiceAvailability.advertisementsEnabled()) return
-        try { CreateSingleAdsManagerInstance() } catch (failure: Exception) { failure.printStackTrace() }
-        com.gameloft.android2d.c.a.setGameLanguage(GloftGF2F.acw!!.dr(FarmGameEngine.aYU).lowercase(Locale.getDefault()))
-        AdsManager.SetAge(FarmGameEngine.aTL)
-        AdsManager.SetAge(FarmGameEngine.aTL)
-        com.gameloft.android2d.c.a.setGender(if (FarmGameEngine.auC == 1) 1 else 2)
-        com.gameloft.android2d.c.a.setAnonymousAccount(s.js())
-        if (com.gameloft.a.b.a.Wp() != null) {
-            val federationIdentifier = com.gameloft.a.b.a.Wp()
-            com.gameloft.android2d.c.a.SetFedID(federationIdentifier.substring(0, federationIdentifier.indexOf(",")))
-        }
-        AdsManager.EnableGLAdsTracking(true)
-        com.gameloft.android2d.c.a.init()
-        Jn = true
-    }
+
+    open fun CreateSingleAdsManagerInstance() { /* Provider removed; never create native state. */ }
+    open fun Init() { /* Provider removed; never set Jn or read account credentials. */ }
     open fun OnAdError(adType: Int, placement: String?) {
-        if (!ServiceAvailability.advertisementsEnabled()) return
-        if (adType == 3) {
-            if (placement!!.equals("enter_section_iap_shop")) { JO = 1; JK = true; return }
-            if (placement.equals("enter_section_video_bubble")) { JP = 1; JL = true }
-            else if (placement.equals("enter_section_video_lucky_wheel")) { JQ = 1; JM = true }
-            else if (placement.equals("enter_section_video_daily_stamp")) { JR = 1; JN = true }
-        }
+        // No provider callback is registered and no availability/reward is armed.
     }
     open fun OnAdFinished(adType: Int, resultCode: Int, placement: String?, auxiliary: String?, campaignId: Int, argument: Int) {
-        if (!ServiceAvailability.advertisementsEnabled()) return
-        if (adType == 3) {
-            if (placement!!.equals("enter_section_iap_shop")) { JO = 1; JK = true; return }
-            if (placement.equals("enter_section_video_bubble")) { JP = 1; JL = true }
-            else if (placement.equals("enter_section_video_lucky_wheel")) { JQ = 1; JM = true }
-            else if (placement.equals("enter_section_video_daily_stamp")) { JR = 1; JN = true }
-        }
+        // Completion of a retired provider cannot create a reward or success state.
     }
     open fun e(placement: String?, availabilityStatus: Int) {
-        if (!ServiceAvailability.advertisementsEnabled()) return
-        val mappedStatus = when (availabilityStatus) { 0 -> 2; 1 -> 4; 2 -> 3; else -> 0 }
-        if (placement!!.equals("enter_section_iap_shop")) { JO = mappedStatus; JK = true }
-        else if (placement.equals("enter_section_video_bubble")) { JP = mappedStatus; JL = true }
-        else if (placement.equals("enter_section_video_lucky_wheel")) { JQ = mappedStatus; JM = true }
-        else if (placement.equals("enter_section_video_daily_stamp")) { JR = mappedStatus; JN = true }
-        Kb = true
+        // Retained signature only: no provider availability can be reported.
     }
     companion object {
         @JvmField val Jl: Array<String> = arrayOf("ads_minigame_timer_skip", "ads_gems", "ads_spin", "ads_double_sc", "ads_double_passport", "ads_construction_skip_time", "ads_diamonds", "ads_cash", "ads_free_item", "ads_storage_slot", "ads_product_skip_time", "ads_special_currency", "ads_daily_reward", "ads_product_poi_skip_time", "ads_product_supply_skip_time")
@@ -102,14 +66,9 @@ open class b {
         @JvmField var Kf: Boolean = false
         @JvmField var Kg: Boolean = false
         @JvmField var Kh: Boolean = false
-        @JvmStatic fun ar(placement: String?) {
-            if (ServiceAvailability.advertisementsEnabled()) AdsManager.IsIncentivizedAvailable(placement)
-        }
-        @JvmStatic fun showIncentivized(placement: String?) {
-            if (ServiceAvailability.advertisementsEnabled()) AdsManager.ShowIncentivized(placement)
-        }
-        @JvmStatic fun isAdOnScreen(adType: Int): Boolean =
-            ServiceAvailability.advertisementsEnabled() && AdsManager.IsAdOnScreen(adType)
+        @JvmStatic fun ar(placement: String?) { /* Provider unavailable; no SDK query. */ }
+        @JvmStatic fun showIncentivized(placement: String?) { /* Provider removed; never open an ad. */ }
+        @JvmStatic fun isAdOnScreen(adType: Int): Boolean = false
         @JvmStatic fun hL(): b {
             if (Jm == null) Jm = b()
             return Jm!!

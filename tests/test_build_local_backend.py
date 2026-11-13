@@ -244,8 +244,12 @@ class LocalBackendPackagingTest(unittest.TestCase):
     def policy_fixture(self):
         disabled = self.directory / 'disabled-sdk.dex'
         disabled.write_bytes(b'dex\n035\0SDK lifecycle policy fixture')
-        policy = {'schema_version': 1, 'policy': 'facebook-and-ads-lifecycle-disabled',
+        policy = {'schema_version': 2, 'policy': 'facebook-and-ads-lifecycle-disabled',
                   'target_class': 'Ljavax/microedition/midlet/MIDlet;',
+                  'target_classes': build.SDK_RETIREMENT_OWNERS,
+                  'native_bridge_calls_disabled': 6, 'total_sdk_invocation_sites_disabled': 33,
+                  'native_ads_manager_invocations_remaining': 0, 'all_native_ads_manager_invocations_audited': True,
+                  'per_owner_inverse_semantics_verified': True,
                   'facebook_lifecycle_calls_disabled': 12, 'ads_lifecycle_calls_disabled': 12,
                   'native_fullscreen_queries_disabled': 2, 'native_back_handlers_disabled': 1,
                   'instruction_widths_preserved': True, 'inverse_target_semantics_verified': True,
@@ -265,7 +269,11 @@ class LocalBackendPackagingTest(unittest.TestCase):
         for field, invalid in (('input_dex_sha256', '0' * 64), ('output_dex_sha256', '0' * 64),
                                ('facebook_lifecycle_calls_disabled', 11), ('native_back_handlers_disabled', True),
                                ('inverse_target_semantics_verified', False), ('unchanged_other_classes_verified', False),
-                               ('instruction_widths_preserved', False), ('target_class', 'Lwrong/Owner;')):
+                               ('instruction_widths_preserved', False), ('target_class', 'Lwrong/Owner;'),
+                               ('schema_version', 1), ('native_bridge_calls_disabled', 5),
+                               ('total_sdk_invocation_sites_disabled', 27), ('native_ads_manager_invocations_remaining', False),
+                               ('native_ads_manager_invocations_remaining', 1), ('all_native_ads_manager_invocations_audited', False),
+                               ('per_owner_inverse_semantics_verified', False), ('target_classes', [])):
             changed = dict(policy); changed[field] = invalid; report.write_text(json.dumps(changed))
             with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'SDK lifecycle provenance'):
                 build.prepare(self.original, self.base, self.dex, self.output, disabled_sdk_dex=disabled)
@@ -335,6 +343,7 @@ class LocalBackendPackagingTest(unittest.TestCase):
             'retained_structural_reference_audit_verified': True, 'retained_reflection_string_audit_verified': True,
             'retired_nullable_avatar_method_verified': True, 'other_profile_data_and_methods_preserved': True,
             'retained_class_semantics_verified': True, 'inverse_class_set_and_method_semantics_verified': True,
+            'native_ads_manager_invocations_remaining': 0, 'global_ad_native_invocation_audit_verified': True,
             'input_dex_sha256': build.sha256(google.read_bytes()), 'output_dex_sha256': build.sha256(facebook.read_bytes())}
         report = facebook.with_suffix('.dex.json'); report.write_text(json.dumps(proof))
         build.prepare(self.original, self.base, self.dex, self.output, disabled_sdk_dex=disabled, pruned_ads_dex=google, pruned_facebook_dex=facebook)
@@ -343,6 +352,7 @@ class LocalBackendPackagingTest(unittest.TestCase):
         for field, invalid in (('removed_facebook_class_count', 716), ('removed_provider_bridge_count', 23),
                 ('retired_avatar_method', 'wrong'), ('original_profile_canonical_sha256', '0' * 64),
                 ('other_profile_data_and_methods_preserved', False), ('inverse_class_set_and_method_semantics_verified', False),
+                ('global_ad_native_invocation_audit_verified', False), ('native_ads_manager_invocations_remaining', 1),
                 ('input_dex_sha256', '0' * 64), ('output_dex_sha256', '0' * 64)):
             changed = dict(proof); changed[field] = invalid; report.write_text(json.dumps(changed))
             with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'Facebook SDK pruning provenance'):

@@ -1,0 +1,7 @@
+test_production_quit_boundary (test_cloud_quit_checkpoint.CloudQuitCheckpointTest.test_production_quit_boundary) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 4.902s
+
+OK
+PASS actual quit checkpoint: reward settlement, duplicate input, local failure, game-thread cleanup, bounded busy writer and late work

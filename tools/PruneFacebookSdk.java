@@ -134,6 +134,7 @@ public final class PruneFacebookSdk {
         Map<String, ClassDef> actual = PruneGoogleAds.classes(bytes, ops);
         if (!actual.keySet().equals(retained.keySet())) throw new IOException("Unexpected class set after Facebook pruning");
         for (ClassDef definition : actual.values()) { Audit audit = new Audit(); audit.definition(definition); audit.requireClosed(definition.getType()); }
+        PatchDisabledSdkLifecycle.assertNoAdNativeInvocations(actual);
         verifyUnavailableAvatar(actual.get(PROFILE));
         byte[] canonical = RelocateGamePackage.semanticBytes(retained.values(), ops);
         if (!Arrays.equals(canonical, RelocateGamePackage.semanticBytes(actual.values(), ops))) throw new IOException("Retained Facebook-pruned semantics changed");
@@ -151,6 +152,7 @@ public final class PruneFacebookSdk {
             + PatchDisabledSdkLifecycle.sha256((String.join("\n", removed) + "\n").getBytes(StandardCharsets.UTF_8)) + "\",\n"
             + "  \"retired_avatar_method\": \"" + PROFILE + "->" + AVATAR + "\",\n  \"original_profile_canonical_sha256\": \"" + PROFILE_CANONICAL_SHA256 + "\",\n"
             + "  \"retained_structural_reference_audit_verified\": true,\n  \"retained_reflection_string_audit_verified\": true,\n"
+            + "  \"native_ads_manager_invocations_remaining\": 0,\n  \"global_ad_native_invocation_audit_verified\": true,\n"
             + "  \"retired_nullable_avatar_method_verified\": true,\n  \"other_profile_data_and_methods_preserved\": true,\n"
             + "  \"retained_class_semantics_verified\": true,\n  \"inverse_class_set_and_method_semantics_verified\": true,\n"
             + "  \"retained_classes_canonical_sha256\": \"" + PatchDisabledSdkLifecycle.sha256(canonical) + "\"\n}\n";

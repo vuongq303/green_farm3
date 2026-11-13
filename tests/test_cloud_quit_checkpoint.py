@@ -34,8 +34,9 @@ import java.util.ArrayDeque
 object SystemClock { var now = 0L; fun elapsedRealtime() = now }
 object Log { fun w(tag: String, message: String) = 0 }
 object ProgressSaveController {
- var value = 0; var saved = -1; var flushes = 0; var allowed = true
- fun flushForLifecycle(): Boolean { flushes++; if (!allowed) return false; saved=value;return true }
+ var value = 0; var saved = -1; var flushes = 0; var allowed = true;var dirty=false
+ fun hasPendingChanges() = dirty
+ fun flushForLifecycle(): Boolean { flushes++; if (!allowed) return false; saved=value;dirty=false;return true }
 }
 class ManualWorker {
  val jobs = ArrayDeque<Runnable>()
@@ -56,7 +57,7 @@ object BackendCloudController {
   worker.jobs.clear();quitAction=null;quitCheckpointStarted=false;quitCheckpointDone=false
   quitDeadlineMillis=0;failNetwork=false;networkRequests=0;SystemClock.now=0
   ProgressSaveController.value=0;ProgressSaveController.saved=-1
-  ProgressSaveController.flushes=0;ProgressSaveController.allowed=true
+  ProgressSaveController.flushes=0;ProgressSaveController.allowed=true;ProgressSaveController.dirty=false
  }
 }
 
@@ -79,6 +80,7 @@ fun main() {
  check(cleaned==0&&cloud.networkRequests==1)
  cloud.frameFinished()
  check(cleaned==1&&store.saved==7&&store.value == -99&&cloud.quitAction==null)
+ check(store.flushes==1) // No fresh serializer timestamp after a clean cloud ACK.
  cloud.frameFinished();check(cleaned==1)
 
  // An unavailable local checkpoint must prevent both network and cleanup.
@@ -87,7 +89,7 @@ fun main() {
  cloud.frameFinished();check(cleaned==0&&cloud.worker.jobs.isEmpty())
  store.allowed=true;store.value=11;cloud.frameFinished()
  check(store.saved==11&&cloud.worker.jobs.size==1)
- cloud.worker.runOne();store.allowed=false;cloud.frameFinished();check(cleaned==0)
+ cloud.worker.runOne();store.dirty=true;store.allowed=false;cloud.frameFinished();check(cleaned==0)
  store.allowed=true;cloud.frameFinished();check(cleaned==1)
 
  // A blocked/busy cloud writer cannot keep quit waiting beyond the deadline.
@@ -96,7 +98,7 @@ fun main() {
  cloud.requestQuit(Runnable { check(store.saved==21);cleaned++ })
  cloud.frameFinished();check(store.saved==20)
  SystemClock.now=7999;cloud.frameFinished();check(cleaned==0)
- store.value=21;SystemClock.now=8000;cloud.frameFinished()
+ store.value=21;store.dirty=true;SystemClock.now=8000;cloud.frameFinished()
  check(cleaned==1&&cloud.quitAction==null&&cloud.networkRequests==0)
  // Old work finally completing cannot finish a subsequent request early.
  val old=cloud.worker.jobs.remove()

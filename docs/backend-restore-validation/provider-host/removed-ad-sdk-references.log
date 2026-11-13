@@ -1,0 +1,16 @@
+test_callbacks_never_initialize_native_ads_or_grant_currency (test_retired_provider_services.RetiredProviderServicesTest.test_callbacks_never_initialize_native_ads_or_grant_currency) ... ok
+test_packed_gui_cannot_render_or_reactivate_provider_buttons (test_retired_provider_services.RetiredProviderServicesTest.test_packed_gui_cannot_render_or_reactivate_provider_buttons) ... ok
+test_original_bytecode_matches_converted_models (test_kotlin_medium_models.KotlinMediumModelsTest.test_original_bytecode_matches_converted_models) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 16.608s
+
+OK
+PASS: 6000 real callback traces; no SDK init, reward, credential read or unrelated startup redirect
+Retired Facebook/video-ad controls: PASS: 8165 identity/reset/render/listener checks; hitboxes, currency controls and stale states verified
+PASS medium Kotlin differential matrix ed3e72037f28b8c54fb865d048bef2f293ffdb60a088d75fec147cf12591c8f7
+PASS medium Kotlin differential random b35f9ef5f2b8487d3ad0f46ef36fd02484ff8408b6d4cb8da3107e7e34dcb055
+PASS medium Kotlin differential cloud f8ca7cb4f26c37fd7736af7020451e02db13fca88895bdc31dd90277111cafd7
+PASS medium Kotlin differential profiler d175c7dfe28c7f27dbc2cfcd85e4da2bb5f4fefedfd0102bd92f5ad761ace8da
+PASS medium Kotlin differential tables 118e1f38c49cfd8dc33e706bfb2ebce4e2e6988ef11db58e5bbbd16e83a3b6ca
+PASS medium Kotlin differential ads 933634a49281e4294e864d755c3fa37f4c520e3f0598155fcd5f9febf9b58372

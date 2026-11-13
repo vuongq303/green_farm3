@@ -87,8 +87,8 @@ public class FarmGameEngine {
   check(bt.getPassword().equals("")&&bt.nZ().getId().equals("")&&bt.nZ().getName().equals(""),"Removed Facebook ABI fabricated identity");
   check(bt.oa()==0&&bt.ob()==null&&bt.eM(-1)==null&&bt.cD(null)==null,"Removed Facebook ABI fabricated friends or image data");
   check(bu.clears==0,"Provider retirement cleared stored data implicitly");
-  // If these real Kotlin entrypoints reach the original SDK's native methods,
-  // the host JVM throws UnsatisfiedLinkError. No native mock reports success.
+  // If these real Kotlin entrypoints regress to the SDK's native methods, the
+  // host JVM throws UnsatisfiedLinkError. No native mock reports success.
   bridge.CreateSingleAdsManagerInstance();bridge.Init();
   b.ar("enter_section_iap_shop");b.showIncentivized("enter_section_video_bubble");
   check(!b.isAdOnScreen(3),"Retired ad reported onscreen");check(!b.Jn,"Ad SDK marked initialized");
@@ -122,10 +122,13 @@ public class FarmGameEngine {
                            kotlin_source_directory() / 'b.kt', kotlin_source_directory() / 'bt.kt',
                            kotlin_source_directory() / 'cm.kt'], [peer, profile, image], directory,
                           classpath=(original, android))
-            for emitted in ('bt.class', 'bt$Companion.class', 'cm.class'):
+            for emitted in ('bt.class', 'bt$Companion.class', 'cm.class', 'b.class', 'b$Companion.class'):
                 bytecode = (directory / qualified_package().replace('.', '/') / emitted).read_bytes()
                 self.assertNotIn(b'com/gameloft/android2d/socialnetwork/l', bytecode)
                 self.assertNotIn(b'com/facebook/', bytecode)
+                self.assertNotIn(b'com/gameloft/adsmanager/', bytecode)
+                self.assertNotIn(b'com/gameloft/android2d/adsmanager/', bytecode)
+                self.assertNotIn(b'com/gameloft/android2d/c/a', bytecode)
             result = subprocess.run([str(jdk_tool('java')), '-cp', runtime_classpath(directory, original, android),
                                      qualified_package() + '.FarmGameEngine'],
                                     capture_output=True, text=True, timeout=20)

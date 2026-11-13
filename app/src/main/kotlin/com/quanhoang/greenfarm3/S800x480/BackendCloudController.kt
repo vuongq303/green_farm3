@@ -262,7 +262,7 @@ object BackendCloudController {
         if (quitCheckpointDone) {
             // SDK callbacks during the request also become locally durable.
             // If network did not acknowledge them, the outbox survives exit.
-            if (!ProgressSaveController.flushForLifecycle()) return
+            if (ProgressSaveController.hasPendingChanges() && !ProgressSaveController.flushForLifecycle()) return
             quitAction = null
             quitCheckpointStarted = false
             quitCheckpointDone = false
