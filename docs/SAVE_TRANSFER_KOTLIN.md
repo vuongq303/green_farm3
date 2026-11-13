@@ -49,6 +49,10 @@ bằng bản đã chọn. Chỉ một bản sao trước lần nhập gần nh�
   acknowledgement mới kết thúc process cũ. Nếu lưu thất bại, giữ phiên cũ và báo
   thử lại, tháo freeze; yêu cầu chuẩn bị trùng không tạo checkpoint song song.
   Thao tác này cũng kết thúc loop/static cache của MIDlet cũ.
+  Cold receiver phải kiểm tra writer chưa khởi tạo trước khi gọi engine: lần UI
+  đầu phát hiện `FarmGameEngine.<clinit>` cần MIDlet và bị NPE khi gọi cancel preview
+  quá sớm. Guard writer-null nay nằm trong monitor, trước engine call; không bỏ
+  durable barrier của phiên có writer. Có JVM regression tái hiện initializer này.
 - `SaveTransferGate.enterGame()` giữ khóa file của hệ điều hành suốt vòng đời
   process game. Mỗi lần xuất/nhập cần lấy cùng khóa riêng. Người chơi mở lại game
   giữa lúc chọn tệp sẽ không khiến hai process đồng thời ghi/đọc sai snapshot;
@@ -159,6 +163,25 @@ trong `docs/kotlin-validation/save-transfer-sqlite.json`; payload tổng hợp
 không phải farm có thể chơi. Các kết quả UI export cầu nối → import package mới,
 đọc farm thật và mở lại phải được báo riêng trong checkpoint tổng của đợt chuyển
 Kotlin. Không suy ra đã đạt từ test codec hoặc build thành công.
+
+Kết quả kiểm tra APK/UI thực tế của mốc này:
+
+- [30/30 fixture SQLite từ APK cầu nối đã cài](kotlin-validation/save-transfer-apk-sqlite.json)
+  đạt bằng Instrumentation gắn vào Application thật; helper/stdlib lấy từ APK
+  đích, không đóng gói bản sao implementation vào DEX test. Database người chơi
+  không được probe mở.
+- [Bằng chứng runtime](kotlin-validation/game-runtime.json): bản cầu nối `f147…`
+  xuất bằng SAF, bản mới `090e…` nhập cùng tệp sau xác nhận; toàn bộ 14 record,
+  payload/hash/generation/marker khớp trước khi mở game lần đầu.
+- Farm thật mở lại, hai cold restart giữ 1.900 xu, 50 cash, XP7, level1,
+  tutorial23. Snapshot mới ghi binding SDK hiện tại; binding ổn định qua hai
+  process sau, không dựa vào metadata nhập đã cũ.
+- Đổi English → Tiếng Việt có confirmation tiếng Anh hiện tại; Cancel giữ PID và
+  header. Một OK tự restart đúng một lần, farm tiếng Việt vẫn giữ các giá trị trên.
+
+Chưa kiểm thử đầy đủ trồng/thu hoạch/kho/quest, mọi ngôn ngữ, âm thanh, máy thật
+hoặc FPS ở mốc chuyển Kotlin. Các ảnh UI đã lọc nằm trong `kotlin-validation/runtime-ui/`;
+database và tệp save thật chỉ giữ riêng trong `.local`, không commit.
 
 Nếu `app_process` của môi trường không chạy fixture được, dùng runner có
 Application/Context Android được gắn đúng vòng đời:

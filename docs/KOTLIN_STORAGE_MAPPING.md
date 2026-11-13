@@ -35,5 +35,9 @@ Kiểm thử nhóm này thực thi Kotlin thật cùng các Java peer trích t�
   identity/format fail trước khi mutate, restore sprite lazy building17 qua
   decoder/initializer/update gốc; không tạo sprite giả hoặc xóa pose.
 - `GameSaveStore` được compile với Android28 và dependency gốc; public JVM API
-  được đối chiếu với Java baseline. SQLite Android cần probe trên APK mới;
-  kết quả build/test cuối được ghi trong checkpoint Kotlin chung.
+  được đối chiếu với Java baseline. [27/27 probe Android SQLite mới](kotlin-validation/store-probe-results.json)
+  đã đạt trên APK `090e1cc7…0efa38be`, application ID `com.quanhoang.greenfarm3`.
+  DEX probe chỉ chứa7 lớp kiểm tra; storage implementation được nạp từ APK đã cài,
+  không đóng gói bản sao helper. Các fixture tách biệt không mở database người chơi.
+  WAL/FULL, kill trước/sau commit, migration/legacy, corruption, write-error/retry
+  và các snapshot async/ordering/coalescing đều được kiểm tra thực tế.

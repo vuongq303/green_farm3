@@ -102,6 +102,8 @@ Gloft/refactor đạt 9/9; reward/pose/model đạt 4/4 sau rename.
 
 Tên chưa đủ bằng chứng vẫn giữ và được liệt kê trong inventory/mapping; không
 tuyên bố toàn bộ 72 nghìn dòng engine đã được đặt tên hoặc chuyển Kotlin.
+Phần lõi monolith vẫn ở `FarmGameEngine.java` và các lớp Java còn lại; số lượng
+file Kotlin không đại diện cho tỷ lệ toàn bộ logic đã chuyển.
 
 ## Bảo toàn database khi chuyển save
 
@@ -132,3 +134,106 @@ Full suite sau package/symbol đạt **154/154**, không skip, cùng **20/20** t
 Lượt đầy đủ này dùng APK cloud `e5026716…` trước sửa cold receiver; regression
 cold và các barrier đã được chạy lại riêng sau sửa. Không coi các test host này
 là bằng chứng chuyển save qua giao diện đã hoàn thành.
+
+## Kiểm thử chuyển save qua giao diện
+
+Trên emulator Android9/API28, bản exporter dùng app ID cũ đã cập nhật bằng cùng
+khóa ký, không uninstall/clear data. Với APK cold-fix `f147ee37…`, người thử đã
+nhấn Chuẩn bị, Xuất và Save trong SAF. Tệp 359.830 byte chứa đủ 14 record;
+parser độc lập kiểm tra checksum toàn tệp/từng record và so sánh chính bytes
+với SQLite cũ: generation/full snapshot 5402, format1, pose1 đều khớp.
+
+APK mới `090e1cc7…` được cài song song bằng ID `com.quanhoang.greenfarm3`.
+SAF Open chọn chính tệp đó; sau xác nhận, UI báo nhập và kiểm tra thành công.
+**Trước lần mở game đầu tiên**, bản copy nhất quán của DB mới có đủ 14 payload,
+generation/tombstone/marker khớp nguồn, không tạo farm mặc định để vượt lỗi.
+
+Sau Mở game và Not now của luồng Connect gốc, farm được hiển thị với bò trưởng
+thành, các ô đã thu hoạch, nhà và FeedMill. Đọc field qua debugger ở chế độ chỉ
+đọc, không invoke method hay sửa field, xác minh cả trước và sau:
+
+| Dữ liệu | Bản cũ | Lần mở farm mới đầu tiên |
+|---|---:|---:|
+| Xu | 1900 | 1900 |
+| Cash | 50 | 50 |
+| XP | 7 | 7 |
+| Level | 1 | 1 |
+| Tutorial | 23 | 23 |
+| Ngôn ngữ | English/0 | English/0 |
+
+Hai lần cold reopen đều đã đạt, với PID mới 16321 và 16638, farm hiển thị và
+toàn bộ số trong bảng vẫn giữ nguyên. SDK identity ổn định; gameplay được ghi
+lại bằng binding hiện tại, hash của bản import ban đầu đã trở nên stale đúng
+thiết kế. Sau Home/lifecycle, slot/full generation 5461, schema4/format1/pose1
+được kiểm tra. Mỗi process mẫu có một writer, không có FATAL.
+
+[Bằng chứng UI và số đối chiếu](kotlin-validation/game-runtime.json),
+[farm sau cold lần hai](kotlin-validation/runtime-ui/new-cold2-farm.png).
+Không suy ra mọi kho/vật nuôi/quest đều đã được thao tác qua UI từ byte equality.
+
+### Ngôn ngữ sau chuyển Kotlin
+
+Đã thử thật English → Tiếng Việt giữa tutorial23. Hộp thoại dùng English đang
+chạy; Cancel giữ PID/header generation/ngôn ngữ. Chọn lại và bấm OK khiến
+PID16638 kết thúc, PID17615 xuất hiện sau10,129s và ổn định qua43,6s quan sát,
+không manual start/stop. Gameplay commit5493 trước preference5494, đúng hai pha.
+Loading/Connect và farm dùng asset tiếng Việt gốc; JDI vẫn1900xu/50cash/XP7/
+level1/tutorial23, language16. Home checkpoint cuối slot/full5520/format1/pose1.
+Không FATAL hoặc lặp xác nhận. Nền game đen trong lúc native dialog giữ focus
+là trạng thái pause; dialog vẫn hiển thị. Không có bản vá suy đoán cho trạng
+thái pause này. Chưa thử lại mọi ngôn ngữ, mọi bước tutorial hoặc hàng chục vòng.
+
+### Probe từ chính APK đã cài
+
+- [27/27 storage probe](kotlin-validation/store-probe-results.json) đạt trên
+  APK game mới `090e1cc7…`. Probe DEX chỉ có 7 lớp kiểm thử; GameSaveStore Kotlin
+  và SQLite được nạp từ APK/platform. Kiểm tra WAL/FULL, kill trước/sau commit,
+  legacy/migration, corruption/thiếu record, lỗi ghi/retry, immutable snapshot và
+  thứ tự/coalescing đều đạt. Không mở database người chơi.
+- [30/30 migration check](kotlin-validation/save-transfer-apk-sqlite.json) đạt
+  trên APK exporter `f147ee37…` qua Instrumentation gắn đúng target. Các lớp
+  production/stdlib được nạp từ APK; test chỉ dùng fixture riêng, giữ file hỏng
+  nguyên byte và target hợp lệ khi import lỗi. Target test được dừng sau kiểm
+  tra để fixture singleton không ảnh hưởng phiên game thật. Đây là chạy lại
+  cùng các trường hợp source trên APK, không cộng thành 60 trường hợp khác nhau.
+
+## APK bàn giao và lệnh cuối
+
+Đã chạy sạch cả hai profile, không override `BACKEND_BASE_URL` Windows:
+
+```sh
+./gradlew :app:clean :app:assembleDebug -PgreenfarmLegacyExport=true --stacktrace
+./gradlew :app:clean :app:assembleDebug --stacktrace
+```
+
+| APK | Kết quả | SHA256 |
+|---|---|---|
+| Cầu nối xuất save cũ | SUCCESS 1m54s,45 task | `bbe0aecf66cf7d1fd7b394fd3f2f17c9388ee9df478f4d4dd7deeb320882d2d1` |
+| Game mới mặc định | SUCCESS 1m44s,45 task | `233a37af49e2e91afb5bbda1cef0a83f338e8b384ce47e4f5445913834be9201` |
+
+[APK và hướng dẫn](../artifacts/README.md),
+[metadata](../artifacts/build-info.json),
+[kết quả kiểm tra bản game](kotlin-validation/delivery/new/summary.json).
+Hai build Linux có `:app:clean` thực thi; chưa chạy Gradle Windows. Cả hai dùng
+`http://10.37.233.55:8787/`, DEX035, chữ ký v1/v2/v3 và alignment16KB đạt, 59
+payload nguyên byte, 0 game class package cũ. Binary Windows-URL này chưa chạy
+từ cloud; bằng chứng UI/SQLite ở trên dùng cùng source với URL cloud.
+
+## Mục tiêu và phần còn lại
+
+| Mục tiêu | Trạng thái tại checkpoint |
+|---|---|
+| Toàn bộ logic do dự án kiểm soát thành Kotlin | **Chưa hoàn tất**. 99 file Kotlin, gồm 83 lớp namespace gốc và 16 helper phục hồi/chuyển save bổ sung; 28 lớp Java còn chạy logic thật. |
+| Không còn logic lấy từ APK gốc | **Chưa hoàn tất**. 110 lớp lõi đã có source, nhưng 125 lớp integration cùng MIDlet/service/SDK/native ngoài namespace vẫn giữ DEX/native đã kiểm kê. APK gốc vẫn là đầu vào bắt buộc. |
+| Application ID/package game mới | Đã build/kiểm tra DEX/manifest và cài/chạy farm với `com.quanhoang.greenfarm3`; 0 định nghĩa game class ở package cũ. SDK vendor namespace được giữ riêng. |
+| Tên có nghĩa theo symbol | Đã áp dụng 7 ánh xạ chính và các tên private/local đã xác minh trong từng nhóm Kotlin. Nhiều symbol chưa hiểu rõ còn giữ, không đổi đại trà theo chữ cái. |
+| Chuyển save giữa hai app ID | Đã xuất/nhập SAF thật, giữ byte record, vào lại farm và qua hai cold restart với đủ số tiền/XP/tutorial đối chiếu. Storage27/migration30 probe từ APK đã cài đạt. |
+| Toàn bộ gameplay và tương thích Android mới | Chưa đủ bằng chứng. API28 là thiết bị đã thử; chưa có ma trận toàn bộ level/quest/kho/âm thanh hoặc phép đo FPS tương đương trước/sau. |
+
+28 lớp Java đang biên dịch còn lại: `FarmEntity`, `FarmGameEngine`, `GameRuntime`,
+`a`, `aa`, `ac`, `ak`, `am`, `ao`, `at`, `aw`, `ay`, `bc`, `bf`, `bq`, `bx`,
+`by`, `bz`, `cg`, `f`, `i`, `k`, `m`, `n`, `s`, `t`, `w`, `z`.
+Mỗi lớp DEX/integration/native còn lại có descriptor và nguồn tham khảo trong
+[inventory](kotlin-validation/dependency-inventory.json). Converter IDE chính
+thức chưa dùng được trong môi trường này; không thay bằng dịch regex hoặc
+implementation suy đoán để tuyên bố 28 lớp lớn đã chuyển xong.

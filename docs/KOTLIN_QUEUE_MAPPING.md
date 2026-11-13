@@ -88,3 +88,28 @@ python3 -m unittest discover -s tests -p test_progress_save_controller.py -v
 với Kotlin classes/stdlib trong classpath. Compiler host được bootstrap dưới `.local`
 bằng URL Maven chính thức và SHA-256 ghim trong `tools/ensure_kotlin_compiler.py`; compiler,
 reflect và coroutines dùng cho tooling không được đóng gói vào APK.
+
+## Sửa cold lifecycle khi mở công cụ chuyển save
+
+Kiểm thử UI thực tế phát hiện receiver chuẩn bị chuyển save có thể được Android
+khởi tạo trong main process lạnh, trước khi MIDlet tồn tại. Đường flush trước đó
+gọi `FarmGameEngine.cancelMovePreviewForInterruption()` trước khi kiểm tra writer.
+Lời gọi static làm engine chạy `<clinit>`, nơi game gốc cần `GloftGF2F.acx`; vì
+chưa có MIDlet nên process bị lỗi khởi tạo.
+
+`flushForLifecycle()` nay kiểm tra `sqliteWriteQueue == null` **đầu tiên, bên trong
+monitor `FarmGameEngine::class.java` đã có**, rồi mới gọi cancel preview. Class
+literal và việc lấy monitor không chạy static initializer. Writer null nghĩa là
+controller chưa khởi tạo writer/world; không có checkpoint RAM do controller sở
+hữu để chờ. Khi writer tồn tại, toàn bộ capture, await, drain và durable sequence
+barrier giữ nguyên, không trả thành công giả khi còn dữ liệu chờ.
+
+Regression chạy trong JVM mới hoàn toàn, với engine có initializer tăng counter
+và ném lỗi nếu chưa có MIDlet. Trước sửa, production controller gây đúng
+`ExceptionInInitializerError`; sau sửa trả true với counter vẫn 0 và không gọi
+initialize storage. Một JVM riêng vẫn chạy các ca active writer, lifecycle,
+language rollback và transfer freeze như trước.
+
+[Bằng chứng trước sửa](kotlin-validation/cold-flush-regression-before.log) và
+[sau sửa](kotlin-validation/cold-flush-regression-after.log). Đây là kiểm tra JVM
+cho thứ tự khởi tạo, không thay thế lần chạy UI Android với APK đã rebuild.
