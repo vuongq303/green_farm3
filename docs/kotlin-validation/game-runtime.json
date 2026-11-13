@@ -1,0 +1,285 @@
+{
+  "device": "emulator-5554; Android9/API28 x86; software/noKVM",
+  "backend_base_url": "http://172.26.91.236:18787/",
+  "tested_apks": {
+    "legacy_export": {
+      "application_id": "com.gameloft.android.ANMP.GloftGF2F",
+      "sha256": "f147ee37a1556a2eb9bff2a0f1cd7431c3ff7ea3409221999ba7d58493b1156a",
+      "source_commit": "1064add",
+      "code_namespace": "com.quanhoang.greenfarm3"
+    },
+    "new_game": {
+      "application_id": "com.quanhoang.greenfarm3",
+      "sha256": "090e1cc7c9e075eee51e5ddbd71382eaaa1bf9ca91b5cf4ab5a8c9840efa38be",
+      "source_commit": "1064add",
+      "code_namespace": "com.quanhoang.greenfarm3"
+    }
+  },
+  "preservation": {
+    "original_app_uninstalled_or_data_cleared": false,
+    "sql_or_gameplay_state_injected": false,
+    "old_profile_retained": true,
+    "backup_method": "SQLite URI mode=ro .backup; coherent committed snapshot including WAL",
+    "private_database_and_archive_committed": false
+  },
+  "real_saf_export": {
+    "file_sha256": "6d389a394cd15e3ce0ab78cda499241e92aa0cfcb6c62ea1070009ae4f4fab13",
+    "bytes": 359830,
+    "source_package": "com.gameloft.android.ANMP.GloftGF2F",
+    "records": 14,
+    "generation": 5402,
+    "complete_snapshot_generation": 5402,
+    "snapshot_format": 1,
+    "pose_snapshot": 1,
+    "all_record_payloads_checksums_and_generations_match_source": true,
+    "archive_whole_file_sha256_valid": true,
+    "language": 0,
+    "tutorial": 23,
+    "pending_reward_count": 0
+  },
+  "real_saf_import": {
+    "all14actual_payload_bytes_generations_tombstones_checksums_match_export": true,
+    "slot_generation": 5402,
+    "complete_snapshot_generation": 5402,
+    "snapshot_format": 1,
+    "pose_snapshot": 1,
+    "identity_metadata_bound_to_exact_imported_gameplay_payload": true,
+    "integrity_check": "ok",
+    "old_source_app_left_installed": true,
+    "game_not_started_before_comparison": true,
+    "new_db_sha256": "a3bc3bf476607630663e8d5a3940fdafcfc226738acf876500825b38b9d6a422",
+    "user_selected_same_downloads_file": true,
+    "user_confirmed_native_import_dialog": true,
+    "app_reported_import_complete": true,
+    "evidence": [
+      "runtime-ui/new-import-confirmation.png",
+      "runtime-ui/new-import-complete.png"
+    ]
+  },
+  "actual_game_runtime": {
+    "launch_method": "Native transfer UI Open game; subsequent normal explicit Start activity launches, original Connect Not now touch",
+    "first_imported_farm_visible": true,
+    "two_cold_process_reopens_passed": true,
+    "processes": {
+      "first": 15894,
+      "cold1": 16321,
+      "cold2": 16638
+    },
+    "retained_visible_world": [
+      "adultcow",
+      "previously harvested plots",
+      "remaining ripe crops",
+      "farmhouse",
+      "FeedMill",
+      "player character"
+    ],
+    "numeric_observations": {
+      "original": {
+        "method": "JDWP read-only fields; no method invocation or field writes; numeric wrapper hashes checked",
+        "engine": "com.gameloft.android.ANMP.GloftGF2F.S800x480.ci",
+        "coinBalance": 1900,
+        "cashBalance": 50,
+        "experience": 7,
+        "level": 1,
+        "tutorialStep": 23,
+        "language": 0,
+        "pid": "21432"
+      },
+      "new_first": {
+        "method": "JDWP read-only fields; no method invocation or field writes; numeric wrapper hashes checked",
+        "engine": "com.quanhoang.greenfarm3.S800x480.FarmGameEngine",
+        "coinBalance": 1900,
+        "cashBalance": 50,
+        "experience": 7,
+        "level": 1,
+        "tutorialStep": 23,
+        "language": 0,
+        "pid": "15894"
+      },
+      "new_cold1": {
+        "method": "JDWP read-only fields; no method invocation or field writes; numeric wrapper hashes checked",
+        "engine": "com.quanhoang.greenfarm3.S800x480.FarmGameEngine",
+        "coinBalance": 1900,
+        "cashBalance": 50,
+        "experience": 7,
+        "level": 1,
+        "tutorialStep": 23,
+        "language": 0,
+        "pid": "16321"
+      },
+      "new_cold2": {
+        "method": "JDWP read-only fields; no method invocation or field writes; numeric wrapper hashes checked",
+        "engine": "com.quanhoang.greenfarm3.S800x480.FarmGameEngine",
+        "coinBalance": 1900,
+        "cashBalance": 50,
+        "experience": 7,
+        "level": 1,
+        "tutorialStep": 23,
+        "language": 0,
+        "pid": "16638"
+      }
+    },
+    "numeric_state_matches_original_all_three_new_sessions": true,
+    "binding_after_first_real_save": {
+      "saved_gameplay_binding_matches_live_sdk_identity": true,
+      "schema": 4,
+      "slot": [
+        [
+          5428,
+          5428
+        ]
+      ],
+      "current_tutorial": 23,
+      "before_cold1_numbers_match_original": true,
+      "gameplay_hash_changed_after_legitimate_save_import_metadata_no_longer_matches": true
+    },
+    "sdk_identity_stable_across_both_cold_reopens": true,
+    "observer_method": "Read-only JDWP static/private fields with numeric wrapper checksum validation, no method invocation or field writes; debugger detached and VM resumed",
+    "worker_and_crash_observations": {
+      "24-new-after-notnow": {
+        "main_pid": "15894",
+        "sqlite_writer_threads": 1,
+        "crash_buffer_bytes": 0
+      },
+      "28-cold1-after-notnow": {
+        "main_pid": "16321",
+        "sqlite_writer_threads": 1,
+        "crash_buffer_bytes": 0
+      },
+      "31-cold2-after-notnow": {
+        "main_pid": "16638",
+        "sqlite_writer_threads": 1,
+        "crash_buffer_bytes": 0
+      }
+    },
+    "evidence": [
+      "runtime-ui/new-imported-farm.png",
+      "runtime-ui/new-cold1-farm.png",
+      "runtime-ui/new-cold2-farm.png"
+    ],
+    "home_lifecycle_checkpoint_after_two_cold": {
+      "slot_generation": 5461,
+      "complete_snapshot_generation": 5461,
+      "snapshot_format": 1,
+      "pose_snapshot": 1,
+      "crash_buffer_bytes": 0
+    }
+  },
+  "intermediate_failure_fixed": {
+    "old_build_sha256": "359a8835343ec399e9b9bae646074aecad77b323fa0dd1ff237381e122c4a984",
+    "failed_pid": 15368,
+    "thread": "GreenFarm-SaveTransferPrepare",
+    "exception": "ExceptionInInitializerError caused by NullPointerException: GloftGF2F.acx absent during FarmGameEngine static initialization",
+    "cause": "Cold preparation called cancelMovePreviewForInterruption before detecting that no save writer/game session existed",
+    "fix": "Move writer-null guard inside existing engine class monitor, before any engine call; real active writers still pass the durable checkpoint barrier",
+    "fixed_legacy_and_new_cold_prepare_ui_passed": true,
+    "no_save_reset_to_hide_failure": true
+  },
+  "feature_matrix": [
+    {
+      "feature": "Old-ID update without uninstall; old farm data retained",
+      "status": "actual Android verified"
+    },
+    {
+      "feature": "SAF export -> separate new-ID SAF import and native confirmation",
+      "status": "actual Android verified; all14records exact before first game boot"
+    },
+    {
+      "feature": "Launch new package, original graphics/assets, startup touch input",
+      "status": "actual Android verified"
+    },
+    {
+      "feature": "Save/load and two cold process reopens",
+      "status": "actual Android verified; exact1900coins/50cash/XP7/L1/tutorial23/EN"
+    },
+    {
+      "feature": "Protected local device binding after first new-ID game save",
+      "status": "actual Android verified; saved binding matches live SDK, stable across two cold reopens"
+    },
+    {
+      "feature": "Corrupt DB preservation, transaction abort, retry, backup and queue guards",
+      "status": "30/30 real Android SQLite checks passed from installed legacy-export f147 APK via attached instrumentation; source fixture also30passed; normal player DB not opened"
+    },
+    {
+      "feature": "Sequential tutorial guards and rapid touch objective conditions",
+      "status": "host production-code/original-bytecode fixtures passed; whole fast-tap tutorial UI not exercised in this milestone"
+    },
+    {
+      "feature": "Plant/grow/harvest and inventory/quest/XP totals after Kotlin conversion",
+      "status": "not yet exercised on device; existing farm and numeric state restored only"
+    },
+    {
+      "feature": "Language change automatic restart after Kotlin conversion",
+      "status": "actual Android verified EN->VI: current-English confirmation, Cancel unchanged, one OK auto restart, Vietnamese original assets/farm, exact coins/cash/XP/tutorial retained"
+    },
+    {
+      "feature": "Audio playback, physical devices, newer Android, FPS comparison",
+      "status": "unverified; preserved assets/native bytes do not prove sound or performance"
+    }
+  ],
+  "limitations": [
+    "No50-100actualharvest or controlled gameplay FPS comparison in this migration milestone.",
+    "No physical-device or newer-Android test; exact WindowsLAN APK not run from cloud.",
+    "Only selected startup/farm screens and English assets observed; not every gameplay/SDK/native path.",
+    "No claim that every timer/listener was counted; one writer observed per sampled game process.",
+    "Original cloud/Facebook service functionality is not established by local farm migration.",
+    "Only one EN->VI language cycle after this Kotlin conversion; not every language or repeated restart soak."
+  ],
+  "installed_apk_migration_fixture_evidence": "save-transfer-apk-sqlite.json",
+  "installed_apk_store_fixture_evidence": "store-probe-results.json",
+  "actual_language_cycle": {
+    "tested_apk_sha256": "090e1cc7c9e075eee51e5ddbd71382eaaa1bf9ca91b5cf4ab5a8c9840efa38be",
+    "path": "AndroidMENU -> originalOptions -> Language -> TiếngViệt",
+    "current_language_confirmation": "English current language shown in native confirmation",
+    "cancel": {
+      "pid": "16638",
+      "saved_language": 0,
+      "header_generation": 1090,
+      "cancel_preserved_process_and_header": true
+    },
+    "reselect_and_ok": {
+      "actual_ok_touches": 1,
+      "old_pid": 16638,
+      "new_pid": 17615,
+      "automatic_first_new_pid_seconds": 10.129,
+      "monitor_seconds": 43.661,
+      "extra_restarts_during_monitor": 0,
+      "manual_start_stop_during_monitor": false
+    },
+    "language_commit_order": {
+      "gameplay_snapshot_generation": 5493,
+      "language_header_generation": 5494,
+      "saved_language": 16
+    },
+    "original_vietnamese_loading_connect_assets_visible": true,
+    "actual_farm_restored": true,
+    "numeric_state_after_restart": {
+      "method": "JDWP read-only fields; no method invocation or field writes; numeric wrapper hashes checked",
+      "engine": "com.quanhoang.greenfarm3.S800x480.FarmGameEngine",
+      "coinBalance": 1900,
+      "cashBalance": 50,
+      "experience": 7,
+      "level": 1,
+      "tutorialStep": 23,
+      "language": 16,
+      "pid": "17615"
+    },
+    "tutorial_and_coins_cash_xp_preserved": true,
+    "normal_native_dialog_pause_behavior": "Game surface pauses behind the native confirmation; a focused dialog can share the activity caption. No new source bug or forced-resume workaround was established or implemented.",
+    "final_home_lifecycle_checkpoint": {
+      "slot_generation": 5520,
+      "complete_snapshot_generation": 5520,
+      "snapshot_format": 1,
+      "pose_snapshot": 1,
+      "pid": 17615,
+      "crash_buffer_bytes": 0
+    },
+    "evidence": [
+      "runtime-ui/english-confirm-vietnamese.png",
+      "runtime-ui/cancel-keeps-english.png",
+      "runtime-ui/vietnamese-loading-after-auto-restart.png",
+      "runtime-ui/vietnamese-connect-assets.png",
+      "runtime-ui/vietnamese-farm-after-restart.png"
+    ]
+  }
+}

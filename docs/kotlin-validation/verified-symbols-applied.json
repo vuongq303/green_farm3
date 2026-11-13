@@ -1,0 +1,292 @@
+{
+  "engine_owner": "com.quanhoang.greenfarm3.S800x480.ci",
+  "symbol_resolution": "javac Trees and Element identity",
+  "applied": true,
+  "files": [
+    {
+      "source": "GLLib.java",
+      "target": "GameRuntime.java",
+      "resolved_edits": 13
+    },
+    {
+      "source": "a.java",
+      "target": "a.java",
+      "resolved_edits": 222
+    },
+    {
+      "source": "aa.java",
+      "target": "aa.java",
+      "resolved_edits": 133
+    },
+    {
+      "source": "ac.java",
+      "target": "ac.java",
+      "resolved_edits": 72
+    },
+    {
+      "source": "am.java",
+      "target": "am.java",
+      "resolved_edits": 34
+    },
+    {
+      "source": "ao.java",
+      "target": "ao.java",
+      "resolved_edits": 29
+    },
+    {
+      "source": "aw.java",
+      "target": "aw.java",
+      "resolved_edits": 37
+    },
+    {
+      "source": "ay.java",
+      "target": "ay.java",
+      "resolved_edits": 13
+    },
+    {
+      "source": "bc.java",
+      "target": "bc.java",
+      "resolved_edits": 1
+    },
+    {
+      "source": "bf.java",
+      "target": "bf.java",
+      "resolved_edits": 7
+    },
+    {
+      "source": "bq.java",
+      "target": "bq.java",
+      "resolved_edits": 86
+    },
+    {
+      "source": "bx.java",
+      "target": "bx.java",
+      "resolved_edits": 19
+    },
+    {
+      "source": "by.java",
+      "target": "by.java",
+      "resolved_edits": 4
+    },
+    {
+      "source": "bz.java",
+      "target": "bz.java",
+      "resolved_edits": 6
+    },
+    {
+      "source": "ch.java",
+      "target": "FarmEntity.java",
+      "resolved_edits": 1809
+    },
+    {
+      "source": "ci.java",
+      "target": "FarmGameEngine.java",
+      "resolved_edits": 2499
+    },
+    {
+      "source": "f.java",
+      "target": "f.java",
+      "resolved_edits": 2
+    },
+    {
+      "source": "i.java",
+      "target": "i.java",
+      "resolved_edits": 20
+    },
+    {
+      "source": "k.java",
+      "target": "k.java",
+      "resolved_edits": 13
+    },
+    {
+      "source": "n.java",
+      "target": "n.java",
+      "resolved_edits": 19
+    },
+    {
+      "source": "s.java",
+      "target": "s.java",
+      "resolved_edits": 96
+    },
+    {
+      "source": "z.java",
+      "target": "z.java",
+      "resolved_edits": 26
+    }
+  ],
+  "kotlin_binding_policy": "same-package reviewed Java type references; reject shadows/interpolation; qualified field owners only",
+  "kotlin_files": [
+    {
+      "source": "EntityPoseState.kt",
+      "guarded_reference_edits": 17
+    },
+    {
+      "source": "GloftGF2F.kt",
+      "guarded_reference_edits": 8
+    },
+    {
+      "source": "LanguageRestartController.kt",
+      "guarded_reference_edits": 29
+    },
+    {
+      "source": "PendingRewardState.kt",
+      "guarded_reference_edits": 18
+    },
+    {
+      "source": "ProgressSaveController.kt",
+      "guarded_reference_edits": 43
+    },
+    {
+      "source": "TutorialFlowController.kt",
+      "guarded_reference_edits": 20
+    },
+    {
+      "source": "ab.kt",
+      "guarded_reference_edits": 1
+    },
+    {
+      "source": "ad.kt",
+      "guarded_reference_edits": 3
+    },
+    {
+      "source": "ae.kt",
+      "guarded_reference_edits": 1
+    },
+    {
+      "source": "af.kt",
+      "guarded_reference_edits": 1
+    },
+    {
+      "source": "ah.kt",
+      "guarded_reference_edits": 5
+    },
+    {
+      "source": "ap.kt",
+      "guarded_reference_edits": 1
+    },
+    {
+      "source": "av.kt",
+      "guarded_reference_edits": 1
+    },
+    {
+      "source": "b.kt",
+      "guarded_reference_edits": 4
+    },
+    {
+      "source": "bg.kt",
+      "guarded_reference_edits": 5
+    },
+    {
+      "source": "bj.kt",
+      "guarded_reference_edits": 6
+    },
+    {
+      "source": "bl.kt",
+      "guarded_reference_edits": 2
+    },
+    {
+      "source": "bs.kt",
+      "guarded_reference_edits": 2
+    },
+    {
+      "source": "bt.kt",
+      "guarded_reference_edits": 1
+    },
+    {
+      "source": "ca.kt",
+      "guarded_reference_edits": 1
+    },
+    {
+      "source": "cj.kt",
+      "guarded_reference_edits": 2
+    },
+    {
+      "source": "ck.kt",
+      "guarded_reference_edits": 1
+    },
+    {
+      "source": "cl.kt",
+      "guarded_reference_edits": 5
+    },
+    {
+      "source": "cm.kt",
+      "guarded_reference_edits": 4
+    },
+    {
+      "source": "cn.kt",
+      "guarded_reference_edits": 17
+    },
+    {
+      "source": "co.kt",
+      "guarded_reference_edits": 3
+    },
+    {
+      "source": "cp.kt",
+      "guarded_reference_edits": 11
+    },
+    {
+      "source": "cq.kt",
+      "guarded_reference_edits": 4
+    },
+    {
+      "source": "cr.kt",
+      "guarded_reference_edits": 18
+    },
+    {
+      "source": "cs.kt",
+      "guarded_reference_edits": 5
+    },
+    {
+      "source": "cu.kt",
+      "guarded_reference_edits": 4
+    },
+    {
+      "source": "cv.kt",
+      "guarded_reference_edits": 5
+    },
+    {
+      "source": "cw.kt",
+      "guarded_reference_edits": 4
+    },
+    {
+      "source": "cx.kt",
+      "guarded_reference_edits": 7
+    },
+    {
+      "source": "cy.kt",
+      "guarded_reference_edits": 27
+    },
+    {
+      "source": "dc.kt",
+      "guarded_reference_edits": 20
+    },
+    {
+      "source": "j.kt",
+      "guarded_reference_edits": 16
+    },
+    {
+      "source": "o.kt",
+      "guarded_reference_edits": 3
+    },
+    {
+      "source": "v.kt",
+      "guarded_reference_edits": 1
+    }
+  ],
+  "class_names": {
+    "ci": "FarmGameEngine",
+    "ch": "FarmEntity",
+    "GLLib": "GameRuntime"
+  },
+  "engine_fields": {
+    "aYR": "currentTutorialStepIndex",
+    "baa": "hasUnsavedGameChanges"
+  },
+  "engine_methods_()I": {
+    "qD": "currentEngineState",
+    "qE": "previousEngineState"
+  },
+  "unresolved_retained": {
+    "ci.bab": "Second dirty flag has overlapping call sites; distinct original meaning not proven"
+  }
+}

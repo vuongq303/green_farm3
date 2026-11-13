@@ -1,0 +1,10 @@
+{
+  "classes": 68,
+  "original_methods": 188,
+  "original_fields": 160,
+  "original_package": "com/gameloft/android/ANMP/GloftGF2F/S800x480",
+  "compiled_package": "com/quanhoang/greenfarm3/S800x480",
+  "verified_core_names": false,
+  "passed": true,
+  "failures": []
+}

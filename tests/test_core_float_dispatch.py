@@ -21,6 +21,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from asm_tools import asm_jar
 from android_build_tools import executable_name
+from game_source_context import (current_source_path, current_compiled_path, current_staged_path, legacy_class_bytes, legacy_core_source)
+
 
 PACKAGE = "com/gameloft/android/ANMP/GloftGF2F/S800x480"
 AJ = "L" + PACKAGE + "/aj;"
@@ -96,9 +98,9 @@ class CoreFloatDispatchTest(unittest.TestCase):
             self.skipTest("Requires verified original conversion and JDK")
         asm = asm_jar()
         for name in sorted(CLASSES):
-            source = ROOT / "app/src/main/java" / PACKAGE / (name + ".java")
-            staged = ROOT / "app/build/generated/core-java" / PACKAGE / (name + ".java")
-            compiled = classes / PACKAGE / (name + ".class")
+            source = current_source_path(name)
+            staged = current_staged_path(name)
+            compiled = current_compiled_path(name)
             if not compiled.is_file():
                 self.skipTest("Requires compiled app core " + name)
             self.assertEqual(source.read_bytes(), staged.read_bytes(),
@@ -136,7 +138,11 @@ class CoreFloatDispatchTest(unittest.TestCase):
                 return methods
 
             before = invocations(baseline)
-            after = invocations(classes / PACKAGE)
+            normalized = root / "current-owner-fixture"
+            normalized.mkdir()
+            for name in CLASSES:
+                (normalized / (name + ".class")).write_bytes(legacy_class_bytes(current_compiled_path(name).read_bytes()))
+            after = invocations(normalized)
             for name, method, target, float_descriptor, integer_descriptor, original_count in CASES:
                 with self.subTest(type=name, method=method, target=target, descriptor=float_descriptor):
                     key = (name, method)

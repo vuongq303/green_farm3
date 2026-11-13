@@ -47,9 +47,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--package", default=APP_PACKAGE)
     args = parser.parse_args()
     output = args.output or args.project_root / "app/build/generated/restored-resources/stable-ids.txt"
-    count = generate(args.project_root, output)
+    content = render(args.project_root / "app/src/main/res/values/public.xml", args.package)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(content)
+    count = len(content.splitlines())
     print(f"Preserved {count} original resource IDs in {output}")
 
 

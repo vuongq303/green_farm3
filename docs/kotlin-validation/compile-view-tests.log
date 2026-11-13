@@ -1,0 +1,7 @@
+test_real_class_round_trip_arrays_signatures_and_modified_utf8 (test_relocate_compile_view.RelocateCompileViewTest.test_real_class_round_trip_arrays_signatures_and_modified_utf8) ... ok
+test_scoped_method_and_field_references_do_not_rename_other_owner (test_relocate_compile_view.RelocateCompileViewTest.test_scoped_method_and_field_references_do_not_rename_other_owner) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.187s
+
+OK

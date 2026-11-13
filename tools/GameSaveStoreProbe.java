@@ -3,7 +3,7 @@ import android.content.ContextWrapper;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
-import com.gameloft.android.ANMP.GloftGF2F.S800x480.GameSaveStore;
+import com.quanhoang.greenfarm3.S800x480.GameSaveStore;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +24,15 @@ import java.util.zip.CRC32;
  * to files/sqlite-probe-<fixture>; it never opens the actual player database.
  */
 public final class GameSaveStoreProbe {
-    private static final String PACKAGE = "com.gameloft.android.ANMP.GloftGF2F";
+    private static final String PACKAGE = probePackage();
+    private static String probePackage() {
+        String supplied = System.getenv("GREENFARM_PROBE_PACKAGE");
+        if (!"com.quanhoang.greenfarm3".equals(supplied)
+                && !"com.gameloft.android.ANMP.GloftGF2F".equals(supplied)) {
+            throw new IllegalArgumentException("Set GREENFARM_PROBE_PACKAGE to the new app or legacy migration bridge application ID");
+        }
+        return supplied;
+    }
     private static final String SLOT = "device-local";
     private static final String[] RECORDS = {"RMSHeader", "save_gameplay", "save_farm0", "pending_rewards_v1", "entity_pose_v1"};
 

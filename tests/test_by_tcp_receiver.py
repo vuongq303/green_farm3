@@ -10,6 +10,10 @@ import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(ROOT / "tools"))
+from game_source_context import legacy_core_source, current_source_path
+
 PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
 RUNNER = r'''
 import java.lang.reflect.*;import java.net.*;import java.nio.file.*;import java.io.*;import java.util.*;
@@ -86,7 +90,7 @@ class TcpReceiverTest(unittest.TestCase):
         if not jar.exists() or not java.is_file() or not javac.is_file():self.skipTest('Requires verified original dex2jar artifact and JDK')
         with tempfile.TemporaryDirectory(prefix='by-tcp-differential-')as temp:
             temporary=Path(temp);source=temporary/'source'/PACKAGE;source.mkdir(parents=True)
-            shutil.copyfile(ROOT/'app/src/main/java'/PACKAGE/'by.java',source/'by.java')
+            (source / 'by.java').write_text(legacy_core_source('by'))
             prefix='package com.gameloft.android.ANMP.GloftGF2F.S800x480;\n'
             (source/'bx.java').write_text(prefix+'''public class bx {public boolean aky,BT;public String akz;public Exception acI;
                 public static int remaining=-1;public static int nO(){return remaining;}public static int eP(int i){return remaining-=i;}public static int eQ(int i){return remaining=i;}}''')

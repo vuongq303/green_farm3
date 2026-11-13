@@ -12,7 +12,11 @@ import unittest
 from test_aa_tile_renderer import extract_method
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / 'app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.java'
+import sys
+sys.path.insert(0, str(ROOT / "tools"))
+from game_source_context import legacy_core_source, current_source_path
+
+SOURCE = current_source_path('ci')
 METHODS = (
     'static int[] layoutMoveControls(',
     'static boolean movePositionChanged(',
@@ -168,21 +172,21 @@ class CIMoveControlsTest(unittest.TestCase):
         java, javac = home / 'bin/java', home / 'bin/javac'
         if not java.exists() or not javac.exists():
             self.skipTest('Requires installed JDK')
-        source = SOURCE.read_text()
+        source = legacy_core_source('ci')
         methods = '\n'.join(extract_method(source, signature) for signature in METHODS)
         farm_input = extract_method(source, 'static boolean jM(int i)')
         release = extract_method(farm_input, 'if (GLLib.dA(0)) {\n                    if (aZi.oY())')
         methods += '\nstatic boolean applyRawReleaseFixture(){' + release + '\nreturn false;}'
-        animation_source = SOURCE.with_name('aa.java').read_text()
+        animation_source = legacy_core_source('aa')
         # These are the real accessors/remapping, not a test definition of facing.
         animation = 'class aa{protected int aaN,aaR;' + '\n'.join(
             extract_method(animation_source, signature) for signature in (
                 'public int lL()', 'public void dS(int i)', 'public final void dU(int i)')) + '}'
-        actor_source = SOURCE.with_name('ch.java').read_text()
+        actor_source = legacy_core_source('ch')
         peers = PEERS.replace('/* ACTUAL_FLAGS */', '\n'.join(
             extract_method(actor_source, signature) for signature in (
                 'void fx(int i)', 'void fy(int i)', 'boolean fz(int i)')))
-        pointer_source = SOURCE.with_name('GLLib.java').read_text()
+        pointer_source = legacy_core_source('GLLib')
         peers = peers.replace('/* ACTUAL_POINTER_METHODS */', '\n'.join(
             extract_method(pointer_source, signature) for signature in (
                 'public static final void la()', 'public static final void lb()',

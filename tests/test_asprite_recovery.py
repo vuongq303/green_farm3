@@ -14,6 +14,10 @@ import zipfile
 from test_gllib_recovered_algorithms import constant_pool
 
 BASE = "com/gameloft/android/ANMP/GloftGF2F/S800x480/"
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from game_source_context import legacy_core_source
+
 METHODS = {
     ("<init>", "()V"), ("<clinit>", "()V"), ("bp", "(I)Z"),
     ("a", "(I[BIIIIIIZ)Z"), ("x", "(II)Ljava/lang/Object;"), ("bS", "(I)I"),
@@ -167,7 +171,8 @@ class ASpriteRecoveryTest(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="asprite-recovery-") as temp:
             root = Path(temp)
             classes = root / "compiled"
-            source = project / "app/src/main/java" / BASE / "a.java"
+            source = root / "a.java"
+            source.write_text(legacy_core_source("a"))
             result = subprocess.run([str(home / "bin/javac"), "-source", "8", "-target", "8", "-proc:none",
                                      "-sourcepath", "", "-cp", f"{android}{os.pathsep}{original}",
                                      "-d", str(classes), str(source)], capture_output=True, text=True)

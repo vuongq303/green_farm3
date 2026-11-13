@@ -17,7 +17,9 @@ from urllib.parse import urlsplit
 
 from android_build_tools import BUILD_TOOLS_VERSION, executable_name
 
-GAME = 'Lcom/gameloft/android/ANMP/GloftGF2F/'
+LEGACY_PACKAGE = 'com.gameloft.android.ANMP.GloftGF2F'
+APPLICATION_PACKAGE = 'com.quanhoang.greenfarm3'
+GAME = 'L' + LEGACY_PACKAGE.replace('.', '/') + '/'
 REQUIRED = ('Ljavax/microedition/midlet/App;', 'Ljavax/microedition/midlet/MIDlet;',
             GAME + 'Start;', GAME + 'S800x480/GloftGF2F;')
 DEX_NAME = re.compile(r'classes(?:[2-9]|[1-9][0-9]+)?\.dex$')
@@ -196,7 +198,57 @@ def network_policy(apk, sdk, backend_base_url):
             'uses_cleartext_traffic': cleartext, 'network_security_config': None}
 
 
-def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None):
+def verify_game_components(root, classes, application_id, original_missing_components=()):
+    """Component class names follow code, while authorities follow the app ID.
+
+    In the legacy export bridge these are intentionally different. Checking
+    only Application/launcher would miss an old-ID KeyProvider class that can
+    fail before the launcher is instantiated.
+    """
+    application = next(n for n in root['children'] if n['tag'] == 'application')
+    verified = []
+    prefixes = (LEGACY_PACKAGE + '.', APPLICATION_PACKAGE + '.')
+    for node in application.get('children', []):
+        if node['tag'] not in ('activity', 'service', 'receiver', 'provider'):
+            continue
+        name = node['attributes'].get('name', '')
+        if name.startswith('.'):
+            name = application_id + name
+        elif name and '.' not in name:
+            name = application_id + '.' + name
+        if name.startswith(prefixes):
+            if 'L' + name.replace('.', '/') + ';' not in classes:
+                if name not in original_missing_components:
+                    raise ValueError('Missing game component class definition: ' + name)
+            else:
+                verified.append(name)
+        authority = node['attributes'].get('authorities', '')
+        if '${' in authority:
+            raise ValueError('Unresolved provider authority placeholder')
+        if name == APPLICATION_PACKAGE + '.KeyProvider' and authority != application_id + '.KeyProvider':
+            raise ValueError('KeyProvider authority differs from the installed application ID')
+    return sorted(verified)
+
+
+def missing_original_components(root, definitions, target_game_package):
+    """Record exact dangling entries in the reference APK, never new omissions."""
+    result = []
+    application = next(n for n in root['children'] if n['tag'] == 'application')
+    for node in application.get('children', []):
+        if node['tag'] not in ('activity', 'service', 'receiver', 'provider'):
+            continue
+        name = node['attributes'].get('name', '')
+        if name.startswith('.'):
+            name = LEGACY_PACKAGE + name
+        elif name and '.' not in name:
+            name = LEGACY_PACKAGE + '.' + name
+        if name.startswith(LEGACY_PACKAGE + '.') and 'L' + name.replace('.', '/') + ';' not in definitions:
+            result.append(name.replace(LEGACY_PACKAGE, target_game_package, 1))
+    return sorted(result)
+
+
+def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
+               application_id=None, game_package=None):
     apk, original = Path(apk), Path(original)
     classes, dex_count = {}, 0
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(apk) as output:
@@ -211,7 +263,16 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None):
                 if classes.keys() & found.keys():
                     raise ValueError('DEX duplicate class across files')
                 classes.update(found)
-        for required in REQUIRED:
+        detected_package = (APPLICATION_PACKAGE if
+                            'L' + APPLICATION_PACKAGE.replace('.', '/') + '/Start;' in classes
+                            else LEGACY_PACKAGE)
+        if game_package is not None and game_package != detected_package:
+            raise ValueError('Game class namespace differs from the expected package')
+        game = 'L' + detected_package.replace('.', '/') + '/'
+        required_classes = REQUIRED[:2] + (game + 'Start;', game + 'S800x480/GloftGF2F;')
+        if detected_package == APPLICATION_PACKAGE and any(name.startswith(GAME) for name in classes):
+            raise ValueError('Legacy game class definitions remain after package relocation')
+        for required in required_classes:
             if required not in classes:
                 raise ValueError('Missing runtime class definition: ' + required)
         payload = lambda archive: {n for n in archive.namelist() if n.startswith(('assets/', 'lib/')) and not n.endswith('/')}
@@ -222,9 +283,12 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None):
             if source.read(name) != output.read(name) or source.getinfo(name).compress_type != output.getinfo(name).compress_type:
                 raise ValueError('Assets/native bytes or compression changed: ' + name)
     package, application, launcher = manifest(apk, sdk)
-    if (package, application, launcher) != manifest(original, sdk):
-        raise ValueError('Packaged manifest package/application/launcher differs from original')
-    for entry in (*REQUIRED, 'L' + application.replace('.', '/') + ';', 'L' + launcher.replace('.', '/') + ';'):
+    original_package, original_application, original_launcher = manifest(original, sdk)
+    expected_package = application_id or (APPLICATION_PACKAGE if detected_package == APPLICATION_PACKAGE else original_package)
+    expected_launcher = original_launcher.replace(LEGACY_PACKAGE, detected_package, 1)
+    if (package, application, launcher) != (expected_package, original_application, expected_launcher):
+        raise ValueError('Packaged manifest package/application/launcher differs from the reviewed configuration')
+    for entry in (*required_classes, 'L' + application.replace('.', '/') + ';', 'L' + launcher.replace('.', '/') + ';'):
         seen = set()
         while entry and not (entry.startswith(('Landroid/', 'Ljava/'))
                              and not entry.startswith(('Landroid/support/', 'Landroid/arch/'))):
@@ -243,9 +307,17 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None):
                 or (metadata.parent / elements[0]['outputFile']).resolve() != apk.resolve()):
             raise ValueError('APK metadata does not point to this APK/package')
     result = {'apk': str(apk.resolve()), 'package': package, 'application': application, 'launcher': launcher,
-              'dex_count': dex_count, 'class_count': len(classes), 'payload_count': len(names)}
+              'dex_count': dex_count, 'class_count': len(classes), 'payload_count': len(names),
+              'game_package': detected_package,
+              'legacy_game_class_definitions_remaining': sum(name.startswith(GAME) for name in classes)}
     if backend_base_url:
         result['network_policy'] = network_policy(apk, sdk, backend_base_url)
+        with zipfile.ZipFile(original) as reference:
+            original_definitions = {name for entry in reference.namelist() if DEX_NAME.fullmatch(entry)
+                                    for name in dex_classes(reference.read(entry))}
+        original_missing = missing_original_components(manifest_tree(original, sdk), original_definitions, detected_package)
+        result['verified_game_components'] = verify_game_components(manifest_tree(apk, sdk), classes, package, original_missing)
+        result['known_dangling_original_components'] = original_missing
     return result
 
 
@@ -255,8 +327,11 @@ def main():
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--metadata', type=Path)
     parser.add_argument('--backend-base-url')
+    parser.add_argument('--application-id', choices=(LEGACY_PACKAGE, APPLICATION_PACKAGE))
+    parser.add_argument('--game-package', choices=(LEGACY_PACKAGE, APPLICATION_PACKAGE))
     args = parser.parse_args()
-    print(json.dumps(verify_apk(args.apk, args.original, args.sdk, args.metadata, args.backend_base_url), indent=2))
+    print(json.dumps(verify_apk(args.apk, args.original, args.sdk, args.metadata, args.backend_base_url,
+                              args.application_id, args.game_package), indent=2))
 
 
 if __name__ == '__main__':

@@ -1,0 +1,6 @@
+test_original_bytecode_endian_eof_abi_and_lifecycle_behavior (test_endian_input_stream.EndianInputStreamTest.test_original_bytecode_endian_eof_abi_and_lifecycle_behavior) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 5.331s
+
+OK

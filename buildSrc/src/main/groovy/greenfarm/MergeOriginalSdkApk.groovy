@@ -24,6 +24,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 
 import groovy.io.FileType
+import groovy.json.JsonSlurper
 import java.nio.charset.StandardCharsets
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -74,6 +75,11 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
     @Classpath
     abstract ConfigurableFileCollection getOverlayCompileClasspath()
 
+    // Explicitly reviewed program dependencies (Kotlin standard library only).
+    // The original compile-only view must never enter this collection.
+    @Classpath
+    abstract ConfigurableFileCollection getOverlayRuntimeClasspath()
+
     @Classpath
     abstract ConfigurableFileCollection getAndroidBootClasspath()
 
@@ -97,6 +103,12 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
 
     @Input
     abstract Property<String> getBackendUrl()
+
+    @Input
+    abstract Property<String> getApplicationId()
+
+    @Input
+    abstract Property<String> getGamePackage()
 
     @Internal
     abstract DirectoryProperty getProjectDirectory()
@@ -165,16 +177,30 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
 
             File patchedDex = new File(work, 'backend/classes.dex')
             runJava('PatchBackendEndpoint', mergedDex, patchedDex, endpoint)
-            runPython('build_local_backend.py', '--original', original,
+            List<Object> packageArguments = ['--original', original,
                     '--base', base, '--patched-dex', patchedDex,
                     '--sdk', sdkDirectory.get().asFile, '--keystore', keystore.get().asFile,
-                    '--output', output)
+                    '--output', output]
+            if (gamePackage.get() == 'com.quanhoang.greenfarm3') {
+                Map mergeReport = (Map) new JsonSlurper().parse(new File(mergedDex.absolutePath + '.json'))
+                if (!(mergeReport.game_symbols_renamed instanceof Boolean)) {
+                    throw new GradleException('Merger report must explicitly verify the symbol-renaming mode')
+                }
+                File relocatedDex = new File(work, 'relocated/classes.dex')
+                List<Object> relocationArguments = [patchedDex, relocatedDex,
+                                                   '--application-id', applicationId.get()]
+                if (mergeReport.game_symbols_renamed) relocationArguments.add('--rename-symbols')
+                runJava('RelocateGamePackage', *relocationArguments)
+                packageArguments.addAll(['--relocated-dex', relocatedDex])
+            }
+            runPython('build_local_backend.py', *packageArguments)
             if (!output.isFile()) {
                 throw new GradleException('The complete APK was not produced: ' + output)
             }
             runPython('verify_runtime_apk.py', '--apk', output,
                     '--original', original, '--sdk', sdkDirectory.get().asFile,
-                    '--backend-base-url', endpoint)
+                    '--backend-base-url', endpoint, '--application-id', applicationId.get(),
+                    '--game-package', gamePackage.get())
             return output
         }
     }
@@ -185,7 +211,8 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
         File dexDirectory = new File(stage, 'dex')
         dexDirectory.mkdirs()
         writeProjectClasses(projectClassJars.get().collect { it.asFile },
-                projectClassDirectories.get().collect { it.asFile }, program)
+                projectClassDirectories.get().collect { it.asFile }, program,
+                overlayRuntimeClasspath.files.toList().sort { it.absolutePath })
 
         int minApi = overlayMinSdk.get()
         if (minApi < 1) throw new GradleException('Invalid overlay minSdk: ' + minApi)
@@ -194,7 +221,9 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
         List<File> libraries = androidBootClasspath.files.toList().sort { it.absolutePath }
         if (libraries.isEmpty()) throw new GradleException('Android boot classpath is empty')
         libraries.each { arguments.addAll(['--lib', it.absolutePath]) }
-        overlayCompileClasspath.files.toList().sort { it.absolutePath }.each {
+        Set<File> runtimeInputs = overlayRuntimeClasspath.files.collect { it.canonicalFile } as Set
+        overlayCompileClasspath.files.toList().findAll { !runtimeInputs.contains(it.canonicalFile) }
+                .sort { it.absolutePath }.each {
             arguments.addAll(['--classpath', it.absolutePath])
         }
         arguments.add(program.absolutePath)
@@ -255,7 +284,8 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
         classes.put(name, bytes)
     }
 
-    static void writeProjectClasses(List<File> jars, List<File> directories, File destination) {
+    static void writeProjectClasses(List<File> jars, List<File> directories, File destination,
+                                    List<File> runtimeJars = []) {
         Map<String, byte[]> classes = new TreeMap<>()
         jars.each { jar ->
             ZipFile archive = new ZipFile(jar)
@@ -279,6 +309,28 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
                     addClass(classes, name, file.bytes)
                 }
             }
+        }
+        runtimeJars.each { jar ->
+            int classCount = 0
+            ZipFile archive = new ZipFile(jar)
+            try {
+                Collections.list(archive.entries()).each { entry ->
+                    if (!entry.isDirectory() && entry.name.endsWith('.class')) {
+                        // Module descriptors are JVM 9 metadata, not Android
+                        // runtime code. Never copy multi-release entries as a
+                        // second definition of a runtime class.
+                        if (entry.name == 'META-INF/versions/9/module-info.class') return
+                        if (!entry.name.startsWith('kotlin/')) {
+                            throw new GradleException('Unreviewed overlay runtime class: ' + entry.name)
+                        }
+                        archive.getInputStream(entry).withCloseable { input ->
+                            addClass(classes, entry.name, input.bytes)
+                            classCount++
+                        }
+                    }
+                }
+            } finally { archive.close() }
+            if (classCount == 0) throw new GradleException('Kotlin runtime jar contains no classes: ' + jar)
         }
         if (classes.isEmpty()) throw new GradleException('No compiled project classes were supplied for the overlay')
         destination.parentFile.mkdirs()

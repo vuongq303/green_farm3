@@ -15,17 +15,19 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from android_build_tools import jdk_tool
+from kotlin_test_tools import compile_mixed, runtime_classpath
+from game_source_context import qualified_package, kotlin_source_directory, adapt_fixture
 
-PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
-CORE = ROOT / 'app/src/main/java' / PACKAGE
+PACKAGE = qualified_package().replace('.', '/')
+CORE = kotlin_source_directory()
 
 STORE = r'''
 package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 import java.util.*;
 import java.util.concurrent.*;
 
-final class GameSaveStore {
- static final class Snapshot {
+public final class GameSaveStore {
+ public static final class Snapshot {
   final Map<String,Integer> records;
   final Map<String,Long> versions;
   Snapshot(Map<String,Integer> records,Map<String,Long> versions){
@@ -209,19 +211,14 @@ class AsyncSaveQueueTest(unittest.TestCase):
         source = cls.directory / PACKAGE
         source.mkdir(parents=True)
         files = []
-        for name, text in [('AsyncSaveQueue', (CORE / 'AsyncSaveQueue.java').read_text()),
-                           ('SaveBatchPolicy', (CORE / 'SaveBatchPolicy.java').read_text()),
-                           ('GameSaveStore', STORE), ('AsyncSaveQueueProbe', RUNNER)]:
+        for name, text in [('GameSaveStore', STORE), ('AsyncSaveQueueProbe', RUNNER)]:
             path = source / (name + '.java')
-            path.write_text(text)
+            path.write_text(adapt_fixture(text))
             files.append(str(path))
-        compile_result = subprocess.run([str(jdk_tool('javac')), '-d', str(cls.directory), *files],
-                                        capture_output=True, text=True)
-        if compile_result.returncode:
-            raise AssertionError(compile_result.stderr)
+        compile_mixed([CORE / 'AsyncSaveQueue.kt', CORE / 'SaveBatchPolicy.kt'], files, cls.directory)
 
     def run_case(self, name):
-        result = subprocess.run([str(jdk_tool('java')), '-cp', str(self.directory),
+        result = subprocess.run([str(jdk_tool('java')), '-cp', runtime_classpath(self.directory),
                                  PACKAGE.replace('/', '.') + '.AsyncSaveQueueProbe', name],
                                 capture_output=True, text=True, timeout=20)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

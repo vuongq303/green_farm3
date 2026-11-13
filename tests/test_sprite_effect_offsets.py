@@ -14,6 +14,10 @@ from test_gllib_recovered_algorithms import constant_pool
 
 
 ROOT=Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(ROOT / "tools"))
+from game_source_context import legacy_core_source, current_source_path
+
 PACKAGE='com/gameloft/android/ANMP/GloftGF2F/S800x480'
 RUNNER=r'''
 import java.lang.reflect.*;import java.net.*;import java.nio.file.*;import java.util.*;
@@ -72,7 +76,7 @@ class SpriteEffectOffsetTest(unittest.TestCase):
         java,javac=home/'bin/java',home/'bin/javac'
         if not jar.is_file() or not java.is_file() or not javac.is_file():
             self.skipTest('Requires verified original conversion and JDK')
-        text=(ROOT/'app/src/main/java'/PACKAGE/'a.java').read_text()
+        text=legacy_core_source('a')
         signatures=('public void a(aj ajVar, int i, int i2, int i3, int i4, int i5)',
                     'public void a(aj ajVar, int i, int i2, float f, float f2, int i3)')
         prefix='package com.gameloft.android.ANMP.GloftGF2F.S800x480;\n'

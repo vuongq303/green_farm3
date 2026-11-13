@@ -1,0 +1,32 @@
+SAVE_TRANSFER_PROBE_START
+PASS source WAL active before export
+PASS SELECT-only transaction exports exact committed snapshot
+PASS source WAL unchanged after export
+PASS new-package import retains every opaque record byte and marker
+PASS language retained
+PASS tombstone retained
+PASS SQLite schema4 retained
+PASS WAL retained
+PASS explicit imported binding accepted
+PASS unrelated binding rejected
+PASS current binding still accepted
+PASS null identity rejected
+PASS binding authorization cannot cover another gameplay payload
+PASS injected import failure observed
+PASS failed transaction preserves existing world exactly
+PASS synced pre-import backup retained
+PASS retry imports one absolute snapshot without additive rewards
+PASS corrupt source export rejected
+PASS corrupt source file preserved byte exactly
+PASS import refuses corrupt existing destination
+PASS failed import does not delete or rewrite corrupt destination
+PASS identity lookup refuses corrupt database
+PASS identity lookup does not delete corrupt save
+PASS corrupt fixture failure cannot affect another valid destination
+PASS game process gate acquired
+PASS transfer blocked while game lifetime lock is held
+PASS preparation owns gameplay freeze
+PASS preparation freeze visible to game frame/input gate
+PASS duplicate preparation cannot start another checkpoint
+PASS failed or cancelled preparation releases gameplay freeze
+SAVE_TRANSFER_PROBE_PASS checks=30

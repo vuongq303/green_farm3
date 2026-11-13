@@ -15,6 +15,12 @@ import subprocess
 import tempfile
 import unittest
 import zipfile
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from kotlin_test_tools import compile_mixed
+from game_source_context import qualified_package, core_source_directory, kotlin_source_directory, type_name, uses_verified_names
+from relocate_compile_view import rewrite_class
+from test_kotlin_core_callbacks import identity_normalized_reference
 
 
 CLASS = "com/gameloft/android/ANMP/GloftGF2F/S800x480/GLLib.class"
@@ -194,8 +200,10 @@ class GLLibRecoveredAlgorithmsTest(unittest.TestCase):
             # compile-view change hides a package/class collision from javac;
             # no runtime class name, descriptor or method code is changed.
             view = root / "compile-view.jar"
-            with zipfile.ZipFile(original) as archive, zipfile.ZipFile(view, "w") as output:
-                old_bytes = archive.read(CLASS)
+            reference = identity_normalized_reference(root)
+            with zipfile.ZipFile(original) as pinned:
+                old_bytes = pinned.read(CLASS)
+            with zipfile.ZipFile(reference) as archive, zipfile.ZipFile(view, "w") as output:
                 for entry in archive.infolist():
                     data = archive.read(entry)
                     if entry.filename == "javax/microedition/a/a.class":
@@ -204,14 +212,19 @@ class GLLibRecoveredAlgorithmsTest(unittest.TestCase):
                         data = data[:offset] + struct.pack(">H", flags & ~1) + data[offset + 2:]
                     output.writestr(entry, data)
             classes = root / "compiled"
-            sources = project / "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480"
-            compile_result = subprocess.run([str(home / "bin/javac"), "-source", "8", "-target", "8",
-                                            "-proc:none", "-sourcepath", "", "-cp", f"{android}{os.pathsep}{view}",
-                                            "-d", str(classes), *[str(sources / f"{name}.java") for name in ("GLLib","bm","bl","GameSaveStore")]],
-                                           capture_output=True, text=True)
-            self.assertEqual(compile_result.returncode, 0, compile_result.stdout + compile_result.stderr)
-            restored = classes / CLASS
-            for label, data in (("original", old_bytes), ("restored", restored.read_bytes())):
+            sources = core_source_directory()
+            kotlin_sources = kotlin_source_directory()
+            selected_kotlin = [kotlin_sources / "GameSaveStore.kt"]
+            selected_java = [sources / (type_name('GLLib') + '.java')]
+            for name in ('bm', 'bl'):
+                kotlin = kotlin_sources / (name + '.kt')
+                (selected_kotlin if kotlin.is_file() else selected_java).append(kotlin if kotlin.is_file() else sources / (name + '.java'))
+            compile_mixed(selected_kotlin, selected_java, classes, classpath=[android, view])
+            restored = classes / qualified_package().replace('.', '/') / (type_name('GLLib') + '.class')
+            # Only class/package identities return to pinned reference names;
+            # method instructions and constant-pool indices remain unchanged.
+            restored_bytes = rewrite_class(restored.read_bytes(), reverse=True, rename_symbols=uses_verified_names())
+            for label, data in (("original", old_bytes), ("restored", restored_bytes)):
                 output = root / label / CLASS
                 output.parent.mkdir(parents=True)
                 output.write_bytes(method_fixture(data))

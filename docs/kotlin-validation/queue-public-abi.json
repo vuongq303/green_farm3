@@ -1,0 +1,32 @@
+{
+  "AsyncSaveQueue": {
+    "preserved_public_members": 6,
+    "new_public_members": 0,
+    "all_old_descriptors_static_and_synchronized_flags_preserved": true
+  },
+  "AsyncSaveQueue$Listener": {
+    "preserved_public_members": 1,
+    "new_public_members": 0,
+    "all_old_descriptors_static_and_synchronized_flags_preserved": true
+  },
+  "AsyncSaveQueue$RetryableCheckpoint": {
+    "preserved_public_members": 0,
+    "new_public_members": 0,
+    "all_old_descriptors_static_and_synchronized_flags_preserved": true
+  },
+  "AsyncSaveQueue$Result": {
+    "preserved_public_members": 6,
+    "new_public_members": 1,
+    "all_old_descriptors_static_and_synchronized_flags_preserved": true
+  },
+  "SaveBatchPolicy": {
+    "preserved_public_members": 8,
+    "new_public_members": 1,
+    "all_old_descriptors_static_and_synchronized_flags_preserved": true
+  },
+  "ProgressSaveController": {
+    "preserved_public_members": 25,
+    "new_public_members": 3,
+    "all_old_descriptors_static_and_synchronized_flags_preserved": true
+  }
+}

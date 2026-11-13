@@ -19,6 +19,7 @@ class ResourceAliasesTest(unittest.TestCase):
             for e in ET.parse(ROOT / "app/src/main/res/values/public.xml").getroot()
         }
         checked = 0
+        app_package = restore.selected_app_package(ROOT)
         with tempfile.TemporaryDirectory() as temp:
             paths = restore.generate(ROOT, Path(temp))
             self.assertEqual(len(paths), 4)
@@ -30,7 +31,7 @@ class ResourceAliasesTest(unittest.TestCase):
                 for field, literal in re.findall(r"int (\w+) = (0x7f[0-9a-fA-F]{6});", source):
                     kind, name = public[int(literal, 16)]
                     escaped = name.replace(".", "_").replace("-", "_").replace(":", "_")
-                    self.assertIn(f"int {field} = {restore.APP_PACKAGE}.R.{kind}.{escaped};", generated)
+                    self.assertIn(f"int {field} = {app_package}.R.{kind}.{escaped};", generated)
                     checked += 1
         self.assertGreater(checked, 150, "The complete SDK R inputs must be exercised")
 
@@ -55,6 +56,22 @@ class ResourceAliasesTest(unittest.TestCase):
                 "package com.facebook;\npublic final class R { public static final int broken = 0x7fffffff; }",
                 {}, "com.facebook",
             )
+
+    def test_new_package_symbolic_styleable_refs_keep_order_android_attrs_and_offsets(self):
+        resources = restore.read_public_resources(ROOT / 'app/src/main/res/values/public.xml',
+                                                  restore.TARGET_APP_PACKAGE)
+        checked = 0
+        for package in restore.SDK_PACKAGES:
+            source = (ROOT / 'app/src/main/java' / Path(*package.split('.')) / 'R.java').read_text()
+            generated = restore.render_alias(source, resources, package, restore.TARGET_APP_PACKAGE)
+            self.assertNotIn(restore.APP_PACKAGE + '.R.', generated)
+            if 'class styleable' not in source:
+                continue
+            old = source.split('class styleable', 1)[1]
+            expected = old.replace(restore.APP_PACKAGE + '.R.', restore.TARGET_APP_PACKAGE + '.R.')
+            self.assertEqual(expected, generated.split('class styleable', 1)[1])
+            checked += source.count(restore.APP_PACKAGE + '.R.')
+        self.assertGreaterEqual(checked, 30, 'Exercise all reviewed symbolic app-attribute references, not only numeric IDs')
 
     def test_dotted_style_name_uses_aapt_field_escaping(self):
         resources = restore.read_public_resources(ROOT / "app/src/main/res/values/public.xml")
