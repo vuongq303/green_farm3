@@ -64,6 +64,10 @@ bằng bản đã chọn. Chỉ một bản sao trước lần nhập gần nh�
   Lookup identity dùng một JOIN SELECT nguyên tử, vẫn là handle read-only và
   không gọi BEGIN. Lỗi API này đã được tái hiện bằng Java tối thiểu trên Android,
   bản transaction WAL/FULL sửa lại đã chạy đạt; không quy lỗi cho Kotlin.
+- Mọi lần mở SQLite của transfer/identity dùng DatabaseErrorHandler riêng chỉ báo
+  lỗi, không xóa file. Handler mặc định Android có thể xóa DB/WAL khi phát hiện
+  corruption. Fixture Android đã kiểm tra export, import và lookup identity đều
+  từ chối DB hỏng nhưng giữ nguyên từng byte file; không reset để thử lại.
 - Import kiểm tra toàn bộ tệp trong worker trước khi xin thay thế. Một transaction
   cập nhật slot, record, commit, trạng thái legacy import và binding chuyển save;
   lỗi ghi rollback toàn bộ. Không replay thao tác gameplay hay cộng thưởng khi retry.
@@ -125,6 +129,13 @@ kernel nhả khóa khi process test bị kill; đồng thời kiểm tra một o
 tháo freeze sau thất bại. Context/identity là peer để cô lập gate; đây không phải
 Android UI hoặc phép đo vòng đời MIDlet.
 
+[30/30 kiểm tra Android SQLite production-source](kotlin-validation/save-transfer-source-sqlite.json)
+đã đạt: byte/generation/time/marker chính xác, WAL trước/sau xuất không đổi,
+binding chỉ cho payload đã nhập, transaction abort giữ world cũ và backup, retry
+không cộng thêm, corruption giữ nguyên file, khóa/freeze. DEX probe ở lần này
+chứa helper production biên dịch từ source và stdlib; **chưa phải** kiểm tra
+implementation từ APK game cuối hoặc thao tác SAF trên farm thật.
+
 `tools/run_save_transfer_probe.py` biên dịch production archive/database/gate/identity
 với fixture riêng để chạy **Android SQLite thật**; không mở DB người chơi hoặc
 cài/dừng game. Ví dụ khi một trong hai application ID đã được cài:
@@ -165,4 +176,6 @@ probe/Instrumentation, không sao chép helper hoặc stdlib của game. `am ins
 tạo lại process đích nên phải lưu game trước; ContextWrapper giới hạn mọi database
 trong thư mục fixture mới, không mở database người chơi. `--prepare-only` không
 dùng ADB, không cài hoặc dừng ứng dụng. Kết quả ghi rõ hash APK đích, test APK,
-từng check và giới hạn. Runner này không nằm trong APK game hoặc cấu hình Run app.
+từng check và giới hạn. Cuối test runner force-stop process thử nghiệm để cache
+identity/khóa fixture không tồn tại trong phiên chơi thật tiếp theo. Runner này
+không nằm trong APK game hoặc cấu hình Run app.

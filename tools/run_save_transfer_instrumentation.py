@@ -119,7 +119,13 @@ def main():
     if len(apks)!=1 or not apks[0].startswith('/data/app/') or not apks[0].endswith('.apk'):raise RuntimeError('Expected one complete installed target APK')
     installed_hash=checked([*adb,'shell',shlex.join(['sha256sum',apks[0]])]).split()[0]
     (work/'install.log').write_text(checked([*adb,'install','-r',apk]))
-    output=checked([*adb,'shell',shlex.join(['am','instrument','-w','-r','-e','fixture_prefix',args.prefix,TEST_PACKAGE+'/'+RUNNER])],timeout=120)
+    try:
+        output=checked([*adb,'shell',shlex.join(['am','instrument','-w','-r','-e','fixture_prefix',args.prefix,TEST_PACKAGE+'/'+RUNNER])],timeout=120)
+    finally:
+        # The fixture intentionally uses production singleton gate/identity
+        # classes with a ContextWrapper. Discard that entire test process before
+        # anyone starts gameplay; a game checkpoint was required before the run.
+        (work/'target-cleanup.log').write_text(checked([*adb,'shell',shlex.join(['am','force-stop',args.package])]))
     (work/'instrumentation.log').write_text(output)
     result={}
     for line in output.splitlines():
@@ -133,7 +139,7 @@ def main():
             'implementation':'production Kotlin from complete installed target APK; real Android SQLite; attached target Application',
             'probe_entry':'separate instrumentation APK, test-only DEX definitions verified',
             'production_classes_copied_to_test_dex':False,'normal_player_database_opened':False,
-            'target_process_recreated_by_instrumentation':True,'fixture_prefix':args.prefix,
+            'target_process_recreated_by_instrumentation':True,'target_process_stopped_after_test':True,'fixture_prefix':args.prefix,
             'passed':passed,'checks_passed':len(cases),'cases':cases,'instrumentation_result':result,
             'limits':['Opaque synthetic payloads are not loadable game farms.','This is not SAF UI export/import or whole-game validation.']}
     args.output.parent.mkdir(parents=True,exist_ok=True)

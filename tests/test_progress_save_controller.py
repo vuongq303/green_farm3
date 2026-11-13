@@ -145,7 +145,10 @@ class GLLib {static void lb(){}static void la(){}}
 class ch {static int pending,credits,settles,entities,loadClears;static boolean levelUpOnSettle;
  static void oM(){settles++;credits+=pending;pending=0;if(levelUpOnSettle){levelUpOnSettle=false;pending=2;ci.apA=0;ci.apz=14;ci.baa=true;}}
  static void oL(){entities=0;loadClears++;}}
+class ColdEngineInitProbe {static int initializations;static boolean failInitialization=true;}
 class ci {
+ static {ColdEngineInitProbe.initializations++;if(ColdEngineInitProbe.failInitialization)
+  throw new IllegalStateException("Engine initialized without its MIDlet");}
  static int avD=-1,aZB,attempts,visitorWrites,cancels,clears,queued,aYU,aOD,auy,committedCallbacks,aYR=-1,aYS=-1;
  static int aAG,aAH,aAI,aAJ,aAK,aZp;static Object avE,baf,aZn;static ch aZi,aZj;
  static boolean baa,bab,skipWrite,throwCapture,forcedSeen,aAi,aAj,awV;
@@ -336,7 +339,16 @@ public class ProgressSaveChecks {
   check(!game.onKeyDown(4,event)&&com.quanhoang.greenfarm3.migration.SaveTransferActivity.launches==1,"non MENU long press opened migration");
   check(!game.onKeyDown(82,null),"null KeyEvent changed non-tutorial route");
  }
+ static void coldNoWriter(){
+  check(ColdEngineInitProbe.initializations==0,"cold fixture initialized engine before flush");
+  check(ProgressSaveController.flushForLifecycle(),"cold process with no writer rejected no-op flush");
+  check(ColdEngineInitProbe.initializations==0,"cold no-writer flush initialized engine without MIDlet");
+  check(GameSaveStore.initializes==0,"cold no-writer flush initialized storage");
+  System.out.println("PASS cold no-writer lifecycle flush: engine class was not initialized without MIDlet");
+ }
  public static void main(String[]args)throws Exception{
+  if(args.length>0&&args[0].equals("coldNoWriter")){coldNoWriter();return;}
+  ColdEngineInitProbe.failInitialization=false;
   loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
   languageCancelAndRestart();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();saveTransferLongPress();saveTransferFreeze();
   System.out.println("PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff");
@@ -402,6 +414,12 @@ class ProgressSaveControllerTest(unittest.TestCase):
             fixture.write_text(adapt_fixture(fixture_text), encoding='utf-8')
             runner.write_text(adapt_fixture(RUNNER), encoding='utf-8')
             compile_mixed(actual, [*peers, fixture, runner], folder)
+            cold = subprocess.run([str(java), '-cp', runtime_classpath(folder),
+                                   PACKAGE.replace('/', '.') + '.ProgressSaveChecks', 'coldNoWriter'],
+                                  capture_output=True, text=True, timeout=20)
+            self.assertEqual(cold.returncode, 0, cold.stdout + cold.stderr)
+            self.assertIn('PASS cold no-writer lifecycle flush', cold.stdout)
+            print(cold.stdout.strip())
             result = subprocess.run([str(java), '-cp', runtime_classpath(folder), PACKAGE.replace('/', '.') + '.ProgressSaveChecks'],
                                     capture_output=True, text=True, timeout=20)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

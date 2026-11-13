@@ -112,3 +112,23 @@ hồi. Fixture Android thực tế đã kiểm chứng bytes file hỏng không 
 xuất, nhập hoặc lookup binding; target hợp lệ khác vẫn giữ nguyên.
 [30/30 ca source/SQLite](kotlin-validation/save-transfer-source-sqlite.json) đạt.
 Chưa coi đó là xuất/nhập qua giao diện hoặc probe từ APK được cài đặt.
+
+## Receiver chạy khi game chưa mở
+
+Thử UI trên bản exporter đã phát hiện lỗi thật: receiver khởi động process mới
+mà chưa có MIDlet, nhưng `flushForLifecycle` gọi vào engine trước khi kiểm tra
+writer. Static initializer của engine cần `GloftGF2F.acx`, dẫn đến
+`ExceptionInInitializerError`. Màn chuyển save báo timeout; database vẫn giữ
+nguyên, chưa xuất/nhập thành công ở lần đó.
+
+Đã đưa kiểm tra writer-null lên trước thao tác engine, **bên trong cùng monitor**.
+Nếu writer tồn tại thì vẫn cancel preview, capture và chờ durable barrier như
+cũ. Regression mới chạy JVM riêng, static initializer engine cố ý lỗi nếu bị
+khởi tạo quá sớm: [trước sửa thất bại](kotlin-validation/cold-flush-regression-before.log),
+[sau sửa đạt](kotlin-validation/cold-flush-regression-after.log), counter engine
+vẫn bằng 0 khi không có writer. Các trường hợp writer đang hoạt động vẫn đạt.
+
+Full suite sau package/symbol đạt **154/154**, không skip, cùng **20/20** test tools.
+Lượt đầy đủ này dùng APK cloud `e5026716…` trước sửa cold receiver; regression
+cold và các barrier đã được chạy lại riêng sau sửa. Không coi các test host này
+là bằng chứng chuyển save qua giao diện đã hoàn thành.

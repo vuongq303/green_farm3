@@ -423,8 +423,11 @@ object ProgressSaveController {
 
     @JvmStatic
     fun flushForLifecycle(): Boolean = synchronized(FarmGameEngine::class.java) {
-        FarmGameEngine.cancelMovePreviewForInterruption()
+        // A cold save-transfer receiver has no MIDlet/world or writer yet.
+        // Taking the class monitor is safe; calling the engine would run its
+        // static initialization before the MIDlet exists.
         if (sqliteWriteQueue == null) return@synchronized true
+        FarmGameEngine.cancelMovePreviewForInterruption()
         drainCompletions()
         if (languageCheckpoint == null && worldEligible()) {
             observeChanges(SystemClock.uptimeMillis())
