@@ -1,0 +1,203 @@
+{
+  "generated_utc": "2026-11-13T07:10:10Z",
+  "source_commit": "1c33b14",
+  "artifact": "artifacts/green-farm-3-offline-test.apk",
+  "installed_package": "com.quanhoang.greenfarm3.offlinetest",
+  "installed_apk_sha256": "e006415ace81358f0f9c922d57381000f3b84f8a8396d63dd653791b17fd7ccf",
+  "device": {
+    "kind": "Android emulator",
+    "api": 28,
+    "architecture": "x86",
+    "hardware_acceleration": "Software emulator; no performance claim"
+  },
+  "method": "Fresh isolated test package; legitimate touchscreen input; read-only JDWP raw fields with numeric wrapper hash checks; no JDWP method invocation/field writes, SQL updates, clear-data, uninstall or authentication fabrication.",
+  "offline_proof": {
+    "internet_permission_present": false,
+    "access_network_state_permission_present": true,
+    "active_default_network_none": true,
+    "airplane_mode_on": "1",
+    "wifi_on": "0",
+    "mobile_data": "0"
+  },
+  "numeric_states": {
+    "first_world_ready": {
+      "coinBalance": 9999999,
+      "cashBalance": 9999999,
+      "experience": 0,
+      "level": 50,
+      "tutorialStep": 1,
+      "language": 0
+    },
+    "after_legitimate_wheat_planting": {
+      "coinBalance": 9999989,
+      "cashBalance": 9999999,
+      "experience": 0,
+      "level": 50,
+      "tutorialStep": 8,
+      "language": 0
+    },
+    "first_cold_reopen_world_ready": {
+      "coinBalance": 9999989,
+      "cashBalance": 9999999,
+      "experience": 0,
+      "level": 50,
+      "tutorialStep": 8,
+      "language": 0
+    },
+    "second_cold_reopen_world_ready": {
+      "coinBalance": 9999989,
+      "cashBalance": 9999999,
+      "experience": 0,
+      "level": 50,
+      "tutorialStep": 8,
+      "language": 0
+    }
+  },
+  "save_snapshots": {
+    "first_world_ready": {
+      "schemaVersion": 4,
+      "generation": 12,
+      "completeSnapshotGeneration": 12,
+      "snapshotFormat": 1,
+      "poseSnapshot": 1,
+      "grantMarker": {
+        "record": "offline_test_balances_v1",
+        "bytes": 16,
+        "deleted": false,
+        "generation": 12
+      },
+      "crashBufferBytes": 0
+    },
+    "after_planting": {
+      "schemaVersion": 4,
+      "generation": 47,
+      "completeSnapshotGeneration": 47,
+      "snapshotFormat": 1,
+      "poseSnapshot": 1,
+      "grantMarker": {
+        "record": "offline_test_balances_v1",
+        "bytes": 16,
+        "deleted": false,
+        "generation": 12
+      },
+      "crashBufferBytes": 0
+    },
+    "home_before_cold1": {
+      "schemaVersion": 4,
+      "generation": 56,
+      "completeSnapshotGeneration": 56,
+      "snapshotFormat": 1,
+      "poseSnapshot": 1,
+      "grantMarker": {
+        "record": "offline_test_balances_v1",
+        "bytes": 16,
+        "deleted": false,
+        "generation": 12
+      },
+      "crashBufferBytes": 0
+    },
+    "first_cold_reopen_farm": {
+      "schemaVersion": 4,
+      "generation": 57,
+      "completeSnapshotGeneration": 57,
+      "snapshotFormat": 1,
+      "poseSnapshot": 1,
+      "grantMarker": {
+        "record": "offline_test_balances_v1",
+        "bytes": 16,
+        "deleted": false,
+        "generation": 12
+      },
+      "crashBufferBytes": 0
+    },
+    "home_before_cold2": {
+      "schemaVersion": 4,
+      "generation": 66,
+      "completeSnapshotGeneration": 66,
+      "snapshotFormat": 1,
+      "poseSnapshot": 1,
+      "grantMarker": {
+        "record": "offline_test_balances_v1",
+        "bytes": 16,
+        "deleted": false,
+        "generation": 12
+      },
+      "crashBufferBytes": 0
+    },
+    "second_cold_reopen_farm": {
+      "schemaVersion": 4,
+      "generation": 75,
+      "completeSnapshotGeneration": 75,
+      "snapshotFormat": 1,
+      "poseSnapshot": 1,
+      "grantMarker": {
+        "record": "offline_test_balances_v1",
+        "bytes": 16,
+        "deleted": false,
+        "generation": 12
+      },
+      "crashBufferBytes": 0
+    },
+    "final_home_durable": {
+      "schemaVersion": 4,
+      "generation": 83,
+      "completeSnapshotGeneration": 83,
+      "snapshotFormat": 1,
+      "poseSnapshot": 1,
+      "grantMarker": {
+        "record": "offline_test_balances_v1",
+        "bytes": 16,
+        "deleted": false,
+        "generation": 12
+      },
+      "crashBufferBytes": 0
+    }
+  },
+  "passed": [
+    "First install and actual farm entry without login or a server-connect confirmation while airplane mode is on and Wi-Fi/mobile data are off.",
+    "Installed APK has no INTERNET permission and its SHA-256 matches the delivered artifact.",
+    "HUD and read-only guarded-field checks confirm initial coins9,999,999, cash9,999,999 and level50; XP0 and tutorial1 are unchanged by the test grant.",
+    "Original tutorial harvesting empties the wheat plots, then legitimate wheat planting deducts10coins to9,999,989 and visibly creates a crop.",
+    "Two separate force-stop/cold launches after durable Home saves preserve coins9,999,989, cash9,999,999, level50, XP0, tutorial8 and the planted crop; no grant refill or tutorial reset.",
+    "Grant marker initially shares generation12 with the full farm snapshot; marker stays generation12 through final durable full snapshot83.",
+    "No FATAL EXCEPTION, fatal signal or test-app ANR in captured app logs; crash buffers are empty for all three process instances.",
+    "Original normal and legacy app packages were not installed, uninstalled, cleared or opened during this QA."
+  ],
+  "not_verified": [
+    "Cash spending through UI was not exercised; the current early tutorial restricts reachable actions. Cash is verified unchanged at9,999,999 after both reopens.",
+    "Complete crop growth/reharvest cycle, all quests/items, high-level unlock behavior, sound and long-session gameplay are outside this short offline smoke test.",
+    "Physical devices and Android versions other than emulator API28 were not tested.",
+    "Real online login/backend success is intentionally disabled in this separate profile and was not tested."
+  ],
+  "observations": [
+    "A dismissible original NEW advertising-information panel appears on first launch with the max-level profile; closing it reaches the original Welcome/farm tutorial.",
+    "Original wrapper SDK still attempts a startup background HTTP call and prints an IOException because cleartext HTTP is blocked. No request can reach a backend without INTERNET permission. This produced no fatal exception or login/server wait in this test.",
+    "Cold launch has a loading splash on this slow software emulator. Numeric reads before world load show original static defaults; only reads after world-ready farm state are used as persistence evidence."
+  ],
+  "network_restoration": {
+    "airplane_mode_on": "0",
+    "wifi_on": "1",
+    "mobile_data": "1",
+    "utc": "2026-11-13T07:09:03Z",
+    "matches_pretest": true
+  },
+  "final_device_state": "Test game sent Home after durable save; original airplane/Wi-Fi/mobile-data settings restored (0/1/1).",
+  "screenshots": [
+    {
+      "file": "01-offline-first-farm.png",
+      "sha256": "7711ecda09015ec3fca3e5d27b561acfceb63d5a87b6d54b0da96cf4b3ead583",
+      "description": "First farm: original tutorial and HUD show coins/cash9,999,999 and level50."
+    },
+    {
+      "file": "02-legitimate-coin-deduction.png",
+      "sha256": "b699c2564e155a61f8bb75682d11e19bd364c05ff5cba0272cb54c2741446814",
+      "description": "Original wheat planting deducts10coins; crop visibly planted."
+    },
+    {
+      "file": "03-after-two-cold-reopens.png",
+      "sha256": "228dd49c1db8e64e89212435f806d5fb28aedf1a7e069f60997a7a74c3dfdbea",
+      "description": "After two force-stop/cold launches: planted crop and9,999,989coins retained; cash9,999,999 and level50."
+    }
+  ],
+  "private_evidence": "Raw Logcat, numeric-wrapper/Sdk-binding details, device paths and save metadata remain under .local/offline-test-runtime and are not published."
+}

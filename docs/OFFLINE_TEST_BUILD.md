@@ -45,4 +45,6 @@ python tools/verify_runtime_apk.py --apk app/build/outputs/apk/debug/app-debug.a
 ```
 
 Build thành công chỉ chứng minh pipeline/đóng gói; báo cáo chạy trên emulator hoặc
-thiết bị được ghi riêng sau kiểm thử thực tế.
+thiết bị được ghi riêng sau kiểm thử thực tế. [Kiểm thử APK trên API 28](offline-test-validation/runtime/index.json)
+đã xác nhận vào farm offline, gieo cây trừ xu và mở lại hai lần giữ số dư/level.
+Chi tiêu cash qua UI, thiết bị thật và Android mới chưa kiểm chứng.

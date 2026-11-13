@@ -1,0 +1,64 @@
+{
+  "format_version": 1,
+  "recorded_date_utc": "2026-11-13",
+  "evidence_source": "Actual session exec outputs transcribed to files; no rerun for logging",
+  "working_directory": "/workspace/green_farm3",
+  "scope": "Host fixtures using extracted source methods and original-bytecode comparisons; no Android runtime assertions",
+  "runs": [
+    {
+      "id": "offline-startup-route",
+      "command": "JAVA_HOME=/workspace/tooling/jdk-25 python -m unittest discover -s tests -p test_offline_startup.py -v",
+      "exit_code": 0,
+      "status": "passed",
+      "checks": 36,
+      "log": "startup-route.log"
+    },
+    {
+      "id": "initial-ci-discovery",
+      "command": "JAVA_HOME=/workspace/tooling/jdk-25 GREENFARM_ORIGINAL_JAR=/workspace/green_farm3/.local/bytecode-tools/greenfarm-original.jar python -m unittest discover -s tests -p 'test_ci_*' -v",
+      "exit_code": 1,
+      "status": "failed",
+      "passed_tests": [
+        "test_ci_move_controls",
+        "test_ci_network_failure",
+        "test_ci_selection_continuation"
+      ],
+      "passed_selection_traces": 576,
+      "unresolved_at_this_run": {
+        "test_ci_quest_progress": "Missing ASM because GRADLE_USER_HOME was omitted; focused rerun passed",
+        "test_ci_startup_continuation": "Missing ASM because GRADLE_USER_HOME was omitted; focused rerun passed",
+        "test_ci_recovered_flow": "Staged source differed from edited source before rebuilding; parent rerun after clean build passed"
+      },
+      "log": "initial-ci-discovery.log"
+    },
+    {
+      "id": "focused-startup-quest-network-regression",
+      "command": "JAVA_HOME=/workspace/tooling/jdk-25 GRADLE_USER_HOME=/workspace/tooling/gradle-home GREENFARM_ORIGINAL_JAR=/workspace/green_farm3/.local/bytecode-tools/greenfarm-original.jar PYTHONPATH=tests python -m unittest test_ci_startup_continuation test_ci_quest_progress test_ci_network_failure -v",
+      "exit_code": 0,
+      "status": "passed",
+      "tests": 3,
+      "original_bytecode_comparisons": {
+        "startup_traces": 432,
+        "quest_objective_predicates": 20000,
+        "quest_progress_traces": 10000,
+        "quest_completion_traces": 1000
+      },
+      "log": "startup-and-quest-regression.log"
+    },
+    {
+      "id": "recovered-flow-after-clean-build",
+      "command": "JAVA_HOME=/workspace/tooling/jdk-25 GRADLE_USER_HOME=/workspace/tooling/gradle-home GREENFARM_ORIGINAL_JAR=/workspace/green_farm3/.local/bytecode-tools/greenfarm-original.jar PYTHONPATH=tests python -m unittest test_ci_recovered_flow -v",
+      "executor": "parent agent; actual saved log read and archived by offline_boot",
+      "exit_code": 0,
+      "status": "passed",
+      "tests": 1,
+      "original_bytecode_comparisons": {
+        "numeric_prefix_cases": 5000,
+        "arabic_lookahead_cases": 2000
+      },
+      "resolves": "initial-ci-discovery/test_ci_recovered_flow staged-source mismatch",
+      "log": "recovered-flow-after-build.log"
+    }
+  ],
+  "read_only_runtime_diagnosis": "legacy-sdk-bootstrap.md"
+}

@@ -1,0 +1,12 @@
+Evidence: actual parent command output copied from .local/offline-recovered-flow-after-build.log; no rerun for logging.
+Working directory: /workspace/green_farm3
+Command: JAVA_HOME=/workspace/tooling/jdk-25 GRADLE_USER_HOME=/workspace/tooling/gradle-home GREENFARM_ORIGINAL_JAR=/workspace/green_farm3/.local/bytecode-tools/greenfarm-original.jar PYTHONPATH=tests python -m unittest test_ci_recovered_flow -v
+Exit code: 0 (reported by parent; output below read from the actual saved log)
+
+test_numeric_prefix_and_arabic_lookahead (test_ci_recovered_flow.CIRecoveredFlowTest.test_numeric_prefix_and_arabic_lookahead) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.122s
+
+OK
+5000 CI numeric-prefix cases and 2000 CI Arabic cases match original bytecode.

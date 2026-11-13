@@ -1,0 +1,22 @@
+test_incomplete_agp_carrier_rejected_and_complete_app_passes (test_verify_runtime_apk.ActualApkTest.test_incomplete_agp_carrier_rejected_and_complete_app_passes) ... ok
+test_binary_xml_dump_parser_retains_boolean_policy_attributes (test_verify_runtime_apk.NetworkPolicyTest.test_binary_xml_dump_parser_retains_boolean_policy_attributes) ... ok
+test_offline_policy_requires_no_internet_declaration_even_limited_sdk (test_verify_runtime_apk.NetworkPolicyTest.test_offline_policy_requires_no_internet_declaration_even_limited_sdk) ... ok
+test_packaged_http_debug_manifest_is_checked (test_verify_runtime_apk.NetworkPolicyTest.test_packaged_http_debug_manifest_is_checked) ... ok
+test_rejects_missing_permission_release_manifest_http_block_and_unreviewed_override (test_verify_runtime_apk.NetworkPolicyTest.test_rejects_missing_permission_release_manifest_http_block_and_unreviewed_override) ... ok
+test_android_support_superclass_is_packaged_not_a_boot_class (test_verify_runtime_apk.RuntimeApkTest.test_android_support_superclass_is_packaged_not_a_boot_class) ... ok
+test_changed_original_payload_or_compression_rejected (test_verify_runtime_apk.RuntimeApkTest.test_changed_original_payload_or_compression_rejected) ... ok
+test_class_name_literal_does_not_define_application (test_verify_runtime_apk.RuntimeApkTest.test_class_name_literal_does_not_define_application) ... ok
+test_complete_definitions_pass (test_verify_runtime_apk.RuntimeApkTest.test_complete_definitions_pass) ... ok
+test_duplicate_definitions_across_dex_rejected (test_verify_runtime_apk.RuntimeApkTest.test_duplicate_definitions_across_dex_rejected) ... ok
+test_malformed_dex_headers_and_references_rejected (test_verify_runtime_apk.RuntimeApkTest.test_malformed_dex_headers_and_references_rejected) ... ok
+test_metadata_must_reference_this_apk (test_verify_runtime_apk.RuntimeApkTest.test_metadata_must_reference_this_apk) ... ok
+test_missing_packaged_superclass_rejected (test_verify_runtime_apk.RuntimeApkTest.test_missing_packaged_superclass_rejected) ... ok
+test_offline_mode_and_isolated_identity_are_both_required (test_verify_runtime_apk.RuntimeApkTest.test_offline_mode_and_isolated_identity_are_both_required) ... ok
+test_packaged_manifest_must_match_original (test_verify_runtime_apk.RuntimeApkTest.test_packaged_manifest_must_match_original) ... ok
+test_primary_dex_required_even_if_secondary_defines_runtime_classes (test_verify_runtime_apk.RuntimeApkTest.test_primary_dex_required_even_if_secondary_defines_runtime_classes) ... ok
+test_runtime_classes_can_be_split_across_dex (test_verify_runtime_apk.RuntimeApkTest.test_runtime_classes_can_be_split_across_dex) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.902s
+
+OK

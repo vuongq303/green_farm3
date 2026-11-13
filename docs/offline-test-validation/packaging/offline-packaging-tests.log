@@ -1,0 +1,18 @@
+test_assembles_verified_dex_resources_and_original_payload_only (test_build_core_source.CoreSourcePackagingTest.test_assembles_verified_dex_resources_and_original_payload_only) ... ok
+test_detects_asset_and_native_bytes_compression_or_set_changes (test_build_core_source.CoreSourcePackagingTest.test_detects_asset_and_native_bytes_compression_or_set_changes) ... ok
+test_generated_profile_must_be_a_compiled_kotlin_addition (test_build_core_source.CoreSourcePackagingTest.test_generated_profile_must_be_a_compiled_kotlin_addition) ... ok
+test_main_rejects_tampered_unsigned_payload_before_any_signing_command (test_build_core_source.CoreSourcePackagingTest.test_main_rejects_tampered_unsigned_payload_before_any_signing_command) ... ok
+test_progress_helpers_must_be_verified_as_additions_not_replacements (test_build_core_source.CoreSourcePackagingTest.test_progress_helpers_must_be_verified_as_additions_not_replacements) ... ok
+test_rejects_changed_original_apk (test_build_core_source.CoreSourcePackagingTest.test_rejects_changed_original_apk) ... ok
+test_rejects_hash_or_semantic_report_mismatch_before_output (test_build_core_source.CoreSourcePackagingTest.test_rejects_hash_or_semantic_report_mismatch_before_output) ... ok
+test_rejects_input_output_aliases_including_hardlinks (test_build_core_source.CoreSourcePackagingTest.test_rejects_input_output_aliases_including_hardlinks) ... ok
+test_rejects_kotlin_code_without_runtime_proof (test_build_core_source.CoreSourcePackagingTest.test_rejects_kotlin_code_without_runtime_proof) ... ok
+test_rejects_launcher_without_kotlin_metadata_proof (test_build_core_source.CoreSourcePackagingTest.test_rejects_launcher_without_kotlin_metadata_proof) ... ok
+test_rejects_missing_kotlin_implementation_proof (test_build_core_source.CoreSourcePackagingTest.test_rejects_missing_kotlin_implementation_proof) ... ok
+test_rejects_missing_or_ambiguous_resource_inputs_before_output (test_build_core_source.CoreSourcePackagingTest.test_rejects_missing_or_ambiguous_resource_inputs_before_output) ... ok
+test_rejects_missing_selected_java_core_coverage (test_build_core_source.CoreSourcePackagingTest.test_rejects_missing_selected_java_core_coverage) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.049s
+
+OK
