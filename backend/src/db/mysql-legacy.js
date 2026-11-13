@@ -19,9 +19,10 @@ function check(condition, code = 'INVALID_LEGACY_EXPORT') { if (!condition) fail
 
 /** Old DB_* values are read only by the explicit migration command. */
 export function loadMysqlLegacyConfig(env = process.env) {
-  for (const key of ['DB_NAME', 'DB_USER', 'DB_PASSWORD']) {
+  for (const key of ['DB_NAME', 'DB_USER']) {
     if (typeof env[key] !== 'string' || !env[key]) fail('MISSING_' + key);
   }
+  check(typeof env.DB_PASSWORD === 'string', 'MISSING_DB_PASSWORD');
   check(identifier(env.DB_NAME), 'INVALID_DB_NAME');
   const port = Number(env.DB_PORT ?? 3306);
   check(Number.isInteger(port) && port >= 1 && port <= 65535, 'INVALID_DB_PORT');

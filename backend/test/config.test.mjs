@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { normalizeBackendBaseUrl, readBackendBaseUrl, loadConfig, loadDatabaseConfig, loadMysqlDatabaseConfig } from '../src/config.js';
+import { loadMysqlLegacyConfig } from '../src/db/mysql-legacy.js';
 
 const valid = 'http://10.37.233.55:8787/';
 
@@ -45,5 +46,15 @@ test('runtime uses a persistent SQLite path and preserves explicit legacy migrat
   assert.match(config.database.filename, /data[/\\]green-farm\.sqlite$/u);
   assert.equal(loadDatabaseConfig({}).requiresLegacyImport, false);
   for (const path of [':memory:', '', 'file:memory', join(tmpdir(), 'temporary.sqlite')]) assert.throws(() => loadDatabaseConfig({ SQLITE_PATH: path }), /SQLITE_PATH/u);
-  assert.throws(() => loadMysqlDatabaseConfig({ ...env, DB_PASSWORD: '' }), /DB_PASSWORD/u);
+});
+
+test('optional MySQL migration preserves supplied credentials and permits only an explicitly empty password', () => {
+  const env = { DB_NAME: 'legacy_migration_test', DB_USER: 'fixture_user' };
+  for (const load of [loadMysqlDatabaseConfig, loadMysqlLegacyConfig]) {
+    assert.equal(load({ ...env, DB_PASSWORD: '' }).password, '');
+    assert.equal(load({ ...env, DB_PASSWORD: 'private-fixture-preserved' }).password, 'private-fixture-preserved');
+    assert.throws(() => load(env), /DB_PASSWORD/u);
+    assert.throws(() => load({ ...env, DB_PASSWORD: null }), /DB_PASSWORD/u);
+  }
+  assert.equal(loadDatabaseConfig({}).requiresLegacyImport, false);
 });

@@ -51,9 +51,12 @@ function integer(env, key, fallback, min, max) {
 }
 
 export function loadMysqlDatabaseConfig(env = process.env) {
-  for (const key of ['DB_NAME', 'DB_USER', 'DB_PASSWORD']) {
+  for (const key of ['DB_NAME', 'DB_USER']) {
     if (typeof env[key] !== 'string' || !env[key]) throw new Error('Configure ' + key + ' in backend/.env');
   }
+  // An explicitly configured empty legacy password is intentional. Never
+  // replace a supplied password with an empty literal or infer a missing one.
+  if (typeof env.DB_PASSWORD !== 'string') throw new Error('Configure DB_PASSWORD in backend/.env (an explicit empty value is allowed for the legacy export)');
   if (!/^[A-Za-z0-9_]+$/u.test(env.DB_NAME) || env.DB_NAME.length > 64) throw new Error('DB_NAME must contain 1..64 ASCII letters, digits or underscores');
   const host = env.DB_HOST ?? '127.0.0.1';
   if (!host || /[\s\u0000]/u.test(host)) throw new Error('DB_HOST must be a hostname or IP');

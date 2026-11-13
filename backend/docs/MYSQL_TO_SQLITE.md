@@ -16,6 +16,11 @@ Dùng Node.js 24+ và `npm ci` trong thư mục `backend`. Giữ thông tin `DB_
 riêng, không commit. Tài khoản cần SELECT trên các bảng nguồn và đọc catalog;
 không cần quyền sửa dữ liệu. Chạy từ `backend`, trong PowerShell:
 
+Nếu MySQL cũ thực sự dùng mật khẩu trống, khai báo rõ `DB_PASSWORD=`. Công cụ
+chấp nhận giá trị trống đã cấu hình, giữ nguyên mật khẩu không trống và từ chối
+khi biến bị thiếu; không ép mọi kết nối thành password rỗng. Runtime SQLite mới
+không yêu cầu mật khẩu database.
+
 ```powershell
 node --env-file=.env.mysql scripts/export-mysql.js --output .local/mysql-before-sqlite.json
 ```
