@@ -52,6 +52,15 @@ không phát thưởng thêm và không dùng thời gian thiết bị để ch�
 Tranh chấp giữ local pending cùng bản server để đối chiếu, không tự merge mảng
 opaque hoặc tự ghi đè bằng một save rỗng.
 
+SDK cũ có thể đổi HDIDFV giữa hai process. Sau GET đã xác thực, client chỉ ghi
+metadata đối chiếu binding khi owner/revision/receipt hiện hành khớp, không có
+pending/conflict và **toàn bộ archive local** có đúng SHA-256 của bản server.
+Metadata dùng binding và checksum của chính payload đã được xác minh; các byte
+gameplay, danh tính SDK và tài khoản giữ nguyên. Cache chỉ bị invalidate sau
+transaction commit. Cơ chế này cũng sửa bản đã lưu hợp lệ nhưng thiếu metadata,
+không tự chấp nhận một file local tùy ý hoặc tạo farm mới để vượt lỗi đọc.
+[Kiểm thử SQLite của binding](backend-restoration-validation/client-host/binding-pin-result.json).
+
 Với hồ sơ mới, backend trả config khởi tạo đã chốt cho đúng player.
 `NewPlayerDefaults` áp dụng bằng setter bảo vệ gốc, ghi marker config hash trong
 **cùng snapshot đầu tiên**. Snapshot này được capture trước tutorial `0→1`.

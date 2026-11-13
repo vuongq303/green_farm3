@@ -1,0 +1,13 @@
+{"total_native_invocations":15,"sites":[{"caller":"Lcom/gameloft/a/b/i;->bQ(Z)V","target":"Lcom/gameloft/adsmanager/AdsManager;->SetAge(I)V","count":1},
+{"caller":"Lcom/gameloft/adsmanager/AdsManager;->CreateSingleAdsManagerInstance()V","target":"Lcom/gameloft/adsmanager/AdsManager;->NativeCreateSingleAdsManagerInstance()V","count":1},
+{"caller":"Lcom/gameloft/adsmanager/AdsManager;->InitializeAdsManager(Ljava/lang/String;Ljava/lang/String;)V","target":"Lcom/gameloft/adsmanager/AdsManager;->NativeInitializeAdsManager(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V","count":1},
+{"caller":"Lcom/gameloft/glads/GLAds;->init()V","target":"Lcom/gameloft/adsmanager/AdsManager;->SetGLAdsServerTrackingEvents(Ljava/lang/String;)V","count":1},
+{"caller":"Lcom/quanhoang/greenfarm3/S800x480/FarmGameEngine;->Mm()V","target":"Lcom/gameloft/android2d/adsmanager/AdsManager;->IsAdsManagerInitialized()Z","count":2},
+{"caller":"Lcom/quanhoang/greenfarm3/S800x480/FarmGameEngine;->Mm()V","target":"Lcom/gameloft/android2d/adsmanager/AdsManager;->UpdateSettings(Ljava/lang/String;Ljava/lang/String;)V","count":1},
+{"caller":"Lcom/quanhoang/greenfarm3/S800x480/b$Companion;->ar(Ljava/lang/String;)V","target":"Lcom/gameloft/android2d/adsmanager/AdsManager;->IsIncentivizedAvailable(Ljava/lang/String;)I","count":1},
+{"caller":"Lcom/quanhoang/greenfarm3/S800x480/b$Companion;->isAdOnScreen(I)Z","target":"Lcom/gameloft/android2d/adsmanager/AdsManager;->IsAdOnScreen(I)Z","count":1},
+{"caller":"Lcom/quanhoang/greenfarm3/S800x480/b$Companion;->showIncentivized(Ljava/lang/String;)V","target":"Lcom/gameloft/android2d/adsmanager/AdsManager;->ShowIncentivized(Ljava/lang/String;)V","count":1},
+{"caller":"Lcom/quanhoang/greenfarm3/S800x480/b;->Init()V","target":"Lcom/gameloft/android2d/adsmanager/AdsManager;->EnableGLAdsTracking(Z)V","count":1},
+{"caller":"Lcom/quanhoang/greenfarm3/S800x480/b;->Init()V","target":"Lcom/gameloft/android2d/adsmanager/AdsManager;->SetAge(I)V","count":2},
+{"caller":"Ljavax/microedition/midlet/o;->onPause()V","target":"Lcom/gameloft/adsmanager/AdsManager;->OnPause()V","count":1},
+{"caller":"Ljavax/microedition/midlet/o;->onResume()V","target":"Lcom/gameloft/adsmanager/AdsManager;->OnResume()V","count":1}]}

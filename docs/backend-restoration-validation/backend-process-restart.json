@@ -1,0 +1,40 @@
+{
+  "operation": "SIGTERM isolated Node backend18888 and restart using same private environment and SQLite file",
+  "schema_version": 4,
+  "health_status": "ready",
+  "quick_check": "ok",
+  "tables_before_after_identical": {
+    "gf_players": {
+      "rows": 3,
+      "row_set_sha256_unchanged": true
+    },
+    "gf_guest_sessions": {
+      "rows": 5,
+      "row_set_sha256_unchanged": true
+    },
+    "gf_player_initializations": {
+      "rows": 3,
+      "row_set_sha256_unchanged": true
+    },
+    "gf_player_initialization_receipts": {
+      "rows": 2,
+      "row_set_sha256_unchanged": true
+    },
+    "gf_farm_snapshots": {
+      "rows": 2,
+      "row_set_sha256_unchanged": true
+    },
+    "gf_save_operations": {
+      "rows": 369,
+      "row_set_sha256_unchanged": true
+    }
+  },
+  "database_reset_or_migration_run": false,
+  "other_mysql_or_backend_processes_signalled": false,
+  "private_proof_files_included": false,
+  "android_state_during_restart": {
+    "existing_profile": "Home, outbox0/revision131",
+    "new_profile": "Home with old-build load error, outbox0/revision238; pending final binding fix update"
+  },
+  "scope": "Actual isolated backend process restart; Android post-restart load is recorded in the runtime report"
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "policy": "remove-google-ads-presentation-sdk",
+  "input_dex_sha256": "ab1384c9cb2aaf9a84a20628401a3a462f3f2bcc024fd73f12495d7d99f7aaa3",
+  "output_dex_sha256": "e85b49aba37e447079e13029f28c8d9fe809f13651d29befd028306155d6ec74",
+  "removed_class_count": 1880,
+  "retained_class_count": 5833,
+  "removed_class_names_sha256": "5671e5e50a404bdacce45908435d05d5e9558c8b5495e5c3916abf787c67358f",
+  "retained_identifier_classes": ["Lcom/google/android/gms/ads/identifier/AdvertisingIdClient$Info;","Lcom/google/android/gms/ads/identifier/AdvertisingIdClient;","Lcom/google/android/gms/ads/identifier/a;","Lcom/google/android/gms/ads/identifier/b;","Lcom/google/android/gms/ads/identifier/zzb;","Lcom/google/android/gms/ads/identifier/zzc;"],
+  "retained_structural_reference_audit_verified": true,
+  "retained_reflection_string_audit_verified": true,
+  "retained_class_semantics_verified": true,
+  "inverse_class_set_semantics_verified": true,
+  "retained_classes_canonical_sha256": "cae4c4edaa25d1041cbd49674e576356e418b54dce3ebb1a08369e90981d9b79"
+}

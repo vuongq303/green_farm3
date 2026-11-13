@@ -1,0 +1,11 @@
+{
+  "apk": "<project>/.local/backend-restoration-runtime/windows-fixed-apk/app-debug.apk",
+  "sha256": "01a3c92d7eb5504627fe61ffbb81b670c7f18a4f8710ceedac04b17b8efa7b8f",
+  "bytes": 14976483,
+  "application_id": "com.quanhoang.greenfarm3",
+  "backend_base_url": "http://10.37.233.55:8787/",
+  "source_checkpoint": "cb57a031fd12b3e891f37f91db653d120a89035a",
+  "build_result": "BUILD SUCCESSFUL in 3m;45 tasks;42 executed,3 up-to-date",
+  "runtime_tested": false,
+  "runtime_results": "Cloud-origin candidate with identical source tested separately; direct Windows-origin network/runtime validation not performed."
+}

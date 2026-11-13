@@ -1,0 +1,35 @@
+{
+  "scope": "Isolated cloud backend, actual HTTP and committed SQLite, no credentials or player identifiers included",
+  "published_default_coins": 2000,
+  "test_config_only_temporarily_2300": true,
+  "before": {
+    "http_and_committed_sqlite_verified": true,
+    "profile_a_initial_coins": 2000,
+    "profile_a_initial_cash": 50,
+    "client_resource_override_http_status": 400,
+    "credentials_published": false
+  },
+  "after_file_edit": {
+    "test_instance_file_initial_coins": 2300,
+    "published_default_file_initial_coins": 2000,
+    "existing_profile_a_still": 2000,
+    "committed_existing_initialization_values": [
+      2000,
+      2000
+    ],
+    "credentials_published": false
+  },
+  "after_restore_to_published_default": {
+    "private_instance_defaults_restored_to": 2000,
+    "published_source_defaults_unchanged": 2000,
+    "persisted_profile_default_coins": [
+      2000,
+      2000,
+      2300
+    ],
+    "original_profile_a_still": 2000,
+    "credentials_published": false
+  },
+  "interpretation": "Existing initialization copies remain pinned; only a newly created profile receives the edited configuration. Source defaults were never changed.",
+  "android_initial_checkpoint_proof": "runtime/fixed/index.json"
+}

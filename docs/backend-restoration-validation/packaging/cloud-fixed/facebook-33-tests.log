@@ -1,0 +1,8 @@
+test_input_alias_cannot_modify_the_original_fixture (test_facebook_sdk_pruning.FacebookSdkPruningTest.test_input_alias_cannot_modify_the_original_fixture) ... ok
+test_provider_dependencies_and_changed_profile_fail_before_output (test_facebook_sdk_pruning.FacebookSdkPruningTest.test_provider_dependencies_and_changed_profile_fail_before_output) ... ok
+test_real_sdk_removal_preserves_profile_data_and_other_runtime_classes (test_facebook_sdk_pruning.FacebookSdkPruningTest.test_real_sdk_removal_preserves_profile_data_and_other_runtime_classes) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 50.553s
+
+OK

@@ -1,0 +1,22 @@
+{
+  "original_apk_sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b",
+  "overlay_apk_sha256": "831b6854ac27a38d2b8f331b79045c6f7866c77315d577c35075af3ea660217d",
+  "output_dex_sha256": "901b356efa8f13b6ab704c4728e36c1bf41e6d461724053129a168a6cd047094",
+  "dex_version": 35,
+  "original_class_count": 6383,
+  "overlay_class_count": 1466,
+  "retained_original_class_count": 6247,
+  "output_class_count": 7713,
+  "overlay_package_normalized": true,
+  "game_symbols_renamed": true,
+  "overlay_inverse_relocation_verified": true,
+  "kotlin_runtime_class_count": 1140,
+  "retained_original_canonical_sha256": "c6e069aea0b02b29fe298e8430468c2ee2561d36d1c3ad9aa4617ba5baa54809",
+  "compiled_overlay_canonical_sha256": "db1189756a396df01c93bc8c6768a7effeb15e8441f6e3c6e498fee317cbdcd7",
+  "original_non_overlay_semantics_verified": true,
+  "compiled_overlay_semantics_verified": true,
+  "semantic_canonical_form": "jumbo-string-loads-and-goto32-with-preserved-labels",
+  "kotlin_metadata_class_count": 168,
+  "replaced_class_count": 136,
+  "added_class_count": 1330
+}

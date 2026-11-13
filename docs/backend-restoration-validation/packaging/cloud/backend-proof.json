@@ -1,0 +1,14 @@
+{
+  "input_dex_sha256": "2bc67b3866fbab6fd6182a967f0dce1668f913625ef3325747e0e856985ea870",
+  "output_dex_sha256": "692f2625a2c534cee46bc4f0b2c8d2fdbf90a3abdbc8919d3f7cf79096a3cc32",
+  "schema_version": 2,
+  "target_classes": ["Lcom/gameloft/a/b/a;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;"],
+  "target_method": "aL(Ljava/lang/String;)Ljava/lang/String;",
+  "original_url": "https://eve.gameloft.com/",
+  "replacement_url": "http://172.26.91.236:18888/",
+  "replacement_count": 3,
+  "replacement_counts": {"Lcom/gameloft/a/b/a;": 1, "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;": 2},
+  "unchanged_other_classes_verified": true,
+  "reverse_patch_semantics_verified": true,
+  "unchanged_classes_canonical_sha256": "9d9f391a0a68cc4053696c5125cdd0041e0c89243756ad05f06585fecf928229"
+}

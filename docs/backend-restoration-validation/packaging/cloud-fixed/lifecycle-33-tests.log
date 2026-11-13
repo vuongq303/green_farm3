@@ -1,0 +1,9 @@
+test_authoritative_original_runtime_and_other_sdk_classes_are_preserved (test_disabled_sdk_lifecycle.DisabledSdkLifecycleTest.test_authoritative_original_runtime_and_other_sdk_classes_are_preserved) ... ok
+test_does_not_overwrite_input_or_apply_policy_twice (test_disabled_sdk_lifecycle.DisabledSdkLifecycleTest.test_does_not_overwrite_input_or_apply_policy_twice) ... ok
+test_global_audit_rejects_remaining_native_calls_in_unconverted_game_sources (test_disabled_sdk_lifecycle.DisabledSdkLifecycleTest.test_global_audit_rejects_remaining_native_calls_in_unconverted_game_sources) ... ok
+test_unreviewed_missing_duplicate_caller_and_query_encoding_fail_closed (test_disabled_sdk_lifecycle.DisabledSdkLifecycleTest.test_unreviewed_missing_duplicate_caller_and_query_encoding_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 24.948s
+
+OK

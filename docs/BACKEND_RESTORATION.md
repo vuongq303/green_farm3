@@ -15,6 +15,14 @@ giữ. Không dùng reset/clean Git và không xóa database hoặc save trên t
 Tài liệu kiểm thử offline cũ chỉ còn là bằng chứng lịch sử, không phải cấu hình
 hay chế độ có thể build trong bản hiện tại.
 
+Đã lấy và hợp nhất `main` mới nhất tại `1dad293` bằng merge `2e583c6`. Giữ việc
+dọn các artifact cũ, gồm APK cầu nối xuất save; chỉ tạo lại APK chính mới theo
+yêu cầu bàn giao hiện tại. Nội dung `.env` của người dùng được giữ nguyên riêng
+tại máy làm việc, không log và không đưa lại vào tree Git. Bản mẫu SQLite
+`.env.example` cùng ignore cho cấu hình riêng được giữ. Ý định hỗ trợ password
+MySQL trống được giữ tại `9c94e99`: công cụ export chấp nhận `DB_PASSWORD=` rõ
+ràng, không ép password không trống thành chuỗi rỗng. Runtime mới dùng SQLite.
+
 Yêu cầu cuối cùng trong file người dùng cung cấp gồm backend SQLite, cấu hình
 khởi tạo tập trung và gỡ Facebook/Google Ads. Vì vậy phần dưới mô tả những thay
 đổi mới sau checkpoint khôi phục; không coi chúng là mã giao thức Gameloft đã
@@ -108,6 +116,68 @@ Xem [phạm vi SDK và bằng chứng](DISABLED_LEGACY_SERVICES.md),
 
 ## Kiểm chứng và APK
 
-Kết quả build, runtime, SHA và những phần chưa kiểm chứng sẽ được ghi trong
-metadata bàn giao cùng APK. Kiểm tra host không thay cho kiểm thử trên Android;
-build Linux cũng không chứng minh đường mạng LAN Windows của người dùng.
+Các nhóm file chính đã sửa:
+
+| Nhóm | File và trách nhiệm |
+| --- | --- |
+| Loại Offline Test | `app/build.gradle`, manifest, script build; gỡ `OfflineSession`, `OfflineTestBalances`, profile và APK test. Mốc hoàn tác chọn lọc `a86db0f`. |
+| Kết nối/lưu client | `BackendCloudController.kt`, `CloudBackendTransport.kt`, `CloudSaveJournal.kt`, `GameSaveStore.kt`, `ProgressSaveController.kt`; phiên riêng, outbox, checkpoint và retry. |
+| Khởi tạo/migration | `NewPlayerDefaults.kt`, `CloudMigrationBackup.kt`, `SaveArchiveDatabase.kt`, `SaveTransferIdentity.kt`; cấu hình server, backup và đối chiếu codec binding. |
+| Gỡ provider | `ServiceAvailability.kt`, adapter `b/bt/cm`, `FarmGameEngine.java`, manifest; `PatchDisabledSdkLifecycle.java`, `PruneGoogleAds.java`, `PruneFacebookSdk.java` và packager/verifier. |
+| Backend | `backend/config/new_player_defaults.json`, catalog gốc, `src/db/sqlite.js`, `sqlite-migrate.js`, dịch vụ phiên/snapshot/khởi tạo, migrations001–004 và công cụ MySQL riêng. |
+| Bàn giao | `artifacts/green-farm-3-debug.apk`, checksum, metadata, README và các bằng chứng host/runtime/packaging liên kết bên dưới. |
+
+Source Android cuối được đóng băng tại `cb57a03`. Cả hai build đều chạy sạch:
+
+```sh
+./gradlew :app:clean :app:assembleDebug -PBACKEND_BASE_URL=http://172.26.91.236:18888/ --stacktrace
+./gradlew :app:clean :app:assembleDebug --stacktrace
+```
+
+Build cloud mất 2m42s; build không override mất 3m. APK bàn giao dùng URL gốc
+`http://10.37.233.55:8787/`, tại
+[`artifacts/green-farm-3-debug.apk`](../artifacts/green-farm-3-debug.apk).
+Output chuẩn của module vẫn là `app/build/outputs/apk/debug/app-debug.apk`.
+Mở project, chọn **Android App app**, chọn thiết bị rồi **Run**.
+
+[Metadata và SHA](../artifacts/build-info.json),
+[bằng chứng đóng gói cuối](backend-restoration-validation/packaging/windows-fixed/final-packaging-proof.json)
+và [đối chiếu hai origin](backend-restoration-validation/packaging/windows-fixed/cloud-windows-comparison.json)
+phân biệt APK chạy thử cloud với APK cấu hình LAN Windows. DEX game trước patch
+endpoint giống nhau; điều này không chứng minh đường LAN trên máy người dùng.
+
+Backend đạt **57/57 test** sau khi hợp nhất main, gồm SQLite thật, HTTP, isolation,
+CAS/idempotency, transaction rollback, schema, cấu hình và công cụ bảo toàn MySQL.
+[Log và phạm vi](../backend/docs/validation/result.json). Kiểm thử client bổ sung
+đạt **46 kiểm tra SQLite**, gồm 15 kiểm tra binding mới:
+[kết quả](backend-restoration-validation/client-host/binding-pin-result.json).
+[Hot reload cấu hình](backend-restoration-validation/defaults-hot-reload.json)
+và [restart tiến trình backend thật](backend-restoration-validation/backend-process-restart.json)
+có bằng chứng riêng, không dùng kết quả test host để suy ra gameplay trên Android.
+
+QA Android đã phát hiện hai lỗi thực tế và giữ nguyên dữ liệu khi xử lý:
+
+- Privacy SDK gọi native quảng cáo chưa khởi tạo, gây `UnsatisfiedLinkError`
+  tại `AdsManager.SetAge`. Bản sửa bỏ đúng propagation quảng cáo cùng các invoke
+  còn sót, giữ tuổi, điều khoản và consent.
+- SDK đổi HDIDFV giữa các process, khiến loader gốc từ chối farm đã lưu. Sau
+  xác thực, chỉ khi toàn bộ archive local khớp đúng snapshot server của chính
+  người chơi mới pin metadata codec binding trong transaction. Không đổi SDK ID,
+  dữ liệu farm hay kiểm tra ownership để vượt lỗi.
+
+[Báo cáo Android](backend-restoration-validation/runtime/fixed/index.json)
+ghi từng APK đã cài, luồng đã chạy và phần chưa kiểm chứng. Trên hai máy ảo API28,
+APK cuối dùng origin cloud đã mở farm cũ với 1.900 xu/50 cash/XP7/level1/tutorial23
+và farm mới với 2.250 xu/50 cash/XP6/level1/tutorial8 sau mất mạng, kill process
+và restart backend. Không xóa dữ liệu ứng dụng khi cập nhật APK.
+
+Trong phép thử hot reload, riêng file cấu hình của instance cloud tạm đổi từ
+2.000 lên 2.300 xu để tạo hồ sơ mới, rồi trả lại 2.000 trước checkpoint đầu.
+Hồ sơ mới vẫn nhận đúng bản cấu hình 2.300 đã chốt; sau sáu lần thu hoạch và năm
+lần gieo cây còn 2.250 xu. Hồ sơ cũ giữ 1.900. File cấu hình được bàn giao luôn
+giữ mặc định gốc 2.000, không phải preset tiền test trong APK.
+
+Điện thoại thật,
+Android mới, toàn bộ chuỗi nhiệm vụ/cửa hàng/xây dựng, âm thanh và hiệu năng dài
+hạn chưa được xác nhận. Migration database MySQL của người dùng trên Windows
+chưa được thực hiện; chỉ chạy test fixture và sao chép save Android có phê duyệt.

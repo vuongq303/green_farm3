@@ -1,0 +1,16 @@
+{
+  "cloud_apk_sha256": "d07b54d5eaab1e184b8c946781e55148e66eb5297ff83d12f3b3f9dfb3337bfe",
+  "windows_apk_sha256": "01a3c92d7eb5504627fe61ffbb81b670c7f18a4f8710ceedac04b17b8efa7b8f",
+  "source_checkpoint": "cb57a031fd12b3e891f37f91db653d120a89035a",
+  "merged_dex_before_endpoint_patch_identical": "901b356efa8f13b6ab704c4728e36c1bf41e6d461724053129a168a6cd047094",
+  "compiled_overlay_canonical_sha256_identical": "db1189756a396df01c93bc8c6768a7effeb15e8441f6e3c6e498fee317cbdcd7",
+  "non_endpoint_classes_before_relocation_identical": "c4180e11fba701a9a21639dd6d72241cf58756965ab8295d14ec8581b2fdc139",
+  "changed_non_signature_apk_entries": [
+    "AndroidManifest.xml",
+    "classes.dex"
+  ],
+  "only_reviewed_origin_and_dependent_revision_metadata_change": true,
+  "cloud_backend": "http://172.26.91.236:18888/",
+  "windows_backend": "http://10.37.233.55:8787/",
+  "windows_backend_reachability_tested": false
+}

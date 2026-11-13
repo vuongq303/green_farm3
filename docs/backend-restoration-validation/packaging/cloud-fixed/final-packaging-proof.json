@@ -1,0 +1,42 @@
+{
+  "source_checkpoint": "8fb4b89",
+  "apk_sha256": "18136567c3e75b9bdedeed48785b380deed7b7291a962a61b5feff4425cec70b",
+  "backend_base_url": "http://172.26.91.236:18888/",
+  "apk_class_count": 5090,
+  "original_assets_native_payloads_verified": 59,
+  "facebook_sdk_class_definitions_remaining": 0,
+  "google_ads_presentation_class_definitions_remaining": 0,
+  "retained_shared_identifier_classes": [
+    "Lcom/google/android/gms/ads/identifier/AdvertisingIdClient$Info;",
+    "Lcom/google/android/gms/ads/identifier/AdvertisingIdClient;",
+    "Lcom/google/android/gms/ads/identifier/a;",
+    "Lcom/google/android/gms/ads/identifier/b;",
+    "Lcom/google/android/gms/ads/identifier/zzb;",
+    "Lcom/google/android/gms/ads/identifier/zzc;"
+  ],
+  "native_ads_manager_invocations_remaining": 0,
+  "sdk_invocation_sites_disabled": 33,
+  "sdk_owner_count": 5,
+  "per_owner_inverse_semantics_verified": true,
+  "privacy_consent_dataflow_preserved_except_optional_ad_age_propagation": true,
+  "compiled_helpers": [
+    "ServiceAvailability",
+    "BackendCloudController",
+    "CloudSaveJournal",
+    "CloudBackendTransport",
+    "NewPlayerDefaults",
+    "CloudMigrationBackup"
+  ],
+  "kotlin_metadata_class_count": 168,
+  "kotlin_runtime_class_count": 1140,
+  "debug_certificate_sha256": "52c1ce4cb6336e7c8122e7bfea44f1dd23262d2e48f08909684514539fc76d00",
+  "signatures_verified": [
+    "v1",
+    "v2",
+    "v3"
+  ],
+  "runtime_tested": false,
+  "runtime_results": "Recorded separately after installing this exact fixed candidate; packaging success is not runtime success.",
+  "sdk_policy_untargeted_classes_preserved_canonically": true,
+  "retained_final_classes_preserved_except_documented_avatar_method": true
+}

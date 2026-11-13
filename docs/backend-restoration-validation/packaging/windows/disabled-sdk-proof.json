@@ -1,0 +1,21 @@
+{
+  "schema_version": 2,
+  "policy": "facebook-and-ads-lifecycle-disabled",
+  "input_dex_sha256": "8393ebb409dc1f975daa0d4395010cbbdb0682121c877dd08bc9904c9c26cee2",
+  "output_dex_sha256": "64fffa5021985f0386622bbdc3c5a784b1f49bbf3c02693cec63105607a6723b",
+  "target_class": "Ljavax/microedition/midlet/MIDlet;",
+  "facebook_lifecycle_calls_disabled": 12,
+  "ads_lifecycle_calls_disabled": 12,
+  "native_fullscreen_queries_disabled": 2,
+  "native_bridge_calls_disabled": 6,
+  "total_sdk_invocation_sites_disabled": 33,
+  "native_ads_manager_invocations_remaining": 0,
+  "all_native_ads_manager_invocations_audited": true,
+  "target_classes": ["Lcom/gameloft/a/b/i;","Lcom/gameloft/adsmanager/AdsManager;","Lcom/gameloft/glads/GLAds;","Ljavax/microedition/midlet/MIDlet;","Ljavax/microedition/midlet/o;"],
+  "per_owner_inverse_semantics_verified": true,
+  "native_back_handlers_disabled": 1,
+  "instruction_widths_preserved": true,
+  "inverse_target_semantics_verified": true,
+  "unchanged_other_classes_verified": true,
+  "unchanged_classes_canonical_sha256": "d12cb2f198c35ac6622eecf5049412d6cb8467014055d78fd46766bd35a1c607"
+}

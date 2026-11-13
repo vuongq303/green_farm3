@@ -41,8 +41,8 @@ bridge chỉ phục vụ provider đó**; không đóng gói lớp Facebook gi�
 ## Cơ chế build
 
 `PatchDisabledSdkLifecycle.java` áp dụng sau khi ghép source, đổi endpoint và
-relocate package. Nó chỉ sửa lớp MIDlet thật, giữ nguyên Application, các lớp
-SDK và thư viện native:
+relocate package. Nó sửa các vị trí đã kiểm kê trong năm owner SDK, gồm MIDlet
+thật; giữ nguyên Application, phần còn lại của từng lớp và thư viện native:
 
 1. Đòi hỏi đúng 33 vị trí: 24 lifecycle, hai truy vấn boolean, một handler Back,
    sáu native propagation/factory/pause/resume trong năm owner đã review. Sai
@@ -104,3 +104,26 @@ sót và việc xóa nhầm Google hoặc shared identifier.
 
 Các kiểm tra này chứng minh phạm vi patch/đóng gói. Kết quả khởi động, kết nối
 backend và chơi trên Android được ghi trong báo cáo runtime riêng.
+
+## Mã tham khảo và thư viện còn giữ
+
+Các thư mục JADX gốc dưới `app/src/main/java/com/facebook`,
+`com/google/android/gms/ads`, `com/google/android/gms/internal/ads`,
+`com/google/ads` và wrapper Gameloft vẫn được giữ để đối chiếu. Chúng không phải
+source set Java được biên dịch của app; pipeline chỉ chọn source đã khôi phục
+và các resource alias đã kiểm kê. Các alias Facebook/Ads không còn caller cũng
+được bỏ khỏi DEX cuối, trong khi resource ID và dữ liệu tài nguyên vẫn giữ.
+
+`green-farm-3.apk` vẫn là đầu vào gốc có checksum cố định để lấy runtime thật,
+assets và native; file APK đầy đủ không được nhúng vào APK mới. Các định nghĩa
+runtime cần thiết từ DEX gốc vẫn vào chương trình sau khi merge/prune. Riêng
+`app/build/original-dependencies/compile-view.jar` chỉ thuộc `compileOnly` và
+classpath tra cứu của D8: không lấy thân hàm lookup làm mã chương trình, không
+đóng gói jar này. Application và MIDlet là các định nghĩa thật từ DEX gốc.
+
+Kiểm kê APK Windows cuối nằm tại
+`docs/backend-restoration-validation/packaging/windows-fixed/dependency-removal-inventory.json`:
+717 lớp Facebook và 24 bridge còn 0; 1.880 lớp Google Ads presentation/mediation
+còn 0; sáu shared identifier được giữ. Toàn bộ 59 payload gốc gồm 49 assets và
+10 thư viện `.so` được đối chiếu byte/hash. Giữ binary native gốc không có nghĩa
+là khởi tạo AdsManager: audit DEX cuối đòi hỏi 0 invoke tới native AdsManager.

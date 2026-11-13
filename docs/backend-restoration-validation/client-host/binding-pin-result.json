@@ -1,0 +1,31 @@
+{
+  "command": "JAVA_HOME=/workspace/tooling/jdk-25 GRADLE_USER_HOME=/workspace/tooling/gradle-home python -m unittest discover -s tests -p test_cloud_save_journal.py -v",
+  "result": "passed",
+  "unittest_cases": 1,
+  "actual_sqlite_checks": 46,
+  "new_binding_checks": 15,
+  "elapsed_seconds": 13.953,
+  "scope": "Production CloudSaveJournal and SaveTransferIdentity methods against actual SQLite transactions/reopened connections with synthetic fixtures; this is not Android SDK or device execution.",
+  "verified": [
+    "Fresh profile without an identity row refuses a changed SDK binding.",
+    "Owner, adoption, conflict, revision, receipt hash and absence of pending work are rechecked in the pin transaction.",
+    "A different full local archive, including a validly checksummed change to a non-gameplay farm record, cannot obtain the binding pin.",
+    "Failure and uncommitted DDL roll back without creating fallback metadata.",
+    "A verified pin changes only save_transfer_identity metadata; every original record and slot field, server owner/revision and outbox remain unchanged.",
+    "An existing negative cache does not accept the pin until explicit post-commit invalidation; changed SDK identifiers work afterward and after a cache/connection reopen."
+  ],
+  "not_verified_by_this_test": [
+    "The actual per-process SDK HDIDFV implementation.",
+    "The reported Android profile C cold reopen; runtime verification follows a rebuilt APK.",
+    "An arbitrary imported/offline test archive is not authorized by this method."
+  ],
+  "security_boundary": "Only the current authenticated guest server snapshot and exact full canonical local archive SHA-256 can authorize codec metadata. No SDK identifier, guest identity, record bytes, economy values or save defaults are rewritten.",
+  "source_sha256": {
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/CloudSaveJournal.kt": "184b8fb958acb9e6243e3a3e85f96344355ae6bc80148fd5d67bc4a1a3b4736e",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/BackendCloudController.kt": "dbe5d212a3b5593a47576dd7b18405db98210d6a3d3132b1bf3bf2207f531ed5",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/migration/SaveTransferIdentity.kt": "b1cc9d71168b5136c2a3812882db448ce4798009c16274c9fda330f6796f2962",
+    "tests/test_cloud_save_journal.py": "ee0d7aceba9f771eeac8984dcbafd2dbbf5eeef515941dabd7016951f0a41fdf"
+  },
+  "log": "binding-pin-tests.log",
+  "log_sha256": "3f03496590c8bd988521db0a0143f7146369e3ca8cc504b9d4b19ca8e77489cf"
+}

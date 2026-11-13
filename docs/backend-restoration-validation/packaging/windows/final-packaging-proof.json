@@ -1,0 +1,45 @@
+{
+  "source_checkpoint": "8fb4b89",
+  "apk_sha256": "55b6647d473a372a7b53e07d1dac5d1517377a1f759ddcadb4ce9309cd8ca1cc",
+  "backend_base_url": "http://10.37.233.55:8787/",
+  "apk_class_count": 5090,
+  "original_payload_count": 59,
+  "application": "javax.microedition.midlet.App",
+  "facebook_sdk_class_definitions_remaining": 0,
+  "google_ads_presentation_class_definitions_remaining": 0,
+  "retained_shared_identifier_classes": [
+    "Lcom/google/android/gms/ads/identifier/AdvertisingIdClient$Info;",
+    "Lcom/google/android/gms/ads/identifier/AdvertisingIdClient;",
+    "Lcom/google/android/gms/ads/identifier/a;",
+    "Lcom/google/android/gms/ads/identifier/b;",
+    "Lcom/google/android/gms/ads/identifier/zzb;",
+    "Lcom/google/android/gms/ads/identifier/zzc;"
+  ],
+  "native_ads_manager_invocations_remaining": 0,
+  "sdk_invocation_sites_disabled": 33,
+  "sdk_owner_count": 5,
+  "per_owner_inverse_semantics_verified": true,
+  "compiled_helpers": [
+    "ServiceAvailability",
+    "BackendCloudController",
+    "CloudSaveJournal",
+    "CloudBackendTransport",
+    "NewPlayerDefaults",
+    "CloudMigrationBackup"
+  ],
+  "kotlin_metadata_class_count": 168,
+  "kotlin_runtime_class_count": 1140,
+  "signatures_verified": [
+    "v1",
+    "v2",
+    "v3"
+  ],
+  "debug_certificate_sha256": "52c1ce4cb6336e7c8122e7bfea44f1dd23262d2e48f08909684514539fc76d00",
+  "previous_published_apks_unchanged_pending_QA": {
+    "green-farm-3-debug.apk": "233a37af49e2e91afb5bbda1cef0a83f338e8b384ce47e4f5445913834be9201",
+    "green-farm-3-legacy-export-debug.apk": "bbe0aecf66cf7d1fd7b394fd3f2f17c9388ee9df478f4d4dd7deeb320882d2d1"
+  },
+  "root_backend_url_unchanged": true,
+  "runtime_tested": false,
+  "runtime_results": "Separate cloud-origin APK18136567 has identical source/merged program. Direct Windows-origin network/runtime validation has not been performed in this cloud environment."
+}

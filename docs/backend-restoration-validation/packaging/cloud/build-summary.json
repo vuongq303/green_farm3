@@ -1,0 +1,14 @@
+{
+  "apk": "<project>/.local/backend-restoration-runtime/cloud-apk/app-debug.apk",
+  "sha256": "1064f8705d93665a8e9b8f9c044be55afac25347965140de81bdba5d7e7ae7cb",
+  "bytes": 14976483,
+  "application_id": "com.quanhoang.greenfarm3",
+  "backend_base_url": "http://172.26.91.236:18888/",
+  "build_result": "BUILD SUCCESSFUL in 3m28s;45 tasks executed",
+  "source_checkpoint": "0a36769",
+  "runtime_tested": true,
+  "runtime_result": "failed",
+  "runtime_failure": "UnsatisfiedLinkError: AdsManager.SetAge from original JW_PrivacyPolicyChecker after SDK logo",
+  "runtime_failure_evidence": "docs/backend-restoration-validation/runtime/initial-privacy-ad-jni-failure.log",
+  "superseded_by_source_checkpoint": "8fb4b89"
+}

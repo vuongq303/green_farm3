@@ -1,0 +1,10 @@
+{
+  "apk": "<project>/.local/backend-restoration-runtime/cloud-fixed2-apk/app-debug.apk",
+  "sha256": "d07b54d5eaab1e184b8c946781e55148e66eb5297ff83d12f3b3f9dfb3337bfe",
+  "bytes": 14976483,
+  "source_checkpoint": "cb57a031fd12b3e891f37f91db653d120a89035a",
+  "application_id": "com.quanhoang.greenfarm3",
+  "backend_base_url": "http://172.26.91.236:18888/",
+  "build_result": "BUILD SUCCESSFUL in 2m42s;45 tasks;42 executed,3 up-to-date",
+  "runtime_tested": false
+}

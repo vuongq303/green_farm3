@@ -16,6 +16,14 @@
       "failed": 0,
       "log": "operator-policy-tests.log",
       "sha256": "98679d6e605b042b1f1a9f8d5cd3f468a58c26c25116bdd9d346e84d8831cd7f"
+    },
+    {
+      "command": "npm test (after integrating main1dad293 and explicit empty MySQL password support)",
+      "passed": 57,
+      "failed": 0,
+      "duration_ms": 1529.995922,
+      "log": "backend-tests-after-main-integration.log",
+      "sha256": "e668b13696f6e61db86a75d75f82ce69afcebaa3adcbab6c220131165389b732"
     }
   ],
   "checks": [
@@ -29,7 +37,8 @@
     "Operator CLI approval permits only a specific player/hash; capability binds operation/hash and cannot bypass malformed/offline-test archive validation",
     "Old normal initialization marker and played values remain unchanged during an operator-approved local copy",
     "Original protected-value decoder tested with five original-method JVM vectors, UTF-8 prefix and truncated-boundary cases",
-    "Consistent MySQL export uses a simulated source transaction; actual SQLite import/backups preserve known IDs/hashes/sessions and unknown Facebook data"
+    "Consistent MySQL export uses a simulated source transaction; actual SQLite import/backups preserve known IDs/hashes/sessions and unknown Facebook data",
+    "Optional MySQL exporters accept an explicitly empty DB_PASSWORD, reject missing/null and preserve nonempty configured passwords; runtime remains SQLite"
   ],
   "not_verified": [
     "User MySQL database migration was not run; original MySQL data/process remains untouched",

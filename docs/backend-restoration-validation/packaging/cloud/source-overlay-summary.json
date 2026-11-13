@@ -1,0 +1,30 @@
+{
+  "original_apk_sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b",
+  "overlay_apk_sha256": "31d7e777ff3f12c2f357ffc90edc6af3ed2fc68ec6af1bda80ec12417c951764",
+  "output_dex_sha256": "2bc67b3866fbab6fd6182a967f0dce1668f913625ef3325747e0e856985ea870",
+  "dex_version": 35,
+  "original_class_count": 6383,
+  "overlay_class_count": 1464,
+  "retained_original_class_count": 6247,
+  "output_class_count": 7711,
+  "overlay_package_normalized": true,
+  "game_symbols_renamed": true,
+  "overlay_inverse_relocation_verified": true,
+  "kotlin_runtime_class_count": 1140,
+  "retained_original_canonical_sha256": "c6e069aea0b02b29fe298e8430468c2ee2561d36d1c3ad9aa4617ba5baa54809",
+  "compiled_overlay_canonical_sha256": "3219aefc4db7351ff60357df4530322c820e3922ddda7af7059745c591b7390c",
+  "original_non_overlay_semantics_verified": true,
+  "compiled_overlay_semantics_verified": true,
+  "semantic_canonical_form": "jumbo-string-loads-and-goto32-with-preserved-labels",
+  "kotlin_metadata_class_count": 168,
+  "replaced_class_count": 136,
+  "added_class_count": 1328,
+  "new_helper_metadata": [
+    "Lcom/quanhoang/greenfarm3/S800x480/BackendCloudController;",
+    "Lcom/quanhoang/greenfarm3/S800x480/CloudBackendTransport;",
+    "Lcom/quanhoang/greenfarm3/S800x480/CloudSaveJournal;",
+    "Lcom/quanhoang/greenfarm3/S800x480/NewPlayerDefaults;",
+    "Lcom/quanhoang/greenfarm3/S800x480/ServiceAvailability;",
+    "Lcom/quanhoang/greenfarm3/migration/CloudMigrationBackup;"
+  ]
+}

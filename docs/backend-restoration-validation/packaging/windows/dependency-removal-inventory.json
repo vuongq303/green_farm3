@@ -1,0 +1,148 @@
+{
+  "source_checkpoint": "8fb4b89",
+  "final_apk_sha256": "55b6647d473a372a7b53e07d1dac5d1517377a1f759ddcadb4ce9309cd8ca1cc",
+  "facebook_sdk": {
+    "original_definitions": 717,
+    "final_definitions": 0
+  },
+  "facebook_provider_bridges": {
+    "original_definitions": 24,
+    "final_definitions": 0,
+    "removed_classes": [
+      "Lcom/gameloft/android2d/socialnetwork/aa;",
+      "Lcom/gameloft/android2d/socialnetwork/ab;",
+      "Lcom/gameloft/android2d/socialnetwork/ac;",
+      "Lcom/gameloft/android2d/socialnetwork/ad;",
+      "Lcom/gameloft/android2d/socialnetwork/ae;",
+      "Lcom/gameloft/android2d/socialnetwork/af;",
+      "Lcom/gameloft/android2d/socialnetwork/ag;",
+      "Lcom/gameloft/android2d/socialnetwork/ah;",
+      "Lcom/gameloft/android2d/socialnetwork/ai;",
+      "Lcom/gameloft/android2d/socialnetwork/l;",
+      "Lcom/gameloft/android2d/socialnetwork/m;",
+      "Lcom/gameloft/android2d/socialnetwork/n;",
+      "Lcom/gameloft/android2d/socialnetwork/o;",
+      "Lcom/gameloft/android2d/socialnetwork/p;",
+      "Lcom/gameloft/android2d/socialnetwork/q;",
+      "Lcom/gameloft/android2d/socialnetwork/s;",
+      "Lcom/gameloft/android2d/socialnetwork/t;",
+      "Lcom/gameloft/android2d/socialnetwork/u;",
+      "Lcom/gameloft/android2d/socialnetwork/v;",
+      "Lcom/gameloft/android2d/socialnetwork/w;",
+      "Lcom/gameloft/android2d/socialnetwork/x;",
+      "Lcom/gameloft/android2d/socialnetwork/y;",
+      "Lcom/gameloft/android2d/socialnetwork/z;",
+      "Ljavax/microedition/midlet/v;"
+    ]
+  },
+  "google_ads_presentation": {
+    "original_definitions": 1880,
+    "final_definitions": 0
+  },
+  "shared_google_identifier": {
+    "retained_classes": [
+      "Lcom/google/android/gms/ads/identifier/AdvertisingIdClient$Info;",
+      "Lcom/google/android/gms/ads/identifier/AdvertisingIdClient;",
+      "Lcom/google/android/gms/ads/identifier/a;",
+      "Lcom/google/android/gms/ads/identifier/b;",
+      "Lcom/google/android/gms/ads/identifier/zzb;",
+      "Lcom/google/android/gms/ads/identifier/zzc;"
+    ],
+    "reason": "Required by original device identity wrapper, Firebase measurement and Moat; not Google ad presentation."
+  },
+  "original_payloads": {
+    "total": 59,
+    "native_library_files": 10,
+    "assets_files": 49,
+    "sha256": {
+      "assets/800x480/0": "966f0169739a92ebfa7335ba0d87ce4c84807bf6403ca31899ab8bfcf7e18baf",
+      "assets/800x480/1": "83b39c866718a4928dbd2e88f60c43f952c0039bec066e65ab8ac22fdfb80f8d",
+      "assets/800x480/10": "5300b4c62e6a707058cbd0b6b4fe28c7cae5d4876fd8571361d78d673261fdc8",
+      "assets/800x480/11": "b7649cef01fc56b98a591a8b9b8311ae1332472c627881093de031ed0f816ce7",
+      "assets/800x480/11.1": "6bf2e7930dc46aeefacab73aae4adc96a6e1a9c77d304824847310c4a5c07283",
+      "assets/800x480/11.2": "3614ac85076f32199db48193ca88d0f1b1919d20ace4b63921fb8343d46f225e",
+      "assets/800x480/11.3": "1ec944c07a682c9a88b4217e19cca220437f65188438d1f8c7b6210c46076bc7",
+      "assets/800x480/11.4": "dcecbbf5742583fa06489cd3403636c4805863d279e2ebd620f771787c2ea8e0",
+      "assets/800x480/11.5": "7b4841e7a22f6cc63377ee307aaedf982bd897172505651ffdd90531326169b5",
+      "assets/800x480/11.6": "6733cb19cd6907008eb8d63db872b88bd785d3dda88eca79b48e6095ea0a2c24",
+      "assets/800x480/11.7": "3c6748ff363163a5aac06695659b529e915f919439a08d1987562f1097537a9a",
+      "assets/800x480/11.8": "8de203bcf317e993f00e1dac47d177cfed3cb86c37e6fda5c5e13f5ea55d0136",
+      "assets/800x480/12": "0f519e13df0118f7e5cc933058150eeda2d0fa5479c1bcdc440fc793f77a8fee",
+      "assets/800x480/13": "2460fceb7c957eca1c50427f6182b5323b7b3c6529f03dcabbb22c9d2ea86b51",
+      "assets/800x480/14": "a728904efd10f0fa766dd6f587e33922d722377719dcaed34731511eeec3c7df",
+      "assets/800x480/15": "e7150ff33e90bc24c7fe252523b7f484c6a6d6cb68df0fc00fd01d730f3b1e94",
+      "assets/800x480/2": "ddc8d5986fdae27a433c3bc9b087f1b6cb084454131df421e019fce7fb4b1b4c",
+      "assets/800x480/3": "80175ab8af3e70b0bb904a20f7ff48250908259a25f3348ed495e2cb3c55a071",
+      "assets/800x480/4": "18baee173b317deca0a02608d630b2479c1d9941929f38475d18daabcbaeb0d3",
+      "assets/800x480/5": "1384819ee61fe4117443cc4b5f505c150ab4cd32e17432b43c7321757e83cb28",
+      "assets/800x480/6": "508f568e136d34506800b22d4688f8faa3ac0a9aefd791588fb6cdf91d9e9bd9",
+      "assets/800x480/7": "b94f18ed3636dcc46760d9c7932f760de2bf4975f972e063f65793316ff532f2",
+      "assets/800x480/8": "7245be91122452177d979fd9bb9f5393520adf7a7a669ee5c2c8cb53606d8859",
+      "assets/800x480/888": "0c23115d8f3aa850576421fa6f459eaf32a6a463b8ab40311db8de1c490ae377",
+      "assets/800x480/9": "cb20820d37d281b471e57532bb03ab938f6217fb7ae7730480a2f0839ef32d98",
+      "assets/800x480/9.1": "44619d94a1ff5e52d253d49a9dc2b96d5c4c56ece7016476210ffc32170ec88d",
+      "assets/800x480/9.2": "f170dac263e65a4fcdd9268cb648e572c9267979c5e59673f9b14b74bc62dece",
+      "assets/800x480/9.3": "0f02c39814f4bde797dbcabac1ab55a5255e52f62b54022e029804db9e0fc484",
+      "assets/800x480/9.4": "eb928038ec0149ad97d72dcb53c6051f912e1d6a84e0e89282d12e7a386836d5",
+      "assets/800x480/9.5": "806e8d1d4cde32350c99faa81fc368ac1480b410e8e13cae445a441b0a016756",
+      "assets/800x480/999": "9b94c3641beed4ddfe9ec78b1c2c168b7c161eab88f4f29f53cde915b796e947",
+      "assets/800x480/BR": "e527c542324ed55ba04d1f1f49d306e29dc96a356543b8e95fb7ec639c5ca83b",
+      "assets/800x480/DE": "ad994951c7beea753abc145f755a578dd9b081ed41d48cdeae796309a624b936",
+      "assets/800x480/EN": "9963f835ce9d56ccf738a74ecc9dcd083c7869e1cba658596c1f8b1a7b92a893",
+      "assets/800x480/ES": "a9b982e165c23a03a393f43b5d93c42d4286cf75eeec72109807c2b8bf2a7f1a",
+      "assets/800x480/FR": "a6f4b5ca1650bfb65750c4b0e719b9f7effa45f3059c53ee3ed73b5ec8f26971",
+      "assets/800x480/IT": "7a7f70b54db9b6ae017f18c2f2c2ec8234f877b28be8a4b02bfb9d0c492eddb8",
+      "assets/800x480/JP": "4061c9ec65820da984ce17e547e84e533d7ae271b230800d878a0efd93b64bca",
+      "assets/800x480/KR": "7c7b6885c34142108c9949458dc5cfc1285bc9e01b1cc0914f9c3d69079aa28d",
+      "assets/800x480/LATAM": "170bab59915be5089c44371bef4c9c65e2f64ab49b7c2f3b84c1bb52abe81e8d",
+      "assets/800x480/PL": "d79d6268c9a70eaeb28a4628b420dacb79c325aeba19fb6af48cf7ae18fe1077",
+      "assets/800x480/RU": "596bf25f8d2a8fd5cf3fcc82875aef0d405430a546b5be2eab1e0743bca90316",
+      "assets/800x480/TH": "141ed45208e2317c376cfd4bc153628def2bfce9a4012f048c056d0b1f78fd2c",
+      "assets/800x480/TR": "16dcb39ecc7d425b23d7135658f771af3d8543a047ca9332ed2c75ae0c969ada",
+      "assets/800x480/VI": "540c338def787e6df9e5c2e662d37eff1d03723a4cfcac787ac94ba28ab790cd",
+      "assets/800x480/iaks": "b35ace6ad49588e917bb032e5037f3331bec7987f5a7de024b8e69f79a8b6e54",
+      "assets/IAP_profiles": "4123843e8fe8db1c47924386754960431606dd3a50ec5c2e34d9c88030e97941",
+      "assets/IAP_texts": "84b99903aef05de57d7d247588ab182b689191fb427facb8e3fcd891956e70c2",
+      "assets/InitialFeed.bin": "3d677c104f3ec8d38ff03d08eb3f7ea0a6514779d72d1c698172049edd734b74",
+      "lib/arm64-v8a/libAdsManager.so": "e5bf335238dd7362e20b10c7938e06c6fa729a2dcdacd767dcab512a6af943bf",
+      "lib/arm64-v8a/libnativeU.so": "9a13044c9570bdc2e6f46793470023a395466108f4d8f4e45bd216992b090777",
+      "lib/armeabi/libAdsManager.so": "d2f757cbc7673626af75a92cfcdd3c4f9059f00920ed098599d8044955fd70cd",
+      "lib/armeabi/libnativeU.so": "b852aa8576860cb677dde4e37bf33afb23a95e27e836e5f5ea477848404c9d16",
+      "lib/armeabi-v7a/libAdsManager.so": "631296334a209071683291e220e6c293dec283129c8d39e452d3a8d8373b716f",
+      "lib/armeabi-v7a/libnativeU.so": "d093d5b819d4df0bcc62a754c698189cd35721967ad3a23583b795bc57ecafe9",
+      "lib/x86/libAdsManager.so": "f04bce0ce8d04a902d7edd21375a75fc34c412987c54be071b82fea15134436f",
+      "lib/x86/libnativeU.so": "c8e9b2f4188ce6d904f83fcfff77569919a35824fac2dd794a7a986c1f667a35",
+      "lib/x86_64/libAdsManager.so": "805bc5712f1518c44ccc8f4ea0b1abf7c8bc092cfedb35836cf9eb702eec2a9c",
+      "lib/x86_64/libnativeU.so": "8374e2ff13ef26ec27ce3272e27fd6bf6f2a1e987ed72b4774f4b04beb052a81"
+    }
+  },
+  "retained_archival_sources": {
+    "original_apk": {
+      "path": "green-farm-3.apk",
+      "sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b",
+      "role": "Authoritative archive/base input. Actual retained runtime DEX definitions and original payloads are merged; retired provider SDK definitions are pruned. The full archive is not embedded as an APK asset."
+    },
+    "jadx_reference_folders": [
+      "app/src/main/java/com/facebook",
+      "app/src/main/java/com/google/android/gms/ads",
+      "app/src/main/java/com/google/android/gms/internal/ads",
+      "app/src/main/java/com/google/ads",
+      "app/src/main/java/com/gameloft/android2d/socialnetwork",
+      "app/src/main/java/com/gameloft/adsmanager",
+      "app/src/main/java/javax/microedition/midlet"
+    ],
+    "source_selection": "External JADX sources are reference-only; main Java compiles selected generated/core-java sources and regenerated resource aliases. Genuine SDK runtime definitions come from the original DEX, not generated compile lookup bodies.",
+    "compile_view": {
+      "path": "app/build/original-dependencies/compile-view.jar",
+      "configuration": "compileOnly; D8 classpath lookup only",
+      "not_an_overlay_program_input": true,
+      "jar_not_packaged": true
+    },
+    "program_inputs": "Only project classfiles and the explicit Kotlin stdlib program overlay, merged with genuine original DEX; closed SDK deletion is verified before final packaging."
+  },
+  "retained_runtime": {
+    "javax.microedition.midlet.App": true,
+    "javax.microedition.midlet.MIDlet": true
+  },
+  "native_ads_manager_invocations_remaining": 0
+}

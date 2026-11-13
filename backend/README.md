@@ -14,6 +14,24 @@ BACKEND_BASE_URL=http://10.37.233.55:8787/
 Sửa URL khi IPv4/port thay đổi, khởi động lại backend và build/cài lại APK.
 `0.0.0.0` chỉ dùng làm địa chỉ bind; app không dùng localhost hoặc server giả.
 
+## Cập nhật từ main `1dad293`
+
+Mốc đó theo dõi `.env` trong Git; bản này giữ `.env` riêng và chỉ theo dõi mẫu
+`.env.example`. Trước khi pull trên máy đang chạy backend, sao lưu cấu hình
+riêng ra ngoài các file được Git theo dõi, rồi khôi phục sau cập nhật:
+
+```powershell
+New-Item -ItemType Directory -Force .local | Out-Null
+Copy-Item backend/.env .local/backend-env-before-update
+# Cập nhật nhánh work, rồi khôi phục file riêng:
+Copy-Item .local/backend-env-before-update backend/.env
+```
+
+Lệnh trên chạy từ root project. Không thay `.env` đang có bằng mẫu khi cập nhật.
+Giữ secret phiên cũ; nếu file vẫn chứa cấu hình MySQL thì hoàn thành migration
+bên dưới trước khi chạy SQLite. Bản sao `.env` tại checkout cloud đã được giữ
+nguyên riêng; nó không tự đồng bộ sang ổ D: của máy Windows.
+
 ## Chạy instance SQLite mới
 
 Từ `backend` trong PowerShell:

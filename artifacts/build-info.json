@@ -1,0 +1,131 @@
+{
+  "format_version": 3,
+  "source_commit": "cb57a031fd12b3e891f37f91db653d120a89035a",
+  "backend_baseline_commit": "2b9f0d9",
+  "offline_removal_checkpoint": "a86db0f",
+  "apk": {
+    "file": "green-farm-3-debug.apk",
+    "sha256": "01a3c92d7eb5504627fe61ffbb81b670c7f18a4f8710ceedac04b17b8efa7b8f",
+    "bytes": 14976483,
+    "application_id": "com.quanhoang.greenfarm3",
+    "application_class": "javax.microedition.midlet.App",
+    "launcher": "com.quanhoang.greenfarm3.Start",
+    "version_name": "4.4.2",
+    "version_code": 44220,
+    "variant": "debug",
+    "min_sdk": 16,
+    "target_sdk": 28,
+    "class_count": 5092,
+    "dex_count": 1
+  },
+  "build": {
+    "command": "./gradlew :app:clean :app:assembleDebug --stacktrace",
+    "result": "BUILD SUCCESSFUL in 3m;45 tasks;42 executed,3 up-to-date",
+    "backend_url": "http://10.37.233.55:8787/",
+    "signature_schemes_verified": [
+      "v1",
+      "v2",
+      "v3"
+    ],
+    "original_payloads_preserved": {
+      "assets": 49,
+      "native_libraries": 10
+    },
+    "kotlin_source_files": 105,
+    "whole_game_kotlin_migration_complete": false,
+    "host_os": "Linux cloud",
+    "windows_host_build_executed": false
+  },
+  "backend": {
+    "runtime": "JavaScript / Node.js >=24 / node:sqlite",
+    "database_default": "backend/data/green-farm.sqlite",
+    "database_schema_version": 4,
+    "local_client_database_schema_version": 5,
+    "save_archive": "GF3SAVE1/version1/schema4",
+    "new_player_defaults": "backend/config/new_player_defaults.json",
+    "configured_defaults": {
+      "schemaVersion": 1,
+      "initialLevel": 1,
+      "initialExperience": 0,
+      "initialCoins": 2000,
+      "initialCash": 50,
+      "initialTutorialStep": 0,
+      "initialLanguage": "auto",
+      "initialCapacityLimits": {
+        "plots": 10,
+        "trees": 10,
+        "animals": 10,
+        "ponds": 1
+      },
+      "initialWorldTemplate": "original-4.4.2"
+    },
+    "reload_policy": "Validate at startup and reread for each newly created player; persist immutable configuration copy per player",
+    "migration_from_mysql": "backend/docs/MYSQL_TO_SQLITE.md",
+    "local_copy_requires_operator_approval": true,
+    "credentials_in_apk": false
+  },
+  "removed_features": {
+    "offline_test_build_profile": true,
+    "offline_test_apk": true,
+    "offline_resource_grant_helpers": true,
+    "facebook_sdk_definitions_remaining": 0,
+    "facebook_bridges_removed": 24,
+    "google_ads_presentation_definitions_remaining": 0,
+    "google_ads_presentation_definitions_removed": 1880,
+    "shared_google_identifier_classes_retained": 6,
+    "native_adsmanager_invocations_remaining": 0,
+    "scoped_sdk_dispatch_edits": 33,
+    "advert_reward_substitute_or_unlimited_grant": false
+  },
+  "android_validation": {
+    "tested_apk_sha256": "d07b54d5eaab1e184b8c946781e55148e66eb5297ff83d12f3b3f9dfb3337bfe",
+    "tested_backend_url": "http://172.26.91.236:18888/",
+    "source_equivalence_proof": "../docs/backend-restoration-validation/packaging/windows-fixed/cloud-windows-comparison.json",
+    "device_type": "Android API28 x86 software emulators, existing save and fresh app instance",
+    "windows_backend_reachability_tested": false,
+    "runtime_report": "../docs/backend-restoration-validation/runtime/fixed/index.json",
+    "prior_gameplay_apk_sha256": "18136567c3e75b9bdedeed48785b380deed7b7291a962a61b5feff4425cec70b",
+    "verified_results": {
+      "existing_profile_final_apk_farm": "1900 coins,50 cash,XP7,level1,tutorial23,VI16 preserved",
+      "fresh_profile_config_and_play": "isolated server pinned2300 coins; first strict checkpoint tutorial0/XP0/level1/cash50; six original mature wheat harvests and five real plantings leave2250/XP6/tutorial8",
+      "network_failure_durability": "active default network verified absent before two plantings; head+tail survive Home and force-stop; same operations acknowledged after reconnect",
+      "final_apk_cold_reopen_after_backend_restart": "both real farms rendered, correct guarded values and player ownership; no FATAL EXCEPTION recorded",
+      "database_reset_or_clear_data_used": false,
+      "actual_quit_menu_not_verified": "early tutorial prevented reaching the explicit Quit UI; production quit flow has separate host checks",
+      "shop_building_all_quests_not_verified": true,
+      "second_cold_reopen_final_apk": "Fresh profile rendered five planted seedlings again,2250 coins/50 cash/XP6/level1/tutorial8; acknowledged revision279/outbox0 at verification, no crash"
+    },
+    "final_home_observation": {
+      "existing_profile": "revision162/outbox0; all14 record payloads match committed server snapshot",
+      "fresh_profile": "local generation339 durable, one pending snapshot; last observed ACK298/server generation338. This last snapshot is not claimed committed; second cold reopen had already passed at revision279/outbox0."
+    }
+  },
+  "evidence": {
+    "packaging": "../docs/backend-restoration-validation/packaging/windows-fixed/final-packaging-proof.json",
+    "sdk_inventory": "../docs/backend-restoration-validation/packaging/windows-fixed/dependency-removal-inventory.json",
+    "backend_tests": "../backend/docs/validation/result.json",
+    "client_host": "../docs/backend-restoration-validation/client-host/index.json",
+    "migration_host": "../docs/cloud-save-validation/migration-host/index.json",
+    "original_defaults": "../docs/backend-restoration-validation/original-balance-tables.json",
+    "initialization_oracle": "../docs/backend-restoration-validation/new-player-oracle/original-gameplay-oracle.json",
+    "defaults_host": "../docs/backend-restoration-validation/new-player-defaults-host/index.json",
+    "binding_pin": "../docs/backend-restoration-validation/client-host/binding-pin-result.json",
+    "backend_restart": "../docs/backend-restoration-validation/backend-process-restart.json",
+    "defaults_reload": "../docs/backend-restoration-validation/defaults-hot-reload.json"
+  },
+  "limits": [
+    "Windows backend and physical user device not accessible from cloud; only equivalent-source cloud-origin APK was run",
+    "All quests, high-level content, actual payments, audio output, newer Android versions and long-session performance not fully verified",
+    "World and inventory initialization select the original template; arbitrary custom item/template seeds are not supported",
+    "Manual SAF replacement of an already cloud-linked or pending profile is blocked; automatic opaque-save conflict merging is not implemented",
+    "After abrupt process death only locally committed snapshots can be retried; cloud success requires matching committed backend receipt"
+  ],
+  "legacy_export_utility": {
+    "historical_file": "artifacts/green-farm-3-legacy-export-debug.apk",
+    "historical_commit": "fdb30d12f5ced3b80c36d3e93907c6fc04f2a765",
+    "historical_sha256": "bbe0aecf66cf7d1fd7b394fd3f2f17c9388ee9df478f4d4dd7deeb320882d2d1",
+    "present_in_this_delivery": false,
+    "scope": "Historical save export utility removed by user on main; deletion preserved, not the SDK-free rebuilt main game"
+  },
+  "integrated_user_main_commit": "1dad293842770c1ea195156231407b0eb778b5e5"
+}

@@ -1,0 +1,268 @@
+{
+  "generated_utc": "2026-11-13T14:54:51Z",
+  "tested_apk_sha256": "d07b54d5eaab1e184b8c946781e55148e66eb5297ff83d12f3b3f9dfb3337bfe",
+  "tested_source_commit": "cb57a03",
+  "application_id": "com.quanhoang.greenfarm3",
+  "environment": "Two independent Android API28 x86 software emulators; normal existing save and separate fresh normal-app sandbox. Physical devices and other Android versions were not tested.",
+  "final_runtime": {
+    "normal_existing_farm": {
+      "status": "Actual farm rendering and read-only guarded balances verified after update and backend restart.",
+      "numeric": {
+        "coinBalance": 1900,
+        "cashBalance": 50,
+        "experience": 7,
+        "level": 1,
+        "tutorialStep": 23,
+        "language": 16
+      },
+      "snapshot": {
+        "schema": 5,
+        "generation": 5661,
+        "complete_snapshot_generation": 5661,
+        "record_count": 14,
+        "server_revision": 135,
+        "outbox_count": 1,
+        "crash_buffer_bytes": 0
+      }
+    },
+    "new_profile_rescued_farm": {
+      "status": "Actual farm rendering restored after SDK-binding fix; no reset or currency grant.",
+      "numeric": {
+        "coinBalance": 2250,
+        "cashBalance": 50,
+        "experience": 6,
+        "level": 1,
+        "tutorialStep": 8,
+        "language": 0
+      },
+      "snapshot": {
+        "schema": 5,
+        "generation": 280,
+        "complete_snapshot_generation": 280,
+        "record_count": 15,
+        "server_revision": 244,
+        "outbox_count": 1,
+        "crash_buffer_bytes": 0
+      }
+    },
+    "new_profile_second_cold_reopen": {
+      "status": "PASS: Home, durable local save and server ACK, force-stop, then actual farm rendering after a second cold launch.",
+      "numeric": {
+        "coinBalance": 2250,
+        "cashBalance": 50,
+        "experience": 6,
+        "level": 1,
+        "tutorialStep": 8,
+        "language": 0
+      },
+      "snapshot": {
+        "schema": 5,
+        "generation": 316,
+        "complete_snapshot_generation": 316,
+        "record_count": 15,
+        "server_revision": 279,
+        "outbox_count": 0,
+        "crash_buffer_bytes": 0
+      }
+    }
+  },
+  "earlier_verified_phases": {
+    "preupgrade_backup": {
+      "schema": 4,
+      "generation": 5520,
+      "complete_generation": 5520,
+      "logical_sqlite_backup_includes_wal": true,
+      "shared_preferences_two_reads_identical": true,
+      "source_db_wal_preferences_hashes_unchanged": true
+    },
+    "actual_schema4_to_5_backup": {
+      "bytes": 365881,
+      "typed_backup_footer_valid": true,
+      "all_definitions_columns_and_rows_of_five_original_tables_match_preupgrade_backup": true
+    },
+    "original_local_copy": {
+      "explicit_native_copy_confirmation": true,
+      "operator_approval_bound_actual_owner_and_head_hash": true,
+      "first_server_revision": 1,
+      "origin": "approved-local-copy",
+      "all_14_records_match_server_blob": true
+    },
+    "remote_new_player_configuration": {
+      "original_backend_default_coins": 2000,
+      "private_test_configuration_coins": 2300,
+      "private_config_restored_to_2000_before_first_farm_commit": true,
+      "new_profile_frozen_coins_remained": 2300,
+      "first_strict_server_archive": {
+        "strict_initial_snapshot_validated": true,
+        "server_archive_record_count": 15,
+        "server_archive_generation": "16",
+        "first_archive_decoded": {
+          "coins": 2300,
+          "cash": 50,
+          "level": 1,
+          "experience": 0,
+          "tutorialStep": 0,
+          "languageIndex": 0,
+          "capacities": {
+            "plots": 10,
+            "trees": 10,
+            "animals": 10,
+            "ponds": 1
+          }
+        },
+        "defaults_marker_ascii_matches_frozen_config": true,
+        "private_current_default_file_was_restored_2000_before_this_commit": true
+      },
+      "age16_compliance_submission_committed_after_real_accept": true
+    },
+    "gameplay_on_sdk_fixed_apk": {
+      "apk_sha256": "18136567c3e75b9bdedeed48785b380deed7b7291a962a61b5feff4425cec70b",
+      "source": "8fb4b89",
+      "observed": "Six genuine wheat harvests produced XP0→6. Seed-tool/touch/drag planted crops and spent coins2300→2250. Cash50, level1 and tutorial8 preserved. These actions preceded the metadata-only binding fix; they are not relabeled as new actions on the final APK."
+    },
+    "actual_network_loss": {
+      "wifi_and_mobile_data_off": true,
+      "active_default_network_none_confirmed_before_action": true,
+      "offline_planting_coins_before": 2270,
+      "offline_planting_coins_after": 2250,
+      "durable_local_generation_after_home_and_process_death": 272,
+      "durable_head_tail_count": 2,
+      "head_operation_hash_and_expected_revision_preserved": true,
+      "server_revision_while_offline": 236,
+      "restored_network_retry_revision": 238,
+      "outbox_after_retry": 0,
+      "durable_decoded_state_after_process_death": {
+        "coins": 2250,
+        "cash": 50,
+        "level": 1,
+        "experience": 6,
+        "tutorialStep": 8,
+        "languageIndex": 0,
+        "capacities": {
+          "plots": 10,
+          "trees": 10,
+          "animals": 10,
+          "ponds": 1
+        }
+      },
+      "note": "An earlier airplane-broadcast setup failed and its online action was excluded from offline conclusions. The valid test used Wi-Fi/data off and confirmed no default network."
+    },
+    "backend_process_restart_proof": "../../backend-process-restart.json",
+    "retired_services_runtime_evidence": {
+      "apk_sha256": "18136567c3e75b9bdedeed48785b380deed7b7291a962a61b5feff4425cec70b",
+      "observed": {
+        "method": "Read-only JDWP loaded-class fields; no target invocation, class initialization or writes",
+        "adBridge": {
+          "loaded": true,
+          "prepared": true,
+          "Jn": false,
+          "JX": false,
+          "JY": false,
+          "JZ": false,
+          "Ka": false
+        },
+        "gameAds": {
+          "loaded": true,
+          "prepared": true,
+          "aYz": false,
+          "aYF": false
+        },
+        "facebookSdk": {
+          "loaded": false
+        },
+        "socialCallback": {
+          "loaded": false
+        },
+        "native": {
+          "libAdsManager_mapped": false,
+          "nativeU_mapped": true
+        }
+      },
+      "scope": "Read-only SDK flags and process maps; final APK has separate structural package verification and completed both startup paths."
+    }
+  },
+  "regressions_found_before_final_delivery": [
+    {
+      "apk_sha256": "1064f8705d93665a8e9b8f9c044be55afac25347965140de81bdba5d7e7ae7cb",
+      "source": "0a36769",
+      "rejected": "Uncaught GLThread UnsatisfiedLinkError: AdsManager.SetAge(int), called by original PrivacyPolicyChecker. SDK advertising JNI propagation was removed while preserving consent handling."
+    },
+    {
+      "apk_sha256": "18136567c3e75b9bdedeed48785b380deed7b7291a962a61b5feff4425cec70b",
+      "source": "8fb4b89",
+      "rejected_for_complete_restore": "Fresh save cold load blocked at step44 because original SDK binding changed across process restart and no verified identity pin existed. Local2250 progress and server ACK238 were retained. Final cb57 fix pins checksum-verified owned metadata during startup reconciliation; no SDK authentication mutation or farm-byte rewrite."
+    }
+  ],
+  "final_home_observation": {
+    "both_apps_sent_home": true,
+    "normal": {
+      "schema": 5,
+      "generation": 5689,
+      "complete_snapshot_generation": 5689,
+      "record_count": 14,
+      "server_revision": 162,
+      "outbox_count": 0,
+      "crash_buffer_bytes": 0
+    },
+    "new_profile": {
+      "schema": 5,
+      "generation": 339,
+      "complete_snapshot_generation": 339,
+      "record_count": 15,
+      "server_revision": 298,
+      "outbox_count": 1,
+      "crash_buffer_bytes": 0
+    },
+    "note": "The final new-profile Home observation had one durable pending snapshot (generation339; last acknowledged server revision298/generation338). It is not claimed server-committed. The earlier second-cold snapshot316 was confirmed ACK279 with outbox0 and actual farm state. No further collection was performed."
+  },
+  "final_normal_server_comparison": {
+    "installed_package": "com.quanhoang.greenfarm3",
+    "client_schema": 5,
+    "client_generation": 5689,
+    "client_complete_snapshot_generation": 5689,
+    "client_server_revision": 162,
+    "server_committed_revision": 162,
+    "server_snapshot_generation": 5689,
+    "server_snapshot_complete_generation": 5689,
+    "server_snapshot_format": 1,
+    "server_pose_snapshot": 1,
+    "server_snapshot_hash": "95922364c29d674e2ee2a37c58db6c3b54fda2869988968595b076b50f52a78c",
+    "client_last_ack_hash": "95922364c29d674e2ee2a37c58db6c3b54fda2869988968595b076b50f52a78c",
+    "ack_hash_matches_committed_server": true,
+    "revision_matches": true,
+    "outbox_count": 0,
+    "server_operation_count_for_this_player": 162,
+    "server_player_count": 3,
+    "record_count": 14,
+    "record_payloads_match_latest_local_capture": true,
+    "record_payload_mismatches": [],
+    "method": "Read-only backend SQLite transaction; exact GF3SAVE1 header, per-record checksums and footer verified; compared to client save-record checksums. No token/player identifier or payload content is output."
+  },
+  "radio_state": {
+    "last_verified_normal": {
+      "airplane_mode_on": 0,
+      "wifi_on": 1,
+      "mobile_data": 1
+    },
+    "last_verified_new_profile": {
+      "airplane_mode_on": 0,
+      "wifi_on": 1,
+      "mobile_data": 1
+    },
+    "restored_to_original_before_final_build_testing": true,
+    "no_subsequent_radio_changes": true
+  },
+  "not_verified": [
+    "Explicit in-game Quit: MENU/BACK did not expose an Exit action in the current early tutorial state; Home and process-death recovery were tested.",
+    "Shop, building placement, all quests/items, cash spending, sound output and a completed grow/reharvest cycle were not verified in this milestone. Final observed crops were still growing.",
+    "A deterministic lost-ACK race and multiple concurrent devices for the same account were not forced on Android; host API/storage tests cover retry and revision behavior.",
+    "Runtime testing used the cloud-endpoint APK identified above. A Windows/LAN-endpoint artifact has separate build/package verification.",
+    "No claim of stability across all Android versions or physical devices."
+  ],
+  "screenshots": [
+    "final-03-normal-preserved-farm.png",
+    "final-fresh-03-rescued-farm.png",
+    "final-fresh-06-second-cold-farm.png"
+  ],
+  "privacy": "No player IDs, access tokens, installation secrets, SDK binding values or raw save payloads are published. Raw diagnostic files remain under ignored .local/backend-restoration-runtime. Existing offline-test data was never imported or reset."
+}

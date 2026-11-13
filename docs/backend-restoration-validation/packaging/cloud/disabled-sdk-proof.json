@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "policy": "facebook-and-ads-lifecycle-disabled",
+  "input_dex_sha256": "9c0eb1796a76162ce6456657e787ad1dc5fc5c548a23b7a0fb850776244859c3",
+  "output_dex_sha256": "33ccf377ecc74fdfe1f2c799385da4bce261eb505bbdbab0d587fe8d3f5a20e5",
+  "target_class": "Ljavax/microedition/midlet/MIDlet;",
+  "facebook_lifecycle_calls_disabled": 12,
+  "ads_lifecycle_calls_disabled": 12,
+  "native_fullscreen_queries_disabled": 2,
+  "native_back_handlers_disabled": 1,
+  "instruction_widths_preserved": true,
+  "inverse_target_semantics_verified": true,
+  "unchanged_other_classes_verified": true,
+  "unchanged_classes_canonical_sha256": "ac75980882a229b11806c627d2107e1742cb74951496231b2e88b32c6b9efb43"
+}

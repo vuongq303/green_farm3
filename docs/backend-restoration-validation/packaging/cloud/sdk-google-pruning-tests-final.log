@@ -1,0 +1,8 @@
+test_each_incoming_reference_kind_and_reflection_fails_closed (test_google_ads_pruning.GoogleAdsPruningTest.test_each_incoming_reference_kind_and_reflection_fails_closed) ... ok
+test_input_alias_is_rejected_without_modifying_original (test_google_ads_pruning.GoogleAdsPruningTest.test_input_alias_is_rejected_without_modifying_original) ... ok
+test_real_sdk_closed_set_retains_original_runtime_and_shared_identifier (test_google_ads_pruning.GoogleAdsPruningTest.test_real_sdk_closed_set_retains_original_runtime_and_shared_identifier) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 20.559s
+
+OK

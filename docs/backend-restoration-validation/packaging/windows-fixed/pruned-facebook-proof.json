@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "policy": "remove-facebook-sdk-and-provider-bridge",
+  "input_dex_sha256": "a6c25c58ead3ad131c5beb9ccda7d48df85a400bc3017bbdfcca88788638d0c5",
+  "output_dex_sha256": "0c2ef3bb92d9b7de671ff3691b1d8cf255e1bf1de61a201f68c7327481b9d44d",
+  "removed_facebook_class_count": 717,
+  "removed_provider_bridge_count": 24,
+  "removed_class_count": 741,
+  "retained_class_count": 5092,
+  "removed_class_names_sha256": "b3ca462a28455053c485fcaf5723a87243b86446b3d596034c8a3da8ce4fc116",
+  "retired_avatar_method": "Lcom/gameloft/android2d/socialnetwork/i;->UN()Ljavax/microedition/lcdui/ao;",
+  "original_profile_canonical_sha256": "5b1b329c8487c068c8a2e1b4dbd2a0fdfabfa7a96faf7ec01acb0098ccd7fd12",
+  "retained_structural_reference_audit_verified": true,
+  "retained_reflection_string_audit_verified": true,
+  "native_ads_manager_invocations_remaining": 0,
+  "global_ad_native_invocation_audit_verified": true,
+  "retired_nullable_avatar_method_verified": true,
+  "other_profile_data_and_methods_preserved": true,
+  "retained_class_semantics_verified": true,
+  "inverse_class_set_and_method_semantics_verified": true,
+  "retained_classes_canonical_sha256": "276aec2585472d7a59c6ec1e5f6bd70db70d68b86a769f41bfff8ecc427c369d"
+}
