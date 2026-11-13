@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabaseCorruptException
 import java.security.MessageDigest
 
-/** A user-approved imported record may retain its original binding without changing SDK authentication. */
+/** An owned cloud snapshot or user-approved import may retain its codec binding without changing SDK authentication. */
 object SaveTransferIdentity {
     @Volatile private var context: Context? = null
     @Volatile private var checked = false

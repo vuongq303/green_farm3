@@ -104,6 +104,41 @@ fun main(args:Array<String>){
  transaction(c){journal.acknowledge(it,promoted,2,2,promoted.snapshotHash)}
  database(c).use{db->check(!journal.hasPending(db)&&journal.state(db).revision==2L&&journal.state(db).lastAckHash==promoted.snapshotHash&&journal.state(db).conflict==null,"latest acknowledged snapshot commits revision/hash and clears only resolved work")}
  check(database(c).use{journal.snapshot(it,c.packageName).generation}==20L,"acknowledgements never mutate gameplay or replay rewards")
+
+ // Reproduce a fresh profile whose SDK identifier changed after process death:
+ // the farm is already committed to its authenticated owner's cloud revision,
+ // but only imported profiles previously received save_transfer_identity.
+ transaction(c){it.execSQL("DROP TABLE save_transfer_identity")}
+ val binding=SaveArchive.gameplayBinding(original.records.single{it.name=="save_gameplay"}.payload!!)
+ com.quanhoang.greenfarm3.migration.SaveTransferIdentity.initialize(c)
+ com.quanhoang.greenfarm3.migration.SaveTransferIdentity.invalidate()
+ check(!com.quanhoang.greenfarm3.migration.SaveTransferIdentity.matches(binding,"b".repeat(binding.length)),"fresh unpinned profile does not bypass a changed SDK binding")
+ fun noIdentity()=database(c).use{db->db.rawQuery("SELECT 1 FROM sqlite_master WHERE type='table' AND name='save_transfer_identity'",null).use{!it.moveToFirst()}}
+ fun rejectedPin(player:String="fixture-player-A",revision:Long=2L,hash:String=promoted.snapshotHash,before:(SQLiteDatabase)->Unit={}){
+  var denied=false
+  try{transaction(c){db->before(db);journal.pinOwnedCloudBinding(db,player,revision,hash,c.packageName)}}catch(expected:IllegalStateException){denied=true}
+  check(denied&&noIdentity(),"unverified cloud binding proof leaves metadata absent and transaction unchanged")
+ }
+ rejectedPin(player="fixture-player-B")
+ rejectedPin(revision=1L)
+ rejectedPin(hash="f".repeat(64))
+ rejectedPin(before={it.execSQL("UPDATE cloud_state SET adopted=0")})
+ rejectedPin(before={it.execSQL("UPDATE cloud_state SET conflict_code='REVISION_CONFLICT'")})
+ rejectedPin(before={journal.enqueueCommittedFarm(it,c.packageName)})
+ rejectedPin(before={mutate(it,21L,99)})
+ check(database(c).use{journal.snapshot(it,c.packageName).generation}==20L&&database(c).use{!journal.hasPending(it)},"failed full-archive proof rolls back changed bytes and does not lose pending work")
+ // A pin which did not commit must not become usable through the cache.
+ database(c).use{db->db.beginTransaction();try{journal.pinOwnedCloudBinding(db,"fixture-player-A",2,promoted.snapshotHash,c.packageName)}finally{db.endTransaction()}}
+ check(noIdentity(),"binding metadata creation rolls back with its SQLite transaction")
+ val beforePin=database(c).use{journal.hash(journal.encode(journal.snapshot(it,c.packageName)))}
+ transaction(c){journal.pinOwnedCloudBinding(it,"fixture-player-A",2,promoted.snapshotHash,c.packageName)}
+ check(!com.quanhoang.greenfarm3.migration.SaveTransferIdentity.matches(binding,"b".repeat(binding.length)),"pin is not published to an already checked cache before explicit post-commit invalidation")
+ com.quanhoang.greenfarm3.migration.SaveTransferIdentity.invalidate()
+ check(com.quanhoang.greenfarm3.migration.SaveTransferIdentity.matches(binding,"b".repeat(binding.length)),"owned committed fresh profile survives a changed SDK identifier")
+ check(database(c).use{journal.hash(journal.encode(journal.snapshot(it,c.packageName)))}==beforePin,"binding pin changes metadata only and preserves every encoded record and slot field")
+ check(database(c).use{journal.state(it).playerId}=="fixture-player-A"&&database(c).use{journal.state(it).revision}==2L&&database(c).use{!journal.hasPending(it)},"binding pin cannot change owner revision rewards or queued work")
+ com.quanhoang.greenfarm3.migration.SaveTransferIdentity.invalidate()
+ check(com.quanhoang.greenfarm3.migration.SaveTransferIdentity.matches(binding,"c".repeat(binding.length)),"verified binding remains readable after SQLite connection/cache reopen")
  println("CLOUD_SAVE_JOURNAL_HOST_PASS checks=$checks")
 }
 '''

@@ -131,6 +131,47 @@ object CloudSaveJournal {
         db.execSQL("UPDATE cloud_state SET conflict_code=? WHERE singleton=1", arrayOf<Any>(code))
     }
 
+    /**
+     * SDK HDIDFV can change across processes. Preserve a codec binding only
+     * after this entire local archive equals the authenticated owner's current
+     * committed cloud snapshot; an arbitrary local/read-only save is not proof.
+     * The caller invalidates SaveTransferIdentity's cache AFTER commit.
+     */
+    fun pinOwnedCloudBinding(db: SQLiteDatabase, playerId: String, revision: Long,
+        snapshotHash: String, sourcePackage: String) {
+        check(db.inTransaction()) { "Owned binding verification requires a transaction" }
+        val current = state(db)
+        check(current.playerId == playerId && current.adopted && current.conflict == null) {
+            "Cloud binding owner is not verified; progress retained"
+        }
+        check(revision in 1..MAX_REVISION && current.revision == revision && current.lastAckHash == snapshotHash) {
+            "Cloud binding receipt is not current; progress retained"
+        }
+        check(!hasPending(db)) { "Pending local work cannot authorize a cloud binding" }
+        val local = snapshot(db, sourcePackage)
+        check(local.records.none { it.name == "offline_test_balances_v1" }) { "Test progress cannot authorize a cloud binding" }
+        check(hash(encode(local)) == snapshotHash) {
+            "Local archive differs from the owned server snapshot; progress retained"
+        }
+        val gameplay = local.records.single { it.name == "save_gameplay" }.payload!!
+        val binding = SaveArchive.gameplayBinding(gameplay)
+        val checksum = SaveArchive.checksum(gameplay)
+        db.execSQL("CREATE TABLE IF NOT EXISTS save_transfer_identity (singleton INTEGER PRIMARY KEY CHECK(singleton=1), version INTEGER NOT NULL CHECK(version=1), original_binding TEXT NOT NULL, gameplay_checksum BLOB NOT NULL CHECK(length(gameplay_checksum)=32))")
+        val present = db.rawQuery("SELECT version FROM save_transfer_identity WHERE singleton=1", null).use {
+            if (it.moveToFirst()) {
+                check(it.getInt(0) == 1) { "Unsupported saved binding metadata; progress retained" }
+                true
+            } else false
+        }
+        val values = ContentValues().apply {
+            put("singleton", 1); put("version", 1)
+            put("original_binding", binding); put("gameplay_checksum", checksum)
+        }
+        if (present) check(db.update("save_transfer_identity", values, "singleton=1 AND version=1", null) == 1) {
+            "Could not retain the verified codec binding"
+        } else db.insertOrThrow("save_transfer_identity", null, values)
+    }
+
     /** The exact existing data-only GF3SAVE1 codec, not a new model of game fields. */
     fun snapshot(db: SQLiteDatabase, sourcePackage: String): SaveArchive.Snapshot {
         val metadata = db.rawQuery("SELECT generation,complete_snapshot_generation,snapshot_format,pose_snapshot,created_at,updated_at FROM save_slots WHERE slot_id=?", arrayOf(SLOT)).use {

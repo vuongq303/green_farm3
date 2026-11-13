@@ -10,6 +10,7 @@ import android.os.Build
 import android.util.Base64
 import android.util.Log
 import com.quanhoang.greenfarm3.migration.SaveArchiveDatabase
+import com.quanhoang.greenfarm3.migration.SaveTransferIdentity
 import java.lang.ref.WeakReference
 import java.security.SecureRandom
 import java.util.concurrent.Executors
@@ -102,6 +103,11 @@ object BackendCloudController {
             }
             if (!state.adopted) GameSaveStore.cloudDatabase(true) { db -> CloudSaveJournal.adoptLocal(db, context) }
             flushPending(16, Long.MAX_VALUE)
+            if (hasFarm) {
+                val committed = authenticated { token -> transport!!.load(token) }
+                    ?: throw CloudBackendTransport.Failure("SERVER_SAVE_MISSING")
+                pinOwnedBinding(session.playerId, committed)
+            }
             return
         }
         if (!state.adopted && hasFarm) {
@@ -120,6 +126,15 @@ object BackendCloudController {
             preserveRemoteConflict(remote)
             throw CloudBackendTransport.Failure("SERVER_HASH_CONFLICT")
         }
+        pinOwnedBinding(session.playerId, remote)
+    }
+
+    private fun pinOwnedBinding(playerId: String, remote: CloudBackendTransport.RemoteSave) {
+        GameSaveStore.cloudDatabase(true) { db ->
+            CloudSaveJournal.pinOwnedCloudBinding(db, playerId, remote.revision, remote.hash, remote.snapshot.sourcePackage)
+        }
+        // Never publish/cache metadata before its owning SQLite transaction ends.
+        SaveTransferIdentity.invalidate()
     }
 
     /** Persist proof before any request, and never mint a replacement identity over bound data. */
