@@ -14,9 +14,10 @@ import re
 from test_aa_tile_renderer import extract_method
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
 sys.path.insert(0, str(ROOT / 'tools'))
 from kotlin_test_tools import compile_mixed, runtime_classpath
+from game_source_context import qualified_package, core_source_directory, kotlin_source_directory, type_name, adapt_fixture, legacy_fixture_names
+PACKAGE = qualified_package().replace('.', '/')
 
 ANDROID = {
     'android/os/SystemClock.java': '''package android.os; public class SystemClock {
@@ -39,9 +40,9 @@ ANDROID = {
         public String getPackageName(){return "com.gameloft.android.ANMP.GloftGF2F";}
         public android.content.pm.PackageManager getPackageManager(){return new android.content.pm.PackageManager();} }''',
     'android/content/pm/PackageManager.java': '''package android.content.pm;public class PackageManager {
-        public static boolean unavailable;public Object resolveActivity(android.content.Intent i,int f){return unavailable?null:new Object();} }''',
+        public static boolean unavailable;public Object resolveActivity(android.content.Intent i,int f){return unavailable||i.component==null||!i.component.name.startsWith(i.component.packageName+".")?null:new Object();} }''',
     'android/content/ComponentName.java': '''package android.content;public class ComponentName {
-        public final String name;public ComponentName(String p,String n){name=n;} }''',
+        public final String packageName,name;public ComponentName(String p,String n){packageName=p;name=n;} }''',
     'android/content/Intent.java': '''package android.content;public class Intent {
         public static final String ACTION_MAIN="main",CATEGORY_LAUNCHER="launcher";
         public static final int FLAG_ACTIVITY_NEW_TASK=0x10000000,FLAG_ACTIVITY_CLEAR_TASK=0x8000;
@@ -351,12 +352,12 @@ class ProgressSaveControllerTest(unittest.TestCase):
         javac, java = home / 'bin' / ('javac' + suffix), home / 'bin' / ('java' + suffix)
         if not javac.is_file() or not java.is_file():
             self.skipTest('Requires installed JDK for isolated Java fixtures')
-        source = ROOT / 'app/src/main/java' / PACKAGE
-        entity = (source / 'ci.java').read_text(encoding='utf-8')
+        source = core_source_directory()
+        entity = legacy_fixture_names((source / (type_name('ci') + '.java')).read_text(encoding='utf-8'))
         methods = '\n'.join(extract_method(entity, signature) for signature in
                             ('static int qD()', 'static int qE()', 'static boolean isPersistedWorldState(int state)',
                              'static boolean pendingTransitionUnloadsWorld()', 'static void qG()'))
-        kotlin_source = ROOT / 'app/src/main/kotlin' / PACKAGE
+        kotlin_source = kotlin_source_directory()
         kotlin_midlet = kotlin_source / 'GloftGF2F.kt'
         if kotlin_midlet.is_file():
             midlet_source = kotlin_midlet.read_text(encoding='utf-8')
@@ -373,7 +374,7 @@ class ProgressSaveControllerTest(unittest.TestCase):
             for relative, content in ANDROID.items():
                 peer = folder / relative
                 peer.parent.mkdir(parents=True, exist_ok=True)
-                peer.write_text(content, encoding='utf-8')
+                peer.write_text(adapt_fixture(content).replace('com.gameloft.android.ANMP.GloftGF2F', qualified_package().rsplit('.', 1)[0]), encoding='utf-8')
                 peers.append(peer)
             fixture, runner = folder / 'Fixture.java', folder / 'ProgressSaveChecks.java'
             actual = [kotlin_source / name for name in ('ProgressSaveController.kt', 'SaveBatchPolicy.kt', 'LanguageRestartController.kt')]
@@ -383,23 +384,23 @@ class ProgressSaveControllerTest(unittest.TestCase):
                 # just as the previous Java fixture did; peers are not gameplay.
                 fixture_text = re.sub(r'(?m)^class GloftGF2F .*$', '', fixture_text)
                 midlet_peer = folder / 'GloftGF2FKeyPeer.kt'
-                midlet_peer.write_text('package ' + PACKAGE.replace('/', '.') + '\n' +
+                midlet_peer.write_text(adapt_fixture('package ' + PACKAGE.replace('/', '.') + '\n' +
                     'import android.view.KeyEvent\nimport javax.microedition.midlet.MIDlet\nimport com.quanhoang.greenfarm3.migration.SaveTransferActivity\n' +
                     'class GloftGF2F : MIDlet() { fun mj() {}\n' + key_methods + '\n' +
-                    'companion object { @JvmField var acx: GloftGF2F? = null; @JvmField var acw: ci? = null } }',
+                    'companion object { @JvmField var acx: GloftGF2F? = null; @JvmField var acw: ci? = null } }'),
                     encoding='utf-8')
                 actual.append(midlet_peer)
                 # The Kotlin ABI field acw exposes ci. Match the production
                 # public engine type rather than an inaccessible peer type.
                 fixture_text, ci_body = fixture_text.split('class ci {', 1)
-                ci_peer = folder / 'ci.java'
-                ci_peer.write_text('package ' + PACKAGE.replace('/', '.') + ';\n' +
-                    'public class ci {' + ci_body + methods + '\n}', encoding='utf-8')
+                ci_peer = folder / (type_name('ci') + '.java')
+                ci_peer.write_text(adapt_fixture('package ' + PACKAGE.replace('/', '.') + ';\n' +
+                    'public class ci {' + ci_body + methods + '\n}'), encoding='utf-8')
                 peers.append(ci_peer)
             else:
                 fixture_text = fixture_text.replace('/* ACTUAL_KEY_OVERRIDES */', key_methods) + methods + '\n}'
-            fixture.write_text(fixture_text, encoding='utf-8')
-            runner.write_text(RUNNER, encoding='utf-8')
+            fixture.write_text(adapt_fixture(fixture_text), encoding='utf-8')
+            runner.write_text(adapt_fixture(RUNNER), encoding='utf-8')
             compile_mixed(actual, [*peers, fixture, runner], folder)
             result = subprocess.run([str(java), '-cp', runtime_classpath(folder), PACKAGE.replace('/', '.') + '.ProgressSaveChecks'],
                                     capture_output=True, text=True, timeout=20)

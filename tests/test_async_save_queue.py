@@ -16,9 +16,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from android_build_tools import jdk_tool
 from kotlin_test_tools import compile_mixed, runtime_classpath
+from game_source_context import qualified_package, kotlin_source_directory, adapt_fixture
 
-PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
-CORE = ROOT / 'app/src/main/kotlin' / PACKAGE
+PACKAGE = qualified_package().replace('.', '/')
+CORE = kotlin_source_directory()
 
 STORE = r'''
 package com.gameloft.android.ANMP.GloftGF2F.S800x480;
@@ -212,7 +213,7 @@ class AsyncSaveQueueTest(unittest.TestCase):
         files = []
         for name, text in [('GameSaveStore', STORE), ('AsyncSaveQueueProbe', RUNNER)]:
             path = source / (name + '.java')
-            path.write_text(text)
+            path.write_text(adapt_fixture(text))
             files.append(str(path))
         compile_mixed([CORE / 'AsyncSaveQueue.kt', CORE / 'SaveBatchPolicy.kt'], files, cls.directory)
 

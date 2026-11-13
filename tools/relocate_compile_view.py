@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Relocate identities in a lookup-only JVM jar; never use this as runtime code.
 
-Only CONSTANT_Utf8 contents and ZIP entry names are rewritten. The constant-pool
-count, all indices, bytecode and attributes stay intact. Rewriting raw UTF-8 bytes
-preserves JVM modified UTF-8, including embedded NUL/unpaired-surrogate encodings.
-Every class must round-trip byte-for-byte before the output jar is published.
+Package/class relocation rewrites CONSTANT_Utf8 contents and ZIP entry names;
+the count, indices, bytecode and attributes stay intact and round-trip exactly.
+Optional verified member renames append scoped name/NAT constants, preserve all
+original indices and class-body bytes, and prove only approved refs changed.
+Raw UTF-8 rewriting preserves JVM modified UTF-8, including NUL/surrogates.
 """
 from pathlib import Path
 import copy

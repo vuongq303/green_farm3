@@ -95,7 +95,8 @@ original converted APK and emitted Kotlin class files. It requires all68 classes
 static/instance form, mutability, interfaces, superclass and extensibility.
 Kotlin companion/accessor classes are extra generated members, not substitutes
 for missing required entry points. `--compiled-package` supports checking the
-same contracts after package relocation.
+same contracts after package relocation. Add `--rename-core-symbols` when checking
+the reviewed `FarmGameEngine`/`FarmEntity`/`GameRuntime` owner descriptors.
 
 `tests/test_kotlin_core_callbacks.py` compiles actual Kotlin implementations,
 loads unchanged original method bytecode in isolated class loaders and compares
@@ -105,6 +106,34 @@ records and array contents, detached save payload, lazy response decode, online
 callbacks, privacy flags, event retry/dequeue, fixed-point values/division and
 static initialization under three configurations. Boundary peers replace SDK or
 Android services, never gameplay algorithms; all live DBs are untouched.
+The extended suite passed37,276 original-bytecode comparisons, including reward
+kind/count decoding and the ordered economy callbacks in `dc.MU`. It checks
+dispatch equivalence, not live inventory or balances.
 An actual two-thread test verifies `aq.mK` blocks while the object's monitor is
 held, for both original DEX-derived code and Kotlin. This is JVM validation;
 rendering, input, networking and audio on Android require separate APK tests.
+
+
+## Legacy test fixtures across package and symbol migration
+
+`tools/game_source_context.py` locates the current engine source and supports
+reviewed fixture-only aliases. Existing Java algorithm tests continue loading the
+unchanged original JAR as their oracle. Their **temporary** source/class shells
+normalize only the app namespace and reviewed type/member identities; production
+source is never changed by a test. Compiled float/texture/CI checks still require
+matching current source/staging bytes and a fresh current class file before
+normalizing a copy for inspection.
+
+The Kotlin callback comparison uses an identity-normalized temporary reference
+JAR when needed. Only class-file constant-pool UTF8 identities and ZIP names
+change; original instructions, branch layout and algorithms remain the reference.
+That JAR is never an input to APK packaging. The actual Kotlin implementation
+and Kotlin-generated companions are loaded separately with the Kotlin runtime.
+
+After package relocation,19 legacy Java/Kotlin slot fixture cases passed without
+skips: startup432 traces, quest20,000 predicates/10,000 progress/1,000 completion,
+CI5,000 numeric/2,000 shaping cases,31 float-overload pairs and lost-cast mutations,
+sprite18,432 effect/7,392 anchor/5,760 tint traces, full sprite decoder800 cases and
+1,200 text/12 exception checks, plus the existing tile, HTTP cancel, TCP, request,
+pathfinding, move-input and network-failure tests. These still do not establish
+Android UI rendering or frame rate.

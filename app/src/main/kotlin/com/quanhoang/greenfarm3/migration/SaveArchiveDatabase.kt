@@ -16,10 +16,15 @@ object SaveArchiveDatabase {
     fun read(context: Context): SaveArchive.Snapshot {
         val path = context.getDatabasePath(SaveArchive.DATABASE_NAME)
         if (!path.isFile) throw IOException("Chưa có bản lưu SQLite để xuất. Hãy vào nông trại và lưu ở bản cũ trước.")
-        val db = SQLiteDatabase.openDatabase(path.absolutePath, null, SQLiteDatabase.OPEN_READONLY)
+        // API16–28 has no read-only transaction API: beginTransaction() on a
+        // read-only handle throws SQLITE_READONLY. Keep a WAL/FULL connection
+        // for this SELECT-only snapshot transaction; no game table is mutated.
+        val db = SQLiteDatabase.openDatabase(path.absolutePath, null,
+            SQLiteDatabase.OPEN_READWRITE or SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING)
         try {
             if (db.version != 4) throw IOException("Hãy mở và lưu bằng bản khôi phục mới nhất để nâng bản lưu lên schema4 trước khi chuyển.")
-            db.beginTransaction()
+            db.execSQL("PRAGMA synchronous=FULL")
+            db.beginTransactionNonExclusive()
             try {
                 val snapshot = readSlot(db, context.packageName)
                 db.setTransactionSuccessful()

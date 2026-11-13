@@ -15,9 +15,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from android_build_tools import jdk_tool
 from kotlin_test_tools import compile_mixed, runtime_classpath
+from game_source_context import ORIGINAL_PACKAGE, qualified_package, kotlin_source_directory, legacy_fixture_names
 
 PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
-NAMES = ('e', 'bv', 'bs', 'be', 'j', 'x', 'bl', 'ah', 'bt', 'cy', 'b')
 
 PEERS = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 class w {static boolean Vl=true;static int Zq=4;}
@@ -123,7 +123,7 @@ class KotlinMediumModelsTest(unittest.TestCase):
         original = Path(os.environ.get('GREENFARM_ORIGINAL_JAR', ROOT / '.local/bytecode-tools/greenfarm-original.jar'))
         if not original.is_file():
             self.skipTest('Original APK dex2jar artifact is required')
-        core = Path(os.environ.get('KOTLIN_MEDIUM_SOURCE_DIR', ROOT / 'app/src/main/kotlin' / PACKAGE))
+        core = Path(os.environ.get('KOTLIN_MEDIUM_SOURCE_DIR', kotlin_source_directory()))
         android = Path(os.environ.get('ANDROID_HOME', '/workspace/tooling/android-sdk')) / 'platforms/android-28/android.jar'
         if not android.is_file():
             self.skipTest('Android28 compile API is required')
@@ -145,8 +145,21 @@ class KotlinMediumModelsTest(unittest.TestCase):
             for folder in (old, new):
                 result = subprocess.run([str(jdk_tool('javac')), '-encoding', 'UTF-8', '-source', '8', '-target', '8', '-classpath', str(folder), '-d', str(folder), str(peer), str(clock)], capture_output=True, text=True)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            compile_mixed([core / (name + '.kt') for name in ('e', 'bs', 'be', 'j', 'bl', 'b')], [], new,
-                          classpath=(ROOT / 'app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes', original, android))
+            # Canonicalize identity-only changes in temporary compiler inputs so the
+            # same untouched original bytecode remains the oracle after relocation.
+            # Production source and its persisted record/SDK identifiers are not edited.
+            canonical = work / 'canonical-source'
+            canonical.mkdir()
+            sources = []
+            for name in ('e', 'bs', 'be', 'j', 'bl', 'b'):
+                text = legacy_fixture_names((core / (name + '.kt')).read_text())
+                declaration = 'package ' + qualified_package()
+                self.assertIn(declaration, text)
+                text = text.replace(declaration, 'package ' + ORIGINAL_PACKAGE, 1)
+                target = canonical / (name + '.kt')
+                target.write_text(text)
+                sources.append(target)
+            compile_mixed(sources, [], new, classpath=(original, android))
             # Call sites compile once against the original descriptors, then run unchanged on Kotlin.
             result = subprocess.run([str(jdk_tool('javac')), '-source', '8', '-target', '8', '-classpath', str(old), '-d', str(work), str(runner)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

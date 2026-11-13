@@ -42,6 +42,14 @@ public final class PackageRelocationOracle {
   return new ImmutableClassDef(owner,1,"Ljava/lang/Object;",Collections.emptyList(),"Game.kt",Collections.singletonList(annotation),Collections.singletonList(field),Collections.singletonList(method));
  }
  static String literal(ClassDef definition){for(Method m:definition.getMethods())for(Instruction i:m.getImplementation().getInstructions())if(i instanceof ReferenceInstruction&&((ReferenceInstruction)i).getReference() instanceof StringReference)return ((StringReference)((ReferenceInstruction)i).getReference()).getString();throw new AssertionError("no literal");}
+ static ClassDef provider(int authorityCopies,boolean includeUri,String methodName){
+  String owner=NEW+"KeyProvider;";MethodImplementationBuilder body=new MethodImplementationBuilder(1);
+  if(includeUri)body.addInstruction(new BuilderInstruction21c(Opcode.CONST_STRING,0,new ImmutableStringReference("content://"+RelocateGamePackage.NEW_PACKAGE+".KeyProvider/key")));
+  for(int n=0;n<authorityCopies;n++)body.addInstruction(new BuilderInstruction21c(Opcode.CONST_STRING,0,new ImmutableStringReference(RelocateGamePackage.NEW_PACKAGE+".KeyProvider")));
+  body.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+  Method init=new ImmutableMethod(owner,methodName,Collections.emptyList(),"V",8,Collections.emptySet(),Collections.emptySet(),body.getMethodImplementation());
+  return new ImmutableClassDef(owner,1,"Landroid/content/ContentProvider;",Collections.emptyList(),null,Collections.emptySet(),Collections.emptyList(),Collections.singletonList(init));
+ }
  public static void main(String[] args)throws Exception{
   ClassDef game=fixture(OLD+"S800x480/Test;",RelocateGamePackage.OLD_PACKAGE+".Start");
   ClassDef migration=fixture(OLD+"migration/Transfer;",RelocateGamePackage.OLD_PACKAGE);
@@ -60,11 +68,19 @@ public final class PackageRelocationOracle {
   List<Field> engineFields=new ArrayList<>();for(Field f:engineBase.getFields())engineFields.add(f);
   engineFields.add(new ImmutableField(engineBase.getType(),"aYR","I",8,new ImmutableIntEncodedValue(0),Collections.emptySet(),Collections.emptySet()));
   engineFields.add(new ImmutableField(engineBase.getType(),"baa","Z",8,ImmutableBooleanEncodedValue.FALSE_VALUE,Collections.emptySet(),Collections.emptySet()));
-  ClassDef engine=new ImmutableClassDef(engineBase.getType(),engineBase.getAccessFlags(),engineBase.getSuperclass(),engineBase.getInterfaces(),engineBase.getSourceFile(),engineBase.getAnnotations(),engineFields,engineBase.getMethods());
+  List<Method> engineMethods=new ArrayList<>();for(Method m:engineBase.getMethods())engineMethods.add(m);
+  for(String name:new String[]{"qD","qE"}){
+   MethodImplementationBuilder getter=new MethodImplementationBuilder(1);
+   getter.addInstruction(new BuilderInstruction11n(Opcode.CONST_4,0,1));getter.addInstruction(new BuilderInstruction11x(Opcode.RETURN,0));
+   engineMethods.add(new ImmutableMethod(engineBase.getType(),name,Collections.emptyList(),"I",8,Collections.emptySet(),Collections.emptySet(),getter.getMethodImplementation()));
+  }
+  ClassDef engine=new ImmutableClassDef(engineBase.getType(),engineBase.getAccessFlags(),engineBase.getSuperclass(),engineBase.getInterfaces(),engineBase.getSourceFile(),engineBase.getAnnotations(),engineFields,engineMethods);
   ClassDef renamed=RelocateGamePackage.rewriteClass(engine,false,true);
   check(renamed.getType().equals(NEW+"S800x480/FarmGameEngine;"),"engine class mapping");
   Set<String> fieldNames=new HashSet<>();for(Field f:renamed.getFields())fieldNames.add(f.getName());
   check(fieldNames.contains("currentTutorialStepIndex")&&fieldNames.contains("hasUnsavedGameChanges")&&!fieldNames.contains("aYR")&&!fieldNames.contains("baa"),"exact engine field mapping");
+  Set<String> methodNames=new HashSet<>();for(Method m:renamed.getMethods())methodNames.add(m.getName());
+  check(methodNames.contains("currentEngineState")&&methodNames.contains("previousEngineState")&&!methodNames.contains("qD")&&!methodNames.contains("qE"),"exact state accessor method mapping");
   check(literal(renamed).equals(RelocateGamePackage.NEW_PACKAGE+".S800x480.GameRuntime"),"qualified reflection class name mapping");
   check(RelocateGamePackage.mapType("[["+OLD+"S800x480/ch;",false,true).equals("[["+NEW+"S800x480/FarmEntity;"),"renamed array element");
   check(RelocateGamePackage.mapType(OLD+"S800x480/ciOther;",false,true).equals(NEW+"S800x480/ciOther;"),"whole-class boundary");
@@ -72,6 +88,15 @@ public final class PackageRelocationOracle {
   ClassDef reflector=fixture("Ljavax/microedition/lcdui/f;",".GLLib");
   check(literal(RelocateGamePackage.rewriteClass(reflector,false,true)).equals(".GameRuntime"),"audited reflection suffix");
   check(literal(RelocateGamePackage.rewriteClass(fixture("Lvendor/Other;",".GLLib"),false,true)).equals(".GLLib"),"unrelated suffix remains");
+  ClassDef mainProvider=provider(1,true,"<clinit>");
+  ClassDef bridgeProvider=RelocateGamePackage.providerIdentity(mainProvider,true);
+  List<String> providerStrings=new ArrayList<>();for(Method m:bridgeProvider.getMethods())for(Instruction i:m.getImplementation().getInstructions())if(i instanceof ReferenceInstruction)providerStrings.add(((StringReference)((ReferenceInstruction)i).getReference()).getString());
+  check(providerStrings.equals(Arrays.asList("content://"+RelocateGamePackage.OLD_PACKAGE+".KeyProvider/key",RelocateGamePackage.OLD_PACKAGE+".KeyProvider")),"legacy bridge keeps only its authority/URI");
+  check(bridgeProvider.getType().equals(NEW+"KeyProvider;"),"bridge provider class still uses new namespace");
+  check(Arrays.equals(RelocateGamePackage.semanticBytes(Collections.singletonList(mainProvider),OPS),RelocateGamePackage.semanticBytes(Collections.singletonList(RelocateGamePackage.providerIdentity(bridgeProvider,false)),OPS)),"provider policy inverse proof");
+  for(ClassDef invalid:Arrays.asList(provider(0,true,"<clinit>"),provider(2,true,"<clinit>"),provider(1,false,"<clinit>"),provider(1,true,"otherMethod"))){
+   try{RelocateGamePackage.providerIdentity(invalid,true);throw new AssertionError("unreviewed provider literal site accepted");}catch(java.io.IOException expected){}
+  }
   try{RelocateGamePackage.rewriteClasses(Arrays.asList(game,RelocateGamePackage.rewriteClass(game,false)),false);throw new AssertionError("collision accepted");}catch(java.io.IOException expected){}
 
   ClassDef small=fixture(OLD+"S800x480/Test;","zzzz-last");

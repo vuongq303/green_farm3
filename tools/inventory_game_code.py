@@ -14,6 +14,7 @@ import subprocess
 import zipfile
 
 from verify_runtime_apk import dex_classes
+from prepare_core_dependencies import verify_original
 
 ORIGINAL = 'com/gameloft/android/ANMP/GloftGF2F'
 TARGET = 'com/quanhoang/greenfarm3'
@@ -22,6 +23,7 @@ RENAMED = {'ci': 'FarmGameEngine', 'ch': 'FarmEntity', 'GLLib': 'GameRuntime'}
 
 def generate(root):
     root = Path(root)
+    verify_original(root / 'green-farm-3.apk')
     main = root / 'app/src/main'
     with zipfile.ZipFile(root / 'green-farm-3.apk') as archive:
         classes = dex_classes(archive.read('classes.dex'))
@@ -76,6 +78,15 @@ def generate(root):
         strings = re.findall(rb'[\x20-\x7e]{6,}', archive.read('classes.dex'))
         package_strings = sorted(set(s.decode() for s in strings if ORIGINAL.encode() in s
                                   or ORIGINAL.replace('/', '.').encode() in s))
+        # Kept separately from the236 real definitions: the original manifest
+        # names this activity, but the supplied original DEX has no such class.
+        keyboard_name = ORIGINAL.replace('/', '.') + '.SoftKeyBoardActivity'
+        unresolved_components = [{'name': keyboard_name,
+                 'declared_in_original_manifest': True,
+                 'defined_in_original_dex': 'L' + keyboard_name.replace('.', '/') + ';' in classes,
+                 'full_name_literal_in_original_dex': keyboard_name.encode() in archive.read('classes.dex'),
+                 'class_suffix_literal_in_original_dex': b'SoftKeyBoardActivity' in archive.read('classes.dex'),
+                 'status': 'Known dangling original manifest component; dynamic name construction/keyboard UI not verified; no replacement stub'}]
     groups = Counter()
     for descriptor in classes:
         if descriptor.startswith('L' + ORIGINAL + '/'):
@@ -90,6 +101,7 @@ def generate(root):
             'game_runtime_source_counts': dict(Counter(r['runtime_source'] for r in records)),
             'engine_runtime_source_counts': dict(Counter(r['runtime_source'] for r in records if r['subsystem'] == 'engine')),
             'game_classes': records,
+            'original_unresolved_manifest_components': unresolved_components,
             'external_namespace_class_counts': dict(sorted(groups.items())),
             'opaque_gameloft_service_descriptors': sorted(c for c in classes if c.startswith('Lcom/gameloft/a/')),
             'retained_midlet_runtime_descriptors': sorted(c for c in classes if c.startswith('Ljavax/microedition/')),

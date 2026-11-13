@@ -24,6 +24,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 
 import groovy.io.FileType
+import groovy.json.JsonSlurper
 import java.nio.charset.StandardCharsets
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -103,6 +104,12 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
     @Input
     abstract Property<String> getBackendUrl()
 
+    @Input
+    abstract Property<String> getApplicationId()
+
+    @Input
+    abstract Property<String> getGamePackage()
+
     @Internal
     abstract DirectoryProperty getProjectDirectory()
 
@@ -170,16 +177,30 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
 
             File patchedDex = new File(work, 'backend/classes.dex')
             runJava('PatchBackendEndpoint', mergedDex, patchedDex, endpoint)
-            runPython('build_local_backend.py', '--original', original,
+            List<Object> packageArguments = ['--original', original,
                     '--base', base, '--patched-dex', patchedDex,
                     '--sdk', sdkDirectory.get().asFile, '--keystore', keystore.get().asFile,
-                    '--output', output)
+                    '--output', output]
+            if (gamePackage.get() == 'com.quanhoang.greenfarm3') {
+                Map mergeReport = (Map) new JsonSlurper().parse(new File(mergedDex.absolutePath + '.json'))
+                if (!(mergeReport.game_symbols_renamed instanceof Boolean)) {
+                    throw new GradleException('Merger report must explicitly verify the symbol-renaming mode')
+                }
+                File relocatedDex = new File(work, 'relocated/classes.dex')
+                List<Object> relocationArguments = [patchedDex, relocatedDex,
+                                                   '--application-id', applicationId.get()]
+                if (mergeReport.game_symbols_renamed) relocationArguments.add('--rename-symbols')
+                runJava('RelocateGamePackage', *relocationArguments)
+                packageArguments.addAll(['--relocated-dex', relocatedDex])
+            }
+            runPython('build_local_backend.py', *packageArguments)
             if (!output.isFile()) {
                 throw new GradleException('The complete APK was not produced: ' + output)
             }
             runPython('verify_runtime_apk.py', '--apk', output,
                     '--original', original, '--sdk', sdkDirectory.get().asFile,
-                    '--backend-base-url', endpoint)
+                    '--backend-base-url', endpoint, '--application-id', applicationId.get(),
+                    '--game-package', gamePackage.get())
             return output
         }
     }

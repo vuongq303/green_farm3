@@ -10,6 +10,10 @@ import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(ROOT / "tools"))
+from game_source_context import legacy_core_source, current_source_path
+
 PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
 RUNNER = r'''
 import java.lang.reflect.*;
@@ -77,7 +81,7 @@ class PathFindingTest(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='z-pathfinding-differential-') as temp:
             temporary = Path(temp)
             source = temporary / 'source' / PACKAGE; source.mkdir(parents=True)
-            shutil.copyfile(ROOT / 'app/src/main/java' / PACKAGE / 'z.java', source / 'z.java')
+            (source / 'z.java').write_text(legacy_core_source('z'))
             prefix = 'package com.gameloft.android.ANMP.GloftGF2F.S800x480;\n'
             (source / 'w.java').write_text(prefix + 'public class w {public static int YU=256; public static boolean YV,YW;}')
             (source / 'GLLib.java').write_text(prefix + '''public class GLLib {

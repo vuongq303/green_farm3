@@ -19,6 +19,9 @@ from test_aa_tile_renderer import extract_method
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+from game_source_context import legacy_core_source, current_source_path
+
 sys.path.insert(0, str(ROOT / 'tools'))
 from asm_tools import asm_jar
 from android_build_tools import executable_name
@@ -132,7 +135,7 @@ class CIStartupContinuationTest(unittest.TestCase):
         if not original.is_file() or not java.is_file() or not javac.is_file():
             self.skipTest("Requires verified original conversion and JDK")
         asm = asm_jar()
-        source = (ROOT / "app/src/main/java" / PACKAGE / "ci.java").read_text()
+        source = legacy_core_source('ci')
         method = extract_method(source, "static void fM(int i)")
         start = method.index("            case 38:")
         end = method.index("            case 39:", start)

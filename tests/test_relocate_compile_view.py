@@ -14,6 +14,31 @@ import relocate_compile_view as relocate
 
 
 class RelocateCompileViewTest(unittest.TestCase):
+    def test_scoped_method_and_field_references_do_not_rename_other_owner(self):
+        with tempfile.TemporaryDirectory(prefix='compile-member-relocation-') as temporary:
+            directory = Path(temporary)
+            engine = directory / 'ci.java'
+            engine.write_text('package com.gameloft.android.ANMP.GloftGF2F.S800x480; public class ci {public static int aYR; public static int qD(){return1;} }'.replace('return1','return 1'))
+            caller = directory / 'Caller.java'
+            caller.write_text('''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
+public class Caller {public int read(){return ci.aYR + ci.qD() + Other.qD();}}
+class Other {public static int qD(){return 7;}}
+''')
+            result = subprocess.run([str(jdk_tool('javac')), '-source','8','-target','8','-d',str(directory),str(engine),str(caller)],capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            old_caller = directory / (relocate.OLD + '/S800x480/Caller.class')
+            typed = relocate.rewrite_class(old_caller.read_bytes(),rename_symbols=True)
+            renamed, changes = relocate.rewrite_engine_member_references(typed)
+            self.assertEqual({x['after'] for x in changes},{'currentTutorialStepIndex','currentEngineState'})
+            output = directory / 'out' / (relocate.NEW + '/S800x480/Caller.class')
+            output.parent.mkdir(parents=True);output.write_bytes(renamed)
+            javap = jdk_tool('javac').with_name('javap.exe' if os.name == 'nt' else 'javap')
+            result = subprocess.run([str(javap),'-c','-classpath',str(directory/'out'),relocate.NEW.replace('/','.')+'.S800x480.Caller'],capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertIn('FarmGameEngine.currentTutorialStepIndex:I',result.stdout)
+            self.assertIn('FarmGameEngine.currentEngineState:()I',result.stdout)
+            self.assertIn('Other.qD:()I',result.stdout)
+
     def test_real_class_round_trip_arrays_signatures_and_modified_utf8(self):
         with tempfile.TemporaryDirectory(prefix='compile-view-relocation-') as temporary:
             directory = Path(temporary)

@@ -37,6 +37,14 @@ của game gốc. Các lớp phụ do Kotlin/D8 sinh và stdlib cũng không ph�
 đã chuyển. Kết quả cập nhật theo source hiện hành nằm trong JSON; báo cáo APK
 merge ghi riêng `kotlin_compiled_classes` và `kotlin_runtime_class_count`.
 
+Manifest gốc còn khai báo `.SoftKeyBoardActivity`, nhưng DEX gốc không định
+nghĩa lớp này và không có cả literal tên đầy đủ lẫn suffix `SoftKeyBoardActivity`
+trong DEX. Không có source JADX tương ứng. Component này không được cộng vào236
+định nghĩa và được ghi riêng trong JSON. Verifier báo baseline exception bằng
+cách đối chiếu chính manifest/DEX gốc, không tạo class rỗng hoặc miễn kiểm tra
+cho component mới. Chưa loại trừ việc dựng tên động và chưa kiểm chứng luồng
+keyboard tùy chọn; không tuyên bố đây là một chức năng đã sửa hoặc đã hoạt động.
+
 ## Phần còn phải khôi phục/chuyển
 
 - Các lớp engine Java lớn vẫn chứa logic gameplay thực, gồm engine chính,
@@ -61,17 +69,18 @@ merge ghi riêng `kotlin_compiled_classes` và `kotlin_runtime_class_count`.
 
 ## JNI và tên động
 
-Đã đọc printable strings và dynamic symbols của cả10 file `.so`. Không file
-nào chứa `ANMP`, `GloftGF2F` hoặc JNI symbol thuộc package game cũ. Các native
+Đã đọc printable strings và dynamic symbols của cả10 file `.so`. Không tìm thấy
+`ANMP`, `GloftGF2F` hoặc JNI symbol thuộc package game cũ trong kết quả đó. Các native
 entry points thuộc `com.gameloft.glads`, `com.gameloft.adsmanager` và
 `com.gameloft.android.wrapper.NativeUtils`; các namespace này được giữ nguyên.
 AdsManager có86 JNI entry names mỗi ABI, nativeU có10; toàn bộ tên/hash được ghi
 trong JSON. Không sửa nhị phân native, không đổi ABI hoặc thư viện.
 
 `InGameBrowserActivity.aW(int)` là một native declaration trong integration gốc.
-Không thư viện được cung cấp nào export JNI symbol của hàm này hoặc chứa tên lớp
-để đăng ký động. Đây là giới hạn tồn tại từ APK gốc ở đường browser tùy chọn;
-chưa chạy đủ đường đó, không gán lỗi này cho chuyển Kotlin hay bịa implementation.
+Không tìm thấy direct JNI export của hàm này hoặc literal tên lớp đầy đủ trong
+thư viện được cung cấp. Điều đó chưa loại trừ `RegisterNatives` hoặc tên lớp
+được dựng động. Chưa kiểm chứng đầy đủ đường browser này và chưa chứng minh
+nó lỗi ở bản gốc; không gán lỗi cho chuyển Kotlin hay bịa implementation native.
 
 Các literal identity đã thấy trong DEX: app ID, `Start`, `KeyProvider`, retry/
 push broadcast action, URI KeyProvider, OBB path, package suffix và link Play
@@ -85,6 +94,27 @@ plain string chứa identity của cả app cũ và mới phải giữ nguyên �
 Type descriptor và signature trong các lớp migration vẫn được relocate. Danh
 sách exception owners được ghi ở report DEX; không giữ game class cũ để né rename.
 
+Bridge xuất save dùng application ID cũ còn một ngoại lệ identity riêng:
+`--application-id com.gameloft.android.ANMP.GloftGF2F` chỉ giữ authority và URI
+`KeyProvider` của bridge ở hai literal trong `<clinit>()V`. Class provider vẫn
+thuộc `com.quanhoang.greenfarm3`; mọi type reference vẫn đổi package. Một literal
+authority và một literal URI là bắt buộc, không được thiếu/thừa hoặc nằm ở hàm
+khác. Guard kiểm tra đảo policy, các class khác không đổi và full inverse DEX.
+Report ghi `application_id/provider_identity_compatibility_exceptions`.
+Main APK mới không dùng ngoại lệ đó. Không có literal oldApp `.provider` hoặc
+`.firebaseinitprovider` trong DEX gốc cần đảo thêm; SDK dùng package của context.
+
+Các tên cũ còn xuất hiện ngoài runtime class identity:
+
+- `res/raw/google_services.json` chứa package của Firebase client gốc. Đây là
+  cấu hình SDK cũ được giữ làm tài nguyên; đổi một chuỗi không tạo Firebase
+  project/certificate mới. Đăng ký Firebase dưới app ID mới chưa được xác minh.
+- Bốn source `R.java` tham khảo của SDK còn biểu thức oldApp.R.attr. Generator
+  chuyển owner sang namespace đang build, bao gồm30 biểu thức styleable symbolic;
+  các file tham khảo không được đưa thẳng vào compiler hoặc đóng gói thành alias cũ.
+- APK gốc, metadata pin/oracle và báo cáo lịch sử giữ tên gốc để đối chiếu.
+  Chúng không phải một bản game class alias đang chạy trong APK mới.
+
 ## Cơ chế build và bảo toàn
 
 `MergeCoreDex` chỉ nhận core/helper đã duyệt, launcher/migration và Kotlin stdlib
@@ -92,6 +122,15 @@ explicit. Compile-view là `compileOnly`, không đổi thành runtime dependenc
 Overlay package mới được chuẩn hóa ngược về identity gốc để thay đúng lớp; các
 proof nguồn overlay và SDK giữ lại vẫn chạy. Sau endpoint patch, relocator đổi
 toàn bộ identity game và phải inverse về canonical input tương đương.
+
+Giai đoạn tên rõ nghĩa có cờ riêng `--rename-symbols`: ba class `ci/ch/GLLib`,
+hai field đã xác minh `aYR:I/baa:Z` và hai static accessor `qD/qE()I` của đúng
+owner engine được đổi đồng bộ. Class/field/method refs trong DEX đều dùng
+rewriter cấu trúc; literal `.GLLib` chỉ đổi ở reflector `javax.microedition.lcdui.f`.
+Mapping đầy đủ được ghi ở report `class_name_mapping/member_name_mapping`.
+Compiler-view clone NameAndType cho đúng owner+descriptor, không thay mọi UTF8
+`qD` hoặc `aYR` dùng chung với lớp khác. Các chỉ số pool cũ, code và attributes
+giữ nguyên; fixture `Other.qD()` phải tiếp tục trỏ tới `Other.qD()`.
 
 Kotlin stdlib làm string pool thực tế vượt65.535: đo được68.269 ở nhóm đầu,
 14 class overlay có `const-string` được DexWriter nâng thành jumbo. Guard nay

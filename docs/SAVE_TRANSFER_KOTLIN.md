@@ -57,6 +57,13 @@ bằng bản đã chọn. Chỉ một bản sao trước lần nhập gần nh�
 - Xuất đọc một SQLite transaction nhất quán, kiểm tra `integrity_check`, checksum
   SHA-256 từng record, tombstone, generation và marker snapshot. Không copy riêng
   file `.db` rồi bỏ quên WAL. Giữ WAL và `synchronous=FULL`.
+  Trên API28, `beginTransaction()` với handle `OPEN_READONLY` thực tế ném
+  `SQLITE_READONLY`. Vì vậy đường xuất mở `OPEN_READWRITE|ENABLE_WRITE_AHEAD_LOGGING`,
+  đặt FULL rồi bắt đầu `beginTransactionNonExclusive()` chỉ thực thi SELECT;
+  không INSERT/UPDATE/DELETE bảng game. Khóa liên process giữ game đã đóng.
+  Lookup identity dùng một JOIN SELECT nguyên tử, vẫn là handle read-only và
+  không gọi BEGIN. Lỗi API này đã được tái hiện bằng Java tối thiểu trên Android,
+  bản transaction WAL/FULL sửa lại đã chạy đạt; không quy lỗi cho Kotlin.
 - Import kiểm tra toàn bộ tệp trong worker trước khi xin thay thế. Một transaction
   cập nhật slot, record, commit, trạng thái legacy import và binding chuyển save;
   lỗi ghi rollback toàn bộ. Không replay thao tác gameplay hay cộng thưởng khi retry.
@@ -132,10 +139,30 @@ Chọn prefix mới cho mỗi lần chạy. Chế độ `--installed-runtime` ch
 nạp implementation/stdlib từ APK đã cài và ghi hash APK thực tế; không đóng gói
 bản sao helper vào DEX probe. Chế độ source độc lập cũng có để chẩn đoán; hai lần
 nạp lạnh DEX độc lập trả mã137 không có PASS, chưa được tính là SQLite đạt
-(xem `save-transfer-cold-probe-attempts.json`). Thư mục fixture xuất hiện trong lần
-kiểm tra muộn hơn; thời điểm/nguyên nhân137 chưa rõ, không suy ra lỗi SQLite.
+(xem `save-transfer-cold-probe-attempts.json`). Sau đó Java tối thiểu có catch
+stdout đã xác định `SQLiteReadOnlyDatabaseException` ở BEGIN: RuntimeInit đã
+chuyển exception chưa bắt thành SIGKILL nên lần đầu chỉ thấy137. Đây là lỗi dùng
+API transaction đã sửa ở trên; không phải bằng chứng lỗi Kotlin hoặc thiếu RAM.
 Probe ghi rõ source SHA-256, DEX hash và từng check khi hoàn tất
 trong `docs/kotlin-validation/save-transfer-sqlite.json`; payload tổng hợp
 không phải farm có thể chơi. Các kết quả UI export cầu nối → import package mới,
 đọc farm thật và mở lại phải được báo riêng trong checkpoint tổng của đợt chuyển
 Kotlin. Không suy ra đã đạt từ test codec hoặc build thành công.
+
+Nếu `app_process` của môi trường không chạy fixture được, dùng runner có
+Application/Context Android được gắn đúng vòng đời:
+
+```sh
+ANDROID_HOME=/path/to/android-sdk python3 tools/run_save_transfer_instrumentation.py \
+  --prepare-only --package com.quanhoang.greenfarm3
+# Sau khi đã checkpoint game và cài APK đích hoàn chỉnh:
+ANDROID_HOME=/path/to/android-sdk python3 tools/run_save_transfer_instrumentation.py \
+  --use-prepared --package com.quanhoang.greenfarm3 --prefix st_instrument_01
+```
+
+Tool tạo APK kiểm thử riêng dưới `.local`, ký bằng khóa debug hiện có; DEX chỉ có
+probe/Instrumentation, không sao chép helper hoặc stdlib của game. `am instrument`
+tạo lại process đích nên phải lưu game trước; ContextWrapper giới hạn mọi database
+trong thư mục fixture mới, không mở database người chơi. `--prepare-only` không
+dùng ADB, không cài hoặc dừng ứng dụng. Kết quả ghi rõ hash APK đích, test APK,
+từng check và giới hạn. Runner này không nằm trong APK game hoặc cấu hình Run app.

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "input_dex_sha256": "3901b6678b4523947273914b30fe94a750e149f89e0a7a1fa3932261d7539ec4",
-  "output_dex_sha256": "b15aea8034fb151aa35423f2661070ee5950d8bffc79dc6a02c548b31290ae7e",
+  "output_dex_sha256": "a33e0fefa44149e19dc46bb5fe6845eed182a962d67cd0e5158ae28f0fc367aa",
   "from_package": "com.gameloft.android.ANMP.GloftGF2F",
   "to_package": "com.quanhoang.greenfarm3",
   "class_count": 6383,
@@ -9,6 +9,8 @@
   "legacy_game_class_definitions_remaining": 0,
   "inverse_canonical_semantics_verified": true,
   "game_symbols_renamed": true,
+  "class_name_mapping": {"Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GLLib;": "Lcom/quanhoang/greenfarm3/S800x480/GameRuntime;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ch;": "Lcom/quanhoang/greenfarm3/S800x480/FarmEntity;", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;": "Lcom/quanhoang/greenfarm3/S800x480/FarmGameEngine;"},
+  "member_name_mapping": {"Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;->aYR:I": "Lcom/quanhoang/greenfarm3/S800x480/FarmGameEngine;->currentTutorialStepIndex:I", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;->baa:Z": "Lcom/quanhoang/greenfarm3/S800x480/FarmGameEngine;->hasUnsavedGameChanges:Z", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;->qD()I": "Lcom/quanhoang/greenfarm3/S800x480/FarmGameEngine;->currentEngineState()I", "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;->qE()I": "Lcom/quanhoang/greenfarm3/S800x480/FarmGameEngine;->previousEngineState()I"},
   "input_canonical_sha256": "ccee705373fac7d466e49cdc4ee55844adf36a64971be759eda5e23c2f619bd8",
   "migration_identity_literal_exception_owners": []
 }

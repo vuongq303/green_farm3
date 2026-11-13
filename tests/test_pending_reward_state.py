@@ -16,7 +16,8 @@ from test_aa_tile_renderer import extract_method
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from kotlin_test_tools import compile_mixed, runtime_classpath
-PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
+from game_source_context import (qualified_package, core_source_directory, kotlin_source_directory, type_name, adapt_fixture, legacy_fixture_names)
+PACKAGE = qualified_package().replace('.', '/')
 
 FIXTURE = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 import java.util.*;
@@ -89,16 +90,16 @@ class PendingRewardStateTest(unittest.TestCase):
         javac, java = home / 'bin' / ('javac' + suffix), home / 'bin' / ('java' + suffix)
         if not javac.is_file() or not java.is_file():
             self.skipTest('Requires installed JDK')
-        source = ROOT / 'app/src/main/java' / PACKAGE
-        entity = (source / 'ch.java').read_text()
+        source = core_source_directory()
+        entity = legacy_fixture_names((source / (type_name('ch') + '.java')).read_text())
         methods = '\n'.join(extract_method(entity, signature) for signature in
                             ('void fx(int i)', 'boolean fz(int i)', 'void oN()', 'void pX()'))
         with tempfile.TemporaryDirectory(prefix='pending-reward-check-') as temporary:
             folder = Path(temporary)
             fixture = folder / 'Fixture.java'
             runner = folder / 'PendingRewardChecks.java'
-            fixture.write_text(FIXTURE + methods + '\n}')
-            runner.write_text(RUNNER)
+            fixture.write_text(adapt_fixture(FIXTURE + methods + '\n}'))
+            runner.write_text(adapt_fixture(RUNNER))
             compile_mixed([ROOT / 'app/src/main/kotlin' / PACKAGE / 'PendingRewardState.kt'],
                           [fixture, runner], folder)
             result = subprocess.run([str(java), '-cp', runtime_classpath(folder),

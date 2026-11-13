@@ -60,3 +60,28 @@ người dùng nhấn Chuẩn bị trước khi lưu/đóng game.
 Đổi package, tên symbol, APK mới và kiểm thử UI/SQLite sau chuyển đổi được bổ sung
 ở checkpoint tiếp theo. Các lần probe `app_process` thoát 137 chưa cho kết quả
 SQLite; không được tính là đạt. Xem [log](kotlin-validation/save-transfer-cold-probe-attempts.json).
+
+## Checkpoint package mới
+
+Sau khi chuyển source sang `com.quanhoang.greenfarm3`, đã chạy build sạch
+`:app:clean :app:assembleDebug --stacktrace`; sửa các alias `R.styleable` còn trỏ
+namespace cũ và giữ nguyên các giá trị/index resource. Build package-only cuối
+đạt 1m55s/44 task, APK SHA256
+`972d82fe52aa259db7e395aaff315b55b5919df7766cd8b151fa8bf930ed8ec5`.
+Manifest có application ID mới, launcher mới, 16 game component có định nghĩa;
+DEX có 7.645 lớp và **0 lớp game thuộc package cũ**. Inverse relocation proof,
+chữ ký v1/v2/v3, DEX035 và 59 payload đều đạt. Đây vẫn là checkpoint build,
+chưa phải kết quả cài/chơi game của package mới.
+
+Manifest APK gốc khai báo `.SoftKeyBoardActivity` nhưng chính DEX gốc không có
+lớp đó. Verifier báo rõ baseline dangling component này; không tạo lớp rỗng,
+xóa entry hoặc cho phép bỏ sót component mới. KeyProvider phải có class mới,
+authority theo application ID thực; bản exporter giữ riêng đúng hai literal
+authority/URI cũ đã xác minh và có inverse proof.
+
+Lỗi SQLite read-only transaction của phần chuyển save đã được tái hiện thật
+trên API28. Bản sửa dùng transaction SELECT với WAL/FULL; identity lookup dùng
+một JOIN SELECT nguyên tử. **23/23 kiểm tra Android SQLite từ production source
+đã đạt**: [kết quả](kotlin-validation/save-transfer-source-sqlite.json).
+Không tính kết quả đó là UI hoặc probe từ APK cài đặt; các lần thoát137 cũ được
+giữ làm bằng chứng lỗi đã tìm được, không phải lỗi Kotlin/thiếu RAM.

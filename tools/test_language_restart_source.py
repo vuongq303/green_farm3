@@ -5,11 +5,13 @@ from pathlib import Path
 import re
 import unittest
 
+from game_source_context import (core_source_directory, kotlin_source_directory, game_source, qualified_package, legacy_fixture_names)
+
 
 ROOT = Path(__file__).resolve().parents[1]
-CORE = ROOT / "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480"
-GAME = (CORE / "ci.java").read_text(encoding="utf-8")
-CONTROLLER = (ROOT / "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/LanguageRestartController.kt").read_text(encoding="utf-8")
+CORE = core_source_directory()
+GAME = legacy_fixture_names(game_source().read_text(encoding="utf-8"))
+CONTROLLER = legacy_fixture_names((kotlin_source_directory() / "LanguageRestartController.kt").read_text(encoding="utf-8"))
 LOCALES = {0: "EN", 1: "DE", 2: "FR", 3: "IT", 4: "ES", 5: "BR",
            7: "JP", 9: "KR", 10: "RU", 11: "TR", 12: "PL", 15: "TH",
            16: "VI", 20: "LATAM"}
@@ -94,7 +96,7 @@ class LanguageRestartSourceTests(unittest.TestCase):
         self.assertLess(restart.index("alarms.setExact"), restart.index("Process.killProcess"))
         self.assertRegex(restart, r"catch\s*\([^)]*:\s*SecurityException\)")
         self.assertIn("alarms.set(", restart)
-        self.assertIn('"com.gameloft.android.ANMP.GloftGF2F.Start"', CONTROLLER)
+        self.assertIn('"' + qualified_package().rsplit('.', 1)[0] + '.Start"', CONTROLLER)
         self.assertIn("PendingIntent.FLAG_IMMUTABLE", CONTROLLER)
         self.assertNotIn(".recreate(", CONTROLLER)
         self.assertNotIn(".select(", method(GAME, "static void fM(int i)"))

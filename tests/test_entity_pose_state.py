@@ -16,7 +16,8 @@ from test_aa_tile_renderer import extract_method
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from kotlin_test_tools import compile_mixed, runtime_classpath
-PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
+from game_source_context import (qualified_package, core_source_directory, kotlin_source_directory, type_name, adapt_fixture, legacy_fixture_names)
+PACKAGE = qualified_package().replace('.', '/')
 
 FIXTURE = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 class GLLib {
@@ -82,8 +83,8 @@ class EntityPoseStateTest(unittest.TestCase):
         javac, java = home / 'bin/javac', home / 'bin/java'
         if not javac.is_file() or not java.is_file():
             self.skipTest('Requires installed JDK')
-        source = ROOT / 'app/src/main/java' / PACKAGE
-        game, actor, library = ((source / name).read_text() for name in ('ci.java', 'ch.java', 'GLLib.java'))
+        source = core_source_directory()
+        game, actor, library = (legacy_fixture_names((source / (type_name(Path(name).stem) + '.java')).read_text()) for name in ('ci.java', 'ch.java', 'GLLib.java'))
         methods = lambda text, signatures: '\n'.join(extract_method(text, signature) for signature in signatures)
         initialize = extract_method(actor, 'void d(int i, int[] iArr)')
         building = initialize[initialize.index('            case 50:'):initialize.index('            case 51:')]
@@ -166,8 +167,8 @@ public class LazyBuildingChecks {
 '''
         with tempfile.TemporaryDirectory(prefix='entity-pose-lazy-codec-') as temporary:
             folder = Path(temporary)
-            (folder / 'Fixture.java').write_text(fixture)
-            (folder / 'LazyBuildingChecks.java').write_text(runner)
+            (folder / 'Fixture.java').write_text(adapt_fixture(fixture))
+            (folder / 'LazyBuildingChecks.java').write_text(adapt_fixture(runner))
             compile_mixed([ROOT / 'app/src/main/kotlin' / PACKAGE / 'EntityPoseState.kt'],
                           [folder / 'Fixture.java', folder / 'LazyBuildingChecks.java'], folder)
             result = subprocess.run([str(java), '-cp', runtime_classpath(folder), PACKAGE.replace('/', '.') + '.LazyBuildingChecks'],
@@ -181,8 +182,8 @@ public class LazyBuildingChecks {
         javac, java = home / 'bin' / ('javac' + suffix), home / 'bin' / ('java' + suffix)
         if not javac.is_file() or not java.is_file():
             self.skipTest('Requires installed JDK')
-        source = ROOT / 'app/src/main/java' / PACKAGE
-        entity, game, animation = ((source / name).read_text() for name in ('ch.java', 'ci.java', 'aa.java'))
+        source = core_source_directory()
+        entity, game, animation = (legacy_fixture_names((source / (type_name(Path(name).stem) + '.java')).read_text()) for name in ('ch.java', 'ci.java', 'aa.java'))
         methods = lambda text, signatures: '\n'.join(extract_method(text, signature) for signature in signatures)
         fixture_text = FIXTURE.replace('AA_METHODS', methods(animation, (
             'public int lL()', 'public void dS(int i)', 'public final void dU(int i)')))
@@ -194,8 +195,8 @@ public class LazyBuildingChecks {
             folder = Path(temporary)
             fixture = folder / 'Fixture.java'
             runner = folder / 'EntityPoseChecks.java'
-            fixture.write_text(fixture_text)
-            runner.write_text(RUNNER)
+            fixture.write_text(adapt_fixture(fixture_text))
+            runner.write_text(adapt_fixture(RUNNER))
             compile_mixed([ROOT / 'app/src/main/kotlin' / PACKAGE / 'EntityPoseState.kt'],
                           [fixture, runner], folder)
             result = subprocess.run([str(java), '-cp', runtime_classpath(folder),

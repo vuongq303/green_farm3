@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Process
 import android.os.ResultReceiver
-import com.gameloft.android.ANMP.GloftGF2F.S800x480.ProgressSaveController
+import com.quanhoang.greenfarm3.S800x480.ProgressSaveController
 
 /** Runs in the gameplay process. The manifest must mark this receiver exported=false. */
 class SaveTransferPreparationReceiver : BroadcastReceiver() {

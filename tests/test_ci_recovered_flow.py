@@ -14,6 +14,10 @@ import zipfile
 
 from test_asprite_recovery import BASE, fixture
 from test_gllib_recovered_algorithms import constant_pool, method_fixture as gllib_fixture
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from game_source_context import (current_source_path, current_compiled_path, current_staged_path, legacy_class_bytes, legacy_core_source)
+
 
 
 RUNNER = r'''
@@ -66,9 +70,9 @@ class CIRecoveredFlowTest(unittest.TestCase):
         home = Path(os.environ.get("JAVA_HOME", "/workspace/tooling/jdk-21.0.9+10"))
         original = Path(os.environ.get("GREENFARM_ORIGINAL_JAR", "/workspace/tooling/recovery-bytecode/greenfarm-original.jar"))
         directory = project / "app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes"
-        restored = directory / BASE / "ci.class"
-        source = project / "app/src/main/java" / BASE / "ci.java"
-        staged = project / "app/build/generated/core-java" / BASE / "ci.java"
+        restored = current_compiled_path("ci")
+        source = current_source_path("ci")
+        staged = current_staged_path("ci")
         if not original.exists() or not restored.exists() or not (home / "bin/javac").exists():
             self.skipTest("Requires verified original conversion and compiled app core CI")
         self.assertEqual(source.read_bytes(), staged.read_bytes(), "Compile app after changing CI")
@@ -76,7 +80,7 @@ class CIRecoveredFlowTest(unittest.TestCase):
                                 "Compiled CI predates the staged source")
         with tempfile.TemporaryDirectory(prefix="ci-flow-") as temp, zipfile.ZipFile(original) as archive:
             root = Path(temp)
-            for label, data in (("original", archive.read(BASE + "ci.class")), ("restored", restored.read_bytes())):
+            for label, data in (("original", archive.read(BASE + "ci.class")), ("restored", legacy_class_bytes(restored.read_bytes()))):
                 output = root / label / BASE
                 output.mkdir(parents=True)
                 selected = fixture(data, {("dk", "(Ljava/lang/String;)I"), ("a", "([CI)V"),

@@ -14,6 +14,7 @@ import android.os.Environment
 import android.os.ResultReceiver
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import java.io.File
 import java.io.IOException
@@ -50,7 +51,10 @@ class SaveTransferActivity : Activity() {
         button("Nhập bản lưu từ tệp") { selectDocument() }
         button("Xuất bản sao trước lần nhập gần nhất") { createDocument(EXPORT_BACKUP) }
         button("Mở game") { launchGame() }
-        setContentView(layout)
+        setContentView(ScrollView(this).apply {
+            isFillViewport = true
+            addView(layout, android.widget.FrameLayout.LayoutParams(-1, -2))
+        })
         status.text = "Nhấn Chuẩn bị để lưu và đóng phiên game trước khi chuyển dữ liệu."
     }
 

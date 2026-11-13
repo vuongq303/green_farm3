@@ -40,23 +40,17 @@ object SaveTransferIdentity {
             db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='save_transfer_identity'", null).use {
                 if (!it.moveToFirst()) return null
             }
-            db.beginTransaction()
-            try {
-                val metadata = db.rawQuery("SELECT original_binding,gameplay_checksum FROM save_transfer_identity WHERE singleton=1 AND version=1", null).use {
-                    if (!it.moveToFirst()) return null
-                    Pair(it.getString(0), it.getBlob(1))
-                }
-                val payload = db.rawQuery("SELECT payload,checksum FROM save_records WHERE slot_id=? AND store_name='save_gameplay' AND record_id=1 AND deleted=0", arrayOf(SaveArchive.SLOT_ID)).use {
-                    if (!it.moveToFirst() || it.isNull(0) || it.isNull(1)) return null
-                    val bytes = it.getBlob(0)
-                    if (!MessageDigest.isEqual(it.getBlob(1), SaveArchive.checksum(bytes))) return null
-                    bytes
-                }
-                if (!MessageDigest.isEqual(metadata.second, SaveArchive.checksum(payload))) return null
-                if (metadata.first != SaveArchive.gameplayBinding(payload)) return null
-                db.setTransactionSuccessful()
-                return metadata.first
-            } finally { db.endTransaction() }
+            // One joined row is an atomic SQLite read without asking Android's
+            // read-only connection to start a write-reserving transaction.
+            return db.rawQuery("SELECT identity.original_binding,identity.gameplay_checksum,record.payload,record.checksum FROM save_transfer_identity AS identity JOIN save_records AS record ON record.slot_id=? AND record.store_name='save_gameplay' AND record.record_id=1 AND record.deleted=0 WHERE identity.singleton=1 AND identity.version=1", arrayOf(SaveArchive.SLOT_ID)).use {
+                if (!it.moveToFirst() || it.isNull(0) || it.isNull(1) || it.isNull(2) || it.isNull(3)) return null
+                val binding = it.getString(0)
+                val payload = it.getBlob(2)
+                val checksum = SaveArchive.checksum(payload)
+                if (!MessageDigest.isEqual(it.getBlob(3), checksum) || !MessageDigest.isEqual(it.getBlob(1), checksum)) return null
+                if (binding != SaveArchive.gameplayBinding(payload)) return null
+                binding
+            }
         } finally { db.close() }
     }
 }

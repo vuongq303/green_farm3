@@ -21,7 +21,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ActivityClearAllTasks.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ActivityClearAllTasks.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ActivityMessage;",
@@ -29,7 +29,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ActivityMessage.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ActivityMessage.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/GoogleIAPTrackerReceiver;",
@@ -37,7 +37,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/GoogleIAPTrackerReceiver.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/GoogleIAPTrackerReceiver.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity;",
@@ -45,7 +45,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/IGPFreemiumActivity.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/IGPFreemiumActivity.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/InGameBrowserActivity;",
@@ -53,7 +53,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/InGameBrowserActivity.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/InGameBrowserActivity.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/KeyProvider;",
@@ -61,7 +61,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/KeyProvider.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/KeyProvider.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/Nt;",
@@ -69,7 +69,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/Nt.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/Nt.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/Pt;",
@@ -77,7 +77,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/Pt.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/Pt.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/FirebaseInstanceIDService;",
@@ -85,7 +85,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/FirebaseInstanceIDService.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/FirebaseInstanceIDService.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/FirebaseMessageService;",
@@ -93,7 +93,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/FirebaseMessageService.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/FirebaseMessageService.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/LocalPushReceiver;",
@@ -101,7 +101,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/LocalPushReceiver.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/LocalPushReceiver.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/PushDeleteReceiver;",
@@ -109,7 +109,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/PushDeleteReceiver.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/PushDeleteReceiver.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/PushIntentReceiver;",
@@ -117,7 +117,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/PushIntentReceiver.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/PushIntentReceiver.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/a;",
@@ -125,7 +125,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/a.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/a.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/aa;",
@@ -133,7 +133,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/aa.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/aa.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/ab;",
@@ -141,7 +141,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/ab.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/ab.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/b;",
@@ -149,7 +149,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/b.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/b.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/c;",
@@ -157,7 +157,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/c.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/c.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/d;",
@@ -165,7 +165,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/d.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/d.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/e;",
@@ -173,7 +173,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/e.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/e.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/f;",
@@ -181,7 +181,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/f.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/f.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/g;",
@@ -189,7 +189,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/g.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/g.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/h;",
@@ -197,7 +197,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/h.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/h.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/i;",
@@ -205,7 +205,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/i.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/i.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/j;",
@@ -213,7 +213,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/j.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/j.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/k;",
@@ -221,7 +221,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/k.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/k.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/l;",
@@ -229,7 +229,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/l.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/l.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/m;",
@@ -237,7 +237,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/m.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/m.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/n;",
@@ -245,7 +245,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/n.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/n.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/o;",
@@ -253,7 +253,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/o.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/o.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/p;",
@@ -261,7 +261,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/p.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/p.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/q;",
@@ -269,7 +269,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/q.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/q.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/r;",
@@ -277,7 +277,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/r.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/r.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/s;",
@@ -285,7 +285,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/s.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/s.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/t;",
@@ -293,7 +293,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/t.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/t.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/u;",
@@ -301,7 +301,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/u.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/u.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/v;",
@@ -309,7 +309,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/v.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/v.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/w;",
@@ -317,7 +317,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/w.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/w.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/x;",
@@ -325,7 +325,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/x.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/x.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/y;",
@@ -333,7 +333,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/y.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/y.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/PushNotification/z;",
@@ -341,22 +341,22 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/PushNotification/z.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/PushNotification/z.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GLLib;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/GLLib;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/GLLib.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/GLLib.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/GLLib.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/GLLib.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GloftGF2F;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/GloftGF2F;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/GloftGF2F.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/GloftGF2F.kt",
       "jadx_reference_source": null
     },
     {
@@ -364,23 +364,23 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/a;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/a.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/a.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/a.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/a.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/aa;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/aa;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/aa.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/aa.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/aa.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/aa.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ab;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ab;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ab.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ab.kt",
       "jadx_reference_source": null
     },
     {
@@ -388,15 +388,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ac;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ac.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ac.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ac.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ac.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ad;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ad;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ad.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ad.kt",
       "jadx_reference_source": null
     },
     {
@@ -404,7 +404,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ae;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ae.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ae.kt",
       "jadx_reference_source": null
     },
     {
@@ -412,7 +412,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/af;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/af.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/af.kt",
       "jadx_reference_source": null
     },
     {
@@ -420,7 +420,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ag;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ag.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ag.kt",
       "jadx_reference_source": null
     },
     {
@@ -428,7 +428,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ah;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ah.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ah.kt",
       "jadx_reference_source": null
     },
     {
@@ -436,7 +436,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ai;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ai.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ai.kt",
       "jadx_reference_source": null
     },
     {
@@ -444,7 +444,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/aj;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/aj.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/aj.kt",
       "jadx_reference_source": null
     },
     {
@@ -452,15 +452,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ak;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ak.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ak.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ak.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ak.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/al;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/al;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/al.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/al.kt",
       "jadx_reference_source": null
     },
     {
@@ -468,15 +468,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/am;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/am.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/am.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/am.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/am.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/an;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/an;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/an.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/an.kt",
       "jadx_reference_source": null
     },
     {
@@ -484,15 +484,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ao;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ao.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ao.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ao.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ao.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ap;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ap;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ap.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ap.kt",
       "jadx_reference_source": null
     },
     {
@@ -500,7 +500,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/aq;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/aq.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/aq.kt",
       "jadx_reference_source": null
     },
     {
@@ -508,7 +508,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ar;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ar.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ar.kt",
       "jadx_reference_source": null
     },
     {
@@ -516,7 +516,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/as;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/as.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/as.kt",
       "jadx_reference_source": null
     },
     {
@@ -524,15 +524,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/at;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/at.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/at.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/at.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/at.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/au;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/au;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/au.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/au.kt",
       "jadx_reference_source": null
     },
     {
@@ -540,7 +540,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/av;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/av.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/av.kt",
       "jadx_reference_source": null
     },
     {
@@ -548,15 +548,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/aw;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/aw.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/aw.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/aw.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/aw.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ax;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ax;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ax.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ax.kt",
       "jadx_reference_source": null
     },
     {
@@ -564,15 +564,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ay;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ay.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ay.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ay.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ay.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/az;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/az;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/az.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/az.kt",
       "jadx_reference_source": null
     },
     {
@@ -580,7 +580,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/b;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/b.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/b.kt",
       "jadx_reference_source": null
     },
     {
@@ -588,7 +588,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ba;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ba.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ba.kt",
       "jadx_reference_source": null
     },
     {
@@ -596,7 +596,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bb;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bb.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bb.kt",
       "jadx_reference_source": null
     },
     {
@@ -604,15 +604,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bc;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/bc.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/bc.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/bc.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/bc.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bd;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bd;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bd.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bd.kt",
       "jadx_reference_source": null
     },
     {
@@ -620,7 +620,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/be;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/be.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/be.kt",
       "jadx_reference_source": null
     },
     {
@@ -628,15 +628,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bf;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/bf.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/bf.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/bf.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/bf.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bg;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bg;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bg.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bg.kt",
       "jadx_reference_source": null
     },
     {
@@ -644,7 +644,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bh;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bh.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bh.kt",
       "jadx_reference_source": null
     },
     {
@@ -652,7 +652,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bi;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bi.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bi.kt",
       "jadx_reference_source": null
     },
     {
@@ -660,7 +660,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bj;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bj.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bj.kt",
       "jadx_reference_source": null
     },
     {
@@ -668,7 +668,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bk;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bk.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bk.kt",
       "jadx_reference_source": null
     },
     {
@@ -676,7 +676,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bl;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bl.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bl.kt",
       "jadx_reference_source": null
     },
     {
@@ -684,7 +684,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bm;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bm.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bm.kt",
       "jadx_reference_source": null
     },
     {
@@ -692,7 +692,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bn;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bn.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bn.kt",
       "jadx_reference_source": null
     },
     {
@@ -700,7 +700,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bo;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bo.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bo.kt",
       "jadx_reference_source": null
     },
     {
@@ -708,7 +708,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bp;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bp.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bp.kt",
       "jadx_reference_source": null
     },
     {
@@ -716,15 +716,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bq;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/bq.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/bq.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/bq.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/bq.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/br;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/br;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/br.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/br.kt",
       "jadx_reference_source": null
     },
     {
@@ -732,7 +732,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bs;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bs.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bs.kt",
       "jadx_reference_source": null
     },
     {
@@ -740,7 +740,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bt;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bt.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bt.kt",
       "jadx_reference_source": null
     },
     {
@@ -748,7 +748,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bu;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bu.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bu.kt",
       "jadx_reference_source": null
     },
     {
@@ -756,7 +756,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bv;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bv.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bv.kt",
       "jadx_reference_source": null
     },
     {
@@ -764,7 +764,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bw;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/bw.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/bw.kt",
       "jadx_reference_source": null
     },
     {
@@ -772,31 +772,31 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bx;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/bx.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/bx.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/bx.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/bx.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/by;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/by;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/by.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/by.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/by.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/by.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/bz;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/bz;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/bz.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/bz.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/bz.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/bz.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/c;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/c;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/c.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/c.kt",
       "jadx_reference_source": null
     },
     {
@@ -804,7 +804,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ca;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ca.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ca.kt",
       "jadx_reference_source": null
     },
     {
@@ -812,7 +812,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cb;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cb.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cb.kt",
       "jadx_reference_source": null
     },
     {
@@ -820,7 +820,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cc;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cc.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cc.kt",
       "jadx_reference_source": null
     },
     {
@@ -828,7 +828,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cd;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cd.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cd.kt",
       "jadx_reference_source": null
     },
     {
@@ -836,7 +836,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ce;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ce.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ce.kt",
       "jadx_reference_source": null
     },
     {
@@ -844,7 +844,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cf;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cf.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cf.kt",
       "jadx_reference_source": null
     },
     {
@@ -852,31 +852,31 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cg;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/cg.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/cg.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/cg.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/cg.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ch;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ch;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ch.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ch.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ch.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ch.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ci;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ci.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ci.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cj;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cj;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cj.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cj.kt",
       "jadx_reference_source": null
     },
     {
@@ -884,7 +884,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ck;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ck.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ck.kt",
       "jadx_reference_source": null
     },
     {
@@ -892,7 +892,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cl;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cl.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cl.kt",
       "jadx_reference_source": null
     },
     {
@@ -900,7 +900,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cm;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cm.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cm.kt",
       "jadx_reference_source": null
     },
     {
@@ -908,7 +908,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cn;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cn.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cn.kt",
       "jadx_reference_source": null
     },
     {
@@ -916,7 +916,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/co;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/co.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/co.kt",
       "jadx_reference_source": null
     },
     {
@@ -924,7 +924,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cp;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cp.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cp.kt",
       "jadx_reference_source": null
     },
     {
@@ -932,7 +932,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cq;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cq.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cq.kt",
       "jadx_reference_source": null
     },
     {
@@ -940,7 +940,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cr;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cr.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cr.kt",
       "jadx_reference_source": null
     },
     {
@@ -948,7 +948,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cs;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cs.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cs.kt",
       "jadx_reference_source": null
     },
     {
@@ -956,7 +956,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ct;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/ct.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ct.kt",
       "jadx_reference_source": null
     },
     {
@@ -964,7 +964,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cu;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cu.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cu.kt",
       "jadx_reference_source": null
     },
     {
@@ -972,7 +972,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cv;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cv.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cv.kt",
       "jadx_reference_source": null
     },
     {
@@ -980,7 +980,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cw;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cw.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cw.kt",
       "jadx_reference_source": null
     },
     {
@@ -988,7 +988,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cx;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cx.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cx.kt",
       "jadx_reference_source": null
     },
     {
@@ -996,7 +996,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cy;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cy.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cy.kt",
       "jadx_reference_source": null
     },
     {
@@ -1004,7 +1004,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/cz;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/cz.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/cz.kt",
       "jadx_reference_source": null
     },
     {
@@ -1012,7 +1012,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/d;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/d.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/d.kt",
       "jadx_reference_source": null
     },
     {
@@ -1020,7 +1020,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/da;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/da.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/da.kt",
       "jadx_reference_source": null
     },
     {
@@ -1028,7 +1028,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/db;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/db.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/db.kt",
       "jadx_reference_source": null
     },
     {
@@ -1036,7 +1036,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/dc;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/dc.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/dc.kt",
       "jadx_reference_source": null
     },
     {
@@ -1044,7 +1044,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/dd;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/dd.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/dd.kt",
       "jadx_reference_source": null
     },
     {
@@ -1052,7 +1052,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/e;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/e.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/e.kt",
       "jadx_reference_source": null
     },
     {
@@ -1060,15 +1060,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/f;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/f.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/f.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/f.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/f.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/g;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/g;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/g.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/g.kt",
       "jadx_reference_source": null
     },
     {
@@ -1076,7 +1076,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/h;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/h.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/h.kt",
       "jadx_reference_source": null
     },
     {
@@ -1084,15 +1084,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/i;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/i.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/i.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/i.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/i.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/j;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/j;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/j.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/j.kt",
       "jadx_reference_source": null
     },
     {
@@ -1100,39 +1100,39 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/k;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/k.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/k.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/k.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/k.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/l;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/l;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/l.kt",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/l.java"
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/l.kt",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/l.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/m;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/m;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/m.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/m.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/m.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/m.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/n;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/n;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/n.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/n.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/n.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/n.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/o;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/o;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/o.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/o.kt",
       "jadx_reference_source": null
     },
     {
@@ -1140,7 +1140,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/p;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/p.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/p.kt",
       "jadx_reference_source": null
     },
     {
@@ -1148,7 +1148,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/q;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/q.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/q.kt",
       "jadx_reference_source": null
     },
     {
@@ -1156,7 +1156,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/r;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/r.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/r.kt",
       "jadx_reference_source": null
     },
     {
@@ -1164,23 +1164,23 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/s;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/s.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/s.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/s.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/s.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/t;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/t;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/t.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/t.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/t.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/t.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/u;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/u;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/u.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/u.kt",
       "jadx_reference_source": null
     },
     {
@@ -1188,7 +1188,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/v;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/v.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/v.kt",
       "jadx_reference_source": null
     },
     {
@@ -1196,15 +1196,15 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/w;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/w.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/w.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/w.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/w.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/x;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/x;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/x.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/x.kt",
       "jadx_reference_source": null
     },
     {
@@ -1212,7 +1212,7 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/y;",
       "subsystem": "engine",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480/y.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/y.kt",
       "jadx_reference_source": null
     },
     {
@@ -1220,8 +1220,8 @@
       "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/z;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/z.java",
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/z.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/z.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/z.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/SplashScreenActivity;",
@@ -1229,14 +1229,14 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/SplashScreenActivity.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/SplashScreenActivity.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/Start;",
       "target_descriptor": "Lcom/quanhoang/greenfarm3/Start;",
       "subsystem": "android-integration",
       "runtime_source": "Kotlin",
-      "active_source": "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/Start.kt",
+      "active_source": "app/src/main/kotlin/com/quanhoang/greenfarm3/Start.kt",
       "jadx_reference_source": null
     },
     {
@@ -1245,7 +1245,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/a/a.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/a/a.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/a/b;",
@@ -1253,7 +1253,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/a/b.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/a/b.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/a;",
@@ -1261,7 +1261,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/a.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/a.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/aa;",
@@ -1269,7 +1269,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/aa.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/aa.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ab;",
@@ -1277,7 +1277,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ab.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ab.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ac;",
@@ -1285,7 +1285,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ac.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ac.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ad;",
@@ -1293,7 +1293,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ad.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ad.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ae;",
@@ -1301,7 +1301,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ae.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ae.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/af;",
@@ -1309,7 +1309,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/af.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/af.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ag;",
@@ -1317,7 +1317,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ag.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ag.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ah;",
@@ -1325,7 +1325,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ah.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ah.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ai;",
@@ -1333,7 +1333,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ai.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ai.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/aj;",
@@ -1341,7 +1341,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/aj.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/aj.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ak;",
@@ -1349,7 +1349,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ak.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ak.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/al;",
@@ -1357,7 +1357,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/al.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/al.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/am;",
@@ -1365,7 +1365,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/am.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/am.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/an;",
@@ -1373,7 +1373,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/an.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/an.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ao;",
@@ -1381,7 +1381,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ao.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ao.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ap;",
@@ -1389,7 +1389,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ap.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ap.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/aq;",
@@ -1397,7 +1397,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/aq.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/aq.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ar;",
@@ -1405,7 +1405,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ar.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ar.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/as;",
@@ -1413,7 +1413,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/as.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/as.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/at;",
@@ -1421,7 +1421,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/at.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/at.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/au;",
@@ -1429,7 +1429,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/au.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/au.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/av;",
@@ -1437,7 +1437,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/av.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/av.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/aw;",
@@ -1445,7 +1445,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/aw.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/aw.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ax;",
@@ -1453,7 +1453,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ax.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ax.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ay;",
@@ -1461,7 +1461,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ay.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ay.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/az;",
@@ -1469,7 +1469,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/az.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/az.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/b;",
@@ -1477,7 +1477,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/b.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/b.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ba;",
@@ -1485,7 +1485,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ba.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ba.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bb;",
@@ -1493,7 +1493,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bb.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bb.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bc;",
@@ -1501,7 +1501,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bc.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bc.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bd;",
@@ -1509,7 +1509,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bd.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bd.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/be;",
@@ -1517,7 +1517,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/be.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/be.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bf;",
@@ -1525,7 +1525,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bf.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bf.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bg;",
@@ -1533,7 +1533,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bg.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bg.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bh;",
@@ -1541,7 +1541,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bh.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bh.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bi;",
@@ -1549,7 +1549,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bi.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bi.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bj;",
@@ -1557,7 +1557,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bj.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bj.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bk;",
@@ -1565,7 +1565,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bk.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bk.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bl;",
@@ -1573,7 +1573,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bl.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bl.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bm;",
@@ -1581,7 +1581,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bm.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bm.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bn;",
@@ -1589,7 +1589,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bn.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bn.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bo;",
@@ -1597,7 +1597,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bo.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bo.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bp;",
@@ -1605,7 +1605,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bp.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bp.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bq;",
@@ -1613,7 +1613,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bq.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bq.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/br;",
@@ -1621,7 +1621,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/br.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/br.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bs;",
@@ -1629,7 +1629,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bs.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bs.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bt;",
@@ -1637,7 +1637,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bt.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bt.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bu;",
@@ -1645,7 +1645,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bu.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bu.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bv;",
@@ -1653,7 +1653,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bv.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bv.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bw;",
@@ -1661,7 +1661,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bw.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bw.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bx;",
@@ -1669,7 +1669,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bx.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bx.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/by;",
@@ -1677,7 +1677,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/by.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/by.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/bz;",
@@ -1685,7 +1685,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/bz.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/bz.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/c;",
@@ -1693,7 +1693,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/c.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/c.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/ca;",
@@ -1701,7 +1701,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/ca.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/ca.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/d;",
@@ -1709,7 +1709,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/d.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/d.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/e;",
@@ -1717,7 +1717,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/e.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/e.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/f;",
@@ -1725,7 +1725,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/f.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/f.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/g;",
@@ -1733,7 +1733,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/g.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/g.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/h;",
@@ -1741,7 +1741,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/h.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/h.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/i;",
@@ -1749,7 +1749,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/i.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/i.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/installer/IReferrerReceiver;",
@@ -1757,7 +1757,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/installer/IReferrerReceiver.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/installer/IReferrerReceiver.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/installer/a;",
@@ -1765,7 +1765,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/installer/a.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/installer/a.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/j;",
@@ -1773,7 +1773,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/j.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/j.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/k;",
@@ -1781,7 +1781,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/k.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/k.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/l;",
@@ -1789,7 +1789,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/l.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/l.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/m;",
@@ -1797,7 +1797,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/m.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/m.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/n;",
@@ -1805,7 +1805,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/n.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/n.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/o;",
@@ -1813,7 +1813,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/o.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/o.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/p;",
@@ -1821,7 +1821,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/p.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/p.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/q;",
@@ -1829,7 +1829,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/q.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/q.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/r;",
@@ -1845,7 +1845,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/s.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/s.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/t;",
@@ -1853,7 +1853,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/t.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/t.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/u;",
@@ -1861,7 +1861,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/u.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/u.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/v;",
@@ -1869,7 +1869,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/v.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/v.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/w;",
@@ -1877,7 +1877,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/w.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/w.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/x;",
@@ -1885,7 +1885,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/x.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/x.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/y;",
@@ -1893,7 +1893,7 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/y.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/y.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/z;",
@@ -1901,7 +1901,17 @@
       "subsystem": "android-integration",
       "runtime_source": "original DEX",
       "active_source": null,
-      "jadx_reference_source": "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/z.java"
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/z.java"
+    }
+  ],
+  "original_unresolved_manifest_components": [
+    {
+      "name": "com.gameloft.android.ANMP.GloftGF2F.SoftKeyBoardActivity",
+      "declared_in_original_manifest": true,
+      "defined_in_original_dex": false,
+      "full_name_literal_in_original_dex": false,
+      "class_suffix_literal_in_original_dex": false,
+      "status": "Known dangling original manifest component; dynamic name construction/keyboard UI not verified; no replacement stub"
     }
   ],
   "external_namespace_class_counts": {

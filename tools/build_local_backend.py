@@ -112,6 +112,11 @@ def main():
         temp = Path(directory)
         unsigned, aligned, signed = [temp / n for n in ('unsigned.apk', 'aligned.apk', 'signed.apk')]
         baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned, args.relocated_dex)
+        if args.relocated_dex is not None:
+            from verify_runtime_apk import manifest
+            relocation = json.loads(args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json').read_text())
+            if relocation.get('application_id') != manifest(unsigned, args.sdk)[0]:
+                raise ValueError('Relocated provider identities do not match the packaged application ID')
         revision = regenerate_build_revision(args.original, unsigned, temp)
         tools = signing_tools(args.sdk)
         keystore = ensure_debug_keystore(args.keystore)

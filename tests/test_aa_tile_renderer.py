@@ -18,6 +18,9 @@ import test_gllib_recovered_algorithms as fixtures
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+from game_source_context import legacy_core_source, current_source_path
+
 PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
 METHODS = {('a', '(Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/aj;IIIIIII)V'),
            ('ab', '(II)Z'), ('w', '(III)I'), ('a', '(IIIZ)I')}
@@ -123,7 +126,7 @@ class TileRendererTest(unittest.TestCase):
         java, javac = java_home / 'bin/java', java_home / 'bin/javac'
         if not jar.exists() or not java.is_file() or not javac.is_file():
             self.skipTest('Requires verified original dex2jar artifact and JDK')
-        text = (ROOT / 'app/src/main/java' / PACKAGE / 'aa.java').read_text()
+        text = legacy_core_source('aa')
         signatures = ('private static void a(aj ajVar, int i, int i2, int i3, int i4, int i5, int i6, int i7)',
                       'private static boolean ab(int i, int i2)',
                       'private static final int w(int i, int i2, int i3)',

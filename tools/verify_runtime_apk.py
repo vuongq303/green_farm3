@@ -198,6 +198,55 @@ def network_policy(apk, sdk, backend_base_url):
             'uses_cleartext_traffic': cleartext, 'network_security_config': None}
 
 
+def verify_game_components(root, classes, application_id, original_missing_components=()):
+    """Component class names follow code, while authorities follow the app ID.
+
+    In the legacy export bridge these are intentionally different. Checking
+    only Application/launcher would miss an old-ID KeyProvider class that can
+    fail before the launcher is instantiated.
+    """
+    application = next(n for n in root['children'] if n['tag'] == 'application')
+    verified = []
+    prefixes = (LEGACY_PACKAGE + '.', APPLICATION_PACKAGE + '.')
+    for node in application.get('children', []):
+        if node['tag'] not in ('activity', 'service', 'receiver', 'provider'):
+            continue
+        name = node['attributes'].get('name', '')
+        if name.startswith('.'):
+            name = application_id + name
+        elif name and '.' not in name:
+            name = application_id + '.' + name
+        if name.startswith(prefixes):
+            if 'L' + name.replace('.', '/') + ';' not in classes:
+                if name not in original_missing_components:
+                    raise ValueError('Missing game component class definition: ' + name)
+            else:
+                verified.append(name)
+        authority = node['attributes'].get('authorities', '')
+        if '${' in authority:
+            raise ValueError('Unresolved provider authority placeholder')
+        if name == APPLICATION_PACKAGE + '.KeyProvider' and authority != application_id + '.KeyProvider':
+            raise ValueError('KeyProvider authority differs from the installed application ID')
+    return sorted(verified)
+
+
+def missing_original_components(root, definitions, target_game_package):
+    """Record exact dangling entries in the reference APK, never new omissions."""
+    result = []
+    application = next(n for n in root['children'] if n['tag'] == 'application')
+    for node in application.get('children', []):
+        if node['tag'] not in ('activity', 'service', 'receiver', 'provider'):
+            continue
+        name = node['attributes'].get('name', '')
+        if name.startswith('.'):
+            name = LEGACY_PACKAGE + name
+        elif name and '.' not in name:
+            name = LEGACY_PACKAGE + '.' + name
+        if name.startswith(LEGACY_PACKAGE + '.') and 'L' + name.replace('.', '/') + ';' not in definitions:
+            result.append(name.replace(LEGACY_PACKAGE, target_game_package, 1))
+    return sorted(result)
+
+
 def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
                application_id=None, game_package=None):
     apk, original = Path(apk), Path(original)
@@ -263,6 +312,12 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
               'legacy_game_class_definitions_remaining': sum(name.startswith(GAME) for name in classes)}
     if backend_base_url:
         result['network_policy'] = network_policy(apk, sdk, backend_base_url)
+        with zipfile.ZipFile(original) as reference:
+            original_definitions = {name for entry in reference.namelist() if DEX_NAME.fullmatch(entry)
+                                    for name in dex_classes(reference.read(entry))}
+        original_missing = missing_original_components(manifest_tree(original, sdk), original_definitions, detected_package)
+        result['verified_game_components'] = verify_game_components(manifest_tree(apk, sdk), classes, package, original_missing)
+        result['known_dangling_original_components'] = original_missing
     return result
 
 

@@ -10,15 +10,18 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from android_build_tools import jdk_tool
 from kotlin_test_tools import compile_mixed, kotlin_runtime_jars
+from game_source_context import qualified_package, kotlin_source_directory, adapt_fixture, type_name, uses_verified_names
+from relocate_compile_view import rewrite_class, map_bytes, OLD, NEW
 
-PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
+PACKAGE = qualified_package().replace('.', '/')
 QUALIFIED = PACKAGE.replace('/', '.')
-SOURCE = Path(os.environ.get('KOTLIN_CALLBACK_SOURCE_DIR', ROOT / 'app/src/main/kotlin' / PACKAGE))
+SOURCE = Path(os.environ.get('KOTLIN_CALLBACK_SOURCE_DIR', kotlin_source_directory()))
 ORIGINAL = Path(os.environ.get('GREENFARM_ORIGINAL_JAR', ROOT / '.local/bytecode-tools/greenfarm-original.jar'))
 
 PEERS = {
@@ -30,6 +33,12 @@ PEERS = {
  public static boolean aWS,aPU,bbi,bbj,bbk,bbl,bbm,bbr; public static String aWZ,baQ;
  public static int[]apC={52},aWD={3,4};public static int apB,aPZ=3,aVW=2;
  public static String[]aVX={"q1","q2"};public static long[]aWE={11,12},aWF={Long.MAX_VALUE-1,-80000};public static boolean[]aWA={true,true};
+ public static short[]aZM=new short[500],aZN=new short[500];static{for(int i=0;i<500;i++){aZM[i]=(short)(i%7==0?-1:i);aZN[i]=(short)(i%5==0?Short.MIN_VALUE:32767-i);}}
+ public static int ih(int v){return v;}public static int ii(int v){return v;}
+ public static void hX(int v){trace+="hX:"+v+";";}public static void hS(int v){trace+="hS:"+v+";";}public static void hT(int v){trace+="hT:"+v+";";}
+ public static void hV(int v){trace+="hV:"+v+";";}public static void hU(int v){trace+="hU:"+v+";";}public static void hI(int v){trace+="hI:"+v+";";}
+ public static boolean bN(int amount,int item){trace+="bN:"+amount+":"+item+";";return true;}
+ public static boolean O(int context,int kind,int amount){trace+="O:"+context+":"+kind+":"+amount+";";return true;}public static void Fy(){trace+="Fy;";}
  public static String trace="";public static Thread bbI;public static Vector bbM;
  public static com.gameloft.android2d.d.b baf=new com.gameloft.android2d.d.b();
  public static void dr(String v){trace+="dr:"+v+";";} public static void dd(String v){trace+="dd:"+v+";";}
@@ -52,7 +61,7 @@ RUNNER = r'''
 import java.lang.reflect.*;import java.net.*;import java.nio.file.*;import java.util.*;
 public class KotlinCoreComparison {
  static String p="%PACKAGE%.";static int checks;
- static Class<?> type(ClassLoader l,String n)throws Exception{return Class.forName(p+n,true,l);}
+ static Class<?> type(ClassLoader l,String n)throws Exception{if(%VERIFIED_NAMES%){if(n.equals("ci"))n="FarmGameEngine";else if(n.equals("ch"))n="FarmEntity";else if(n.equals("GLLib"))n="GameRuntime";}return Class.forName(p+n,true,l);}
  static Method method(Class<?> c,String n,Class<?>...args)throws Exception{Method m=c.getDeclaredMethod(n,args);m.setAccessible(true);return m;}
  static Constructor<?> constructor(Class<?> c,Class<?>...args)throws Exception{Constructor<?> v=c.getDeclaredConstructor(args);v.setAccessible(true);return v;}
  static Object call(Class<?> c,Object target,String n,Class<?>[]types,Object...args)throws Exception{return method(c,n,types).invoke(target,args);}
@@ -92,6 +101,15 @@ public class KotlinCoreComparison {
   Class<?> ou=type(a,"u"),nu=type(b,"u");Class<?>[]ut={int.class,String.class,byte[].class,String.class,int.class,String.class,Exception.class};byte[]bytes="farm_é".getBytes();Object uo=constructor(ou,ut).newInstance(201,null,bytes,"tag",-3,null,null),un=constructor(nu,ut).newInstance(201,null,bytes.clone(),"tag",-3,null,null);
   for(String getter:new String[]{"jw","jx","jy","jz","jA","jB"})same(call(ou,uo,getter,new Class[0]),call(nu,un,getter,new Class[0]),"response getter "+getter);
  }
+ static void rewards(ClassLoader a,ClassLoader b)throws Exception{
+  Class<?>oc=type(a,"ci"),nc=type(b,"ci"),old=type(a,"dc"),now=type(b,"dc");
+  for(int kind:new int[]{0,5,37,36,6,59,99})for(int packedKind:new int[]{0,5,110,111,112,113,114,115,116,117,177,499})for(int amount:new int[]{-32768,-1,0,1,32767}){
+   call(oc,null,"reset",new Class[0]);call(nc,null,"reset",new Class[0]);int packed=(amount<<16)|(packedKind&65535);Object x=constructor(old,int.class,int.class).newInstance(kind,packed),y=constructor(now,int.class,int.class).newInstance(kind,packed);
+   for(String field:new String[]{"anG","anM","aoG","aoH"})same(get(old,x,field),get(now,y,field),"reward field/short expansion");
+   same(call(old,x,"MT",new Class[0]),call(now,y,"MT",new Class[0]),"reward amount signed16bit");same(call(old,x,"MV",new Class[0]),call(now,y,"MV",new Class[0]),"reward type");
+   call(old,x,"MU",new Class[0]);call(now,y,"MU",new Class[0]);same(call(oc,null,"snapshot",new Class[0]),call(nc,null,"snapshot",new Class[0]),"reward dispatch and economy call order");
+  }
+ }
  static void requestMonitor(ClassLoader loader)throws Exception{
   Class<?>request=type(loader,"aq");Object entity=constructor(request).newInstance();Method idle=method(request,"mK");java.util.concurrent.CountDownLatch entered=new java.util.concurrent.CountDownLatch(1),done=new java.util.concurrent.CountDownLatch(1);Throwable[]failure={null};
   Thread worker=new Thread(()->{entered.countDown();try{idle.invoke(entity);}catch(Throwable x){failure[0]=x;}finally{done.countDown();}});
@@ -130,39 +148,67 @@ public class KotlinCoreComparison {
   }
  }
  public static void main(String[]args)throws Exception{
-  try(URLClassLoader a=load(args[0],"-",args[2],args[3]);URLClassLoader b=load(args[0],args[1],args[2],args[3])){algorithms(a,b);requestMonitor(a);requestMonitor(b);callbacks(a,b);}constants(args[0],args[1],args[2],args[3]);System.out.println("PASS "+checks+" original-bytecode comparisons: hash/RNG, guarded values, linked hash, arrays/nulls, callbacks/privacy/event queue, constants and fixedpoint");
+  try(URLClassLoader a=load(args[0],"-",args[2],args[3]);URLClassLoader b=load(args[0],args[1],args[2],args[3])){algorithms(a,b);rewards(a,b);requestMonitor(a);requestMonitor(b);callbacks(a,b);}constants(args[0],args[1],args[2],args[3]);System.out.println("PASS "+checks+" original-bytecode comparisons: hash/RNG, guarded values, linked hash, arrays/nulls, reward dispatch, callbacks/privacy/event queue, constants and fixedpoint");
  }
 }
 '''
 
 
+def identity_normalized_reference(directory):
+    """Keep original method instructions; map reviewed owners for renamed peers.
+
+    The compiler-view mapper changes only CP UTF8 identities and ZIP names. No
+    instruction, branch or original algorithm is synthesized for the reference.
+    This temporary JAR is a JVM test reference and never an APK input.
+    """
+    if PACKAGE == OLD + '/S800x480' and not uses_verified_names():
+        return ORIGINAL
+    target = directory / 'original-method-reference.jar'
+    if PACKAGE not in (OLD + '/S800x480', NEW + '/S800x480'):
+        raise AssertionError('Unexpected source package: ' + PACKAGE)
+    rename = uses_verified_names()
+    with zipfile.ZipFile(ORIGINAL) as before, zipfile.ZipFile(target, 'w') as after:
+        for entry in before.infolist():
+            name = map_bytes(entry.filename.encode(), rename_symbols=rename).decode()
+            data = before.read(entry)
+            if name.endswith('.class'):
+                data = rewrite_class(data, rename_symbols=rename)
+            if PACKAGE.startswith(OLD + '/'):
+                name = map_bytes(name.encode(), reverse=True).decode()
+                if name.endswith('.class'):
+                    data = rewrite_class(data, reverse=True)
+            after.writestr(name, data)
+    return target
+
+
 class KotlinCoreCallbacksTest(unittest.TestCase):
     def test_original_bytecode_behavior(self):
         self.assertTrue(ORIGINAL.is_file(), 'Run prepareCoreDependencies to obtain the verified original JAR')
-        selected = ('aq al bo ce cf bi bk bd bb bp cc cd q r y u bh ag ax av af ar co cu cv cw cx cn cr cl dd').split()
+        selected = ('dc aq al bo ce cf bi bk bd bb bp cc cd q r y u bh ag ax av af ar co cu cv cw cx cn cr cl dd').split()
         with tempfile.TemporaryDirectory(prefix='kotlin-core-comparison-') as temporary:
             root = Path(temporary)
             peers, output, runner = root / 'peers', root / 'kotlin', root / 'runner'
+            reference = identity_normalized_reference(root)
             java_sources = []
             for name, source in PEERS.items():
-                path = peers / PACKAGE / name
+                path = peers / PACKAGE / (type_name(name[:-5]) + '.java')
                 path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_text(source.replace('%PACKAGE%', QUALIFIED))
+                path.write_text(adapt_fixture(source.replace('%PACKAGE%', QUALIFIED)))
                 java_sources.append(path)
             for name, source in EXTRA_PEERS.items():
                 path = peers / name
                 path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_text(source.replace('%PACKAGE%', QUALIFIED))
+                path.write_text(adapt_fixture(source.replace('%PACKAGE%', QUALIFIED)))
                 java_sources.append(path)
             runner.mkdir()
             source = runner / 'KotlinCoreComparison.java'
-            source.write_text(RUNNER.replace('%PACKAGE%', QUALIFIED))
-            built = subprocess.run([str(jdk_tool('javac')), '-cp', str(ORIGINAL), '-d', str(peers), *map(str, java_sources)], capture_output=True, text=True)
+            source.write_text(RUNNER.replace('%PACKAGE%', QUALIFIED).replace('%VERIFIED_NAMES%', 'true' if uses_verified_names() else 'false'))
+            built = subprocess.run([str(jdk_tool('javac')), '-cp', str(reference), '-d', str(peers), *map(str, java_sources)], capture_output=True, text=True)
             self.assertEqual(built.returncode, 0, built.stderr)
-            compile_mixed([SOURCE / (name + '.kt') for name in selected], [], output, classpath=[peers, ORIGINAL, Path(os.environ.get('ANDROID_HOME', '/workspace/tooling/android-sdk')) / 'platforms/android-28/android.jar'])
+            compile_mixed([SOURCE / (name + '.kt') for name in selected], [], output, classpath=[peers, reference, Path(os.environ.get('ANDROID_HOME', '/workspace/tooling/android-sdk')) / 'platforms/android-28/android.jar'])
             built = subprocess.run([str(jdk_tool('javac')), '-d', str(runner), str(source)], capture_output=True, text=True)
             self.assertEqual(built.returncode, 0, built.stderr)
-            result = subprocess.run([str(jdk_tool('java')), '-cp', str(runner), 'KotlinCoreComparison', str(peers), str(output), str(ORIGINAL), str(kotlin_runtime_jars()[0])], capture_output=True, text=True, timeout=90)
+            result = subprocess.run([str(jdk_tool('java')), '-cp', str(runner), 'KotlinCoreComparison', str(peers), str(output), str(reference), str(kotlin_runtime_jars()[0])], capture_output=True, text=True, timeout=90)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn('original-bytecode comparisons', result.stdout)
             print(result.stdout.strip())

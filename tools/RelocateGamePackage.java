@@ -18,6 +18,7 @@ import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.Method;
+import org.jf.dexlib2.iface.MethodImplementation;
 import org.jf.dexlib2.iface.debug.DebugItem;
 import org.jf.dexlib2.iface.debug.StartLocal;
 import org.jf.dexlib2.iface.instruction.Instruction;
@@ -31,6 +32,7 @@ import org.jf.dexlib2.iface.value.StringEncodedValue;
 import org.jf.dexlib2.immutable.debug.ImmutableStartLocal;
 import org.jf.dexlib2.immutable.ImmutableClassDef;
 import org.jf.dexlib2.immutable.ImmutableMethod;
+import org.jf.dexlib2.immutable.ImmutableMethodImplementation;
 import org.jf.dexlib2.builder.MutableMethodImplementation;
 import org.jf.dexlib2.builder.BuilderInstruction;
 import org.jf.dexlib2.builder.BuilderOffsetInstruction;
@@ -303,6 +305,73 @@ public final class RelocateGamePackage {
     private static String quote(String value) {
         return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
     }
+    private static String mappingJson(Map<String, String> values) {
+        List<String> entries = new ArrayList<>();
+        for (Map.Entry<String, String> entry : values.entrySet()) entries.add(quote(entry.getKey()) + ": " + quote(entry.getValue()));
+        return "{" + String.join(", ", entries) + "}";
+    }
+    public static Map<String, String> classNameMapping() {
+        Map<String, String> result = new TreeMap<>();
+        result.put("L" + OLD_INTERNAL + "/S800x480/ci;", "L" + NEW_INTERNAL + "/S800x480/FarmGameEngine;");
+        result.put("L" + OLD_INTERNAL + "/S800x480/ch;", "L" + NEW_INTERNAL + "/S800x480/FarmEntity;");
+        result.put("L" + OLD_INTERNAL + "/S800x480/GLLib;", "L" + NEW_INTERNAL + "/S800x480/GameRuntime;");
+        return result;
+    }
+    public static Map<String, String> memberNameMapping() {
+        Map<String, String> result = new TreeMap<>();
+        String oldOwner = "L" + OLD_INTERNAL + "/S800x480/ci;->";
+        String newOwner = "L" + NEW_INTERNAL + "/S800x480/FarmGameEngine;->";
+        result.put(oldOwner + "aYR:I", newOwner + "currentTutorialStepIndex:I");
+        result.put(oldOwner + "baa:Z", newOwner + "hasUnsavedGameChanges:Z");
+        result.put(oldOwner + "qD()I", newOwner + "currentEngineState()I");
+        result.put(oldOwner + "qE()I", newOwner + "previousEngineState()I");
+        return result;
+    }
+    /** The legacy export bridge keeps its own provider authority, not class name. */
+    static ClassDef providerIdentity(ClassDef definition, boolean toLegacy) throws IOException {
+        String owner = "L" + NEW_INTERNAL + "/KeyProvider;";
+        if (!definition.getType().equals(owner)) throw new IOException("Expected relocated KeyProvider class");
+        String before = toLegacy ? NEW_PACKAGE : OLD_PACKAGE;
+        String after = toLegacy ? OLD_PACKAGE : NEW_PACKAGE;
+        String beforeAuthority = before + ".KeyProvider", afterAuthority = after + ".KeyProvider";
+        String beforeUri = "content://" + beforeAuthority + "/key", afterUri = "content://" + afterAuthority + "/key";
+        int initializerCount = 0, authorityCount = 0, uriCount = 0;
+        List<Method> methods = new ArrayList<>();
+        for (Method method : definition.getMethods()) {
+            MethodImplementation body = method.getImplementation();
+            boolean target = method.getName().equals("<clinit>") && method.getParameterTypes().isEmpty()
+                    && method.getReturnType().equals("V") && (method.getAccessFlags() & 8) != 0;
+            if (target) initializerCount++;
+            if (body == null) { methods.add(method); continue; }
+            List<Instruction> instructions = new ArrayList<>();
+            for (Instruction instruction : body.getInstructions()) {
+                if ((instruction.getOpcode() == Opcode.CONST_STRING || instruction.getOpcode() == Opcode.CONST_STRING_JUMBO)
+                        && instruction instanceof ReferenceInstruction) {
+                    String value = ((StringReference) ((ReferenceInstruction) instruction).getReference()).getString();
+                    boolean authority = value.equals(beforeAuthority), uri = value.equals(beforeUri);
+                    if (authority || uri) {
+                        if (!target) throw new IOException("KeyProvider identity appeared outside its reviewed initializer");
+                        if (authority) authorityCount++; else uriCount++;
+                        ImmutableStringReference replacement = new ImmutableStringReference(authority ? afterAuthority : afterUri);
+                        int register = ((OneRegisterInstruction) instruction).getRegisterA();
+                        instruction = instruction.getOpcode() == Opcode.CONST_STRING
+                                ? new ImmutableInstruction21c(Opcode.CONST_STRING, register, replacement)
+                                : new ImmutableInstruction31c(Opcode.CONST_STRING_JUMBO, register, replacement);
+                    }
+                }
+                instructions.add(instruction);
+            }
+            methods.add(new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
+                    method.getReturnType(), method.getAccessFlags(), method.getAnnotations(), method.getHiddenApiRestrictions(),
+                    new ImmutableMethodImplementation(body.getRegisterCount(), instructions, body.getTryBlocks(), body.getDebugItems())));
+        }
+        if (initializerCount != 1 || authorityCount != 1 || uriCount != 1) {
+            throw new IOException("Expected exactly one KeyProvider initializer, authority literal and URI literal; found "
+                    + initializerCount + "/" + authorityCount + "/" + uriCount);
+        }
+        return new ImmutableClassDef(definition.getType(), definition.getAccessFlags(), definition.getSuperclass(),
+                definition.getInterfaces(), definition.getSourceFile(), definition.getAnnotations(), definition.getFields(), methods);
+    }
     private static void writeAtomic(Path output, byte[] data) throws IOException {
         Files.createDirectories(output.getParent());
         Path pending = Files.createTempFile(output.getParent(), ".relocate-package-", ".tmp");
@@ -316,10 +385,20 @@ public final class RelocateGamePackage {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 2 || args.length > 3 || (args.length == 3 && !args[2].equals("--rename-symbols"))) {
-            throw new IllegalArgumentException("Usage: RelocateGamePackage input.dex output.dex [--rename-symbols]");
+        String usage = "Usage: RelocateGamePackage input.dex output.dex [--rename-symbols] [--application-id old|new-package]";
+        if (args.length < 2) throw new IllegalArgumentException(usage);
+        boolean renameSymbols = false, applicationIdSet = false;
+        String applicationId = NEW_PACKAGE;
+        for (int index = 2; index < args.length; index++) {
+            if (args[index].equals("--rename-symbols") && !renameSymbols) renameSymbols = true;
+            else if (args[index].equals("--application-id") && !applicationIdSet && index + 1 < args.length) {
+                applicationId = args[++index]; applicationIdSet = true;
+                if (!applicationId.equals(OLD_PACKAGE) && !applicationId.equals(NEW_PACKAGE)) {
+                    throw new IllegalArgumentException("Application ID must be the reviewed original or new game ID");
+                }
+            } else throw new IllegalArgumentException(usage);
         }
-        boolean renameSymbols = args.length == 3;
+        boolean legacyBridge = applicationId.equals(OLD_PACKAGE);
         Path input = Paths.get(args[0]).toRealPath();
         Path output = Paths.get(args[1]).toAbsolutePath().normalize();
         Path report = output.resolveSibling(output.getFileName() + ".json");
@@ -341,6 +420,12 @@ public final class RelocateGamePackage {
             }
         }
         Map<String, ClassDef> relocated = rewriteClasses(original.values(), false, renameSymbols);
+        String providerOwner = "L" + NEW_INTERNAL + "/KeyProvider;";
+        ClassDef expectedProvider = relocated.get(providerOwner);
+        if (legacyBridge) {
+            if (expectedProvider == null) throw new IOException("Legacy export bridge needs the original KeyProvider definition");
+            relocated.put(providerOwner, providerIdentity(expectedProvider, true));
+        }
         byte[] outputBytes = serialize(relocated.values(), opcodes);
         Map<String, ClassDef> actual = readClasses(outputBytes, opcodes);
         if (!actual.keySet().equals(relocated.keySet())) throw new IOException("Relocated class set differs after read-back");
@@ -353,8 +438,23 @@ public final class RelocateGamePackage {
                 throw new IOException("Legacy game type reference remains: " + type.getType());
             }
         }
+        Map<String, ClassDef> inverseInput = new TreeMap<>(actual);
+        if (legacyBridge) {
+            ClassDef restoredProvider = providerIdentity(actual.get(providerOwner), false);
+            if (!Arrays.equals(semanticBytes(java.util.Collections.singletonList(expectedProvider), opcodes),
+                    semanticBytes(java.util.Collections.singletonList(restoredProvider), opcodes))) {
+                throw new IOException("Reversing the two provider literals changed other KeyProvider semantics");
+            }
+            inverseInput.put(providerOwner, restoredProvider);
+            Map<String, ClassDef> expectedOthers = rewriteClasses(original.values(), false, renameSymbols);
+            Map<String, ClassDef> actualOthers = new TreeMap<>(actual);
+            expectedOthers.remove(providerOwner); actualOthers.remove(providerOwner);
+            if (!Arrays.equals(semanticBytes(expectedOthers.values(), opcodes), semanticBytes(actualOthers.values(), opcodes))) {
+                throw new IOException("Legacy provider identity policy changed another class");
+            }
+        }
         byte[] canonicalOriginal = semanticBytes(original.values(), opcodes);
-        byte[] canonicalRestored = semanticBytes(rewriteClasses(actual.values(), true, renameSymbols).values(), opcodes);
+        byte[] canonicalRestored = semanticBytes(rewriteClasses(inverseInput.values(), true, renameSymbols).values(), opcodes);
         if (!Arrays.equals(canonicalOriginal, canonicalRestored)) {
             throw new IOException("Inverse relocation changed canonical DEX semantics");
         }
@@ -370,11 +470,19 @@ public final class RelocateGamePackage {
                 + "  \"output_dex_sha256\": " + quote(sha256(outputBytes)) + ",\n"
                 + "  \"from_package\": " + quote(OLD_PACKAGE) + ",\n"
                 + "  \"to_package\": " + quote(NEW_PACKAGE) + ",\n"
+                + "  \"application_id\": " + quote(applicationId) + ",\n"
                 + "  \"class_count\": " + actual.size() + ",\n"
                 + "  \"relocated_class_count\": " + moved + ",\n"
                 + "  \"legacy_game_class_definitions_remaining\": 0,\n"
                 + "  \"inverse_canonical_semantics_verified\": true,\n"
                 + "  \"game_symbols_renamed\": " + renameSymbols + ",\n"
+                + "  \"class_name_mapping\": " + mappingJson(renameSymbols ? classNameMapping() : new TreeMap<>()) + ",\n"
+                + "  \"member_name_mapping\": " + mappingJson(renameSymbols ? memberNameMapping() : new TreeMap<>()) + ",\n"
+                + "  \"provider_identity_compatibility_exceptions\": " + (legacyBridge
+                        ? "[{\"class\":" + quote(providerOwner) + ",\"method\":\"<clinit>()V\",\"literal_replacements\":2,"
+                          + "\"authority\":" + quote(OLD_PACKAGE + ".KeyProvider") + ",\"uri\":"
+                          + quote("content://" + OLD_PACKAGE + ".KeyProvider/key") + ",\"reverse_policy_semantics_verified\":true,\"other_classes_unchanged_verified\":true}]"
+                        : "[]") + ",\n"
                 + "  \"input_canonical_sha256\": " + quote(sha256(canonicalOriginal)) + ",\n"
                 + "  \"migration_identity_literal_exception_owners\": [" + String.join(", ", preserved) + "]\n}\n";
         writeAtomic(output, outputBytes);

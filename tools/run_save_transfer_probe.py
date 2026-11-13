@@ -93,7 +93,7 @@ def main():
     fixture = private+'/files/save-transfer-probe-'+args.prefix
     upload = 'mkdir -p '+shlex.quote(code)+' && cat > '+shlex.quote(code+'/probe.dex')
     dex_bytes = (dex/'classes.dex').read_bytes()
-    if args.installed_runtime and any(not name.startswith('LSaveTransferDatabaseProbe') for name in dex_classes(dex_bytes)):
+    if args.installed_runtime and any(not name.startswith('Lcom/quanhoang/greenfarm3/testsupport/SaveTransferDatabaseProbe') for name in dex_classes(dex_bytes)):
         raise RuntimeError('Runtime probe unexpectedly copied a production/dependency class')
     checked([*adb,'shell',shlex.join(['run-as',args.package,'sh','-c',upload])],data=dex_bytes)
     uploaded = checked([*adb,'shell',shlex.join(['run-as',args.package,'sha256sum',code+'/probe.dex'])]).split()[0]
@@ -109,7 +109,7 @@ def main():
             raise RuntimeError('Expected one complete installed APK, without splits')
         installed_hash = checked([*adb,'shell',shlex.join(['sha256sum',apks[0]])]).split()[0]
         runtime_classpath += ':'+apks[0]
-    command = 'CLASSPATH='+shlex.quote(runtime_classpath)+' app_process /system/bin SaveTransferDatabaseProbe '+shlex.quote(fixture)
+    command = 'CLASSPATH='+shlex.quote(runtime_classpath)+' app_process /system/bin com.quanhoang.greenfarm3.testsupport.SaveTransferDatabaseProbe '+shlex.quote(fixture)
     output = checked([*adb,'shell',shlex.join(['run-as',args.package,'sh','-c',command])],timeout=60)
     (work/'android.log').write_text(output)
     cases = [line.removeprefix('PASS ') for line in output.splitlines() if line.startswith('PASS ')]

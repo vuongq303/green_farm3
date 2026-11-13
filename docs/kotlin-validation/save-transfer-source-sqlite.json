@@ -1,0 +1,51 @@
+{
+  "tested_at": "2026-11-13T04:28:19.603944+00:00",
+  "device": "emulator-5554",
+  "uid_package": "com.gameloft.android.ANMP.GloftGF2F",
+  "implementation": "production Kotlin compiled from source with real Android SQLite",
+  "installed_apk_sha256": null,
+  "final_apk_or_ui_test": false,
+  "normal_player_database_opened": false,
+  "game_installed_started_stopped_or_reset": false,
+  "fixture_prefix": "st_fixed_01",
+  "probe_dex_sha256": "40e35e01ddb44cf64684e442b68abf1c87226d6a25c9235260206c8d33999dbc",
+  "sources_sha256": {
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/migration/SaveArchive.kt": "53ac0ae03fd04ae29135caae3d7ad1367b7aa73085e777ce3c934876ddfc3369",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/migration/SaveArchiveDatabase.kt": "543bddcda8b1f89e085b6c70bb439d3e66ccc6d73e3fb8ea2e4929dbce596b42",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/migration/SaveTransferIdentity.kt": "a34036eb13289e1f942885e9d1604cf6b50bd156f89a79f1a39729c2d26a5697",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/migration/SaveTransferGate.kt": "c22b4299f2972606ef7932a9efc71661f7c125d048c275d21aa55006ffce9f4b",
+    "tools/SaveTransferDatabaseProbe.kt": "3fc9f85717e8b8dc099fd470ae5145180331cb48d05fc1d8097607c4c0fc72db"
+  },
+  "passed": true,
+  "checks_passed": 23,
+  "cases": [
+    "source WAL active before export",
+    "SELECT-only transaction exports exact committed snapshot",
+    "source WAL unchanged after export",
+    "new-package import retains every opaque record byte and marker",
+    "language retained",
+    "tombstone retained",
+    "SQLite schema4 retained",
+    "WAL retained",
+    "explicit imported binding accepted",
+    "unrelated binding rejected",
+    "current binding still accepted",
+    "null identity rejected",
+    "binding authorization cannot cover another gameplay payload",
+    "injected import failure observed",
+    "failed transaction preserves existing world exactly",
+    "synced pre-import backup retained",
+    "retry imports one absolute snapshot without additive rewards",
+    "game process gate acquired",
+    "transfer blocked while game lifetime lock is held",
+    "preparation owns gameplay freeze",
+    "preparation freeze visible to game frame/input gate",
+    "duplicate preparation cannot start another checkpoint",
+    "failed or cancelled preparation releases gameplay freeze"
+  ],
+  "limitations": [
+    "Opaque synthetic payloads are not loadable game farms.",
+    "This is not an actual old-APK SAF export/new-APK import/UI validation.",
+    "Same-process overlapping-lock test; not a long concurrent-process restart stress test."
+  ]
+}

@@ -40,8 +40,8 @@ can be migrated together.
 | `MoreGamesRemoval` | `layer`, `item` | `layerId`, `itemId` | Original packed GUI identifiers, values unchanged. |
 | same | `row` | `row`, then `packedFlags` | Nullable JVM input checked only after matching a removed widget; preserves Java's short-circuit/null behavior. |
 
-The obfuscated engine fields referenced by these helpers remain unchanged until a
-separate symbol-aware engine rename: `ci.aYR`, `ci.aYS`, `ci.aYU`, entity fields,
+At this group’s initial checkpoint, engine symbols were kept for a separate
+symbol-aware rename: `ci.aYR`, `ci.aYS`, `ci.aYU`, entity fields,
 GUI flags and IDs are not rewritten by a textual short-name substitution.
 No save keys, binary fields, tutorial step values, item definitions or packed GUI
 indices have been renamed or renumbered by this group.
@@ -65,3 +65,11 @@ indices have been renamed or renumbered by this group.
 These JVM fixtures do not establish rendering, touch delivery, Android alarm
 behavior or a real game session. APK and emulator checks are reported separately
 by the parent migration checkpoint.
+
+
+The language controller also honors
+`com.quanhoang.greenfarm3.migration.SaveTransferGate.isPreparingTransfer()`: explicit
+save export/import preparation blocks pointer callbacks and game updates, draining
+stale input before the transfer checkpoint. Ordinary background saves do not set
+this flag. The controller fixture verified five blocked frames without changing
+engine/tutorial/credits or save queue state, then resumed after cancellation.

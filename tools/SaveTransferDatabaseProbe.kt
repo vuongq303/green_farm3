@@ -1,3 +1,5 @@
+package com.quanhoang.greenfarm3.testsupport
+
 import android.content.Context
 import android.content.ContextWrapper
 import android.database.sqlite.SQLiteDatabase
@@ -14,7 +16,7 @@ import java.nio.ByteOrder
 
 /** Synthetic opaque records in isolated directories, never a gameplay or player-data probe. */
 object SaveTransferDatabaseProbe {
-    private class FixtureContext(private val root: File, private val appPackage: String) : ContextWrapper(null) {
+    private class FixtureContext(private val root: File, private val appPackage: String, base: Context?) : ContextWrapper(base) {
         override fun getFilesDir(): File = File(root, "files").also { it.mkdirs() }
         override fun getDatabasePath(name: String): File = File(root, "databases/$name").also { it.parentFile?.mkdirs() }
         override fun getPackageName(): String = appPackage
@@ -54,20 +56,47 @@ object SaveTransferDatabaseProbe {
             }
 
     private fun database(context: Context): SQLiteDatabase = SQLiteDatabase.openDatabase(
-        context.getDatabasePath(SaveArchive.DATABASE_NAME).absolutePath, null, SQLiteDatabase.OPEN_READWRITE)
+        context.getDatabasePath(SaveArchive.DATABASE_NAME).absolutePath, null,
+        SQLiteDatabase.OPEN_READWRITE or SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING)
+        .also { it.execSQL("PRAGMA synchronous=FULL") }
+
+    private fun journalMode(context: Context): String = SQLiteDatabase.openDatabase(
+        context.getDatabasePath(SaveArchive.DATABASE_NAME).absolutePath, null, SQLiteDatabase.OPEN_READONLY).use { db ->
+        db.rawQuery("PRAGMA journal_mode", null).use { it.moveToFirst(); it.getString(0) }
+    }
 
     @JvmStatic fun main(args: Array<String>) {
-        println("SAVE_TRANSFER_PROBE_START")
-        val path = File(args.single()).canonicalFile
+        try {
+            println("SAVE_TRANSFER_PROBE_START")
+            val path = File(args.single()).canonicalFile
+            execute(path, null)
+        } catch (failure: Throwable) {
+            // RuntimeInit's uncaught handler otherwise SIGKILLs app_process and
+            // hides the actual Java exception behind an unhelpful exit137.
+            failure.printStackTrace(System.out)
+            System.exit(2)
+        }
+    }
+
+    @JvmStatic fun runInContext(context: Context, prefix: String): List<String> {
+        require(prefix.matches(Regex("st_[A-Za-z0-9_-]{1,32}")))
+        execute(File(context.filesDir, "save-transfer-probe-" + prefix).canonicalFile, context)
+        return ArrayList(checks)
+    }
+
+    private fun execute(path: File, base: Context?) {
+        checks.clear()
         require(path.name.matches(Regex("save-transfer-probe-[A-Za-z0-9_-]{1,48}")) && path.parentFile.name == "files")
         require(!path.exists()) { "Choose a fresh fixture directory" }
         path.mkdirs()
-        val source = FixtureContext(File(path, "source"), "com.gameloft.android.ANMP.GloftGF2F")
-        val target = FixtureContext(File(path, "target"), "com.quanhoang.greenfarm3")
+        val source = FixtureContext(File(path, "source"), "com.gameloft.android.ANMP.GloftGF2F", base)
+        val target = FixtureContext(File(path, "target"), "com.quanhoang.greenfarm3", base)
         val snapshot = fixture()
         SaveTransferGate.withTransferLock(source) { SaveArchiveDatabase.install(source, snapshot) }
+        check(journalMode(source).equals("wal", true), "source WAL active before export")
         val exported = SaveTransferGate.withTransferLock(source) { SaveArchiveDatabase.read(source) }
-        check(same(snapshot, exported), "read-only transaction exports exact committed snapshot")
+        check(same(snapshot, exported), "SELECT-only transaction exports exact committed snapshot")
+        check(journalMode(source).equals("wal", true), "source WAL unchanged after export")
         val bytes = ByteArrayOutputStream().also { SaveArchive.write(exported, it) }.toByteArray()
         val decoded = SaveArchive.read(ByteArrayInputStream(bytes))
         SaveTransferGate.withTransferLock(target) { SaveArchiveDatabase.install(target, decoded) }
@@ -76,17 +105,16 @@ object SaveTransferDatabaseProbe {
             "language retained")
         check(SaveArchiveDatabase.read(target).records.single { it.name == "removed-record" }.payload == null,
             "tombstone retained")
-        database(target).use { db ->
+        SQLiteDatabase.openDatabase(target.getDatabasePath(SaveArchive.DATABASE_NAME).absolutePath, null, SQLiteDatabase.OPEN_READONLY).use { db ->
             check(db.version == 4, "SQLite schema4 retained")
             db.rawQuery("PRAGMA journal_mode", null).use { it.moveToFirst(); check(it.getString(0).equals("wal", true), "WAL retained") }
-            db.rawQuery("PRAGMA synchronous", null).use { it.moveToFirst(); check(it.getInt(0) == 2, "FULL retained on opened writer") }
         }
         SaveTransferIdentity.initialize(target)
         check(SaveTransferIdentity.matches(BINDING, "new-device-binding"), "explicit imported binding accepted")
         check(!SaveTransferIdentity.matches("other-binding", "new-device-binding"), "unrelated binding rejected")
         check(SaveTransferIdentity.matches("new-device-binding", "new-device-binding"), "current binding still accepted")
         check(!SaveTransferIdentity.matches(null, null), "null identity rejected")
-        val altered = FixtureContext(File(path, "altered"), "com.quanhoang.greenfarm3")
+        val altered = FixtureContext(File(path, "altered"), "com.quanhoang.greenfarm3", base)
         SaveArchiveDatabase.install(altered, snapshot)
         database(altered).use { db ->
             val changed = snapshot.records.single { it.name == "save_gameplay" }.payload!!.copyOf().also { it[it.lastIndex] = 99 }
@@ -107,7 +135,7 @@ object SaveTransferDatabaseProbe {
         database(target).use { it.execSQL("DROP TRIGGER reject_transfer") }
         SaveArchiveDatabase.install(target, newer)
         check(same(newer, SaveArchiveDatabase.read(target)), "retry imports one absolute snapshot without additive rewards")
-        val gate = FixtureContext(File(path, "gate"), "com.quanhoang.greenfarm3")
+        val gate = FixtureContext(File(path, "gate"), "com.quanhoang.greenfarm3", base)
         check(SaveTransferGate.enterGame(gate), "game process gate acquired")
         var blocked = false
         try { SaveTransferGate.withTransferLock(gate) { throw AssertionError("transfer ran while game lock was held") } }

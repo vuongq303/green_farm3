@@ -21,6 +21,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from asm_tools import asm_jar
 from android_build_tools import executable_name
+from game_source_context import (current_source_path, current_compiled_path, current_staged_path, legacy_class_bytes, legacy_core_source)
+
 
 PACKAGE = "com/gameloft/android/ANMP/GloftGF2F/S800x480"
 OWNER = PACKAGE + "/GLLib"
@@ -82,9 +84,9 @@ class GLLibTextureDispatchTest(unittest.TestCase):
         original = Path(os.environ.get("GREENFARM_ORIGINAL_JAR", "/workspace/tooling/recovery-bytecode/greenfarm-original.jar"))
         java, javac = (home / 'bin' / executable_name(name) for name in ('java', 'javac'))
         classes = ROOT / "app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes"
-        restored = classes / (OWNER + ".class")
-        source = ROOT / "app/src/main/java" / (OWNER + ".java")
-        staged = ROOT / "app/build/generated/core-java" / (OWNER + ".java")
+        restored = current_compiled_path("GLLib")
+        source = current_source_path("GLLib")
+        staged = current_staged_path("GLLib")
         if not original.is_file() or not restored.is_file() or not java.is_file() or not javac.is_file():
             self.skipTest("Requires verified original conversion, compiled app core GLLib and JDK")
         asm = asm_jar()
@@ -118,12 +120,14 @@ class GLLibTextureDispatchTest(unittest.TestCase):
             expected = dispatch(baseline)
             self.assertEqual(expected, {NORMAL: [TEXTURE], UV: [TEXTURE]},
                              "Original texture call sites changed")
-            self.assertEqual(dispatch(restored), expected,
+            normalized = root / "current-owner-fixture.class"
+            normalized.write_bytes(legacy_class_bytes(restored.read_bytes()))
+            self.assertEqual(dispatch(normalized), expected,
                              "Texture drawing selected the six-int pointer overload")
 
             # Compile the actual source methods independently, then reintroduce
             # the lost casts only in a temporary copy to verify regression sensitivity.
-            methods = "\n".join(extract_method(source.read_text(), signature) for signature in SIGNATURES)
+            methods = "\n".join(extract_method(legacy_core_source("GLLib"), signature) for signature in SIGNATURES)
             for label, body in (("current", methods), ("lost-casts", re.sub(r"\(float\)\s*(i(?:[234])?)\b", r"\1", methods))):
                 fixture = root / label / "GLLib.java"
                 fixture.parent.mkdir()
