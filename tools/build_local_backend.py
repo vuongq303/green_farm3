@@ -21,7 +21,7 @@ TARGET_METHOD = 'aL(Ljava/lang/String;)Ljava/lang/String;'
 ORIGINAL_URL = 'https://eve.gameloft.com/'
 
 
-def prepare(original, base, patched_dex, output):
+def prepare(original, base, patched_dex, output, relocated_dex=None):
     original, base, patched_dex, output = map(Path, (original, base, patched_dex, output))
     base_report = base.with_suffix('.provenance.json')
     patch_report = patched_dex.with_suffix(patched_dex.suffix + '.json')
@@ -33,6 +33,19 @@ def prepare(original, base, patched_dex, output):
         raise ValueError('Unexpected original APK')
     baseline = json.loads(base_report.read_text())
     patch = json.loads(patch_report.read_text())
+    relocation = None
+    packaged_dex = patched_dex
+    if relocated_dex is not None:
+        packaged_dex = Path(relocated_dex)
+        relocation = json.loads(packaged_dex.with_suffix(packaged_dex.suffix + '.json').read_text())
+        if (relocation.get('schema_version') != 1
+                or relocation.get('from_package') != 'com.gameloft.android.ANMP.GloftGF2F'
+                or relocation.get('to_package') != 'com.quanhoang.greenfarm3'
+                or relocation.get('input_dex_sha256') != sha256(patched_dex.read_bytes())
+                or relocation.get('output_dex_sha256') != sha256(packaged_dex.read_bytes())
+                or relocation.get('legacy_game_class_definitions_remaining') != 0
+                or relocation.get('inverse_canonical_semantics_verified') is not True):
+            raise ValueError('Game package relocation provenance mismatch')
     if (baseline.get('mode') != 'java-core-with-original-dex-sdk-dependencies'
             or baseline.get('original_apk_sha256') != EXPECTED_APK_SHA256
             or baseline.get('output_apk_sha256') != sha256(base.read_bytes())
@@ -68,7 +81,7 @@ def prepare(original, base, patched_dex, output):
                 if SIGNATURE.fullmatch(entry.filename):
                     continue
                 if entry.filename == 'classes.dex':
-                    data = patched_dex.read_bytes()
+                    data = packaged_dex.read_bytes()
                 elif entry.filename == resource:
                     # The shared metadata generator verifies this original preimage,
                     # then changes only REVISION-2408 for the patched DEX size.
@@ -84,18 +97,21 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('original', 'base', 'patched-dex', 'output', 'sdk', 'keystore'):
         parser.add_argument('--' + name, required=True, type=Path)
+    parser.add_argument('--relocated-dex', type=Path)
     args = parser.parse_args()
     output = args.output.resolve()
     inputs = (args.original, args.base, args.patched_dex, args.keystore,
               args.base.with_suffix('.provenance.json'),
               args.patched_dex.with_suffix(args.patched_dex.suffix + '.json'))
+    if args.relocated_dex is not None:
+        inputs += (args.relocated_dex, args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json'))
     if any(output == p.resolve() or (output.exists() and p.exists() and output.samefile(p)) for p in inputs):
         raise ValueError('Output must not overwrite an input, key or provenance report')
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='local-backend-', dir=output.parent) as directory:
         temp = Path(directory)
         unsigned, aligned, signed = [temp / n for n in ('unsigned.apk', 'aligned.apk', 'signed.apk')]
-        baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned)
+        baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned, args.relocated_dex)
         revision = regenerate_build_revision(args.original, unsigned, temp)
         tools = signing_tools(args.sdk)
         keystore = ensure_debug_keystore(args.keystore)
@@ -107,7 +123,8 @@ def main():
         subprocess.run([str(tools.zipalign), '-c', '-P', '16', '4', str(signed)], check=True)
         payload = verify_assets_native(args.original, signed)
         with zipfile.ZipFile(signed) as apk:
-            if sha256(apk.read('classes.dex')) != patch['output_dex_sha256']:
+            packaged_dex_hash = sha256((args.relocated_dex or args.patched_dex).read_bytes())
+            if sha256(apk.read('classes.dex')) != packaged_dex_hash:
                 raise ValueError('Signed APK DEX differs from verified endpoint patch')
         shutil.copyfile(signed, output)
     report = {
@@ -116,6 +133,9 @@ def main():
         'base_apk_sha256': baseline['output_apk_sha256'],
         'output_apk_sha256': sha256(output.read_bytes()),
         'endpoint_patch': patch,
+        'packaged_dex_sha256': packaged_dex_hash,
+        'package_relocation': (json.loads(args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json').read_text())
+                               if args.relocated_dex else None),
         'build_revision_metadata': revision,
         'unchanged_assets_native_sha256': payload,
         'scope': 'SDK and game Janus discovery constructors; unrelated legacy service clients are not migrated.',

@@ -36,15 +36,48 @@ def assemble(original, compiled, merged_dex, output):
             or report.get('original_non_overlay_semantics_verified') is not True
             or report.get('compiled_overlay_semantics_verified') is not True):
         raise ValueError('Merger provenance does not verify these exact inputs and output')
-    core = Path(__file__).resolve().parents[1] / 'app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480'
-    required = {'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/' + p.stem + ';'
-                for p in core.glob('*.java') if p.stem != 'l' and p.stem not in ADDED_CORE_SOURCES}
+    project = Path(__file__).resolve().parents[1]
+    # The merger proves source overlays in the original namespace before final
+    # package relocation. Kotlin source roots are equally authoritative; a Java
+    # source-file count alone would silently miss every converted implementation.
+    source_files = []
+    for language in ('java', 'kotlin'):
+        for package in ('com/gameloft/android/ANMP/GloftGF2F', 'com/quanhoang/greenfarm3'):
+            source_files.extend((project / 'app/src/main' / language / package / 'S800x480').glob('*.java' if language == 'java' else '*.kt'))
+    kotlin_names = {p.stem for p in source_files if p.suffix == '.kt'}
+    selected_names = {p.stem for p in source_files
+                      if p.stem != 'l' or p.stem in kotlin_names}
+    if not selected_names:
+        raise ValueError('No selected game source implementations found')
+    original_core = 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/'
+    binary_names = {'FarmGameEngine': 'ci', 'FarmEntity': 'ch', 'GameRuntime': 'GLLib'}
+    required = {original_core + binary_names.get(name, name) + ';' for name in selected_names
+                if name not in ADDED_CORE_SOURCES}
     if not required.issubset(set(report.get('replaced_classes', []))):
         raise ValueError('Not every selected Java-core class was recompiled and replaced')
-    additions = {'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/' + p.stem + ';'
-                 for p in core.glob('*.java') if p.stem in ADDED_CORE_SOURCES}
+    additions = {original_core + name + ';' for name in selected_names
+                 if name in ADDED_CORE_SOURCES}
     if not additions.issubset(set(report.get('added_classes', []))):
         raise ValueError('Not every reviewed progress helper was compiled and added')
+    def normalized_kotlin_name(descriptor):
+        descriptor = descriptor.replace('Lcom/quanhoang/greenfarm3/',
+                                        'Lcom/gameloft/android/ANMP/GloftGF2F/', 1)
+        for source_name, binary_name in binary_names.items():
+            descriptor = descriptor.replace('/' + source_name + ';', '/' + binary_name + ';')
+        return descriptor
+    kotlin_expected = {original_core + binary_names.get(name, name) + ';' for name in kotlin_names}
+    kotlin_actual = {normalized_kotlin_name(name) for name in report.get('kotlin_compiled_classes', [])}
+    if not kotlin_expected.issubset(kotlin_actual):
+        raise ValueError('A selected Kotlin implementation lacks Kotlin metadata in the compiled DEX: '
+                         + ', '.join(sorted(kotlin_expected - kotlin_actual)))
+    if kotlin_expected and report.get('kotlin_runtime_class_count', 0) <= 0:
+        raise ValueError('Kotlin implementations require packaged Kotlin runtime classes')
+    for package in ('com/gameloft/android/ANMP/GloftGF2F', 'com/quanhoang/greenfarm3'):
+        entry = project / 'app/src/main/kotlin' / package / 'Start.kt'
+        if entry.is_file() and 'Lcom/gameloft/android/ANMP/GloftGF2F/Start;' not in set(report.get('replaced_classes', [])):
+            raise ValueError('The source Kotlin launcher did not replace the original DEX launcher')
+        if entry.is_file() and 'Lcom/gameloft/android/ANMP/GloftGF2F/Start;' not in kotlin_actual:
+            raise ValueError('The source Kotlin launcher lacks Kotlin metadata in the compiled DEX')
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(compiled) as rebuilt:
         original_names, compiled_names = source.namelist(), rebuilt.namelist()
         if len(original_names) != len(set(original_names)):

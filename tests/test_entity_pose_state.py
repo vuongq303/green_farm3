@@ -7,12 +7,15 @@ the coordinate quantization used by the farm codec.
 from pathlib import Path
 import os
 import subprocess
+import sys
 import tempfile
 import unittest
 
 from test_aa_tile_renderer import extract_method
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+from kotlin_test_tools import compile_mixed, runtime_classpath
 PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
 
 FIXTURE = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
@@ -165,11 +168,9 @@ public class LazyBuildingChecks {
             folder = Path(temporary)
             (folder / 'Fixture.java').write_text(fixture)
             (folder / 'LazyBuildingChecks.java').write_text(runner)
-            result = subprocess.run([str(javac), '-source', '8', '-target', '8', '-d', str(folder),
-                                     str(folder / 'Fixture.java'), str(folder / 'LazyBuildingChecks.java'),
-                                     str(source / 'EntityPoseState.java')], capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            result = subprocess.run([str(java), '-cp', str(folder), PACKAGE.replace('/', '.') + '.LazyBuildingChecks'],
+            compile_mixed([ROOT / 'app/src/main/kotlin' / PACKAGE / 'EntityPoseState.kt'],
+                          [folder / 'Fixture.java', folder / 'LazyBuildingChecks.java'], folder)
+            result = subprocess.run([str(java), '-cp', runtime_classpath(folder), PACKAGE.replace('/', '.') + '.LazyBuildingChecks'],
                                     capture_output=True, text=True, timeout=20)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             print(result.stdout.strip())
@@ -195,11 +196,9 @@ public class LazyBuildingChecks {
             runner = folder / 'EntityPoseChecks.java'
             fixture.write_text(fixture_text)
             runner.write_text(RUNNER)
-            result = subprocess.run([str(javac), '-source', '8', '-target', '8', '-d', str(folder),
-                                     str(fixture), str(runner), str(source / 'EntityPoseState.java')],
-                                    capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            result = subprocess.run([str(java), '-cp', str(folder),
+            compile_mixed([ROOT / 'app/src/main/kotlin' / PACKAGE / 'EntityPoseState.kt'],
+                          [fixture, runner], folder)
+            result = subprocess.run([str(java), '-cp', runtime_classpath(folder),
                                      PACKAGE.replace('/', '.') + '.EntityPoseChecks'],
                                     capture_output=True, text=True, timeout=20)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

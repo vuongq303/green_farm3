@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "input_dex_sha256": "3901b6678b4523947273914b30fe94a750e149f89e0a7a1fa3932261d7539ec4",
+  "output_dex_sha256": "b15aea8034fb151aa35423f2661070ee5950d8bffc79dc6a02c548b31290ae7e",
+  "from_package": "com.gameloft.android.ANMP.GloftGF2F",
+  "to_package": "com.quanhoang.greenfarm3",
+  "class_count": 6383,
+  "relocated_class_count": 236,
+  "legacy_game_class_definitions_remaining": 0,
+  "inverse_canonical_semantics_verified": true,
+  "game_symbols_renamed": true,
+  "input_canonical_sha256": "ccee705373fac7d466e49cdc4ee55844adf36a64971be759eda5e23c2f619bd8",
+  "migration_identity_literal_exception_owners": []
+}

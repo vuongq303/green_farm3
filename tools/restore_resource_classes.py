@@ -15,6 +15,7 @@ import xml.etree.ElementTree as ET
 
 
 APP_PACKAGE = "com.gameloft.android.ANMP.GloftGF2F"
+TARGET_APP_PACKAGE = "com.quanhoang.greenfarm3"
 SDK_PACKAGES = (
     "com.facebook",
     "com.google.android.gms.ads",
@@ -29,12 +30,12 @@ def java_resource_name(name: str) -> str:
     return name.replace(".", "_").replace("-", "_").replace(":", "_")
 
 
-def read_public_resources(path: Path) -> dict[int, str]:
+def read_public_resources(path: Path, app_package: str = APP_PACKAGE) -> dict[int, str]:
     result: dict[int, str] = {}
     for entry in ET.parse(path).getroot().findall("public"):
         value = int(entry.attrib["id"], 0)
         reference = (
-            f"{APP_PACKAGE}.R.{entry.attrib['type']}."
+            f"{app_package}.R.{entry.attrib['type']}."
             f"{java_resource_name(entry.attrib['name'])}"
         )
         if value in result and result[value] != reference:
@@ -68,7 +69,9 @@ def render_alias(source: str, resources: dict[int, str], package: str) -> str:
 
 
 def generate(project_root: Path, output: Path) -> list[Path]:
-    resources = read_public_resources(project_root / "app/src/main/res/values/public.xml")
+    app_package = TARGET_APP_PACKAGE if (project_root / 'app/src/main/java'
+            / TARGET_APP_PACKAGE.replace('.', '/')).is_dir() else APP_PACKAGE
+    resources = read_public_resources(project_root / "app/src/main/res/values/public.xml", app_package)
     # Validate everything before writing, so a bad/missing source cannot leave a
     # partly generated set that appears ready for compilation.
     rendered = []

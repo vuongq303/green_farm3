@@ -18,6 +18,7 @@ from test_aa_tile_renderer import extract_method
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from android_build_tools import jdk_tool
+from kotlin_test_tools import compile_mixed, runtime_classpath
 
 PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
 CORE = ROOT / 'app/src/main/java' / PACKAGE
@@ -69,6 +70,10 @@ public class MoreGamesProbe {
  }
  public static void main(String[] args){
   reset();int checks=0;
+  // Preserve Java short-circuit/null behavior at the public JVM boundary.
+  MoreGamesRemoval.removeWidget(1,4,null);
+  try{MoreGamesRemoval.removeWidget(1,34,null);throw new AssertionError("removed null row accepted");}
+  catch(NullPointerException expected){}
   for(int layer=0;layer<50;layer++)for(int item=0;item<160;item++){
    boolean removed=(layer==1&&(item==34||item==38))||(layer==27&&(item==22||item==23));
    check(MoreGamesRemoval.isWidget(layer,item)==removed,"wrong identity "+layer+":"+item);checks++;
@@ -146,11 +151,9 @@ class MoreGamesRemovalTest(unittest.TestCase):
             package.mkdir(parents=True)
             java = package / 'MoreGamesProbe.java'
             java.write_text(source)
-            helper = package / 'MoreGamesRemoval.java'
-            helper.write_text((CORE / 'MoreGamesRemoval.java').read_text())
-            subprocess.run([str(jdk_tool('javac')), '-d', str(directory), str(java), str(helper)],
-                           check=True, capture_output=True, text=True)
-            return subprocess.run([str(jdk_tool('java')), '-cp', str(directory),
+            helper = ROOT / 'app/src/main/kotlin' / PACKAGE / 'MoreGamesRemoval.kt'
+            compile_mixed([helper], [java], directory)
+            return subprocess.run([str(jdk_tool('java')), '-cp', runtime_classpath(directory),
                                    PACKAGE.replace('/', '.') + '.MoreGamesProbe'],
                                   capture_output=True, text=True)
 

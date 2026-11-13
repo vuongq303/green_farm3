@@ -20654,7 +20654,7 @@ public final class ci extends GLLib implements av {
             String str4 = "Federation.GetDeviceId() @@@@@@@@@@@@@@@= " + rl();
             String str5 = "Federation.GetDeviceId() @@@@@@@@@@@@@@@= " + rl();
             String strOs = com.gameloft.android.wrapper.au.Os();
-            if (!strO.equals("" + rl()) && !asP && strO.length() == strOs.length()) {
+            if (!com.quanhoang.greenfarm3.migration.SaveTransferIdentity.matches(strO, "" + rl()) && !asP && strO.length() == strOs.length()) {
                 aPg = false;
                 aOM = false;
                 ro();

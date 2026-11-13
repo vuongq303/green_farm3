@@ -8,11 +8,15 @@ import os
 import subprocess
 import tempfile
 import unittest
+import sys
+import re
 
 from test_aa_tile_renderer import extract_method
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
+sys.path.insert(0, str(ROOT / 'tools'))
+from kotlin_test_tools import compile_mixed, runtime_classpath
 
 ANDROID = {
     'android/os/SystemClock.java': '''package android.os; public class SystemClock {
@@ -24,7 +28,7 @@ ANDROID = {
         public static int kills;public static int myPid(){return 7;}
         public static void killProcess(int pid){kills++;} }''',
     'android/view/KeyEvent.java': '''package android.view;public class KeyEvent {
-        public static final int KEYCODE_MENU=82; }''',
+        public static final int KEYCODE_MENU=82;public boolean longPress;public boolean isLongPress(){return longPress;} }''',
     'android/util/Log.java': '''package android.util;public class Log {
         public static int d(String a,String b){return 0;}
         public static int w(String a,String b,Throwable c){return 0;}
@@ -72,6 +76,12 @@ ANDROID = {
         public static android.content.Intent last;public static int flags;
         public static PendingIntent getActivity(android.content.Context c,int n,android.content.Intent i,int f){last=i;flags=f;return new PendingIntent();}
         public void cancel(){} }''',
+    'com/quanhoang/greenfarm3/migration/SaveTransferGate.java': '''package com.quanhoang.greenfarm3.migration;
+        public class SaveTransferGate {public static boolean preparing;
+        public static boolean isPreparingTransfer(){return preparing;} }''',
+    'com/quanhoang/greenfarm3/migration/SaveTransferActivity.java': '''package com.quanhoang.greenfarm3.migration;
+        public class SaveTransferActivity {public static int launches;public static android.app.Activity last;
+        public static void launch(android.app.Activity activity){launches++;last=activity;} }''',
     'android/widget/Toast.java': '''package android.widget;public class Toast {
         public static final int LENGTH_LONG=1;public static Toast makeText(android.content.Context c,String s,int n){return new Toast();}
         public void show(){} }''',
@@ -166,9 +176,11 @@ public class ProgressSaveChecks {
   ci.aYR=ci.aYS=-1;ci.awV=false;GloftGF2F.acw=new ci();MIDlet.keyDowns=MIDlet.keyUps=0;
   ch.pending=ch.credits=ch.settles=ch.entities=ch.loadClears=0;ch.levelUpOnSettle=false;SystemClock.now=10000;
   MIDlet.cnz=MIDlet.cnA=null;AlertDialog.latest=null;AlarmManager.exact=AlarmManager.ordinary=android.os.Process.kills=0;
+  com.quanhoang.greenfarm3.migration.SaveTransferActivity.launches=0;com.quanhoang.greenfarm3.migration.SaveTransferActivity.last=null;
+  com.quanhoang.greenfarm3.migration.SaveTransferGate.preparing=false;
   AlarmManager.failAll=AlarmManager.exactDenied=false;android.content.pm.PackageManager.unavailable=false;
-  set(LanguageRestartController.class,"state",0);set(LanguageRestartController.class,"restartPromptVisible",false);set(LanguageRestartController.class,"handoff",null);
-  set(LanguageRestartController.class,"menuHeld",false);set(LanguageRestartController.class,"menuRequested",false);
+  set(LanguageRestartController.class,"restartState",0);set(LanguageRestartController.class,"restartPromptVisible",false);set(LanguageRestartController.class,"restartHandoff",null);
+  set(LanguageRestartController.class,"menuKeyHeld",false);set(LanguageRestartController.class,"menuOpenRequested",false);
   ProgressSaveController.initialize();
  }
  static void ready(){ProgressSaveController.globalLoadFinished(false,false);ProgressSaveController.farmLoadFinished();ProgressSaveController.enterWorld();}
@@ -298,9 +310,34 @@ public class ProgressSaveChecks {
   ci.aZB=0;check(game.onKeyDown(82,event)&&game.onKeyUp(82,event),"eligible MENU request missing");ci.avD=3;
   LanguageRestartController.frameStarted();check(ci.apA==-1,"queued MENU bypassed game-thread eligibility recheck");
  }
+ static void saveTransferFreeze()throws Exception{
+  readySaved();ci.aYR=16;ci.state(19);
+  int captures=ci.attempts,credits=ch.credits,submissions=queue().submissions;
+  com.quanhoang.greenfarm3.migration.SaveTransferGate.preparing=true;
+  check(LanguageRestartController.blocksGameplay(),"save transfer did not block gameplay input");
+  for(int frame=0;frame<5;frame++)check(LanguageRestartController.frameStarted(),"save transfer did not stop game frame updates");
+  check(ci.apA==-1&&ci.aYR==16&&ch.credits==credits&&ci.attempts==captures&&queue().submissions==submissions,
+    "freeze hook changed gameplay or duplicated checkpoint while transfer owns it");
+  com.quanhoang.greenfarm3.migration.SaveTransferGate.preparing=false;
+  check(!LanguageRestartController.blocksGameplay()&&!LanguageRestartController.frameStarted(),"transfer completion did not restore ordinary session");
+ }
+ static void saveTransferLongPress()throws Exception{
+  readySaved();GloftGF2F game=new GloftGF2F();ci.aYR=16;android.view.KeyEvent event=new android.view.KeyEvent();event.longPress=true;
+  Activity actualActivity=new Activity();MIDlet.cnA=actualActivity;MIDlet.cnz=new Activity();
+  int captures=ci.attempts;
+  check(game.onKeyDown(82,event),"long MENU not consumed for save transfer");
+  check(com.quanhoang.greenfarm3.migration.SaveTransferActivity.launches==1
+    &&com.quanhoang.greenfarm3.migration.SaveTransferActivity.last==actualActivity,"save transfer used unattached MIDlet or wrong Activity");
+  check(!LanguageRestartController.frameStarted()&&ci.apA==-1&&ci.attempts==captures,"long MENU also opened tutorial Options or serialized during key callback");
+  actualActivity.finishing=true;ci.aYR=-1;
+  check(!game.onKeyDown(82,event)&&com.quanhoang.greenfarm3.migration.SaveTransferActivity.launches==1,"finishing Activity opened migration");
+  MIDlet.cnA=null;check(!game.onKeyDown(82,event),"missing real Activity did not use original key route");
+  check(!game.onKeyDown(4,event)&&com.quanhoang.greenfarm3.migration.SaveTransferActivity.launches==1,"non MENU long press opened migration");
+  check(!game.onKeyDown(82,null),"null KeyEvent changed non-tutorial route");
+ }
  public static void main(String[]args)throws Exception{
   loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
-  languageCancelAndRestart();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();
+  languageCancelAndRestart();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();saveTransferLongPress();saveTransferFreeze();
   System.out.println("PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff");
  }
 }
@@ -319,10 +356,17 @@ class ProgressSaveControllerTest(unittest.TestCase):
         methods = '\n'.join(extract_method(entity, signature) for signature in
                             ('static int qD()', 'static int qE()', 'static boolean isPersistedWorldState(int state)',
                              'static boolean pendingTransitionUnloadsWorld()', 'static void qG()'))
-        midlet_source = (source / 'GloftGF2F.java').read_text(encoding='utf-8')
-        key_methods = '\n'.join(extract_method(midlet_source, signature) for signature in
-                                ('public boolean onKeyDown(int keyCode, KeyEvent event)',
-                                 'public boolean onKeyUp(int keyCode, KeyEvent event)'))
+        kotlin_source = ROOT / 'app/src/main/kotlin' / PACKAGE
+        kotlin_midlet = kotlin_source / 'GloftGF2F.kt'
+        if kotlin_midlet.is_file():
+            midlet_source = kotlin_midlet.read_text(encoding='utf-8')
+            key_methods = '\n'.join(extract_method(midlet_source, signature) for signature in
+                                    ('override fun onKeyDown(', 'override fun onKeyUp('))
+        else:
+            midlet_source = (source / 'GloftGF2F.java').read_text(encoding='utf-8')
+            key_methods = '\n'.join(extract_method(midlet_source, signature) for signature in
+                                    ('public boolean onKeyDown(int keyCode, KeyEvent event)',
+                                     'public boolean onKeyUp(int keyCode, KeyEvent event)'))
         with tempfile.TemporaryDirectory(prefix='progress-save-check-') as temporary:
             folder = Path(temporary)
             peers = []
@@ -332,14 +376,32 @@ class ProgressSaveControllerTest(unittest.TestCase):
                 peer.write_text(content, encoding='utf-8')
                 peers.append(peer)
             fixture, runner = folder / 'Fixture.java', folder / 'ProgressSaveChecks.java'
-            fixture.write_text(FIXTURE.replace('/* ACTUAL_KEY_OVERRIDES */', key_methods) + methods + '\n}', encoding='utf-8')
+            actual = [kotlin_source / name for name in ('ProgressSaveController.kt', 'SaveBatchPolicy.kt', 'LanguageRestartController.kt')]
+            fixture_text = FIXTURE
+            if kotlin_midlet.is_file():
+                # Isolate only the two unchanged production override bodies,
+                # just as the previous Java fixture did; peers are not gameplay.
+                fixture_text = re.sub(r'(?m)^class GloftGF2F .*$', '', fixture_text)
+                midlet_peer = folder / 'GloftGF2FKeyPeer.kt'
+                midlet_peer.write_text('package ' + PACKAGE.replace('/', '.') + '\n' +
+                    'import android.view.KeyEvent\nimport javax.microedition.midlet.MIDlet\nimport com.quanhoang.greenfarm3.migration.SaveTransferActivity\n' +
+                    'class GloftGF2F : MIDlet() { fun mj() {}\n' + key_methods + '\n' +
+                    'companion object { @JvmField var acx: GloftGF2F? = null; @JvmField var acw: ci? = null } }',
+                    encoding='utf-8')
+                actual.append(midlet_peer)
+                # The Kotlin ABI field acw exposes ci. Match the production
+                # public engine type rather than an inaccessible peer type.
+                fixture_text, ci_body = fixture_text.split('class ci {', 1)
+                ci_peer = folder / 'ci.java'
+                ci_peer.write_text('package ' + PACKAGE.replace('/', '.') + ';\n' +
+                    'public class ci {' + ci_body + methods + '\n}', encoding='utf-8')
+                peers.append(ci_peer)
+            else:
+                fixture_text = fixture_text.replace('/* ACTUAL_KEY_OVERRIDES */', key_methods) + methods + '\n}'
+            fixture.write_text(fixture_text, encoding='utf-8')
             runner.write_text(RUNNER, encoding='utf-8')
-            actual = [source / name for name in ('ProgressSaveController.java', 'SaveBatchPolicy.java', 'LanguageRestartController.java')]
-            result = subprocess.run([str(javac), '-encoding', 'UTF-8', '-source', '8', '-target', '8',
-                                     '-d', str(folder), *map(str, peers), str(fixture), str(runner), *map(str, actual)],
-                                    capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            result = subprocess.run([str(java), '-cp', str(folder), PACKAGE.replace('/', '.') + '.ProgressSaveChecks'],
+            compile_mixed(actual, [*peers, fixture, runner], folder)
+            result = subprocess.run([str(java), '-cp', runtime_classpath(folder), PACKAGE.replace('/', '.') + '.ProgressSaveChecks'],
                                     capture_output=True, text=True, timeout=20)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn('PASS actual save/language controllers', result.stdout)

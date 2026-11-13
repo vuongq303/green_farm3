@@ -45,15 +45,32 @@ class CoreSourcePackagingTest(unittest.TestCase):
         self.original_hash = build.sha256(self.original.read_bytes())
         patch = mock.patch.object(build, "EXPECTED_APK_SHA256", self.original_hash)
         patch.start(); self.addCleanup(patch.stop)
-        core = ROOT / "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480"
-        selected = {"Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/" + source.stem + ";"
-                    for source in core.glob("*.java") if source.stem != "l" and source.stem not in build.ADDED_CORE_SOURCES}
-        self.assertEqual(len(selected), 108, "Update the reviewed source profile explicitly if its coverage changes")
+        # The fixture represents reviewed merger proof, not real bytecode. Both
+        # language roots are source-owned; l/g now replace their original DEX
+        # implementations, so the reviewed original-core profile is 110.
+        sources = []
+        for language, suffix in (("java", "*.java"), ("kotlin", "*.kt")):
+            for package in ("com/gameloft/android/ANMP/GloftGF2F", "com/quanhoang/greenfarm3"):
+                sources.extend((ROOT / "app/src/main" / language / package / "S800x480").glob(suffix))
+        original_core = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/"
+        binary_names = {"FarmGameEngine": "ci", "FarmEntity": "ch", "GameRuntime": "GLLib"}
+        selected = {original_core + binary_names.get(source.stem, source.stem) + ";" for source in sources
+                    if source.stem not in build.ADDED_CORE_SOURCES}
+        self.assertEqual(len(selected), 110, "Update the reviewed source profile explicitly if its coverage changes")
+        kotlin_classes = {original_core + binary_names.get(source.stem, source.stem) + ";"
+                          for source in sources if source.suffix == ".kt"}
+        for package in ("com/gameloft/android/ANMP/GloftGF2F", "com/quanhoang/greenfarm3"):
+            if (ROOT / "app/src/main/kotlin" / package / "Start.kt").is_file():
+                selected.add("Lcom/gameloft/android/ANMP/GloftGF2F/Start;")
+                kotlin_classes.add("Lcom/gameloft/android/ANMP/GloftGF2F/Start;")
         self.report = {"original_apk_sha256": self.original_hash,
                        "overlay_apk_sha256": build.sha256(self.compiled.read_bytes()),
                        "output_dex_sha256": build.sha256(self.merged.read_bytes()),
                        "original_non_overlay_semantics_verified": True,
                        "compiled_overlay_semantics_verified": True,
+                       "kotlin_compiled_classes": sorted(kotlin_classes),
+                       "kotlin_runtime_class_count": 1,
+                       "kotlin_runtime_classes": ["Lkotlin/jvm/internal/Intrinsics;"],
                        "replaced_classes": sorted(selected),
                        "added_classes": sorted("Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/" + name + ";"
                                                for name in build.ADDED_CORE_SOURCES)}
@@ -134,6 +151,29 @@ class CoreSourcePackagingTest(unittest.TestCase):
         self.report["replaced_classes"].append(helper)
         self.write_report()
         with self.assertRaisesRegex(ValueError, "reviewed progress helper"): self.assemble()
+        self.assertFalse(self.output.exists())
+
+    def test_rejects_missing_kotlin_implementation_proof(self):
+        # A replacement identity alone could still be the old Java/DEX class.
+        # The real merger binds Metadata-bearing compiled definitions to DEX.
+        self.report["kotlin_compiled_classes"].remove(
+            "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GameSaveStore;")
+        self.write_report()
+        with self.assertRaisesRegex(ValueError, "Kotlin"): self.assemble()
+        self.assertFalse(self.output.exists())
+
+    def test_rejects_kotlin_code_without_runtime_proof(self):
+        self.report["kotlin_runtime_class_count"] = 0
+        self.report["kotlin_runtime_classes"] = []
+        self.write_report()
+        with self.assertRaisesRegex(ValueError, "Kotlin runtime"): self.assemble()
+        self.assertFalse(self.output.exists())
+
+    def test_rejects_launcher_without_kotlin_metadata_proof(self):
+        launcher = "Lcom/gameloft/android/ANMP/GloftGF2F/Start;"
+        self.report["kotlin_compiled_classes"].remove(launcher)
+        self.write_report()
+        with self.assertRaisesRegex(ValueError, "Kotlin launcher lacks Kotlin metadata"): self.assemble()
         self.assertFalse(self.output.exists())
 
     def test_rejects_changed_original_apk(self):

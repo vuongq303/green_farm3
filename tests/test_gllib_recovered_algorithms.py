@@ -15,6 +15,9 @@ import subprocess
 import tempfile
 import unittest
 import zipfile
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from kotlin_test_tools import compile_mixed
 
 
 CLASS = "com/gameloft/android/ANMP/GloftGF2F/S800x480/GLLib.class"
@@ -205,11 +208,10 @@ class GLLibRecoveredAlgorithmsTest(unittest.TestCase):
                     output.writestr(entry, data)
             classes = root / "compiled"
             sources = project / "app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480"
-            compile_result = subprocess.run([str(home / "bin/javac"), "-source", "8", "-target", "8",
-                                            "-proc:none", "-sourcepath", "", "-cp", f"{android}{os.pathsep}{view}",
-                                            "-d", str(classes), *[str(sources / f"{name}.java") for name in ("GLLib","bm","bl","GameSaveStore")]],
-                                           capture_output=True, text=True)
-            self.assertEqual(compile_result.returncode, 0, compile_result.stdout + compile_result.stderr)
+            kotlin_sources = project / "app/src/main/kotlin/com/gameloft/android/ANMP/GloftGF2F/S800x480"
+            compile_mixed([kotlin_sources / "GameSaveStore.kt"],
+                          [sources / f"{name}.java" for name in ("GLLib", "bm", "bl")],
+                          classes, classpath=[android, view])
             restored = classes / CLASS
             for label, data in (("original", old_bytes), ("restored", restored.read_bytes())):
                 output = root / label / CLASS

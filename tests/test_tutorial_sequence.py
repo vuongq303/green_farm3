@@ -11,6 +11,9 @@ import tempfile
 import unittest
 
 from test_aa_tile_renderer import extract_method
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from kotlin_test_tools import compile_mixed, runtime_classpath
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
@@ -233,12 +236,9 @@ class TutorialSequenceTest(unittest.TestCase):
             package.mkdir(parents=True)
             main = package / 'ci.java'
             main.write_text(fixture)
-            helper = package / 'TutorialFlowController.java'
-            helper.write_bytes((SOURCE / helper.name).read_bytes())
-            result = subprocess.run([str(javac), '-d', str(directory), str(main), str(helper)],
-                                    capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            result = subprocess.run([str(java), '-cp', str(directory),
+            helper = ROOT / 'app/src/main/kotlin' / PACKAGE / 'TutorialFlowController.kt'
+            compile_mixed([helper], [main], directory)
+            result = subprocess.run([str(java), '-cp', runtime_classpath(directory),
                                      PACKAGE.replace('/', '.') + '.ci'],
                                     capture_output=True, text=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

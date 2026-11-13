@@ -1,0 +1,24 @@
+{
+  "passed": false,
+  "completed_sqlite_checks": null,
+  "normal_player_database_opened": false,
+  "implementation": "production Kotlin compiled from source plus full stdlib in standalone probe DEX",
+  "attempts": [
+    {
+      "prefix": "st_1113_01",
+      "exit_code": 137,
+      "output": "Killed"
+    },
+    {
+      "prefix": "st_1113_02",
+      "exit_code": 137,
+      "output": "SAVE_TRANSFER_PROBE_START\\nKilled"
+    }
+  ],
+  "observed_stage": "Second process printed START then returned137 without PASS. The fixture directories were absent in an early inspection but existed later; the actual termination stage is unconfirmed.",
+  "normal_game_pid_after_attempts": 21432,
+  "normal_game_explicitly_killed_or_reset": false,
+  "cause": "Unconfirmed; exit137 alone does not establish low-memory killer or a SQLite/code failure.",
+  "next": "Run --installed-runtime against the complete installed Kotlin APK, retaining its normal ART/runtime setup.",
+  "not_a_successful_sqlite_or_gameplay_test": true
+}

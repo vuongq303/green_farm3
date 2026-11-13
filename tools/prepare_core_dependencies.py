@@ -19,6 +19,7 @@ import urllib.request
 import zipfile
 
 import make_core_compile_view
+import relocate_compile_view
 from android_build_tools import jdk_tool
 
 
@@ -35,6 +36,8 @@ ADDED_CORE_SOURCES = frozenset({
     'TutorialFlowController', 'MoreGamesRemoval',
 })
 CORE_PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480/'
+TARGET_PACKAGE = 'com/quanhoang/greenfarm3/S800x480/'
+SYMBOL_CLASS_NAMES = {'FarmGameEngine': 'ci', 'FarmEntity': 'ch', 'GameRuntime': 'GLLib'}
 RESOURCE_CLASSES = (
     'com/gameloft/android/ANMP/GloftGF2F/R', 'com/facebook/R',
     'com/google/android/gms/ads/R', 'com/google/android/gms/ads/impl/R',
@@ -185,16 +188,31 @@ def convert_original(apk, tool_dir, cache, java):
 
 
 def source_classes(source_dir, expected_count=CORE_SOURCE_COUNT):
-    paths = sorted(Path(source_dir).glob('*.java'))
+    source_dir = Path(source_dir)
+    directories = [source_dir]
+    if '/java/' in source_dir.as_posix():
+        directories.append(Path(source_dir.as_posix().replace('/java/', '/kotlin/', 1)))
+    paths = sorted(p for directory in directories for pattern in ('*.java', '*.kt')
+                   for p in directory.glob(pattern))
+    if any(p.name == 'g.java' for p in paths):
+        raise ValueError('The original empty g class must remain unless restored by Kotlin')
+    paths = [p for p in paths if p.name != 'l.java']
+    stems = [p.stem for p in paths]
+    if len(stems) != len(set(stems)):
+        raise ValueError('Duplicate Java/Kotlin recovered source identities')
     # New progress helpers have no identity in the pinned original APK. Keep
     # the 108 recovered identities strict and exclude only reviewed additions
     # from this compile-only dependency filtering count.
-    names = {CORE_PACKAGE + path.stem + '.class' for path in paths
-             if path.stem != 'l' and path.stem not in ADDED_CORE_SOURCES}
+    names = {CORE_PACKAGE + SYMBOL_CLASS_NAMES.get(path.stem, path.stem) + '.class' for path in paths
+             if path.stem not in ('l', 'g') and path.stem not in ADDED_CORE_SOURCES}
     if CORE_PACKAGE + 'g.class' in names:
         raise ValueError('The original empty g class must remain a binary dependency')
     if len(names) != expected_count:
         raise ValueError(f'Expected {expected_count} recovered core sources, found {len(names)}')
+    # These formerly DEX-only identities are accepted only with real Kotlin
+    # implementations; the incomplete JADX l.java remains reference material.
+    names.update(CORE_PACKAGE + p.stem + '.class' for p in paths
+                 if p.suffix == '.kt' and p.stem in ('l', 'g'))
     return names
 
 
@@ -236,23 +254,40 @@ def prepare(project_root, original=None, output_dir=None, cache=None, tool_archi
     if java is None:
         java = jdk_tool('java')
     converted, conversion = convert_original(original, tool_dir, cache, java)
-    core = source_classes(root / 'app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480')
+    target_core = root / 'app/src/main/java' / TARGET_PACKAGE
+    relocated = target_core.is_dir()
+    renamed_symbols = (target_core / 'FarmGameEngine.java').is_file()
+    source_dir = target_core if relocated else root / 'app/src/main/java' / CORE_PACKAGE
+    core = source_classes(source_dir)
+    main = root / 'app/src/main'
+    for package in ('com/gameloft/android/ANMP/GloftGF2F', 'com/quanhoang/greenfarm3'):
+        if (main / 'kotlin' / package / 'Start.kt').is_file():
+            core.add('com/gameloft/android/ANMP/GloftGF2F/Start.class')
     output_dir.mkdir(parents=True, exist_ok=True)
     output = output_dir / 'compile-view.jar'
     with tempfile.TemporaryDirectory(prefix='compile-dependencies-', dir=output_dir) as temp:
         filtered = Path(temp) / 'filtered-compiler-input.jar'
         removed = filter_dependencies(converted, filtered, core)
-        view = make_core_compile_view.generate(filtered, output)
+        if relocated:
+            original_view = Path(temp) / 'original-identity-view.jar'
+            view = make_core_compile_view.generate(filtered, original_view)
+            relocation = relocate_compile_view.relocate(original_view, output, renamed_symbols)
+        else:
+            view = make_core_compile_view.generate(filtered, output)
+            relocation = None
     with zipfile.ZipFile(output) as archive:
         names = archive.namelist()
-        if CORE_PACKAGE + 'l.class' not in names or CORE_PACKAGE + 'g.class' not in names:
-            raise ValueError('Compile dependencies lost original l or empty g class')
+        stream_package = TARGET_PACKAGE if relocated else CORE_PACKAGE
+        for stem in ('l', 'g'):
+            if CORE_PACKAGE + stem + '.class' not in core and stream_package + stem + '.class' not in names:
+                raise ValueError('Compile dependencies lost unrecovered stream identity: ' + stem)
         remaining_count = sum(name.endswith('.class') for name in names)
     provenance = {'purpose': 'compile-only; never package this jar in the game',
                   'runtime_source': 'original classes.dex, not converted classfiles',
                   **conversion, 'excluded_core_count': len(core), 'excluded_classes': removed,
                   'compile_class_count': remaining_count,
                   'compile_view_sha256': file_sha256(output), 'compile_view_changes': view['changes']}
+    provenance['package_relocation'] = relocation
     output.with_suffix('.provenance.json').write_text(json.dumps(provenance, indent=2) + '\n')
     print(f'Prepared compile-only dependencies: {output}; {len(core)} core classes excluded, '
           f'{remaining_count} binary class identities retained.')
