@@ -124,7 +124,6 @@ object ProgressSaveController {
         if (!globalLoaded || !ownFarmLoaded || loadBlocked) return
         try {
             GameSaveStore.finishLoading()
-            OfflineTestBalances.onWorldReady()
         } catch (failure: RuntimeException) {
             loadingFailed(failure)
             return
@@ -240,7 +239,6 @@ object ProgressSaveController {
                 retryLoad = false
                 GameSaveStore.reopen()
                 GameSaveStore.finishLoading()
-                OfflineTestBalances.onWorldReady()
                 loadBlocked = false
                 loadError = null
                 worldReady = true
@@ -297,7 +295,6 @@ object ProgressSaveController {
             }
             GameSaveStore.beginCapture(FarmGameEngine.aZB == 0)
             if (FarmGameEngine.aZB == 0) FarmGameEngine.av(false) else FarmGameEngine.rs()
-            OfflineTestBalances.captureGrantMarker()
             val snapshot = GameSaveStore.finishCapture()
             sqliteWriteQueue!!.submit(snapshot, sequence, checkpoint)
             batchPolicy.captured()

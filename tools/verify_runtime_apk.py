@@ -19,7 +19,6 @@ from android_build_tools import BUILD_TOOLS_VERSION, executable_name
 
 LEGACY_PACKAGE = 'com.gameloft.android.ANMP.GloftGF2F'
 APPLICATION_PACKAGE = 'com.quanhoang.greenfarm3'
-OFFLINE_TEST_PACKAGE = APPLICATION_PACKAGE + '.offlinetest'
 GAME = 'L' + LEGACY_PACKAGE.replace('.', '/') + '/'
 REQUIRED = ('Ljavax/microedition/midlet/App;', 'Ljavax/microedition/midlet/MIDlet;',
             GAME + 'Start;', GAME + 'S800x480/GloftGF2F;')
@@ -173,25 +172,12 @@ def manifest(apk, sdk):
     return package, qualify(application['attributes']['name']), qualify(launchers[0])
 
 
-def network_policy(apk, sdk, backend_base_url, offline_test=False):
+def network_policy(apk, sdk, backend_base_url):
     """Inspect the installed artifact's binary manifest, not just source XML."""
     root = manifest_tree(apk, sdk)
     application = next((n for n in root['children'] if n['tag'] == 'application'), None)
     if application is None:
         raise ValueError('Packaged manifest application is missing')
-    if offline_test:
-        # Check all Internet declarations, including limited-SDK declarations.
-        # A debug source manifest alone cannot prove the packaged app is offline.
-        declarations = [n for n in root['children']
-                        if n['tag'] in ('uses-permission', 'uses-permission-sdk-23')
-                        and n['attributes'].get('name') == 'android.permission.INTERNET']
-        if declarations:
-            raise ValueError('Offline test APK must not request android.permission.INTERNET')
-        if application['attributes'].get('debuggable') != 'true':
-            raise ValueError('Offline test profile must be a debug APK')
-        return {'internet_permission': False, 'debuggable': True,
-                'uses_cleartext_traffic': application['attributes'].get('usesCleartextTraffic') == 'true',
-                'offline_test': True}
     attributes = application['attributes']
     internet = any(n['tag'] == 'uses-permission'
                    and n['attributes'].get('name') == 'android.permission.INTERNET'
@@ -262,7 +248,7 @@ def missing_original_components(root, definitions, target_game_package):
 
 
 def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
-               application_id=None, game_package=None, offline_test=False):
+               application_id=None, game_package=None):
     apk, original = Path(apk), Path(original)
     classes, dex_count = {}, 0
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(apk) as output:
@@ -297,10 +283,6 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
             if source.read(name) != output.read(name) or source.getinfo(name).compress_type != output.getinfo(name).compress_type:
                 raise ValueError('Assets/native bytes or compression changed: ' + name)
     package, application, launcher = manifest(apk, sdk)
-    if offline_test and package != OFFLINE_TEST_PACKAGE:
-        raise ValueError('Offline test profile must use its isolated application ID')
-    if package == OFFLINE_TEST_PACKAGE and not offline_test:
-        raise ValueError('Offline test APK requires explicit offline verification mode')
     original_package, original_application, original_launcher = manifest(original, sdk)
     expected_package = application_id or (APPLICATION_PACKAGE if detected_package == APPLICATION_PACKAGE else original_package)
     expected_launcher = original_launcher.replace(LEGACY_PACKAGE, detected_package, 1)
@@ -328,8 +310,8 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
               'dex_count': dex_count, 'class_count': len(classes), 'payload_count': len(names),
               'game_package': detected_package,
               'legacy_game_class_definitions_remaining': sum(name.startswith(GAME) for name in classes)}
-    if backend_base_url or offline_test:
-        result['network_policy'] = network_policy(apk, sdk, backend_base_url, offline_test)
+    if backend_base_url:
+        result['network_policy'] = network_policy(apk, sdk, backend_base_url)
         with zipfile.ZipFile(original) as reference:
             original_definitions = {name for entry in reference.namelist() if DEX_NAME.fullmatch(entry)
                                     for name in dex_classes(reference.read(entry))}
@@ -345,12 +327,11 @@ def main():
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--metadata', type=Path)
     parser.add_argument('--backend-base-url')
-    parser.add_argument('--application-id', choices=(LEGACY_PACKAGE, APPLICATION_PACKAGE, OFFLINE_TEST_PACKAGE))
+    parser.add_argument('--application-id', choices=(LEGACY_PACKAGE, APPLICATION_PACKAGE))
     parser.add_argument('--game-package', choices=(LEGACY_PACKAGE, APPLICATION_PACKAGE))
-    parser.add_argument('--offline-test', action='store_true')
     args = parser.parse_args()
     print(json.dumps(verify_apk(args.apk, args.original, args.sdk, args.metadata, args.backend_base_url,
-                              args.application_id, args.game_package, args.offline_test), indent=2))
+                              args.application_id, args.game_package), indent=2))
 
 
 if __name__ == '__main__':

@@ -67,9 +67,6 @@ def assemble(original, compiled, merged_dex, output):
         return descriptor
     kotlin_expected = {original_core + binary_names.get(name, name) + ';' for name in kotlin_names}
     kotlin_actual = {normalized_kotlin_name(name) for name in report.get('kotlin_compiled_classes', [])}
-    generated_config = original_core + 'OfflineTestConfig;'
-    if generated_config not in kotlin_actual or generated_config not in set(report.get('added_classes', [])):
-        raise ValueError('Generated offline test configuration must be compiled Kotlin in the source overlay')
     if not kotlin_expected.issubset(kotlin_actual):
         raise ValueError('A selected Kotlin implementation lacks Kotlin metadata in the compiled DEX: '
                          + ', '.join(sorted(kotlin_expected - kotlin_actual)))

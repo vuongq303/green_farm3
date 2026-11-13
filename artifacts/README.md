@@ -1,20 +1,5 @@
 # APK debug và chuyển save
 
-[Tải APK kiểm thử offline riêng](green-farm-3-offline-test.apk):
-**Green Farm 3 Offline Test**, package `com.quanhoang.greenfarm3.offlinetest`.
-Bản này tạm dừng đăng nhập/server của game và không có quyền Internet. Farm test
-được cấp một lần **9.999.999 xu, 9.999.999 cash và level 50**; tiêu tiền và lưu
-theo cơ chế bình thường, không tự nạp lại sau mỗi lần mở. Không cấp thêm vật phẩm.
-Ứng dụng test có dữ liệu riêng, không thay thế hoặc đọc save của bản thường.
-Xem [cách build](../docs/OFFLINE_TEST_BUILD.md),
-[chi tiết số dư/level](../docs/OFFLINE_TEST_BALANCES.md) và
-[metadata/checksum APK](offline-test-build-info.json).
-
-Đã thử đúng APK này trên emulator API 28 với toàn bộ mạng tắt: vào farm, thu
-hoạch, gieo lúa trừ 10 xu và mở lại hai lần giữ đúng cây, số dư cùng level 50,
-không ghi nhận FATAL. Chi tiêu cash qua UI, thiết bị thật, Android mới và toàn bộ
-chuỗi nhiệm vụ chưa kiểm chứng. [Bằng chứng](../docs/offline-test-validation/runtime/index.json).
-
 [Tải game mới: green-farm-3-debug.apk](green-farm-3-debug.apk) — application ID
 **com.quanhoang.greenfarm3**, khoảng15,8MB, version4.4.2. Đây là APK hoàn chỉnh
 của module **app**, nguồn thực thi checkpoint `1064add`.

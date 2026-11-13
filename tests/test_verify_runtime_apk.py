@@ -172,15 +172,6 @@ class RuntimeApkTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "manifest"):
                 self.check()
 
-    def test_offline_mode_and_isolated_identity_are_both_required(self):
-        with self.assertRaisesRegex(ValueError, "isolated application ID"):
-            self.check(offline_test=True)
-        with mock.patch.object(verify, "manifest", return_value=(
-                verify.OFFLINE_TEST_PACKAGE, "javax.microedition.midlet.App",
-                "com.quanhoang.greenfarm3.Start")):
-            with self.assertRaisesRegex(ValueError, "explicit offline verification mode"):
-                self.check(application_id=verify.OFFLINE_TEST_PACKAGE)
-
 
 class ActualApkTest(unittest.TestCase):
     def test_incomplete_agp_carrier_rejected_and_complete_app_passes(self):
@@ -192,9 +183,7 @@ class ActualApkTest(unittest.TestCase):
             self.skipTest("Build carrier and complete local APK, and supply Android SDK")
         with self.assertRaisesRegex(ValueError, "App"):
             verify.verify_apk(carrier, original, sdk)
-        package = verify.manifest(complete, sdk)[0]
-        offline = package == verify.OFFLINE_TEST_PACKAGE
-        verify.verify_apk(complete, original, sdk, application_id=package, offline_test=offline)
+        verify.verify_apk(complete, original, sdk)
 
 
 class NetworkPolicyTest(unittest.TestCase):
@@ -223,23 +212,6 @@ class NetworkPolicyTest(unittest.TestCase):
             with self.subTest(changes=changes), mock.patch.object(verify, 'manifest_tree', return_value=self.tree(**changes)):
                 with self.assertRaises(ValueError):
                     verify.network_policy('final.apk', 'sdk', self.BASE)
-
-    def test_offline_policy_requires_no_internet_declaration_even_limited_sdk(self):
-        tree = self.tree(internet=False, cleartext='false')
-        with mock.patch.object(verify, 'manifest_tree', return_value=tree):
-            result = verify.network_policy('test.apk', 'sdk', None, offline_test=True)
-        self.assertFalse(result['internet_permission'])
-        self.assertTrue(result['offline_test'])
-        for tag in ('uses-permission', 'uses-permission-sdk-23'):
-            broken = self.tree(internet=False)
-            broken['children'].append({'tag': tag, 'attributes': {
-                'name': 'android.permission.INTERNET', 'maxSdkVersion': '23'}})
-            with self.subTest(tag=tag), mock.patch.object(verify, 'manifest_tree', return_value=broken):
-                with self.assertRaisesRegex(ValueError, 'must not request'):
-                    verify.network_policy('test.apk', 'sdk', None, offline_test=True)
-        with mock.patch.object(verify, 'manifest_tree', return_value=self.tree(internet=False, debuggable='false')):
-            with self.assertRaisesRegex(ValueError, 'debug'):
-                verify.network_policy('test.apk', 'sdk', None, offline_test=True)
 
     def test_binary_xml_dump_parser_retains_boolean_policy_attributes(self):
         dump = '''E: manifest (line=1)

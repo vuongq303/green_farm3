@@ -94,11 +94,6 @@ ANDROID = {
 
 FIXTURE = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 import java.util.*;import android.view.KeyEvent;
-// This fixture exercises normal-mode save sequencing; the real isolated grant
-// and protected fields are exercised by test_offline_test_balances.py.
-class OfflineTestBalances {
- static void onWorldReady(){} static void captureGrantMarker(){}
-}
 class GameSaveStore {
  static final int STATUS_FAILED=3;static boolean ready,loading,failFinish,failInitialize,failReopen;
  static int initializes,reopens,begins,logicalLanguage,durableLanguage,durableCredits,durablePending,applies;

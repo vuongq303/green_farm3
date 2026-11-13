@@ -16888,9 +16888,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void Ml() {
-        // CRM config is advertising/service configuration, not the local farm
-        // records. Its SDK wait must not block the deliberately offline APK.
-        if (OfflineTestConfig.enabled()) return;
         String lowerCase = GloftGF2F.acw.dr(aYU).toLowerCase();
         if (lowerCase.indexOf("kr") != -1) {
             lowerCase = "ko";
@@ -16963,7 +16960,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void Mn() {
-        if (OfflineTestConfig.enabled()) return;
         if (!com.gameloft.a.a.o.VW().VY()) {
             try {
                 Ml();
@@ -35279,9 +35275,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void jn() {
-        // Follow the existing non-federation startup route. Do not create an
-        // anonymous server session or manufacture an authenticated result.
-        if (OfflineTestConfig.enabled()) return;
         if (aps) {
             return;
         }
@@ -41536,7 +41529,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static boolean qO() {
-        if (OfflineTestConfig.enabled()) return false;
         return bx("isConnectedMobile") || bx("isConnectedWifi");
     }
 
@@ -50969,10 +50961,8 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if (i == 0) {
             bc(true);
             kX();
-            if (!OfflineTestConfig.enabled()) {
-                com.gameloft.android2d.iap.b.eD("anonymous:" + iY());
-                s.aK("eveListDataCenters");
-            }
+            com.gameloft.android2d.iap.b.eD("anonymous:" + iY());
+            s.aK("eveListDataCenters");
             if (axu == null) {
                 axu = new int[10];
                 axu[0] = ih(10);
@@ -52577,16 +52567,14 @@ public final class FarmGameEngine extends GameRuntime implements av {
         } else {
             GameRuntime.Rm.setSeed(j);
         }
-        if (!OfflineTestConfig.enabled()) {
-            jn();
-            s.aK("eveListDataCenters");
-            if (baf == null && rj() != null) {
-                String strBY = GloftGF2F.acx.bY("IAP-GameCodeIGP");
-                String str = "Tam debug============================" + rj() + "hhhhh";
-                baf = com.gameloft.android2d.d.b.i("1557:53118:4.4.2:android:googleplay", strBY, "anonymous:" + s.iY(), m.iy(), rj());
-                com.gameloft.android.wrapper.ag.OnResume();
-                Kv();
-            }
+        jn();
+        s.aK("eveListDataCenters");
+        if (baf == null && rj() != null) {
+            String strBY = GloftGF2F.acx.bY("IAP-GameCodeIGP");
+            String str = "Tam debug============================" + rj() + "hhhhh";
+            baf = com.gameloft.android2d.d.b.i("1557:53118:4.4.2:android:googleplay", strBY, "anonymous:" + s.iY(), m.iy(), rj());
+            com.gameloft.android.wrapper.ag.OnResume();
+            Kv();
         }
         bas = 0;
         as.Init();
@@ -63088,7 +63076,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if ((baI != null || arf) && currentEngineState() != 20 && currentEngineState() >= 4 && Long.parseLong(baI) < 1) {
             F(47, 48, 7, 0);
         }
-        if (!OfflineTestConfig.enabled()) ah.mg();
+        ah.mg();
         if (qN() && bt.nY() && !arj) {
             arj = true;
             new Thread(new cm()).start();
@@ -63110,7 +63098,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 apy = false;
             }
         }
-        if (!OfflineTestConfig.enabled()) qQ();
+        qQ();
         if (currentEngineState() >= 18) {
             Mq();
         }
@@ -63534,7 +63522,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void xi() {
-        if (OfflineSession.rejectOnlineAction()) return;
         boolean z = true;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (!qN() || strBY == null || strBY.equals("off")) {
@@ -63992,9 +63979,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
             jCurrentTimeMillis7 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         GameRuntime.r(sbAppend2.append(jCurrentTimeMillis7 - jCurrentTimeMillis2).append(" ms").toString());
-        // Service/privacy refresh, CRM, advertising and IAP SDK work is
-        // intentionally paused only in the separate local test application.
-        if (!OfflineTestConfig.enabled()) {
         int iQD = currentEngineState();
         if (com.gameloft.a.b.a.fZ() && Lc() && aTY && iQD != 4 && iQD != 2 && aUb) {
             com.gameloft.a.b.i iVarWv = com.gameloft.a.b.i.Wv();
@@ -64083,7 +64067,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
         com.gameloft.a.a.k.VR().a(new ck(this));
         if (currentEngineState() > 7 && aUb && !aYF) {
             Mo();
-        }
         }
         if (FC() >= 3 && currentEngineState() == 18 && !aYu) {
             fE(65);
@@ -67133,9 +67116,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void aZ(boolean z) {
-        // ProgressSaveController still captures all local gameplay records.
-        // Suspend only the online backup; preserve the original local container.
-        if (OfflineTestConfig.enabled() && z) return;
         if (aCD) {
             if (!z || (qN() && arg)) {
                 if (rv() == null) {

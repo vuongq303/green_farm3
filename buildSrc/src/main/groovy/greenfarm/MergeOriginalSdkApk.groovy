@@ -110,9 +110,6 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
     @Input
     abstract Property<String> getGamePackage()
 
-    @Input
-    abstract Property<Boolean> getOfflineMode()
-
     @Internal
     abstract DirectoryProperty getProjectDirectory()
 
@@ -200,12 +197,10 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
             if (!output.isFile()) {
                 throw new GradleException('The complete APK was not produced: ' + output)
             }
-            List<Object> verificationArguments = ['--apk', output,
+            runPython('verify_runtime_apk.py', '--apk', output,
                     '--original', original, '--sdk', sdkDirectory.get().asFile,
                     '--backend-base-url', endpoint, '--application-id', applicationId.get(),
-                    '--game-package', gamePackage.get()]
-            if (offlineMode.get()) verificationArguments.add('--offline-test')
-            runPython('verify_runtime_apk.py', *verificationArguments)
+                    '--game-package', gamePackage.get())
             return output
         }
     }
