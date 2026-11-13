@@ -59,6 +59,7 @@ class CoreSourcePackagingTest(unittest.TestCase):
         self.assertEqual(len(selected), 110, "Update the reviewed source profile explicitly if its coverage changes")
         kotlin_classes = {original_core + binary_names.get(source.stem, source.stem) + ";"
                           for source in sources if source.suffix == ".kt"}
+        kotlin_classes.add(original_core + 'OfflineTestConfig;')
         for package in ("com/gameloft/android/ANMP/GloftGF2F", "com/quanhoang/greenfarm3"):
             if (ROOT / "app/src/main/kotlin" / package / "Start.kt").is_file():
                 selected.add("Lcom/gameloft/android/ANMP/GloftGF2F/Start;")
@@ -161,6 +162,18 @@ class CoreSourcePackagingTest(unittest.TestCase):
         self.write_report()
         with self.assertRaisesRegex(ValueError, "Kotlin"): self.assemble()
         self.assertFalse(self.output.exists())
+
+    def test_generated_profile_must_be_a_compiled_kotlin_addition(self):
+        configuration = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/OfflineTestConfig;"
+        for field in ("added_classes", "kotlin_compiled_classes"):
+            with self.subTest(field=field):
+                self.report[field].remove(configuration)
+                self.write_report()
+                with self.assertRaisesRegex(ValueError, "Generated offline test configuration"):
+                    self.assemble()
+                self.assertFalse(self.output.exists())
+                self.report[field].append(configuration)
+        self.write_report()
 
     def test_rejects_kotlin_code_without_runtime_proof(self):
         self.report["kotlin_runtime_class_count"] = 0

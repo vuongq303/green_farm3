@@ -94,6 +94,11 @@ public final class PackageRelocationOracle {
   check(providerStrings.equals(Arrays.asList("content://"+RelocateGamePackage.OLD_PACKAGE+".KeyProvider/key",RelocateGamePackage.OLD_PACKAGE+".KeyProvider")),"legacy bridge keeps only its authority/URI");
   check(bridgeProvider.getType().equals(NEW+"KeyProvider;"),"bridge provider class still uses new namespace");
   check(Arrays.equals(RelocateGamePackage.semanticBytes(Collections.singletonList(mainProvider),OPS),RelocateGamePackage.semanticBytes(Collections.singletonList(RelocateGamePackage.providerIdentity(bridgeProvider,false)),OPS)),"provider policy inverse proof");
+  ClassDef offlineProvider=RelocateGamePackage.providerIdentity(mainProvider,RelocateGamePackage.NEW_PACKAGE,RelocateGamePackage.OFFLINE_PACKAGE);
+  List<String> offlineStrings=new ArrayList<>();for(Method m:offlineProvider.getMethods())for(Instruction i:m.getImplementation().getInstructions())if(i instanceof ReferenceInstruction)offlineStrings.add(((StringReference)((ReferenceInstruction)i).getReference()).getString());
+  check(offlineStrings.equals(Arrays.asList("content://"+RelocateGamePackage.OFFLINE_PACKAGE+".KeyProvider/key",RelocateGamePackage.OFFLINE_PACKAGE+".KeyProvider")),"offline app provider URI follows isolated application ID");
+  check(offlineProvider.getType().equals(NEW+"KeyProvider;"),"offline provider code namespace unchanged");
+  check(Arrays.equals(RelocateGamePackage.semanticBytes(Collections.singletonList(mainProvider),OPS),RelocateGamePackage.semanticBytes(Collections.singletonList(RelocateGamePackage.providerIdentity(offlineProvider,RelocateGamePackage.OFFLINE_PACKAGE,RelocateGamePackage.NEW_PACKAGE)),OPS)),"offline provider policy inverse proof");
   for(ClassDef invalid:Arrays.asList(provider(0,true,"<clinit>"),provider(2,true,"<clinit>"),provider(1,false,"<clinit>"),provider(1,true,"otherMethod"))){
    try{RelocateGamePackage.providerIdentity(invalid,true);throw new AssertionError("unreviewed provider literal site accepted");}catch(java.io.IOException expected){}
   }

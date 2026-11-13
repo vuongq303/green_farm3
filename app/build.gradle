@@ -33,9 +33,56 @@ def legacyExport = providers.gradleProperty('greenfarmLegacyExport').map { value
         default: throw new GradleException('greenfarmLegacyExport must be true or false')
     }
 }.orElse(false)
+def offlineTest = providers.gradleProperty('greenfarmOfflineTest').map { value ->
+    switch (value.toLowerCase(Locale.ROOT)) {
+        case 'true': return true
+        case 'false': return false
+        default: throw new GradleException('greenfarmOfflineTest must be true or false')
+    }
+}.orElse(false)
+if (legacyExport.get() && offlineTest.get()) {
+    throw new GradleException('greenfarmOfflineTest cannot be combined with greenfarmLegacyExport')
+}
 // Export bridge updates the installed old app with its existing signing key.
-// Both builds run the same source classes under the new internal namespace.
-def resolvedApplicationId = legacyExport.get() ? legacyApplicationId : gameNamespace
+// All profiles run the same source classes under the new internal namespace.
+def resolvedApplicationId = offlineTest.get() ? gameNamespace + '.offlinetest' :
+        (legacyExport.get() ? legacyApplicationId : gameNamespace)
+def generatedTestProfile = layout.buildDirectory.dir('generated/test-profile')
+
+// Only immutable build configuration is generated. Runtime/game implementations
+// remain reviewable Kotlin source and are never supplied by compile-only stubs.
+def generateTestProfile = tasks.register('generateTestProfile') {
+    inputs.property('offlineTest', offlineTest)
+    inputs.file('src/debug/AndroidManifest.xml')
+    outputs.dir(generatedTestProfile)
+    doLast {
+        File root = generatedTestProfile.get().asFile
+        File config = new File(root, 'kotlin/com/quanhoang/greenfarm3/S800x480/OfflineTestConfig.kt')
+        config.parentFile.mkdirs()
+        config.text = """package com.quanhoang.greenfarm3.S800x480
+class OfflineTestConfig private constructor() {
+    companion object {
+        const val ENABLED: Boolean = ${offlineTest.get()}
+        @JvmStatic fun enabled(): Boolean = ENABLED
+    }
+}
+"""
+        File manifest = new File(root, 'AndroidManifest.xml')
+        String network = offlineTest.get() ? '''
+    <uses-permission android:name="android.permission.INTERNET" tools:node="remove"/>
+    <uses-permission-sdk-23 android:name="android.permission.INTERNET" tools:node="remove"/>''' : ''
+        String policy = file('src/debug/AndroidManifest.xml').getText('UTF-8')
+        if (offlineTest.get()) {
+            String cleartext = 'android:usesCleartextTraffic="true"'
+            if (policy.count(cleartext) != 1 || policy.count('<application') != 1) {
+                throw new GradleException('Debug manifest must have one reviewed cleartext policy/application')
+            }
+            policy = policy.replace(cleartext, 'android:usesCleartextTraffic="false"')
+                    .replace('<application', network + '\n    <application')
+        }
+        manifest.setText(policy, 'UTF-8')
+    }
+}
 
 // JADX Java/resources are UTF-8 regardless of the Windows system code page.
 tasks.withType(Exec).configureEach {
@@ -69,14 +116,16 @@ android {
             // Unrecovered SDK/runtime classes still come from original DEX.
             java.srcDirs = [layout.buildDirectory.dir('generated/core-java')]
             // Keep JADX's unselected Java files out of the Kotlin source lookup.
-            kotlin.srcDirs = ['src/main/kotlin']
+            kotlin.srcDirs = ['src/main/kotlin', generatedTestProfile.map { it.dir('kotlin') }]
             res.srcDirs = [layout.buildDirectory.dir('generated/restored-res')]
             jniLibs.srcDirs = ['src/main/lib']
         }
+        debug { manifest.srcFile(generatedTestProfile.map { it.file('AndroidManifest.xml') }) }
     }
 
     defaultConfig {
         applicationId resolvedApplicationId
+        manifestPlaceholders = [greenFarmAppLabel: offlineTest.get() ? 'Green Farm 3 Offline Test' : '@string/MIDlet_Name']
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 44220
@@ -199,13 +248,16 @@ dependencies {
 }
 
 tasks.named('preBuild') {
-    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds
+    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds, generateTestProfile
+}
+tasks.matching { it.name == 'compileDebugKotlin' || it.name.startsWith('processDebug') }.configureEach {
+    dependsOn generateTestProfile
 }
 
 // Android Studio executes this native setup task after model sync. Populate
 // its generated source/resource roots and lookup-only jar on a clean checkout.
 tasks.matching { it.name == 'generateDebugSources' }.configureEach {
-    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds
+    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds, generateTestProfile
 }
 
 tasks.matching { it.name == 'validateSigningDebug' }.configureEach {
@@ -241,6 +293,7 @@ androidComponents {
             backendUrl.set(backendBaseUrl)
             applicationId.set(variant.applicationId)
             gamePackage.set(gameNamespace)
+            offlineMode.set(offlineTest)
             mergeToolClasspath.from(configurations.dexMergeTool,
                     compileDexMergeTool.flatMap { it.destinationDirectory })
             // Rebuild only this project's classfiles at its declared minSdk.
