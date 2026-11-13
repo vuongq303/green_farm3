@@ -1,0 +1,20 @@
+{
+  "default": {
+    "passed": true,
+    "enabled": false
+  },
+  "explicit_true": {
+    "passed": true,
+    "enabled": true
+  },
+  "invalid_value": {
+    "passed": true,
+    "rejected": true,
+    "expected_error": "greenfarmOfflineTest must be true or false"
+  },
+  "conflicting_profiles": {
+    "passed": true,
+    "rejected": true,
+    "expected_error": "greenfarmOfflineTest cannot be combined with greenfarmLegacyExport"
+  }
+}

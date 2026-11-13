@@ -9,7 +9,7 @@
         android:xlargeScreens="true"/>
     <application
         android:theme="@style/Theme.wrapper.black.notitlebar.fullscreen"
-        android:label="@string/MIDlet_Name"
+        android:label="${greenFarmAppLabel}"
         android:icon="@mipmap/ic_launcher"
         android:name="javax.microedition.midlet.App"
         android:debuggable="false"
@@ -25,7 +25,7 @@
             android:name="com.quanhoang.greenfarm3.migration.SaveTransferPreparationReceiver"
             android:exported="false"/>
         <activity
-            android:label="@string/MIDlet_Name"
+            android:label="${greenFarmAppLabel}"
             android:name="com.quanhoang.greenfarm3.Start"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"

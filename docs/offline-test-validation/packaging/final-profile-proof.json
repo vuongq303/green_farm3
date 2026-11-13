@@ -1,0 +1,11 @@
+{
+  "final_dex_config_enabled": true,
+  "final_dex_coins_and_cash_initial": 9999999,
+  "final_dex_player_level": 50,
+  "signature_v1_v2_v3_verified": true,
+  "normal_artifacts_unchanged": {
+    "artifacts/green-farm-3-debug.apk": "233a37af49e2e91afb5bbda1cef0a83f338e8b384ce47e4f5445913834be9201",
+    "artifacts/green-farm-3-legacy-export-debug.apk": "bbe0aecf66cf7d1fd7b394fd3f2f17c9388ee9df478f4d4dd7deeb320882d2d1"
+  },
+  "backend_base_url_unchanged": "http://10.37.233.55:8787/"
+}

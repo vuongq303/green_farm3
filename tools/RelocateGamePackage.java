@@ -67,6 +67,7 @@ import org.jf.dexlib2.writer.pool.DexPool;
 public final class RelocateGamePackage {
     public static final String OLD_PACKAGE = "com.gameloft.android.ANMP.GloftGF2F";
     public static final String NEW_PACKAGE = "com.quanhoang.greenfarm3";
+    public static final String OFFLINE_PACKAGE = NEW_PACKAGE + ".offlinetest";
     public static final String OLD_INTERNAL = OLD_PACKAGE.replace('.', '/');
     public static final String NEW_INTERNAL = NEW_PACKAGE.replace('.', '/');
     private RelocateGamePackage() {}
@@ -331,8 +332,14 @@ public final class RelocateGamePackage {
     static ClassDef providerIdentity(ClassDef definition, boolean toLegacy) throws IOException {
         String owner = "L" + NEW_INTERNAL + "/KeyProvider;";
         if (!definition.getType().equals(owner)) throw new IOException("Expected relocated KeyProvider class");
-        String before = toLegacy ? NEW_PACKAGE : OLD_PACKAGE;
-        String after = toLegacy ? OLD_PACKAGE : NEW_PACKAGE;
+        return providerIdentity(definition, toLegacy ? NEW_PACKAGE : OLD_PACKAGE,
+                toLegacy ? OLD_PACKAGE : NEW_PACKAGE);
+    }
+
+    /** Retarget only the reviewed URI data; the provider class stays in the code namespace. */
+    static ClassDef providerIdentity(ClassDef definition, String before, String after) throws IOException {
+        String owner = "L" + NEW_INTERNAL + "/KeyProvider;";
+        if (!definition.getType().equals(owner)) throw new IOException("Expected relocated KeyProvider class");
         String beforeAuthority = before + ".KeyProvider", afterAuthority = after + ".KeyProvider";
         String beforeUri = "content://" + beforeAuthority + "/key", afterUri = "content://" + afterAuthority + "/key";
         int initializerCount = 0, authorityCount = 0, uriCount = 0;
@@ -385,7 +392,7 @@ public final class RelocateGamePackage {
     }
 
     public static void main(String[] args) throws Exception {
-        String usage = "Usage: RelocateGamePackage input.dex output.dex [--rename-symbols] [--application-id old|new-package]";
+        String usage = "Usage: RelocateGamePackage input.dex output.dex [--rename-symbols] [--application-id old|new|offline-test-package]";
         if (args.length < 2) throw new IllegalArgumentException(usage);
         boolean renameSymbols = false, applicationIdSet = false;
         String applicationId = NEW_PACKAGE;
@@ -393,12 +400,13 @@ public final class RelocateGamePackage {
             if (args[index].equals("--rename-symbols") && !renameSymbols) renameSymbols = true;
             else if (args[index].equals("--application-id") && !applicationIdSet && index + 1 < args.length) {
                 applicationId = args[++index]; applicationIdSet = true;
-                if (!applicationId.equals(OLD_PACKAGE) && !applicationId.equals(NEW_PACKAGE)) {
-                    throw new IllegalArgumentException("Application ID must be the reviewed original or new game ID");
+                if (!applicationId.equals(OLD_PACKAGE) && !applicationId.equals(NEW_PACKAGE)
+                        && !applicationId.equals(OFFLINE_PACKAGE)) {
+                    throw new IllegalArgumentException("Application ID must be the reviewed original, new or offline test game ID");
                 }
             } else throw new IllegalArgumentException(usage);
         }
-        boolean legacyBridge = applicationId.equals(OLD_PACKAGE);
+        boolean customProviderIdentity = !applicationId.equals(NEW_PACKAGE);
         Path input = Paths.get(args[0]).toRealPath();
         Path output = Paths.get(args[1]).toAbsolutePath().normalize();
         Path report = output.resolveSibling(output.getFileName() + ".json");
@@ -422,9 +430,9 @@ public final class RelocateGamePackage {
         Map<String, ClassDef> relocated = rewriteClasses(original.values(), false, renameSymbols);
         String providerOwner = "L" + NEW_INTERNAL + "/KeyProvider;";
         ClassDef expectedProvider = relocated.get(providerOwner);
-        if (legacyBridge) {
-            if (expectedProvider == null) throw new IOException("Legacy export bridge needs the original KeyProvider definition");
-            relocated.put(providerOwner, providerIdentity(expectedProvider, true));
+        if (customProviderIdentity) {
+            if (expectedProvider == null) throw new IOException("Alternate application ID needs the original KeyProvider definition");
+            relocated.put(providerOwner, providerIdentity(expectedProvider, NEW_PACKAGE, applicationId));
         }
         byte[] outputBytes = serialize(relocated.values(), opcodes);
         Map<String, ClassDef> actual = readClasses(outputBytes, opcodes);
@@ -439,8 +447,8 @@ public final class RelocateGamePackage {
             }
         }
         Map<String, ClassDef> inverseInput = new TreeMap<>(actual);
-        if (legacyBridge) {
-            ClassDef restoredProvider = providerIdentity(actual.get(providerOwner), false);
+        if (customProviderIdentity) {
+            ClassDef restoredProvider = providerIdentity(actual.get(providerOwner), applicationId, NEW_PACKAGE);
             if (!Arrays.equals(semanticBytes(java.util.Collections.singletonList(expectedProvider), opcodes),
                     semanticBytes(java.util.Collections.singletonList(restoredProvider), opcodes))) {
                 throw new IOException("Reversing the two provider literals changed other KeyProvider semantics");
@@ -450,7 +458,7 @@ public final class RelocateGamePackage {
             Map<String, ClassDef> actualOthers = new TreeMap<>(actual);
             expectedOthers.remove(providerOwner); actualOthers.remove(providerOwner);
             if (!Arrays.equals(semanticBytes(expectedOthers.values(), opcodes), semanticBytes(actualOthers.values(), opcodes))) {
-                throw new IOException("Legacy provider identity policy changed another class");
+                throw new IOException("Alternate provider identity policy changed another class");
             }
         }
         byte[] canonicalOriginal = semanticBytes(original.values(), opcodes);
@@ -478,10 +486,10 @@ public final class RelocateGamePackage {
                 + "  \"game_symbols_renamed\": " + renameSymbols + ",\n"
                 + "  \"class_name_mapping\": " + mappingJson(renameSymbols ? classNameMapping() : new TreeMap<>()) + ",\n"
                 + "  \"member_name_mapping\": " + mappingJson(renameSymbols ? memberNameMapping() : new TreeMap<>()) + ",\n"
-                + "  \"provider_identity_compatibility_exceptions\": " + (legacyBridge
+                + "  \"provider_identity_compatibility_exceptions\": " + (customProviderIdentity
                         ? "[{\"class\":" + quote(providerOwner) + ",\"method\":\"<clinit>()V\",\"literal_replacements\":2,"
-                          + "\"authority\":" + quote(OLD_PACKAGE + ".KeyProvider") + ",\"uri\":"
-                          + quote("content://" + OLD_PACKAGE + ".KeyProvider/key") + ",\"reverse_policy_semantics_verified\":true,\"other_classes_unchanged_verified\":true}]"
+                          + "\"authority\":" + quote(applicationId + ".KeyProvider") + ",\"uri\":"
+                          + quote("content://" + applicationId + ".KeyProvider/key") + ",\"reverse_policy_semantics_verified\":true,\"other_classes_unchanged_verified\":true}]"
                         : "[]") + ",\n"
                 + "  \"input_canonical_sha256\": " + quote(sha256(canonicalOriginal)) + ",\n"
                 + "  \"migration_identity_literal_exception_owners\": [" + String.join(", ", preserved) + "]\n}\n";

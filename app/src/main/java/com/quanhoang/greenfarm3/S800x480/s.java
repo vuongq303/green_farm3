@@ -757,6 +757,7 @@ public class s {
     }
 
     public static void aK(String str) {
+        if (OfflineTestConfig.enabled()) return;
         Mz = str;
         Mw = 0;
         My = new am(false);
@@ -2083,6 +2084,9 @@ public class s {
     }
 
     public static void ae(boolean z) {
+        // Keep queued federation requests dormant in the offline test build;
+        // do not emit success callbacks or install a fabricated session.
+        if (OfflineTestConfig.enabled()) return;
         byte[] bArrOj;
         String strIT;
         if (Mw != -1 && (strIT = iT()) != null) {
@@ -2597,6 +2601,7 @@ public class s {
     }
 
     public static void aS(String str) {
+        if (OfflineTestConfig.enabled()) return;
         if (!fZ()) {
             if (!jb()) {
                 jc();
@@ -2640,7 +2645,7 @@ public class s {
     }
 
     public static boolean jp() {
-        return w.XY;
+        return !OfflineTestConfig.enabled() && w.XY;
     }
 
     public static void jq() {
