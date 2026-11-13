@@ -102,3 +102,13 @@ Gloft/refactor đạt 9/9; reward/pose/model đạt 4/4 sau rename.
 
 Tên chưa đủ bằng chứng vẫn giữ và được liệt kê trong inventory/mapping; không
 tuyên bố toàn bộ 72 nghìn dòng engine đã được đặt tên hoặc chuyển Kotlin.
+
+## Bảo toàn database khi chuyển save
+
+Các đường mở database của migration dùng `DatabaseErrorHandler` không xóa file,
+giống nguyên tắc đã có ở GameSaveStore. Handler mặc định Android có thể xóa DB
+khi phát hiện hỏng; exporter/importer nay từ chối và giữ nguyên dữ liệu để phục
+hồi. Fixture Android thực tế đã kiểm chứng bytes file hỏng không bị đổi/xóa khi
+xuất, nhập hoặc lookup binding; target hợp lệ khác vẫn giữ nguyên.
+[30/30 ca source/SQLite](kotlin-validation/save-transfer-source-sqlite.json) đạt.
+Chưa coi đó là xuất/nhập qua giao diện hoặc probe từ APK được cài đặt.

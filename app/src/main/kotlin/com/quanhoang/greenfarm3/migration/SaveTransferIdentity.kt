@@ -1,7 +1,9 @@
 package com.quanhoang.greenfarm3.migration
 
 import android.content.Context
+import android.database.DatabaseErrorHandler
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteDatabaseCorruptException
 import java.security.MessageDigest
 
 /** A user-approved imported record may retain its original binding without changing SDK authentication. */
@@ -9,6 +11,9 @@ object SaveTransferIdentity {
     @Volatile private var context: Context? = null
     @Volatile private var checked = false
     @Volatile private var importedBinding: String? = null
+    private val preserveCorruptDatabase = DatabaseErrorHandler {
+        throw SQLiteDatabaseCorruptException("Không thể đọc định danh bản lưu bị hỏng; dữ liệu được giữ nguyên.")
+    }
 
     @JvmStatic @Synchronized fun initialize(supplied: Context) {
         val application = supplied.applicationContext ?: supplied
@@ -35,7 +40,7 @@ object SaveTransferIdentity {
         val supplied = context ?: return null
         val path = supplied.getDatabasePath(SaveArchive.DATABASE_NAME)
         if (!path.isFile) return null
-        val db = SQLiteDatabase.openDatabase(path.absolutePath, null, SQLiteDatabase.OPEN_READONLY)
+        val db = SQLiteDatabase.openDatabase(path.absolutePath, null, SQLiteDatabase.OPEN_READONLY, preserveCorruptDatabase)
         try {
             db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='save_transfer_identity'", null).use {
                 if (!it.moveToFirst()) return null

@@ -2,7 +2,9 @@ package com.quanhoang.greenfarm3.migration
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.DatabaseErrorHandler
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteDatabaseCorruptException
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -12,6 +14,11 @@ import java.security.MessageDigest
 object SaveArchiveDatabase {
     const val BACKUP_FILE = "greenfarm-before-import.gf3save"
     private const val SLOT = SaveArchive.SLOT_ID
+    private val preserveCorruptDatabase = DatabaseErrorHandler {
+        // The platform default deletes corrupt database/WAL files. An export
+        // or failed import must retain the user's original bytes for recovery.
+        throw SQLiteDatabaseCorruptException("Tiến độ SQLite bị hỏng; dữ liệu được giữ nguyên để phục hồi.")
+    }
 
     fun read(context: Context): SaveArchive.Snapshot {
         val path = context.getDatabasePath(SaveArchive.DATABASE_NAME)
@@ -20,7 +27,7 @@ object SaveArchiveDatabase {
         // read-only handle throws SQLITE_READONLY. Keep a WAL/FULL connection
         // for this SELECT-only snapshot transaction; no game table is mutated.
         val db = SQLiteDatabase.openDatabase(path.absolutePath, null,
-            SQLiteDatabase.OPEN_READWRITE or SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING)
+            SQLiteDatabase.OPEN_READWRITE or SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING, preserveCorruptDatabase)
         try {
             if (db.version != 4) throw IOException("Hãy mở và lưu bằng bản khôi phục mới nhất để nâng bản lưu lên schema4 trước khi chuyển.")
             db.execSQL("PRAGMA synchronous=FULL")
@@ -68,7 +75,7 @@ object SaveArchiveDatabase {
         val path = context.getDatabasePath(SaveArchive.DATABASE_NAME)
         val newlyCreated = !path.exists()
         if (!newlyCreated) {
-            val existing = SQLiteDatabase.openDatabase(path.absolutePath, null, SQLiteDatabase.OPEN_READONLY)
+            val existing = SQLiteDatabase.openDatabase(path.absolutePath, null, SQLiteDatabase.OPEN_READONLY, preserveCorruptDatabase)
             val hasProgress = try {
                 if (existing.version != 4) throw IOException("Schema bản lưu hiện tại không được hỗ trợ; chưa nhập dữ liệu.")
                 existing.rawQuery("SELECT COUNT(*) FROM save_records WHERE slot_id=? AND store_name IN('save_gameplay','save_farm0') AND deleted=0", arrayOf(SLOT)).use {
@@ -81,7 +88,7 @@ object SaveArchiveDatabase {
             }
         }
         path.parentFile?.mkdirs()
-        val db = SQLiteDatabase.openOrCreateDatabase(path, null)
+        val db = SQLiteDatabase.openOrCreateDatabase(path.absolutePath, null, preserveCorruptDatabase)
         var installed = false
         try {
             if (db.version !in intArrayOf(0, 4)) throw IOException("Schema bản lưu hiện tại không được hỗ trợ; chưa nhập dữ liệu.")

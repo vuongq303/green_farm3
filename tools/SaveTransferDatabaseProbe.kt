@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
+import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -135,6 +136,25 @@ object SaveTransferDatabaseProbe {
         database(target).use { it.execSQL("DROP TRIGGER reject_transfer") }
         SaveArchiveDatabase.install(target, newer)
         check(same(newer, SaveArchiveDatabase.read(target)), "retry imports one absolute snapshot without additive rewards")
+        val corrupt = FixtureContext(File(path, "corrupt"), "com.quanhoang.greenfarm3", base)
+        SaveArchiveDatabase.install(corrupt, snapshot)
+        val corruptFile = corrupt.getDatabasePath(SaveArchive.DATABASE_NAME)
+        RandomAccessFile(corruptFile, "rw").use { it.seek(0); it.write(ByteArray(100) { 42 }) }
+        val corruptBytes = corruptFile.readBytes()
+        var rejected = false
+        try { SaveArchiveDatabase.read(corrupt) } catch (_: android.database.SQLException) { rejected = true }
+        check(rejected, "corrupt source export rejected")
+        check(corruptFile.isFile && corruptFile.readBytes().contentEquals(corruptBytes), "corrupt source file preserved byte exactly")
+        rejected = false
+        try { SaveArchiveDatabase.install(corrupt, newer) } catch (_: android.database.SQLException) { rejected = true }
+        check(rejected, "import refuses corrupt existing destination")
+        check(corruptFile.isFile && corruptFile.readBytes().contentEquals(corruptBytes), "failed import does not delete or rewrite corrupt destination")
+        SaveTransferIdentity.initialize(corrupt)
+        rejected = false
+        try { SaveTransferIdentity.matches(BINDING, "new-device-binding") } catch (_: android.database.SQLException) { rejected = true }
+        check(rejected, "identity lookup refuses corrupt database")
+        check(corruptFile.isFile && corruptFile.readBytes().contentEquals(corruptBytes), "identity lookup does not delete corrupt save")
+        check(same(newer, SaveArchiveDatabase.read(target)), "corrupt fixture failure cannot affect another valid destination")
         val gate = FixtureContext(File(path, "gate"), "com.quanhoang.greenfarm3", base)
         check(SaveTransferGate.enterGame(gate), "game process gate acquired")
         var blocked = false
