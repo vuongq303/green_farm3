@@ -58,7 +58,7 @@ public class ay {
     }
 
     public ay(byte[] bArr, int[] iArr, int i, int i2) {
-        GLLib.b("-----------------------Create image--------------------------", "OPEN_GL", 3);
+        GameRuntime.b("-----------------------Create image--------------------------", "OPEN_GL", 3);
         this.ais = new int[1];
         this.aio = i;
         this.aiq = i;
@@ -76,7 +76,7 @@ public class ay {
     }
 
     public ay(int i, int[] iArr, int i2, int i3) {
-        GLLib.b("-----------------------Create image--------------------------", "OPEN_GL", 3);
+        GameRuntime.b("-----------------------Create image--------------------------", "OPEN_GL", 3);
         GLES20.glActiveTexture(33984);
         this.ais = new int[1];
         this.ais[0] = i;
@@ -114,21 +114,21 @@ public class ay {
     public ay(int[] iArr, int i, int i2) {
         int[] iArrC;
         this.ais = new int[1];
-        GLLib.b("-----------------------Create image--------------------------", "OPEN_GL", 3);
+        GameRuntime.b("-----------------------Create image--------------------------", "OPEN_GL", 3);
         this.aio = i;
         this.aip = i2;
         GLES20.glGenTextures(1, this.ais, 0);
         GLES20.glBindTexture(3553, this.ais[0]);
         GLES20.glTexParameterf(3553, 10242, 33071.0f);
         GLES20.glTexParameterf(3553, 10243, 33071.0f);
-        GLES20.glTexParameterf(3553, 10241, GLLib.kJ() ? 9729.0f : 9728.0f);
-        GLES20.glTexParameterf(3553, 10240, GLLib.kJ() ? 9729.0f : 9728.0f);
-        if (w.VD && (i != GLLib.cS(i) || i2 != GLLib.cS(i2))) {
-            int iCS = GLLib.cS(i);
-            int iCS2 = GLLib.cS(i2);
+        GLES20.glTexParameterf(3553, 10241, GameRuntime.kJ() ? 9729.0f : 9728.0f);
+        GLES20.glTexParameterf(3553, 10240, GameRuntime.kJ() ? 9729.0f : 9728.0f);
+        if (w.VD && (i != GameRuntime.cS(i) || i2 != GameRuntime.cS(i2))) {
+            int iCS = GameRuntime.cS(i);
+            int iCS2 = GameRuntime.cS(i2);
             if (iArr != null) {
                 iArrC = a.c(iArr);
-                GLLib.a(iArr, iArrC, i, i2, iCS, iCS2);
+                GameRuntime.a(iArr, iArrC, i, i2, iCS, iCS2);
             } else {
                 iArrC = iArr;
             }
@@ -144,7 +144,7 @@ public class ay {
             GLES20.glTexImage2D(3553, 0, 6408, this.aiq, this.air, 0, 6408, 5121, null);
             return;
         }
-        if (w.Vt && GLLib.kK() == 2) {
+        if (w.Vt && GameRuntime.kK() == 2) {
             int[] iArr2 = new int[(this.aiq + 2) * 4 * (this.air + 2)];
             short[] sArrA = a.a((short[]) null);
             for (int i4 = 0; i4 < this.air; i4++) {
@@ -227,7 +227,7 @@ public class ay {
             GLES20.glTexImage2D(3553, 0, 6408, this.aiq, this.air, 0, 6408, 32820, ShortBuffer.wrap(sArrA));
             return;
         }
-        if (w.Vt && GLLib.kK() == 1) {
+        if (w.Vt && GameRuntime.kK() == 1) {
             short[] sArrA2 = a.a((short[]) null);
             for (int i40 = 0; i40 < i3; i40++) {
                 int i41 = iArr[i40];
@@ -236,7 +236,7 @@ public class ay {
             GLES20.glTexImage2D(3553, 0, 6408, this.aiq, this.air, 0, 6408, 32820, ShortBuffer.wrap(sArrA2));
             return;
         }
-        if (w.Vt && GLLib.kK() == 0) {
+        if (w.Vt && GameRuntime.kK() == 0) {
             short[] sArrA3 = a.a((short[]) null);
             for (int i42 = 0; i42 < i3; i42++) {
                 int i43 = iArr[i42];

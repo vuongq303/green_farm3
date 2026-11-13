@@ -14,10 +14,10 @@ open class b {
     open fun CreateSingleAdsManagerInstance() { AdsManager.CreateSingleAdsManagerInstance() }
     open fun Init() {
         try { CreateSingleAdsManagerInstance() } catch (failure: Exception) { failure.printStackTrace() }
-        com.gameloft.android2d.c.a.setGameLanguage(GloftGF2F.acw!!.dr(ci.aYU).lowercase(Locale.getDefault()))
-        AdsManager.SetAge(ci.aTL)
-        AdsManager.SetAge(ci.aTL)
-        com.gameloft.android2d.c.a.setGender(if (ci.auC == 1) 1 else 2)
+        com.gameloft.android2d.c.a.setGameLanguage(GloftGF2F.acw!!.dr(FarmGameEngine.aYU).lowercase(Locale.getDefault()))
+        AdsManager.SetAge(FarmGameEngine.aTL)
+        AdsManager.SetAge(FarmGameEngine.aTL)
+        com.gameloft.android2d.c.a.setGender(if (FarmGameEngine.auC == 1) 1 else 2)
         com.gameloft.android2d.c.a.setAnonymousAccount(s.js())
         if (com.gameloft.a.b.a.Wp() != null) {
             val federationIdentifier = com.gameloft.a.b.a.Wp()

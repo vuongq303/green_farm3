@@ -313,7 +313,7 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
     public static String bW(String str) {
         char[] cArr = new char[str.length()];
         str.getChars(0, str.length(), cArr, 0);
-        GLLib.a(cArr, cArr.length);
+        GameRuntime.a(cArr, cArr.length);
         return String.valueOf(cArr);
     }
 
@@ -928,7 +928,7 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
                     }
                     break;
                 case 2:
-                    GLLib.bk("/dataIGPSprites");
+                    GameRuntime.bk("/dataIGPSprites");
                     int i14 = aeY;
                     int i15 = afc;
                     if (agx[ahA].equals("AR")) {
@@ -939,7 +939,7 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
                         a.aa(false);
                     }
                     ahg = b(i14, 3, true, false);
-                    ahg.e((int[]) GLLib.de(i15));
+                    ahg.e((int[]) GameRuntime.de(i15));
                     afM = ahg.hC();
                     a aVar = ahg;
                     a.d('|');
@@ -953,7 +953,7 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
                         a.aa(false);
                     }
                     ahh = b(i16, 3, true, false);
-                    ahh.e((int[]) GLLib.de(i17));
+                    ahh.e((int[]) GameRuntime.de(i17));
                     a aVar2 = ahh;
                     a.d('|');
                     if (ahK <= 160) {
@@ -991,16 +991,16 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
                             ahh.IQ = 1;
                         }
                     }
-                    GLLib.ke();
+                    GameRuntime.ke();
                     break;
                 case 3:
-                    GLLib.bk("/dataIGPSprites");
+                    GameRuntime.bk("/dataIGPSprites");
                     for (int i18 = 0; i18 < afg; i18++) {
                         if (i18 != aeY && i18 != afc && i18 != aeZ && i18 != afd && i18 != afa && i18 != afe && i18 != afb && i18 != aff) {
                             ahf[i18] = b(i18, 1, true, true);
                         }
                     }
-                    GLLib.ke();
+                    GameRuntime.ke();
                     break;
                 case 6:
                     if (ahb == ail && aii == -1 && aij == -1) {
@@ -1027,7 +1027,7 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
         }
         if (z) {
             mQ();
-            GLLib.ke();
+            GameRuntime.ke();
             afL = null;
             afR = null;
             agA = null;
@@ -1560,13 +1560,13 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
             c(ajVar, 0, 0, ahJ, ahK);
             switch (agZ) {
                 case 0:
-                    GLLib.dk(0);
-                    GLLib.b(ajVar, 0.0f, 0.0f, ahJ, ahK, true);
+                    GameRuntime.dk(0);
+                    GameRuntime.b(ajVar, 0.0f, 0.0f, ahJ, ahK, true);
                     b(ajVar, ahM, (ahJ * 3) / 4, ahd, ahe);
                     if (ahE != null && !ahE.trim().equals("")) {
-                        GLLib.dk(16777215);
-                        GLLib.Qk = aea;
-                        GLLib.a(ahE, ahL, ahM - 5, 33);
+                        GameRuntime.dk(16777215);
+                        GameRuntime.Qk = aea;
+                        GameRuntime.a(ahE, ahL, ahM - 5, 33);
                         break;
                     }
                     break;
@@ -1584,8 +1584,8 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
                     if (aik > 1) {
                         int i = afM;
                         int i2 = (ahM - i) - 5;
-                        GLLib.dk(6324884);
-                        GLLib.b(ajVar, 0.0f, i2, ahJ, i * 2, true);
+                        GameRuntime.dk(6324884);
+                        GameRuntime.b(ajVar, 0.0f, i2, ahJ, i * 2, true);
                         int i3 = afS;
                         afS = 0;
                         a(aeL, ajVar, ahL, (i >> 1) + i2, 65);
@@ -1601,10 +1601,10 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
                     c(ajVar, 0, i6 - 1, i5, i4 - ((i6 - 1) * 2), -1);
                     c(ajVar, 0, i6, i5, i4 - (i6 * 2), -220209185);
                     agJ = false;
-                    GLLib.dk(16777215);
-                    GLLib.b(ajVar, 0.0f, i4 - (iAi + 1), i5, iAi + 1, true);
-                    GLLib.dk(-220209185);
-                    GLLib.b(ajVar, 0.0f, i4 - iAi, i5, iAi, true);
+                    GameRuntime.dk(16777215);
+                    GameRuntime.b(ajVar, 0.0f, i4 - (iAi + 1), i5, iAi + 1, true);
+                    GameRuntime.dk(-220209185);
+                    GameRuntime.b(ajVar, 0.0f, i4 - iAi, i5, iAi, true);
                     afS = 1;
                     a(aey, ajVar, i5 >> 1, i4 >> 1, 3, true);
                     d(ajVar);
@@ -1618,7 +1618,7 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
         for (int i6 = 0; i6 < iArr.length; i6++) {
             iArr[i6] = i5;
         }
-        GLLib.a(ajVar, iArr, 0, i3, i, i2, i3, i4, true, true, 0);
+        GameRuntime.a(ajVar, iArr, 0, i3, i, i2, i3, i4, true, true, 0);
     }
 
     private static void c(aj ajVar) {
@@ -1627,15 +1627,15 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
         int i3 = ahJ;
         int i4 = ahK;
         nc();
-        GLLib.dk(16777215);
+        GameRuntime.dk(16777215);
         if (aeg[0]) {
-            GLLib.dk(0);
+            GameRuntime.dk(0);
         }
         if (ahj != null) {
-            GLLib.a(ajVar, ahj, 0, 0, 0, true);
+            GameRuntime.a(ajVar, ahj, 0, 0, 0, true);
         } else {
-            GLLib.dk(16777215);
-            GLLib.b(ajVar, 0.0f, 0.0f, i3, i4, true);
+            GameRuntime.dk(16777215);
+            GameRuntime.b(ajVar, 0.0f, 0.0f, i3, i4, true);
         }
         int i5 = agM[afh][0];
         int i6 = agM[afh][1];
@@ -1900,8 +1900,8 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
             }
             int i6 = ahy - (ahw >> 1);
             int i7 = ahz + (ahx >> 1);
-            GLLib.dk(-1030069);
-            GLLib.b(ajVar, i6, i7 + iAj, ahw, ahx - (iAj << 1), true);
+            GameRuntime.dk(-1030069);
+            GameRuntime.b(ajVar, i6, i7 + iAj, ahw, ahx - (iAj << 1), true);
             d(ajVar, aeT, 20, i6, i7, 17);
             d(ajVar, aeT, 23, i6, (ahx + i7) - iAi4, 17);
             int i8 = i6 + iAi2;
@@ -1958,13 +1958,13 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
         }
         int i5 = (ahJ - i2) / 2;
         c(ajVar, i5, 0, i2 + 2, ahK);
-        GLLib.dk(16777215);
-        GLLib.b(GLLib.Qj, i5, i, i2, 6.0f, true);
-        GLLib.b(ajVar, i5, i, i2, 6.0f, true);
-        GLLib.dk(0);
-        GLLib.b(ajVar, i5 + 1 + 1, i + 1 + 1, (i2 - 2) - 2, 3.0f, true);
-        GLLib.dk(16711680);
-        GLLib.b(ajVar, i5 + 1 + 1, i + 1 + 1, ((((i2 - 2) - 2) * i3) / i4) + 1, 3.0f, true);
+        GameRuntime.dk(16777215);
+        GameRuntime.b(GameRuntime.Qj, i5, i, i2, 6.0f, true);
+        GameRuntime.b(ajVar, i5, i, i2, 6.0f, true);
+        GameRuntime.dk(0);
+        GameRuntime.b(ajVar, i5 + 1 + 1, i + 1 + 1, (i2 - 2) - 2, 3.0f, true);
+        GameRuntime.dk(16711680);
+        GameRuntime.b(ajVar, i5 + 1 + 1, i + 1 + 1, ((((i2 - 2) - 2) * i3) / i4) + 1, 3.0f, true);
     }
 
     private static void d(aj ajVar, int i, int i2, int i3, int i4, int i5) {
@@ -1972,7 +1972,7 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
     }
 
     private static void c(aj ajVar, int i, int i2, int i3, int i4) {
-        GLLib.a(ajVar, Math.max(i, 0), Math.max(i2, 0), Math.min(i3, ahJ), Math.min(i4, ahK), true);
+        GameRuntime.a(ajVar, Math.max(i, 0), Math.max(i2, 0), Math.min(i3, ahJ), Math.min(i4, ahK), true);
     }
 
     @Override // java.lang.Runnable
@@ -2079,7 +2079,7 @@ public class aw implements Runnable, javax.microedition.lcdui.p {
 
     private static a a(int i, int i2, int i3, int i4, boolean z, boolean z2, boolean z3) {
         a aVar = new a();
-        aVar.d(GLLib.db(i), 0);
+        aVar.d(GameRuntime.db(i), 0);
         for (int i5 = 0; (i2 >> i5) != 0; i5++) {
             if (((i2 >> i5) & 1) != 0) {
                 if (i3 != 0) {

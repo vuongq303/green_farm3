@@ -292,7 +292,7 @@ public class f {
     private long hY() {
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         return jCurrentTimeMillis / 1000;
     }

@@ -42,7 +42,7 @@ public class bx extends Thread {
         synchronized (this.akC) {
             this.akC.addElement(bArr);
             if (w.XX) {
-                GLLib.b("Adding packet to outgoing queue", "TCP", 3);
+                GameRuntime.b("Adding packet to outgoing queue", "TCP", 3);
             }
         }
     }
@@ -64,8 +64,8 @@ public class bx extends Thread {
                 new Thread(this).start();
             } catch (Exception e) {
                 if (w.XX) {
-                    GLLib.b("TCP: connect exception: " + e.toString(), "TCP", 6);
-                    GLLib.d(e);
+                    GameRuntime.b("TCP: connect exception: " + e.toString(), "TCP", 6);
+                    GameRuntime.d(e);
                 }
             }
         }
@@ -73,14 +73,14 @@ public class bx extends Thread {
 
     public void disconnect() {
         if (w.XX) {
-            GLLib.b("disconnecting tcp ... ", "TCP", 3);
+            GameRuntime.b("disconnecting tcp ... ", "TCP", 3);
         }
         this.aky = true;
     }
 
     private void bM() {
         if (w.XX) {
-            GLLib.b("cleanup tcp .. ", "TCP", 3);
+            GameRuntime.b("cleanup tcp .. ", "TCP", 3);
         }
         if (this.akA != null) {
             by.a(this.akA, false);
@@ -125,7 +125,7 @@ public class bx extends Thread {
         this.BT = false;
         try {
             if (w.XX) {
-                GLLib.b("TCP: Opening connection to " + this.url, "TCP", 3);
+                GameRuntime.b("TCP: Opening connection to " + this.url, "TCP", 3);
             }
             this.akD = (javax.microedition.a.o) javax.microedition.a.c.jd(this.url);
             if (this.akD == null) {
@@ -138,7 +138,7 @@ public class bx extends Thread {
             this.akF = null;
             try {
                 if (w.XX) {
-                    GLLib.b("TCP: Opening output stream", "TCP", 3);
+                    GameRuntime.b("TCP: Opening output stream", "TCP", 3);
                 }
                 this.akF = this.akD.ajP();
                 if (this.akF == null) {
@@ -152,7 +152,7 @@ public class bx extends Thread {
                 this.akE = null;
                 try {
                     if (w.XX) {
-                        GLLib.b("TCP: Opening input stream", "TCP", 3);
+                        GameRuntime.b("TCP: Opening input stream", "TCP", 3);
                     }
                     this.akE = this.akD.ajO();
                     if (this.akE == null) {
@@ -165,7 +165,7 @@ public class bx extends Thread {
                     }
                     this.akx = true;
                     if (w.XX) {
-                        GLLib.b("TCP: Connection established, starting recv thread", "TCP", 3);
+                        GameRuntime.b("TCP: Connection established, starting recv thread", "TCP", 3);
                     }
                     this.akA = new by(this, this.akE, this.akB, this.akG, this);
                     this.akA.start();
@@ -189,14 +189,14 @@ public class bx extends Thread {
                             }
                         } else {
                             if (w.XX) {
-                                GLLib.b("TCP: new packet to send", "TCP", 3);
+                                GameRuntime.b("TCP: new packet to send", "TCP", 3);
                             }
                             try {
                                 this.akF.write(bArr);
                             } catch (Exception e2) {
                                 if (w.XX) {
-                                    GLLib.b("TCP: send exception: " + e2.toString(), "TCP", 6);
-                                    GLLib.d(e2);
+                                    GameRuntime.b("TCP: send exception: " + e2.toString(), "TCP", 6);
+                                    GameRuntime.d(e2);
                                 }
                                 this.BT = true;
                                 this.acI = e2;
@@ -206,7 +206,7 @@ public class bx extends Thread {
                                 this.akx = false;
                             }
                             if (w.XX) {
-                                GLLib.b("TCP: Sent " + bArr.length + " bytes packet:" + new String(bArr), "TCP", 3);
+                                GameRuntime.b("TCP: Sent " + bArr.length + " bytes packet:" + new String(bArr), "TCP", 3);
                             }
                             try {
                                 sleep(300L);
@@ -218,36 +218,36 @@ public class bx extends Thread {
                     bM();
                 } catch (Exception e4) {
                     if (w.XX) {
-                        GLLib.b("TCP: run exception: " + e4.toString(), "TCP", 6);
+                        GameRuntime.b("TCP: run exception: " + e4.toString(), "TCP", 6);
                     }
                     this.BT = true;
                     this.acI = e4;
                     if (w.XX) {
                         this.akz = "StreamConnection.openInputStream to " + this.url + " exception: " + e4;
                     }
-                    GLLib.d(e4);
+                    GameRuntime.d(e4);
                 }
             } catch (Exception e5) {
                 if (w.XX) {
-                    GLLib.b("TCP: run exception: " + e5.toString(), "TCP", 6);
+                    GameRuntime.b("TCP: run exception: " + e5.toString(), "TCP", 6);
                 }
                 this.BT = true;
                 this.acI = e5;
                 if (w.XX) {
                     this.akz = "StreamConnection.openOutputStream to " + this.url + " exception: " + e5;
                 }
-                GLLib.d(e5);
+                GameRuntime.d(e5);
             }
         } catch (Exception e6) {
             if (w.XX) {
-                GLLib.b("TCP: run exception: " + e6.toString(), "TCP", 6);
+                GameRuntime.b("TCP: run exception: " + e6.toString(), "TCP", 6);
             }
             this.BT = true;
             this.acI = e6;
             if (w.XX) {
                 this.akz = "StreamConnection.open to " + this.url + " exception: " + e6;
             }
-            GLLib.d(e6);
+            GameRuntime.d(e6);
         }
     }
     // Original DEX synthetic accessors, inlined away by JADX.

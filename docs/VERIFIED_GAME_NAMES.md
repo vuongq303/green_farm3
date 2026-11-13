@@ -13,6 +13,11 @@ Bảng này mô tả những symbol có đủ bằng chứng để đổi tên. 
 | static method `ci.qD():I` | `FarmGameEngine.currentEngineState():I` | Đọc state ở đỉnh stack `apC`/`apB`; các transition test đã kiểm chứng giá trị trả về. |
 | static method `ci.qE():I` | `FarmGameEngine.previousEngineState():I` | Đọc state cha trong cùng stack, trả sentinel khi không có parent; giữ nguyên điều kiện và giá trị. |
 
+`hasUnsavedGameChanges` là tín hiệu thay đổi mới chờ capture, không phải toàn bộ
+trạng thái RAM so với database. Controller chuyển cờ vào monotonic sequence/batch
+rồi clear **trước** commit. Vì vậy cờ false không đồng nghĩa save đã bền vững;
+`hasPendingChanges()`, sequence và hàng đợi writer mới quản lý durable barrier.
+
 Tên `ci.bab` vẫn giữ: hiện cùng tham gia dirty signal, nhưng các nơi đặt cờ tập
 trung ở một số đường dịch vụ/daily state và chưa chứng minh được vai trò riêng.
 Không đổi nó thành “farmDirty”, “onlineDirty” hoặc “forceFullSave” bằng suy đoán.
@@ -62,3 +67,18 @@ python3 -m unittest discover -s tests -p test_verified_symbol_refactor.py -v
 
 Cả 2 ca đạt. Báo cáo áp dụng trên project thật và kết quả APK được ghi ở checkpoint
 chuyển Kotlin/package; không coi test công cụ là đã chạy gameplay sau đổi tên.
+
+## Áp dụng trên project hiện tại
+
+Sau checkpoint APK chỉ đổi package `3a32ca1`, công cụ đã áp dụng 7 ánh xạ trên
+package `com.quanhoang.greenfarm3.S800x480`: **22 file Java / 5.160 token đã resolve**,
+**39 file Kotlin / 326 reference có guard**. Không chỉnh compiler output hoặc dùng
+regex toàn project. `bc.ch(String)`, `bc.ci(String)`, `s.ch(int)` và `s.ci(int)`
+vẫn giữ vì là symbol khác owner, dù cùng chữ với tên lớp cũ. Chuỗi `GLLib.quit`
+vẫn giữ đúng vai trò lệnh/nhãn runtime.
+
+[Báo cáo áp dụng](kotlin-validation/verified-symbols-applied.json) ghi file đích,
+số thay đổi và bảng map. Lệnh chính là `tools/rename_verified_symbols.py --apply`
+với source roots mới và classpath compiler/SDK của checkpoint package-only.
+Source đã được giữ nguyên sau khi áp dụng để build APK xác minh riêng; kết quả
+build/runtime cuối cùng nằm trong báo cáo tổng của đợt chuyển đổi.

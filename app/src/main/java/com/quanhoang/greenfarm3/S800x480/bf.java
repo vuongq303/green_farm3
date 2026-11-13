@@ -78,19 +78,19 @@ public class bf extends a {
     }
 
     public void nt() {
-        GLLib.m2do(1);
+        GameRuntime.m2do(1);
         if (this.ajd == 0) {
-            GLLib.g(this.aiX[this.aiW * 4], this.aiX[(this.aiW * 4) + 1], this.aiX[(this.aiW * 4) + 2], this.aiX[(this.aiW * 4) + 3]);
+            GameRuntime.g(this.aiX[this.aiW * 4], this.aiX[(this.aiW * 4) + 1], this.aiX[(this.aiW * 4) + 2], this.aiX[(this.aiW * 4) + 3]);
         } else if (this.ajd == 1) {
-            GLLib.g(this.aiY[this.aiW * 4], this.aiY[(this.aiW * 4) + 1], this.aiY[(this.aiW * 4) + 2], this.aiY[(this.aiW * 4) + 3]);
+            GameRuntime.g(this.aiY[this.aiW * 4], this.aiY[(this.aiW * 4) + 1], this.aiY[(this.aiW * 4) + 2], this.aiY[(this.aiW * 4) + 3]);
         } else {
-            GLLib.g(this.aiZ[this.aiW * 4], this.aiZ[(this.aiW * 4) + 1], this.aiZ[(this.aiW * 4) + 2], this.aiZ[(this.aiW * 4) + 3]);
+            GameRuntime.g(this.aiZ[this.aiW * 4], this.aiZ[(this.aiW * 4) + 1], this.aiZ[(this.aiW * 4) + 2], this.aiZ[(this.aiW * 4) + 3]);
         }
     }
 
     public void nu() {
-        GLLib.g(255, 255, 255, 255);
-        GLLib.m2do(0);
+        GameRuntime.g(255, 255, 255, 255);
+        GameRuntime.m2do(0);
     }
 
     /* JADX WARN: Code duplicated, block: B:140:0x029d  */
@@ -245,7 +245,7 @@ public class bf extends a {
                             if (!w.XA || iA <= hv()) {
                                 i8 = iA;
                             } else {
-                                GLLib.be("Character not available: c = " + iA);
+                                GameRuntime.be("Character not available: c = " + iA);
                                 i8 = 0;
                             }
                             aVar.a(ajVar, i8, (float) iHD, (float) i14, 0);

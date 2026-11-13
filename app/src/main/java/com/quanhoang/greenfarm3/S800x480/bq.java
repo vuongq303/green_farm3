@@ -69,14 +69,14 @@ public class bq {
                 }
                 if (ade != null) {
                     if ("java.io.IOException".equals(ade.getClass().getName()) || "java.net.ConnectException".equals(ade.getClass().getName())) {
-                        GLLib.be("No Internet connection");
+                        GameRuntime.be("No Internet connection");
                     }
                     adh = -1;
                     return;
                 }
                 if (ade != null) {
                     if ("java.io.IOException".equals(ade.getClass().getName()) || "java.net.ConnectException".equals(ade.getClass().getName())) {
-                        GLLib.be("No Internet connection");
+                        GameRuntime.be("No Internet connection");
                     }
                     adh = -1;
                     return;
@@ -105,11 +105,11 @@ public class bq {
             if (aka) {
                 return -125;
             }
-            GLLib.be("Begin saving game.");
+            GameRuntime.be("Begin saving game.");
             try {
                 ajS = openRecordStore(str, true);
             } catch (javax.microedition.b.c e) {
-                GLLib.d(e);
+                GameRuntime.d(e);
             }
             if (ajS == null) {
                 return -16;
@@ -141,20 +141,20 @@ public class bq {
                 iA = 0;
             }
             if (iA == 0) {
-                GLLib.be("Error while compressing buffer. Aborting Save\n");
+                GameRuntime.be("Error while compressing buffer. Aborting Save\n");
                 try {
                     closeRecordStore(ajS);
                 } catch (javax.microedition.b.c e2) {
-                    GLLib.d(e2);
+                    GameRuntime.d(e2);
                 }
                 akb = false;
                 return -9;
             }
             byte[] byteArray = byteArrayOutputStream.toByteArray();
-            GLLib.kQ();
-            int iA2 = GLLib.a(bArr, 0, bArr.length, 0);
-            byte[] bArrA = GLLib.a(byteArray, str, true);
-            ajR.a(new bp(GLLib.g(new int[]{i, iA2, bArrA.length})));
+            GameRuntime.kQ();
+            int iA2 = GameRuntime.a(bArr, 0, bArr.length, 0);
+            byte[] bArrA = GameRuntime.a(byteArray, str, true);
+            ajR.a(new bp(GameRuntime.g(new int[]{i, iA2, bArrA.length})));
             ajR.a(new bp(bArrA));
             ajY++;
             return 0;
@@ -166,11 +166,11 @@ public class bq {
         if (ajR == null || ajR.hT() == null) {
             return 0;
         }
-        byte[] bArrG = GLLib.g(new int[]{ajY});
+        byte[] bArrG = GameRuntime.g(new int[]{ajY});
         e eVar = new e();
         eVar.a(ajR.hT());
         eVar.a(new bp(bArrG));
-        return GLLib.e(eVar.hT().data).length();
+        return GameRuntime.e(eVar.hT().data).length();
     }
 
     public static synchronized int i(String str, boolean z) {
@@ -186,7 +186,7 @@ public class bq {
                     if (!akb) {
                         i = -16;
                     } else {
-                        ajR.a(new bp(GLLib.g(new int[]{ajY})));
+                        ajR.a(new bp(GameRuntime.g(new int[]{ajY})));
                         try {
                             addRecord(ajS, ajR.hT().data, 0, ajR.hT().data.length);
                             ajR.as(str);
@@ -194,7 +194,7 @@ public class bq {
                             try {
                                 closeRecordStore(ajS);
                             } catch (javax.microedition.b.c e) {
-                                GLLib.d(e);
+                                GameRuntime.d(e);
                             }
                             akb = false;
                             if (z) {
@@ -208,7 +208,7 @@ public class bq {
                                 i = 0;
                             }
                         } catch (javax.microedition.b.c e2) {
-                            GLLib.d(e2);
+                            GameRuntime.d(e2);
                             adh = -1;
                             akd = "Can not save local record";
                             i = adh;
@@ -235,7 +235,7 @@ public class bq {
     public static void mJ() {
         adu = false;
         adw = true;
-        GLLib.be("oss: thread ended");
+        GameRuntime.be("oss: thread ended");
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -260,7 +260,7 @@ public class bq {
         long jCB;
         long jCB2;
         int i;
-        GLLib.be("Attempting to upload save to GL cloud");
+        GameRuntime.be("Attempting to upload save to GL cloud");
         adh = 0;
         Vector vector = new Vector();
         vector.removeAllElements();
@@ -278,7 +278,7 @@ public class bq {
                 s.j(str, "$savegamelib.objects.TOC", "cloudUploadGetToc");
                 C(t.Os, "cloudUploadGetToc");
                 if (adh == 404) {
-                    GLLib.be("Table of Contents does not exist. Creating it");
+                    GameRuntime.be("Table of Contents does not exist. Creating it");
                     bc bcVar3 = new bc();
                     bcVar3.a("TOC", new bc());
                     bcVar = bcVar3;
@@ -287,7 +287,7 @@ public class bq {
                     if (((bc) bcVar4.cd("TOC")) == null) {
                         akd = "Retrieved Invalid Table Of Contents";
                         adh = -13;
-                        GLLib.be(akd);
+                        GameRuntime.be(akd);
                         return;
                     }
                     bcVar = bcVar4;
@@ -317,7 +317,7 @@ public class bq {
                             } catch (Exception e) {
                                 adh = -1;
                                 akd = "profile quotas error";
-                                GLLib.be(akd);
+                                GameRuntime.be(akd);
                                 return;
                             }
                         }
@@ -326,16 +326,16 @@ public class bq {
                     if (iNo == 0 && iCe <= 0) {
                         adh = -126;
                         akd = "server quotas exceed";
-                        GLLib.be(akd);
+                        GameRuntime.be(akd);
                         return;
                     }
                     if (iNo >= 5 || iCe == 0) {
-                        GLLib.be("Maximum number of saves reached. Overwriting oldest save.");
+                        GameRuntime.be("Maximum number of saves reached. Overwriting oldest save.");
                         int i4 = 0;
                         try {
                             jCB = cB(((bc) bcVar5.nq()[0]).ch("Date"));
                         } catch (Exception e2) {
-                            GLLib.be("TIMESTAMP is INVALID. Save 1 Invalid. Replacing it");
+                            GameRuntime.be("TIMESTAMP is INVALID. Save 1 Invalid. Replacing it");
                             jCB = 0;
                         }
                         int i5 = 1;
@@ -361,7 +361,7 @@ public class bq {
                         bcVar8.a("Date", string);
                         bcVar8.a("Description", ajR.hX());
                         bcVar8.a("Version", ajR.hW());
-                        bcVar8.a("GLUID", GLLib.e(ajR.hU().getBytes()));
+                        bcVar8.a("GLUID", GameRuntime.e(ajR.hU().getBytes()));
                         try {
                             ajR.au(bcVar8.ch("SeshatFileKey"));
                         } catch (Exception e4) {
@@ -376,23 +376,23 @@ public class bq {
                         bcVar9.a("SeshatFileKey", str2);
                         ajR.au(str2);
                         bcVar9.a("Date", Long.toString(ajR.hS()));
-                        bcVar9.a("GLUID", GLLib.e(ajR.hU().getBytes()));
+                        bcVar9.a("GLUID", GameRuntime.e(ajR.hU().getBytes()));
                         bcVar9.a("Version", ajR.hW());
                         bcVar5.a(str2, bcVar9);
                     }
-                    s.d(str, ajR.hV(), GLLib.e(ajR.hT().data), "private", "cloudUploadPutKey");
+                    s.d(str, ajR.hV(), GameRuntime.e(ajR.hT().data), "private", "cloudUploadPutKey");
                     C(t.Ot, "cloudUploadPutKey");
                     if (adh == 0) {
-                        GLLib.be("Savegame upload to cloud was successful.");
+                        GameRuntime.be("Savegame upload to cloud was successful.");
                         String string2 = bcVar.toString();
-                        GLLib.be("Updated Table Of Contents.");
+                        GameRuntime.be("Updated Table Of Contents.");
                         s.d(str, "$savegamelib.objects.TOC", string2, "private", "cloudUploadPutToc");
                         C(t.Ot, "cloudUploadPutToc");
                         if (adh == 0) {
-                            GLLib.be("Table Of Contents upload to cloud was successful.");
+                            GameRuntime.be("Table Of Contents upload to cloud was successful.");
                         } else {
                             akd = "Table Of Contents upload to cloud failed.";
-                            GLLib.be(akd);
+                            GameRuntime.be(akd);
                         }
                     } else {
                         akd = "Savegame upload to cloud failed.";
@@ -401,7 +401,7 @@ public class bq {
                 } else {
                     adh = -1;
                     akd = "Can not get user standard profile";
-                    GLLib.be(akd);
+                    GameRuntime.be(akd);
                     return;
                 }
             } else {
@@ -412,9 +412,9 @@ public class bq {
 
     private static void nJ() {
         int i = 0;
-        GLLib.be("Attempting to upload save to GAME cloud");
+        GameRuntime.be("Attempting to upload save to GAME cloud");
         adh = 0;
-        String strE = GLLib.e(ajR.hT().data);
+        String strE = GameRuntime.e(ajR.hT().data);
         bc bcVar = new bc();
         bcVar.a("Version", ajR.hW());
         bcVar.a("Date", new Long(ajR.hS()));
@@ -435,9 +435,9 @@ public class bq {
                 s.d((String) vector.elementAt(i2), "game_dedicated_slot.dat", str, "private", "cloudUploadGame");
                 C(t.Ot, "cloudUploadGame");
                 if (adh == 0) {
-                    GLLib.be("Savegame upload to GAME cloud successful.");
+                    GameRuntime.be("Savegame upload to GAME cloud successful.");
                 } else {
-                    GLLib.be("Savegame upload to GAME cloud failed.");
+                    GameRuntime.be("Savegame upload to GAME cloud failed.");
                 }
                 i = i2 + 1;
             } else {
@@ -448,7 +448,7 @@ public class bq {
 
     /* JADX INFO: Access modifiers changed from: private */
     public static void cu(String str) {
-        GLLib.be("Retrieving saves from dedicated game saves");
+        GameRuntime.be("Retrieving saves from dedicated game saves");
         adh = 0;
         Vector vector = new Vector();
         vector.removeAllElements();
@@ -462,7 +462,7 @@ public class bq {
             s.j(str2, "game_dedicated_slot.dat", "cloudDownloadFile");
             C(t.Os, "cloudDownloadFile");
             if (adh != 0) {
-                GLLib.be("DownloadFileFromSeshat GetData failed");
+                GameRuntime.be("DownloadFileFromSeshat GetData failed");
                 return;
             }
             String str3 = adc;
@@ -474,43 +474,43 @@ public class bq {
                     String strSubstring2 = str3.substring(iIndexOf + i2);
                     ajV = new bc(strSubstring);
                     if (!ajV.cb("GLUID")) {
-                        GLLib.be("Dedicated game save missing gluid");
+                        GameRuntime.be("Dedicated game save missing gluid");
                         adh = -6;
                         return;
                     }
                     String string = ajV.cd("GLUID").toString();
-                    byte[] bArrBJ = GLLib.bJ(strSubstring2);
+                    byte[] bArrBJ = GameRuntime.bJ(strSubstring2);
                     if (cA("tempSaveFile")) {
                         deleteRecordStore("tempSaveFile");
                     }
                     ajS = openRecordStore("tempSaveFile", true);
                     if (ajS == null) {
                         adh = -16;
-                        GLLib.be("can't use tempSaveFile");
+                        GameRuntime.be("can't use tempSaveFile");
                         return;
                     }
                     addRecord(ajS, bArrBJ, 0, bArrBJ.length);
                     closeRecordStore(ajS);
                     adh = cv("tempSaveFile");
                     if (adh != 0) {
-                        GLLib.be("can't load tempSaveFile");
+                        GameRuntime.be("can't load tempSaveFile");
                         return;
                     }
                     int i3 = ajY;
                     adh = ct(str);
                     if (adh != 0) {
-                        GLLib.be("can't save " + str);
+                        GameRuntime.be("can't save " + str);
                         return;
                     }
                     for (int i4 = 0; i4 < i3; i4++) {
                         byte[] bArrCw = cw(string);
                         if (adh != 0) {
-                            GLLib.be("load buffer " + i4 + " fail");
+                            GameRuntime.be("load buffer " + i4 + " fail");
                             return;
                         }
                         adh = n(bArrCw, bArrCw.length);
                         if (adh != 0) {
-                            GLLib.be("save buffer " + i4 + " fail");
+                            GameRuntime.be("save buffer " + i4 + " fail");
                             return;
                         }
                     }
@@ -527,11 +527,11 @@ public class bq {
                         return;
                     }
                 } catch (Exception e2) {
-                    GLLib.be("Decode game cloud save fail");
+                    GameRuntime.be("Decode game cloud save fail");
                 }
             }
             if (adh != 0) {
-                GLLib.be("GetDedicatedGameSave: DownloadFileFromSeshat - failed for cred " + str2);
+                GameRuntime.be("GetDedicatedGameSave: DownloadFileFromSeshat - failed for cred " + str2);
                 return;
             }
         }
@@ -539,25 +539,25 @@ public class bq {
 
     public static int cv(String str) {
         if (w.ZT) {
-            GLLib.be("Begin loading game");
+            GameRuntime.be("Begin loading game");
             try {
                 ajT = openRecordStore(str, false);
             } catch (javax.microedition.b.c e) {
-                GLLib.d(e);
+                GameRuntime.d(e);
             }
             if (ajT != null) {
                 ajZ = 0;
                 try {
                     ajW = ajT.pi(1);
                     ajX = 0;
-                    ajY = GLLib.l(ajW, ajW.length - 4);
+                    ajY = GameRuntime.l(ajW, ajW.length - 4);
                 } catch (Exception e2) {
-                    GLLib.d(e2);
+                    GameRuntime.d(e2);
                 }
                 akc = true;
                 return 0;
             }
-            GLLib.be("Could not load save file");
+            GameRuntime.be("Could not load save file");
             return -16;
         }
         return -1;
@@ -575,15 +575,15 @@ public class bq {
             adh = -16;
             return null;
         }
-        GLLib.l(ajW, ajX);
+        GameRuntime.l(ajW, ajX);
         ajX += 4;
-        int iL = GLLib.l(ajW, ajX);
+        int iL = GameRuntime.l(ajW, ajX);
         ajX += 4;
-        int iL2 = GLLib.l(ajW, ajX);
+        int iL2 = GameRuntime.l(ajW, ajX);
         ajX += 4;
         byte[] bArr = new byte[iL2];
-        ajX = GLLib.b(ajW, ajX, bArr);
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(GLLib.b(bArr, str, true));
+        ajX = GameRuntime.b(ajW, ajX, bArr);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(GameRuntime.b(bArr, str, true));
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             decompressSave(byteArrayInputStream, byteArrayOutputStream);
@@ -591,15 +591,15 @@ public class bq {
             e.printStackTrace();
         }
         if (byteArrayOutputStream.size() == 0) {
-            GLLib.be("Error while uncompressing buffer.\n");
+            GameRuntime.be("Error while uncompressing buffer.\n");
             adh = -7;
             return null;
         }
         byte[] byteArray = byteArrayOutputStream.toByteArray();
-        GLLib.kQ();
-        if (GLLib.a(byteArray, 0, byteArray.length, 0) != iL) {
+        GameRuntime.kQ();
+        if (GameRuntime.a(byteArray, 0, byteArray.length, 0) != iL) {
             akd = "CRC Error.\n";
-            GLLib.be(akd);
+            GameRuntime.be(akd);
             adh = -10;
             return null;
         }
@@ -613,14 +613,14 @@ public class bq {
             try {
                 closeRecordStore(ajT);
             } catch (Exception e) {
-                GLLib.d(e);
+                GameRuntime.d(e);
             }
             akc = false;
             if (ajZ == ajY) {
                 return 0;
             }
             akd = "Savegame parsing mismatch! You did not load all the data";
-            GLLib.be(akd);
+            GameRuntime.be(akd);
             return -18;
         }
         return -1;
@@ -630,7 +630,7 @@ public class bq {
     public static void nM() {
         if (w.ZT) {
             ajU = new Vector();
-            GLLib.be("Retrieving saves from cloud");
+            GameRuntime.be("Retrieving saves from cloud");
             adh = 0;
             Vector vector = new Vector();
             vector.removeAllElements();
@@ -648,7 +648,7 @@ public class bq {
                     bc bcVar = new bc(adc);
                     if (((bc) bcVar.cd("TOC")) == null) {
                         adh = -13;
-                        GLLib.be("field TOC not exist");
+                        GameRuntime.be("field TOC not exist");
                         return;
                     }
                     bc bcVar2 = (bc) bcVar.cd("TOC");
@@ -664,21 +664,21 @@ public class bq {
                                 eVar.l(cB(bcVar3.ch("Date")));
                                 String strCh = bcVar3.ch("GLUID");
                                 if (strCh.length() > 0) {
-                                    eVar.at(new String(GLLib.bJ(strCh)));
+                                    eVar.at(new String(GameRuntime.bJ(strCh)));
                                     ajU.addElement(eVar);
                                 } else {
-                                    GLLib.be("Savegame does not have ID.\n");
+                                    GameRuntime.be("Savegame does not have ID.\n");
                                 }
                             } catch (Exception e) {
                                 adh = -13;
                                 akd = "Invalid TOC content";
-                                GLLib.be(akd);
+                                GameRuntime.be(akd);
                                 return;
                             }
                         }
                     }
                 } else {
-                    GLLib.be("Fail retrieve cloud list (TOC)");
+                    GameRuntime.be("Fail retrieve cloud list (TOC)");
                     return;
                 }
             }
@@ -688,47 +688,47 @@ public class bq {
     /* JADX INFO: Access modifiers changed from: private */
     public static void a(String str, e eVar) {
         if (w.ZT) {
-            GLLib.be("Restoring save from cloud...");
+            GameRuntime.be("Restoring save from cloud...");
             adh = 0;
             s.j(eVar.hR(), eVar.hV(), "cloudGetCloudSave");
             C(t.Os, "cloudGetCloudSave");
             if (adh != 0) {
-                GLLib.be("Could not retrieve savegame");
+                GameRuntime.be("Could not retrieve savegame");
                 return;
             }
             try {
-                byte[] bArrBJ = GLLib.bJ(adc);
+                byte[] bArrBJ = GameRuntime.bJ(adc);
                 if (cA("tempSaveFile")) {
                     deleteRecordStore("tempSaveFile");
                 }
                 ajS = openRecordStore("tempSaveFile", true);
                 if (ajS == null) {
                     adh = -16;
-                    GLLib.be("can't use tempSaveFile");
+                    GameRuntime.be("can't use tempSaveFile");
                     return;
                 }
                 addRecord(ajS, bArrBJ, 0, bArrBJ.length);
                 closeRecordStore(ajS);
                 adh = cv("tempSaveFile");
                 if (adh != 0) {
-                    GLLib.be("can't load tempSaveFile");
+                    GameRuntime.be("can't load tempSaveFile");
                     return;
                 }
                 int i = ajY;
                 adh = ct(str);
                 if (adh != 0) {
-                    GLLib.be("can't save " + str);
+                    GameRuntime.be("can't save " + str);
                     return;
                 }
                 for (int i2 = 0; i2 < i; i2++) {
                     byte[] bArrCw = cw(eVar.hU());
                     if (adh != 0) {
-                        GLLib.be("load buffer " + i2 + " fail");
+                        GameRuntime.be("load buffer " + i2 + " fail");
                         return;
                     }
                     adh = n(bArrCw, bArrCw.length);
                     if (adh != 0) {
-                        GLLib.be("save buffer " + i2 + " fail");
+                        GameRuntime.be("save buffer " + i2 + " fail");
                         return;
                     }
                 }
@@ -738,12 +738,12 @@ public class bq {
                     try {
                         deleteRecordStore("tempSaveFile");
                     } catch (javax.microedition.b.c e) {
-                        GLLib.d(e);
+                        GameRuntime.d(e);
                         adh = -1;
                     }
                 }
             } catch (Exception e2) {
-                GLLib.be(e2.getMessage());
+                GameRuntime.be(e2.getMessage());
                 adh = -1;
             }
         }
@@ -775,11 +775,11 @@ public class bq {
         }
         C(t.Os, "cloudRestoreGetKey");
         if (adh != 0) {
-            GLLib.be("Could not retrieve savegame");
+            GameRuntime.be("Could not retrieve savegame");
             return adh;
         }
         try {
-            byte[] bArrBJ = GLLib.bJ(adc);
+            byte[] bArrBJ = GameRuntime.bJ(adc);
             if (cA("tempSaveFile")) {
                 deleteRecordStore("tempSaveFile");
             }
@@ -816,11 +816,11 @@ public class bq {
             try {
                 deleteRecordStore("tempSaveFile");
             } catch (javax.microedition.b.c e2) {
-                GLLib.d(e2);
+                GameRuntime.d(e2);
                 adh = -1;
             }
         } catch (Exception e3) {
-            GLLib.be(e3.getMessage());
+            GameRuntime.be(e3.getMessage());
         }
         return adh;
     }
@@ -838,7 +838,7 @@ public class bq {
     public static void G(String str, String str2) {
         String strCh;
         if (w.ZT) {
-            GLLib.be("Restoring save from cloud...");
+            GameRuntime.be("Restoring save from cloud...");
             adh = 0;
             bc bcVar = new bc(str);
             if (bcVar.no() > 0 && bcVar.np()[0].equals("json")) {
@@ -859,7 +859,7 @@ public class bq {
                     if (strCh3 == null || (strCh = bcVar.ch("key")) == null) {
                         adh = -122;
                     } else {
-                        adh = f(str2, strCh2, new String(GLLib.bJ(strCh)), strCh3);
+                        adh = f(str2, strCh2, new String(GameRuntime.bJ(strCh)), strCh3);
                         if (adh == 0) {
                             aka = true;
                         }
@@ -883,7 +883,7 @@ public class bq {
         try {
             deleteRecordStore(str);
         } catch (javax.microedition.b.c e) {
-            GLLib.d(e);
+            GameRuntime.d(e);
         }
         aka = false;
         return 0;
@@ -891,7 +891,7 @@ public class bq {
 
     /* JADX INFO: Access modifiers changed from: private */
     public static void nN() {
-        GLLib.be("Attempting to reset the clouds");
+        GameRuntime.be("Attempting to reset the clouds");
         adh = 0;
         s.t("$savegamelib.objects.TOC", "cloudDeleteToc");
         C(t.Ou, "cloudDeleteToc");

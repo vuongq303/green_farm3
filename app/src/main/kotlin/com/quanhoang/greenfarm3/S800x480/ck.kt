@@ -3,7 +3,7 @@ package com.quanhoang.greenfarm3.S800x480
 import org.json.JSONException
 import org.json.JSONObject
 
-open class ck(@JvmField val bbN: ci?) : com.gameloft.a.a.h {
+open class ck(@JvmField val bbN: FarmGameEngine?) : com.gameloft.a.a.h {
     override fun a(success: Boolean, response: JSONObject?) {
         val diagnostic = "CRM_Callback :: success = " + success + "data = " + response
         if (success) {

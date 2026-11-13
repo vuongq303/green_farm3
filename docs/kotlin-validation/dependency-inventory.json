@@ -345,11 +345,11 @@
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GLLib;",
-      "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/GLLib;",
+      "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/GameRuntime;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/GLLib.java",
-      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/GLLib.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/GameRuntime.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/GameRuntime.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/GloftGF2F;",
@@ -857,19 +857,19 @@
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ch;",
-      "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ch;",
+      "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/FarmEntity;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ch.java",
-      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ch.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/FarmEntity.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/FarmEntity.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ci;",
-      "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/ci;",
+      "target_descriptor": "Lcom/quanhoang/greenfarm3/S800x480/FarmGameEngine;",
       "subsystem": "engine",
       "runtime_source": "Java",
-      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ci.java",
-      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/ci.java"
+      "active_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/FarmGameEngine.java",
+      "jadx_reference_source": "app/src/main/java/com/quanhoang/greenfarm3/S800x480/FarmGameEngine.java"
     },
     {
       "original_descriptor": "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/cj;",

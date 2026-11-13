@@ -144,10 +144,10 @@ public class n {
 
     public static boolean cg(int i) {
         if (i != 12345) {
-            GLLib.be("\n\n **************** Verify code failed, please use fake code: 12345 ****************\n\n");
+            GameRuntime.be("\n\n **************** Verify code failed, please use fake code: 12345 ****************\n\n");
             return false;
         }
-        GLLib.be("\n\n **************** Verify code success with fake code: 12345 ****************\n\n");
+        GameRuntime.be("\n\n **************** Verify code success with fake code: 12345 ****************\n\n");
         setResult(7);
         return true;
     }
@@ -230,7 +230,7 @@ public class n {
     }
 
     public static boolean iB() {
-        String strBY = GLLib.Qu.bY("IAP-Show-Redeem");
+        String strBY = GameRuntime.Qu.bY("IAP-Show-Redeem");
         return (strBY == null || strBY.equals("")) ? w.ZH : strBY.equals(AppEventsConstants.EVENT_PARAM_VALUE_YES);
     }
 
@@ -257,7 +257,7 @@ public class n {
     }
 
     public static void iG() {
-        byte[] bArrBF = GLLib.bF(Lt);
+        byte[] bArrBF = GameRuntime.bF(Lt);
         if (bArrBF == null || bArrBF.length == 0) {
             return;
         }
@@ -345,9 +345,9 @@ public class n {
     public static void iF() {
         debug("FakeIAPLib:: Init_Feed");
         Lz = false;
-        String strBY = GLLib.Qu.bY("IAP-Feed-URL");
-        String strBY2 = GLLib.Qu.bY("IAP-Feed-Query");
-        String strBY3 = GLLib.Qu.bY("IAP-Feed-Imei");
+        String strBY = GameRuntime.Qu.bY("IAP-Feed-URL");
+        String strBY2 = GameRuntime.Qu.bY("IAP-Feed-Query");
+        String strBY3 = GameRuntime.Qu.bY("IAP-Feed-Imei");
         if (strBY == null || strBY2 == null || strBY.equals("") || strBY2.equals("")) {
             debug("FakeIAPLib:: Feed Url is null, use fake IAP.");
             LD = new q[LB.length];
@@ -382,13 +382,13 @@ public class n {
                 }
                 long jCurrentTimeMillis2 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 if (jCurrentTimeMillis2 - jCurrentTimeMillis > 1500) {
                     debug("[sendProfileRequest]Waiting for response");
                     jCurrentTimeMillis = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                 }
             }
@@ -400,7 +400,7 @@ public class n {
         }
         long jCurrentTimeMillis3 = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         Ly = jCurrentTimeMillis3;
         if (LH.LQ.equals("")) {
@@ -411,7 +411,7 @@ public class n {
     }
 
     public static int iC() {
-        if (GLLib.Qp) {
+        if (GameRuntime.Qp) {
             LD = null;
         }
         int i = Lp;
@@ -423,17 +423,17 @@ public class n {
             debug("\n\n **************** IAP Waiting.... ****************\n\n");
         }
         if (Lp == 12) {
-            GLLib.be("\n\n **************** Trying to Silent Unlock ****************\n\n");
+            GameRuntime.be("\n\n **************** Trying to Silent Unlock ****************\n\n");
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (jCurrentTimeMillis < LE + 5000 || LE == 0) {
                 if (iB()) {
-                    GLLib.be("\n\n **************** Silent Unlock failed switch to IAP_REQUEST_SENT ****************\n\n");
+                    GameRuntime.be("\n\n **************** Silent Unlock failed switch to IAP_REQUEST_SENT ****************\n\n");
                     setResult(2);
                 } else {
-                    GLLib.be("\n\n **************** IAP_ITEM_PURCHASED ****************\n\n");
+                    GameRuntime.be("\n\n **************** IAP_ITEM_PURCHASED ****************\n\n");
                     setResult(7);
                 }
             }

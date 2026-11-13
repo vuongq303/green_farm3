@@ -129,9 +129,9 @@ class TutorialFlowController private constructor() {
         }
 
         @JvmStatic fun restoreAfterLoad() = synchronized(TutorialFlowController::class.java) {
-            val entityLists = ch.als
-            if (ci.aZB != 0 || ci.aYR != 18 || entityLists == null || entityLists.size <= 1) return@synchronized
-            var grownCow: ch? = null
+            val entityLists = FarmEntity.als
+            if (FarmGameEngine.aZB != 0 || FarmGameEngine.currentTutorialStepIndex != 18 || entityLists == null || entityLists.size <= 1) return@synchronized
+            var grownCow: FarmEntity? = null
             var entity = entityLists[1]
             while (entity != null) {
                 if (entity.Kx == 54) {
@@ -150,15 +150,15 @@ class TutorialFlowController private constructor() {
         }
 
         @JvmStatic fun restoreWorldUi() {
-            if (ci.aZB != 0 || ci.aYR < 10 || ci.aYR > 12) return
+            if (FarmGameEngine.aZB != 0 || FarmGameEngine.currentTutorialStepIndex < 10 || FarmGameEngine.currentTutorialStepIndex > 12) return
             // Ep hides the control when jM re-enters tutorial. Rebuild its
             // presentation only; persisted quests continue to own progression.
-            ci.e(1, 53, true)
-            ci.f(1, 53, true)
-            ci.e(1, 65, ci.aYR == 10)
-            ci.e(1, 66, ci.aYR == 11)
-            ci.Ff()
-            ci.gM(1)
+            FarmGameEngine.e(1, 53, true)
+            FarmGameEngine.f(1, 53, true)
+            FarmGameEngine.e(1, 65, FarmGameEngine.currentTutorialStepIndex == 10)
+            FarmGameEngine.e(1, 66, FarmGameEngine.currentTutorialStepIndex == 11)
+            FarmGameEngine.Ff()
+            FarmGameEngine.gM(1)
         }
     }
 }

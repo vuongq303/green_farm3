@@ -10,10 +10,10 @@ class ad : SoundPool.OnLoadCompleteListener {
             if (ac.ma()[index] == sampleId) soundIndex = index
             index++
         }
-        GLLib.c(status == 0, "Sound " + soundIndex + " loading ERROR!!!")
-        if (w.Wd) GLLib.b("onLoadComplete for sound " + soundIndex + "; SoundPool " + soundPool + "; with state " + status, "GLLib_snd", 3)
+        GameRuntime.c(status == 0, "Sound " + soundIndex + " loading ERROR!!!")
+        if (w.Wd) GameRuntime.b("onLoadComplete for sound " + soundIndex + "; SoundPool " + soundPool + "; with state " + status, "GLLib_snd", 3)
         if (status == 0) {
-            if (w.Wd) GLLib.b("Loading completed for sound " + soundIndex, "GLLib_snd", 3)
+            if (w.Wd) GameRuntime.b("Loading completed for sound " + soundIndex, "GLLib_snd", 3)
             ac.mb()[soundIndex] = true
         }
     }

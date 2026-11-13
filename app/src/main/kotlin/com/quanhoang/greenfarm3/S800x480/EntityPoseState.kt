@@ -16,11 +16,11 @@ object EntityPoseState {
     private const val WORDS = 6
     private const val MAX_ENTITIES = 16384
     private var restored = false
-    private var deferred = IdentityHashMap<ch, Int>()
+    private var deferred = IdentityHashMap<FarmEntity, Int>()
 
     @JvmStatic fun resetForLoad() { restored = false; deferred.clear() }
     // Kotlin visibility follows the package-private Java actor; JVM name preserves its old hook.
-    @JvmStatic @JvmName("spriteUpdated") internal fun spriteUpdated(entity: ch) {
+    @JvmStatic @JvmName("spriteUpdated") internal fun spriteUpdated(entity: FarmEntity) {
         if (entity.aoO == null) return
         val transform = deferred.remove(entity)
         if (transform != null) entity.aoO.aaN = transform
@@ -30,13 +30,13 @@ object EntityPoseState {
         requireWorldList()
         val entries = ArrayList<IntArray>()
         val occurrences = HashMap<String, Int>()
-        val liveEntities = HashSet<ch>()
-        var entity = ch.als[1]
+        val liveEntities = HashSet<FarmEntity>()
+        var entity = FarmEntity.als[1]
         while (entity != null) {
             if (persistent(entity.Kx, entity.aoC)) {
                 liveEntities.add(entity)
-                val gridX = ci.bG(entity.aol, entity.aom).toShort().toInt()
-                val gridY = ci.bH(entity.aol, entity.aom).toShort().toInt()
+                val gridX = FarmGameEngine.bG(entity.aol, entity.aom).toShort().toInt()
+                val gridY = FarmGameEngine.bH(entity.aol, entity.aom).toShort().toInt()
                 val definition = definitionKey(entity.Kx, entity.aoC)
                 val key = baseKey(entity.Kx, definition, gridX, gridY)
                 val occurrence = nextOccurrence(occurrences, key)
@@ -59,22 +59,22 @@ object EntityPoseState {
             output.writeInt(entries.size)
             for (entry in entries) for (value in entry) output.writeInt(value)
             output.flush()
-            GLLib.a(RECORD, bytes.toByteArray(), ci.rv())
+            GameRuntime.a(RECORD, bytes.toByteArray(), FarmGameEngine.rv())
         } catch (failure: IOException) { throw invalid("Cannot encode entity transforms", failure) }
     }
 
     @JvmStatic fun restoreSnapshot() {
         if (restored) return
         requireWorldList()
-        val bytes = GLLib.B(RECORD, ci.rv())
+        val bytes = GameRuntime.B(RECORD, FarmGameEngine.rv())
         if (bytes == null) { restored = true; return }
         val entries = decode(bytes)
-        val entities = HashMap<String, ArrayList<ch>>()
-        var entity = ch.als[1]
+        val entities = HashMap<String, ArrayList<FarmEntity>>()
+        var entity = FarmEntity.als[1]
         while (entity != null) {
             if (persistent(entity.Kx, entity.aoC)) {
                 val key = baseKey(entity.Kx, definitionKey(entity.Kx, entity.aoC),
-                    ci.bG(entity.aol, entity.aom).toShort().toInt(), ci.bH(entity.aol, entity.aom).toShort().toInt())
+                    FarmGameEngine.bG(entity.aol, entity.aom).toShort().toInt(), FarmGameEngine.bH(entity.aol, entity.aom).toShort().toInt())
                 var group = entities[key]
                 if (group == null) { group = ArrayList(); entities[key] = group }
                 group.add(entity)
@@ -92,7 +92,7 @@ object EntityPoseState {
         }
         val targets = arrayOfNulls<aa>(entries.size)
         val before = IntArray(entries.size)
-        val pending = IdentityHashMap<ch, Int>()
+        val pending = IdentityHashMap<FarmEntity, Int>()
         val assigned = HashSet<String>()
         for (index in entries.indices) {
             val entry = entries[index]
@@ -147,7 +147,7 @@ object EntityPoseState {
     private fun definitionKey(type: Int, definition: Int): Int = if (type == 13) -1 else definition.toByte().toInt()
     private fun baseKey(type: Int, definition: Int, gridX: Int, gridY: Int): String = "$type:$definition:$gridX:$gridY"
     private fun requireWorldList() {
-        if (ch.als == null || ch.als.size <= 1) throw invalid("Entity list is not ready", null)
+        if (FarmEntity.als == null || FarmEntity.als.size <= 1) throw invalid("Entity list is not ready", null)
     }
     private fun invalid(message: String, cause: Throwable?): IllegalStateException = IllegalStateException(message, cause)
 }

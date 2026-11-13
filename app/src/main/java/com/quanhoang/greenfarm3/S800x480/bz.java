@@ -80,14 +80,14 @@ public class bz {
                     }
                     if (ade != null) {
                         if ("java.io.IOException".equals(ade.getClass().getName()) || "java.net.ConnectException".equals(ade.getClass().getName())) {
-                            GLLib.be("No Internet connection");
+                            GameRuntime.be("No Internet connection");
                         }
                         adh = -1;
                         return;
                     }
                     if (ade != null) {
                         if ("java.io.IOException".equals(ade.getClass().getName()) || "java.net.ConnectException".equals(ade.getClass().getName())) {
-                            GLLib.be("No Internet connection");
+                            GameRuntime.be("No Internet connection");
                         }
                         adh = -1;
                         return;
@@ -430,12 +430,12 @@ public class bz {
     }
 
     private String k(bc bcVar) {
-        return GLLib.e(GLLib.a(bcVar.toString().getBytes(), this.akU, true));
+        return GameRuntime.e(GameRuntime.a(bcVar.toString().getBytes(), this.akU, true));
     }
 
     private int b(String str, bc bcVar) {
         try {
-            bcVar.ca(new String(GLLib.b(decodeBase64(str), this.akU, true)));
+            bcVar.ca(new String(GameRuntime.b(decodeBase64(str), this.akU, true)));
             return 0;
         } catch (IOException e) {
             return -24;
@@ -443,7 +443,7 @@ public class bz {
     }
     // Original bJ call is protected by an IOException handler in DEX.
     private static byte[] decodeBase64(String value) throws IOException {
-        return GLLib.bJ(value);
+        return GameRuntime.bJ(value);
     }
 
     // Original DEX synthetic accessors, inlined away by JADX.

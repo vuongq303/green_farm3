@@ -5,11 +5,11 @@ open class cw(@JvmField var bbW: String?) : ar {
         if (responseBody == null) return
         if (statusCode == 200) {
             val diagnostic = "[OnlineQuest]OnlineQuestGetRewardCallback Success " + responseBody
-            if (responseBody == "-3") ci.dn(bbW) else ci.M(bbW, responseBody)
+            if (responseBody == "-3") FarmGameEngine.dn(bbW) else FarmGameEngine.M(bbW, responseBody)
             return
         }
-        if (statusCode == 404) ci.dn(bbW)
-        else if (statusCode == 409) ci.dn(bbW)
+        if (statusCode == 404) FarmGameEngine.dn(bbW)
+        else if (statusCode == 409) FarmGameEngine.dn(bbW)
         else {
             val diagnostic = "[OnlineQuest]OnlineQuestGetRewardCallback Error " + Integer.toString(statusCode)
         }

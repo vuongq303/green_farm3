@@ -10,8 +10,8 @@ import com.gameloft.glads.GLURLConnection;
 import com.google.android.gms.ads.AdRequest;
 
 /* JADX INFO: loaded from: classes.dex */
-class ch {
-    static ch[] als;
+class FarmEntity {
+    static FarmEntity[] als;
     static int[] ape;
     static int[] apf;
     static int[][] apg;
@@ -56,7 +56,7 @@ class ch {
     int aoJ;
     int aoK;
     int aoL;
-    ch aoM;
+    FarmEntity aoM;
     int[] aoN;
     aa aoO;
     int aoP;
@@ -67,8 +67,8 @@ class ch {
     int aoU;
     int aoV;
     int aoW;
-    ch aoi;
-    ch aoj;
+    FarmEntity aoi;
+    FarmEntity aoj;
     int aol;
     int aom;
     int aon;
@@ -92,7 +92,7 @@ class ch {
     public static boolean alt = false;
     public static long alu = 300000;
     static boolean alN = false;
-    static final int alU = ci.ih(86400);
+    static final int alU = FarmGameEngine.ih(86400);
     public static boolean amc = false;
     static int anY = 0;
     static int anZ = 10;
@@ -127,7 +127,7 @@ class ch {
     boolean amn = false;
     boolean amo = false;
     byte amp = 0;
-    int amr = ci.ih(0);
+    int amr = FarmGameEngine.ih(0);
     boolean ams = false;
     int amt = 2;
     boolean amu = false;
@@ -140,11 +140,11 @@ class ch {
     long amB = 0;
     long amC = 0;
     int amD = Integer.MAX_VALUE;
-    int amE = ci.ih(Integer.MAX_VALUE);
+    int amE = FarmGameEngine.ih(Integer.MAX_VALUE);
     int amF = 0;
     int amG = 0;
     int amH = 0;
-    int amI = ci.ih(0);
+    int amI = FarmGameEngine.ih(0);
     long amJ = 0;
     int amK = 0;
     boolean amL = false;
@@ -219,7 +219,7 @@ class ch {
     boolean apk = false;
 
     static void Init() {
-        als = new ch[6];
+        als = new FarmEntity[6];
         ape = new int[4];
         apf = new int[7];
         apg = new int[500][];
@@ -229,14 +229,14 @@ class ch {
         }
     }
 
-    static int a(int i, int i2, int i3, int i4, int i5, int i6, ch[] chVarArr, int i7) {
+    static int a(int i, int i2, int i3, int i4, int i5, int i6, FarmEntity[] chVarArr, int i7) {
         int[] iArr = new int[2];
         int[] iArr2 = new int[2];
         int i8 = 0;
-        for (ch chVar = als[i]; chVar != null && i8 < i7; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null && i8 < i7; chVar = chVar.aoi) {
             iArr[0] = chVar.aol;
             iArr[1] = chVar.aom;
-            ci.f(iArr, iArr2);
+            FarmGameEngine.f(iArr, iArr2);
             if ((i2 == -1 || i2 == chVar.Kx) && chVar.Kx != -1 && iArr2[0] >= i3 && iArr2[0] < i4 && iArr2[1] >= i5 && iArr2[1] < i6) {
                 chVarArr[i8] = chVar;
                 i8++;
@@ -245,9 +245,9 @@ class ch {
         return i8;
     }
 
-    static int a(int i, int i2, int i3, int i4, ch[] chVarArr, int i5) {
+    static int a(int i, int i2, int i3, int i4, FarmEntity[] chVarArr, int i5) {
         int i6 = 0;
-        for (ch chVar = als[i]; chVar != null && i6 < i5; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null && i6 < i5; chVar = chVar.aoi) {
             if ((i2 == -1 || chVar.Kx == i2) && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && chVar.aoC >= i3 && chVar.aoC <= i4 && !chVar.fz(32)) {
                 chVarArr[i6] = chVar;
                 i6++;
@@ -256,9 +256,9 @@ class ch {
         return i6;
     }
 
-    static int a(int i, int i2, int i3, ch[] chVarArr, int i4) {
+    static int a(int i, int i2, int i3, FarmEntity[] chVarArr, int i4) {
         int i5 = 0;
-        for (ch chVar = als[i]; chVar != null && i5 < i4; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null && i5 < i4; chVar = chVar.aoi) {
             if ((i2 == -1 || chVar.Kx == i2) && ((i3 == -1 || chVar.aoC == i3) && chVar.ams)) {
                 chVarArr[i5] = chVar;
                 i5++;
@@ -267,14 +267,14 @@ class ch {
         return i5;
     }
 
-    static int a(int i, int i2, ch[] chVarArr, int i3) {
+    static int a(int i, int i2, FarmEntity[] chVarArr, int i3) {
         return b(i, i2, -1, chVarArr, i3);
     }
 
-    static int a(int i, int i2, ch[] chVarArr, int i3, ch chVar) {
+    static int a(int i, int i2, FarmEntity[] chVarArr, int i3, FarmEntity chVar) {
         int i4 = 0;
-        for (ch chVar2 = als[i]; chVar2 != null && i4 < i3; chVar2 = chVar2.aoi) {
-            if (chVar2.Kx == i2 && chVar2.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && (ci.awl || ci.c(chVar2, chVar))) {
+        for (FarmEntity chVar2 = als[i]; chVar2 != null && i4 < i3; chVar2 = chVar2.aoi) {
+            if (chVar2.Kx == i2 && chVar2.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && (FarmGameEngine.awl || FarmGameEngine.c(chVar2, chVar))) {
                 chVarArr[i4] = chVar2;
                 i4++;
             }
@@ -282,14 +282,14 @@ class ch {
         return i4;
     }
 
-    static int a(ch[] chVarArr, int i) {
+    static int a(FarmEntity[] chVarArr, int i) {
         return a(chVarArr, i, -1);
     }
 
-    static int a(ch[] chVarArr, int i, int i2) {
+    static int a(FarmEntity[] chVarArr, int i, int i2) {
         int i3 = 0;
         if (als != null) {
-            for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+            for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
                 if ((i2 == -1 || chVar.Kx == i2) && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && (chVar.qj() || chVar.qi())) {
                     chVarArr[i3] = chVar;
                     i3++;
@@ -299,16 +299,16 @@ class ch {
         return i3;
     }
 
-    static void a(ch chVar, int i) {
+    static void a(FarmEntity chVar, int i) {
         chVar.aok = i;
         chVar.aov = chVar.oW();
-        ch chVar2 = null;
-        ch chVar3 = als[i];
+        FarmEntity chVar2 = null;
+        FarmEntity chVar3 = als[i];
         while (chVar3 != null && chVar.aov > chVar3.oW()) {
             chVar2 = chVar3;
             chVar3 = chVar3.aoi;
         }
-        ch chVar4 = chVar2;
+        FarmEntity chVar4 = chVar2;
         while (chVar3 != null && chVar.aov == chVar3.oW() && chVar.aoG > chVar3.aoG) {
             chVar4 = chVar3;
             chVar3 = chVar3.aoi;
@@ -325,11 +325,11 @@ class ch {
         }
     }
 
-    static boolean a(ch chVar) {
+    static boolean a(FarmEntity chVar) {
         return chVar.Kx == 50 && (chVar.aoC == 9 || chVar.aoC == 14);
     }
 
-    static boolean a(ch[] chVarArr, ch chVar) {
+    static boolean a(FarmEntity[] chVarArr, FarmEntity chVar) {
         for (int i = 0; i < chVarArr.length && chVarArr[i] != null; i++) {
             if (chVarArr[i].Kx == chVar.Kx && chVarArr[i].aoC == chVar.aoC && chVarArr[i].aoU == chVar.aoU) {
                 return false;
@@ -339,41 +339,41 @@ class ch {
     }
 
     /* JADX WARN: Code duplicated, block: B:82:0x0113  */
-    static ch[] a(int i, int i2, ch chVar, int i3) {
+    static FarmEntity[] a(int i, int i2, FarmEntity chVar, int i3) {
         int i4;
-        ch[] chVarArr;
+        FarmEntity[] chVarArr;
         boolean z;
-        ch[] chVarArr2;
+        FarmEntity[] chVarArr2;
         int i5;
-        ch chVar2 = als[i];
-        ch[] chVarArr3 = new ch[i3];
+        FarmEntity chVar2 = als[i];
+        FarmEntity[] chVarArr3 = new FarmEntity[i3];
         int i6 = 0;
         int i7 = chVar.aoy;
         int i8 = chVar.aoz;
-        for (ch chVar3 = chVar2; chVar3 != null && i6 < i3; chVar3 = chVar3.aoi) {
+        for (FarmEntity chVar3 = chVar2; chVar3 != null && i6 < i3; chVar3 = chVar3.aoi) {
             if (!(i2 == -1 || chVar3.Kx == i2) || !chVar3.fz(AdRequest.MAX_CONTENT_URL_LENGTH) || !chVar3.fz(128) || chVar3.fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST) || chVar3.fz(Utility.DEFAULT_STREAM_BUFFER_SIZE) || chVar3.anw || a(chVar3)) {
                 i4 = i6;
             } else if (i2 == -1) {
                 chVar.aol = chVar3.aol;
                 chVar.aom = chVar3.aom;
-                int[] iArrA = ci.a(new ch[]{chVar});
+                int[] iArrA = FarmGameEngine.a(new FarmEntity[]{chVar});
                 if (iArrA != null) {
-                    ch chVar4 = als[i];
+                    FarmEntity chVar4 = als[i];
                     chVarArr3[0] = chVar3;
                     int i9 = 1;
-                    ch chVar5 = chVar4;
+                    FarmEntity chVar5 = chVar4;
                     while (true) {
                         if (chVar5 == null || i9 >= i3) {
                             z = true;
                             chVarArr2 = chVarArr3;
                             break;
                         }
-                        if (!chVar5.fz(AdRequest.MAX_CONTENT_URL_LENGTH) || chVar5.fz(Utility.DEFAULT_STREAM_BUFFER_SIZE) || chVar5.fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST) || chVar5.anw || !a(chVarArr3, chVar5) || a(chVar5) || !ci.c(chVar5, chVar)) {
+                        if (!chVar5.fz(AdRequest.MAX_CONTENT_URL_LENGTH) || chVar5.fz(Utility.DEFAULT_STREAM_BUFFER_SIZE) || chVar5.fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST) || chVar5.anw || !a(chVarArr3, chVar5) || a(chVar5) || !FarmGameEngine.c(chVar5, chVar)) {
                             i5 = i9;
                         } else {
                             if (!chVar5.fz(128)) {
                                 z = false;
-                                chVarArr2 = new ch[i3];
+                                chVarArr2 = new FarmEntity[i3];
                                 break;
                             }
                             i5 = i9 + 1;
@@ -383,10 +383,10 @@ class ch {
                         i9 = i5;
                     }
                     if (z) {
-                        int[] iArrA2 = ci.a(chVarArr2);
+                        int[] iArrA2 = FarmGameEngine.a(chVarArr2);
                         boolean z2 = false;
                         for (int i10 = 0; i10 < iArrA.length && !z2; i10++) {
-                            if (ci.aAP[iArrA[i10]] == 1) {
+                            if (FarmGameEngine.aAP[iArrA[i10]] == 1) {
                                 boolean z3 = false;
                                 for (int i11 = 0; i11 < iArrA2.length && !z3; i11++) {
                                     if (iArrA[i10] == iArrA2[i11]) {
@@ -410,8 +410,8 @@ class ch {
             } else if (chVar3.aoy < i7 || chVar3.aoz < i8) {
                 i4 = i6;
             } else {
-                ch chVarFm = ci.Fm();
-                if (chVarFm != null ? ci.c(chVarFm, chVar3) : false) {
+                FarmEntity chVarFm = FarmGameEngine.Fm();
+                if (chVarFm != null ? FarmGameEngine.c(chVarFm, chVar3) : false) {
                     i4 = i6;
                 } else {
                     chVarArr3[i6] = chVar3;
@@ -425,7 +425,7 @@ class ch {
 
     static int aA(int i, int i2) {
         int i3 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == i2 && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && !chVar.fz(32) && chVar.fz(2048)) {
                 i3++;
             }
@@ -433,17 +433,17 @@ class ch {
         return i3;
     }
 
-    static ch aB(int i, int i2) {
+    static FarmEntity aB(int i, int i2) {
         if (als != null) {
-            ch chVar = als[i];
-            ch chVar2 = chVar;
-            for (ch chVar3 = chVar; chVar3 != null && 0 == 0; chVar3 = chVar3.aoi) {
+            FarmEntity chVar = als[i];
+            FarmEntity chVar2 = chVar;
+            for (FarmEntity chVar3 = chVar; chVar3 != null && 0 == 0; chVar3 = chVar3.aoi) {
                 if ((i2 == -1 || chVar3.Kx == i2) && chVar3.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && chVar3.qj()) {
                     return chVar3;
                 }
                 chVar2 = chVar3;
             }
-            for (ch chVar4 = chVar2; chVar4 != null && 0 == 0; chVar4 = chVar4.aoj) {
+            for (FarmEntity chVar4 = chVar2; chVar4 != null && 0 == 0; chVar4 = chVar4.aoj) {
                 if ((i2 == -1 || chVar4.Kx == i2) && chVar4.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && chVar4.qi()) {
                     return chVar4;
                 }
@@ -452,10 +452,10 @@ class ch {
         return null;
     }
 
-    static ch aC(int i, int i2) {
-        ch chVar = als[i];
+    static FarmEntity aC(int i, int i2) {
+        FarmEntity chVar = als[i];
         while (chVar != null) {
-            if (chVar.aoD == i2 && (ci.aCu != 19 || chVar.aoC != 14 || ci.qD() != 36)) {
+            if (chVar.aoD == i2 && (FarmGameEngine.aCu != 19 || chVar.aoC != 14 || FarmGameEngine.currentEngineState() != 36)) {
                 return chVar;
             }
             chVar = chVar.aoi;
@@ -465,7 +465,7 @@ class ch {
 
     static int aD(int i, int i2) {
         int i3 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 54) {
                 String str = "actor animal. sel:" + chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) + ",wt:" + ((int) chVar.aoB);
             }
@@ -477,7 +477,7 @@ class ch {
     }
 
     public static void as(boolean z) {
-        for (ch chVar = als[1]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[1]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 50) {
                 switch (chVar.aoC) {
                     case 29:
@@ -495,16 +495,16 @@ class ch {
     }
 
     static void au(boolean z) {
-        for (ch chVar = als[1]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[1]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx != 54 || ((chVar.anp != 0 && z) || chVar.anj || chVar.ank || chVar.anw)) {
-                if (chVar.Kx == 69 && ci.u(chVar)) {
+                if (chVar.Kx == 69 && FarmGameEngine.u(chVar)) {
                     if (z) {
                         chVar.px();
                     } else {
                         chVar.py();
                     }
                 }
-            } else if (ci.u(chVar)) {
+            } else if (FarmGameEngine.u(chVar)) {
                 if (z) {
                     chVar.pE();
                 } else {
@@ -516,7 +516,7 @@ class ch {
 
     static int av(int i, int i2) {
         int i3 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == i2) {
                 i3++;
             }
@@ -526,7 +526,7 @@ class ch {
 
     static int aw(int i, int i2) {
         int i3 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if ((i2 == -1 || chVar.Kx == i2) && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH)) {
                 if (!(chVar.Kx == 50 && chVar.aoC == 27)) {
                     i3++;
@@ -538,7 +538,7 @@ class ch {
 
     static int ax(int i, int i2) {
         int i3 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 54 && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && !chVar.anj && !chVar.ank) {
                 if (i2 == 0 && chVar.fz(32)) {
                     i3++;
@@ -554,7 +554,7 @@ class ch {
 
     static int ay(int i, int i2) {
         int i3 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.aoU == i2 && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH)) {
                 i3++;
             }
@@ -564,7 +564,7 @@ class ch {
 
     static int az(int i, int i2) {
         int i3 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == i2 && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH)) {
                 i3++;
             }
@@ -572,9 +572,9 @@ class ch {
         return i3;
     }
 
-    static int b(int i, int i2, int i3, int i4, ch[] chVarArr, int i5) {
+    static int b(int i, int i2, int i3, int i4, FarmEntity[] chVarArr, int i5) {
         int i6 = 0;
-        for (ch chVar = als[i]; chVar != null && i6 < i5; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null && i6 < i5; chVar = chVar.aoi) {
             if ((i2 == -1 || chVar.Kx == i2) && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && chVar.aoU >= i3 && chVar.aoU <= i4 && !chVar.fz(32) && !chVar.fz(Utility.DEFAULT_STREAM_BUFFER_SIZE)) {
                 chVarArr[i6] = chVar;
                 i6++;
@@ -583,9 +583,9 @@ class ch {
         return i6;
     }
 
-    static int b(int i, int i2, int i3, ch[] chVarArr, int i4) {
+    static int b(int i, int i2, int i3, FarmEntity[] chVarArr, int i4) {
         int i5 = 0;
-        for (ch chVar = als[i]; chVar != null && i5 < i4; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null && i5 < i4; chVar = chVar.aoi) {
             if ((i2 == -1 || chVar.Kx == i2) && (i3 == -1 || chVar.aoC == i3)) {
                 chVarArr[i5] = chVar;
                 i5++;
@@ -594,8 +594,8 @@ class ch {
         return i5;
     }
 
-    static ch b(int i, int i2, int[] iArr) {
-        ch chVar = new ch();
+    static FarmEntity b(int i, int i2, int[] iArr) {
+        FarmEntity chVar = new FarmEntity();
         chVar.d(i, iArr);
         int i3 = api;
         api = i3 + 1;
@@ -604,9 +604,9 @@ class ch {
         return chVar;
     }
 
-    static int c(int i, int i2, int i3, ch[] chVarArr, int i4) {
+    static int c(int i, int i2, int i3, FarmEntity[] chVarArr, int i4) {
         int i5 = 0;
-        for (ch chVar = als[i]; chVar != null && i5 < i4; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null && i5 < i4; chVar = chVar.aoi) {
             if ((i2 == -1 || chVar.Kx == i2) && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && (i3 == -1 || chVar.aoC == i3)) {
                 chVarArr[i5] = chVar;
                 i5++;
@@ -616,12 +616,12 @@ class ch {
     }
 
     static void c(boolean z, boolean z2) {
-        ci.a(151144, new String[]{"INT:" + Integer.toString(151147), "INT:" + Integer.toString(z2 ? 151148 : 151149), "INT:" + Integer.toString(ci.FC())});
+        FarmGameEngine.a(151144, new String[]{"INT:" + Integer.toString(151147), "INT:" + Integer.toString(z2 ? 151148 : 151149), "INT:" + Integer.toString(FarmGameEngine.FC())});
     }
 
-    static int d(int i, int i2, int i3, ch[] chVarArr, int i4) {
+    static int d(int i, int i2, int i3, FarmEntity[] chVarArr, int i4) {
         int i5 = 0;
-        for (ch chVar = als[i]; chVar != null && i5 < i4; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null && i5 < i4; chVar = chVar.aoi) {
             if ((i2 == -1 || chVar.Kx == i2) && (i3 == -1 || chVar.aoU == i3)) {
                 chVarArr[i5] = chVar;
                 i5++;
@@ -630,10 +630,10 @@ class ch {
         return i5;
     }
 
-    static int e(int i, int i2, int i3, ch[] chVarArr, int i4) {
+    static int e(int i, int i2, int i3, FarmEntity[] chVarArr, int i4) {
         int i5;
         int i6 = 0;
-        ch chVar = als[i];
+        FarmEntity chVar = als[i];
         while (chVar != null && i6 < i4) {
             if (chVar.Kx == i2 && chVar.fz(4096) && chVar.aoU == i3) {
                 i5 = i6 + 1;
@@ -647,14 +647,14 @@ class ch {
         return i6;
     }
 
-    static ch e(int i, int[] iArr) {
+    static FarmEntity e(int i, int[] iArr) {
         return b(i, 1, iArr);
     }
 
     static void eW(int i) {
-        ch chVar = als[i];
+        FarmEntity chVar = als[i];
         while (chVar != null) {
-            ch chVar2 = chVar.aoi;
+            FarmEntity chVar2 = chVar.aoi;
             chVar.mg();
             chVar = chVar2;
         }
@@ -667,10 +667,10 @@ class ch {
     }
 
     static void eZ(int i) {
-        ch chVar = als[i];
-        ch chVar2 = null;
+        FarmEntity chVar = als[i];
+        FarmEntity chVar2 = null;
         while (chVar != null) {
-            ch chVar3 = chVar.aoi;
+            FarmEntity chVar3 = chVar.aoi;
             int iOW = chVar.oW();
             if (iOW != chVar.aov) {
                 chVar.aov = iOW;
@@ -681,7 +681,7 @@ class ch {
             chVar = chVar3;
         }
         while (chVar2 != null) {
-            ch chVar4 = chVar2.aoi;
+            FarmEntity chVar4 = chVar2.aoi;
             a(chVar2, i);
             chVar2 = chVar4;
         }
@@ -710,9 +710,9 @@ class ch {
     }
 
     static void fa(int i) {
-        ch chVar = als[i];
+        FarmEntity chVar = als[i];
         while (chVar != null) {
-            ch chVar2 = chVar.aoi;
+            FarmEntity chVar2 = chVar.aoi;
             chVar.aov = 0;
             chVar = chVar2;
         }
@@ -720,7 +720,7 @@ class ch {
 
     static int fb(int i) {
         int i2 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 49 && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && (chVar.Bj == 3 || chVar.Bj == 4 || chVar.Bj == 5)) {
                 i2++;
             }
@@ -728,15 +728,15 @@ class ch {
         return i2;
     }
 
-    static ch fc(int i) {
+    static FarmEntity fc(int i) {
         return aB(i, -1);
     }
 
     static void fd(int i) {
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             int[] iArr = new int[2];
-            ci.f(new int[]{chVar.aol, chVar.aom}, iArr);
-            if (!ci.hB(ci.bE(iArr[0], iArr[1]))) {
+            FarmGameEngine.f(new int[]{chVar.aol, chVar.aom}, iArr);
+            if (!FarmGameEngine.hB(FarmGameEngine.bE(iArr[0], iArr[1]))) {
                 chVar.fy(AdRequest.MAX_CONTENT_URL_LENGTH);
             } else if (chVar.Kx != 50 || chVar.aoC < 0 || chVar.aoC > 8) {
                 chVar.fx(AdRequest.MAX_CONTENT_URL_LENGTH);
@@ -752,7 +752,7 @@ class ch {
     static int fe(int i) {
         int i2;
         int i3 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 47 && chVar.anG == 59 && (i2 = chVar.anM & 65535) != 110 && i2 != 5 && (i2 < 111 || i2 > 116)) {
                 i3 += (chVar.anM & (-65536)) >> 16;
             }
@@ -762,7 +762,7 @@ class ch {
 
     static int ff(int i) {
         int i2 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 47 && chVar.anG == 37) {
                 i2++;
             }
@@ -772,46 +772,46 @@ class ch {
     }
 
     static void fr(int i) {
-        ci.a(151144, new String[]{"INT:" + Integer.toString(151145), "INT:" + Integer.toString(i), "INT:" + Integer.toString(ci.FC())});
+        FarmGameEngine.a(151144, new String[]{"INT:" + Integer.toString(151145), "INT:" + Integer.toString(i), "INT:" + Integer.toString(FarmGameEngine.FC())});
     }
 
-    static ch ft(int i) {
-        int iL = GLLib.L(25, 29);
+    static FarmEntity ft(int i) {
+        int iL = GameRuntime.L(25, 29);
         String str = "Fireworks sndIndex : " + iL;
-        ci.gX(iL);
+        FarmGameEngine.gX(iL);
         if (i == -1) {
             anY = -1;
         } else {
             anY = 0;
             anZ = i;
         }
-        if (ci.aZf[85] == null) {
-            ci.s(0, 85, 15, 24);
-            GLLib.bk("/9");
-            ci.fP(0);
-            GLLib.ke();
+        if (FarmGameEngine.aZf[85] == null) {
+            FarmGameEngine.s(0, 85, 15, 24);
+            GameRuntime.bk("/9");
+            FarmGameEngine.fP(0);
+            GameRuntime.ke();
         }
         if (av(1, 21) <= 0) {
-            ch chVarE = e(21, new int[]{((ci.aZj.aol + (GLLib.kH() >> 1)) * 100) / ci.aYP, ((ci.aZj.aom + (GLLib.kI() >> 1)) * 100) / ci.aYP, 255});
-            chVarE.aoO = new aa(ci.aZf[85], chVarE.aol, chVarE.aom);
+            FarmEntity chVarE = e(21, new int[]{((FarmGameEngine.aZj.aol + (GameRuntime.kH() >> 1)) * 100) / FarmGameEngine.aYP, ((FarmGameEngine.aZj.aom + (GameRuntime.kI() >> 1)) * 100) / FarmGameEngine.aYP, 255});
+            chVarE.aoO = new aa(FarmGameEngine.aZf[85], chVarE.aol, chVarE.aom);
             chVarE.aoO.Y(0, 1);
             return chVarE;
         }
-        ch[] chVarArr = new ch[1];
+        FarmEntity[] chVarArr = new FarmEntity[1];
         a(1, 21, chVarArr, 1);
-        chVarArr[0].aoO = new aa(ci.aZf[85], chVarArr[0].aol, chVarArr[0].aom);
+        chVarArr[0].aoO = new aa(FarmGameEngine.aZf[85], chVarArr[0].aol, chVarArr[0].aom);
         chVarArr[0].aoO.Y(0, 1);
         return chVarArr[0];
     }
 
-    static ch fu(int i) {
-        ch[] chVarArr = new ch[1];
+    static FarmEntity fu(int i) {
+        FarmEntity[] chVarArr = new FarmEntity[1];
         b(1, 50, 18, chVarArr, 1);
         if (chVarArr[0] != null) {
             aoc = chVarArr[0].aol;
             aod = chVarArr[0].aom;
         }
-        ci.gX(30);
+        FarmGameEngine.gX(30);
         if (i == -1) {
             aoa = -1;
         } else {
@@ -819,42 +819,42 @@ class ch {
             aob = i;
         }
         if (av(1, 23) <= 0) {
-            ch chVarE = e(23, new int[]{(aoc * 100) / ci.aYP, (aod * 100) / ci.aYP, 255});
-            chVarE.aoO = new aa(ci.aZf[13], chVarE.aol, chVarE.aom);
+            FarmEntity chVarE = e(23, new int[]{(aoc * 100) / FarmGameEngine.aYP, (aod * 100) / FarmGameEngine.aYP, 255});
+            chVarE.aoO = new aa(FarmGameEngine.aZf[13], chVarE.aol, chVarE.aom);
             chVarE.aoO.Y(1, 1);
             return chVarE;
         }
-        ch[] chVarArr2 = new ch[1];
+        FarmEntity[] chVarArr2 = new FarmEntity[1];
         a(1, 23, chVarArr2, 1);
-        chVarArr2[0].aoO = new aa(ci.aZf[13], chVarArr2[0].aol, chVarArr2[0].aom);
+        chVarArr2[0].aoO = new aa(FarmGameEngine.aZf[13], chVarArr2[0].aol, chVarArr2[0].aom);
         chVarArr2[0].aoO.Y(1, 1);
         return chVarArr2[0];
     }
 
-    static ch fv(int i) {
+    static FarmEntity fv(int i) {
         if (i == -1) {
             aoe = -1;
         } else {
             aoe = 0;
             aof = i;
         }
-        if (ci.aZf[85] == null) {
-            ci.s(0, 85, 15, 24);
-            GLLib.bk("/9");
-            ci.fP(0);
-            GLLib.ke();
+        if (FarmGameEngine.aZf[85] == null) {
+            FarmGameEngine.s(0, 85, 15, 24);
+            GameRuntime.bk("/9");
+            FarmGameEngine.fP(0);
+            GameRuntime.ke();
         }
-        ci.q(11, false);
+        FarmGameEngine.q(11, false);
         aog = true;
         if (av(1, 24) <= 0) {
-            ch chVarE = e(24, new int[]{((ci.aZj.aol + (GLLib.kH() >> 1)) * 100) / ci.aYP, ((ci.aZj.aom + (GLLib.kI() >> 1)) * 100) / ci.aYP, 255});
-            chVarE.aoO = new aa(ci.aZf[85], chVarE.aol, chVarE.aom);
+            FarmEntity chVarE = e(24, new int[]{((FarmGameEngine.aZj.aol + (GameRuntime.kH() >> 1)) * 100) / FarmGameEngine.aYP, ((FarmGameEngine.aZj.aom + (GameRuntime.kI() >> 1)) * 100) / FarmGameEngine.aYP, 255});
+            chVarE.aoO = new aa(FarmGameEngine.aZf[85], chVarE.aol, chVarE.aom);
             chVarE.aoO.Y(0, 1);
             return chVarE;
         }
-        ch[] chVarArr = new ch[1];
+        FarmEntity[] chVarArr = new FarmEntity[1];
         a(1, 24, chVarArr, 1);
-        chVarArr[0].aoO = new aa(ci.aZf[85], chVarArr[0].aol, chVarArr[0].aom);
+        chVarArr[0].aoO = new aa(FarmGameEngine.aZf[85], chVarArr[0].aol, chVarArr[0].aom);
         chVarArr[0].aoO.Y(0, 1);
         return chVarArr[0];
     }
@@ -880,8 +880,8 @@ class ch {
         for (int i = 0; i < 6; i++) {
             eX(i);
         }
-        ci.aZz = false;
-        ci.aZA = false;
+        FarmGameEngine.aZz = false;
+        FarmGameEngine.aZA = false;
         oK();
     }
 
@@ -896,51 +896,51 @@ class ch {
     }
 
     static void oM() {
-        ci.bbs = false;
-        ch chVar = als[3];
+        FarmGameEngine.bbs = false;
+        FarmEntity chVar = als[3];
         while (chVar != null) {
-            ch chVar2 = chVar.aoi;
+            FarmEntity chVar2 = chVar.aoi;
             if (chVar.Kx == 47 && chVar.anX) {
                 chVar.anX = false;
                 if (chVar != null && chVar.anG == 37) {
                     String str = "extra info:" + chVar.anM;
-                    ci.hX(chVar.anM);
+                    FarmGameEngine.hX(chVar.anM);
                 } else if (chVar.anG == 36) {
-                    ci.hS(chVar.anM);
+                    FarmGameEngine.hS(chVar.anM);
                 } else if (chVar.anG == 6) {
-                    ci.hT(chVar.anM);
+                    FarmGameEngine.hT(chVar.anM);
                 } else if (chVar.anG == 59) {
                     int i = chVar.anM & 65535;
                     int i2 = (chVar.anM & (-65536)) >> 16;
                     String str2 = "item index:" + i + ",qty:" + i2;
                     if (i == 110) {
-                        ci.hV(i2);
+                        FarmGameEngine.hV(i2);
                     } else if (i == 5) {
-                        ci.hU(i2);
+                        FarmGameEngine.hU(i2);
                     } else if ((i < 111 || i > 116) && ((i >= 1 && i <= 26) || i == 119)) {
                         String str3 = "add crop, tree,:" + i + ",qty:" + i2;
-                        ci.O(0, i, i2);
+                        FarmGameEngine.O(0, i, i2);
                     }
                 } else if (chVar.anG == 67) {
-                    ci.hg(chVar.anM);
-                    ci.bW(1, 121);
+                    FarmGameEngine.hg(chVar.anM);
+                    FarmGameEngine.bW(1, 121);
                 }
                 chVar.oN();
-                ci.bbs = true;
+                FarmGameEngine.bbs = true;
             }
             chVar = chVar2;
         }
     }
 
-    static ch oP() {
-        ch chVar;
-        ch chVar2;
-        ch chVar3;
-        ch chVar4;
-        ch chVar5;
-        ch chVar6;
-        ch chVar7;
-        ch chVar8;
+    static FarmEntity oP() {
+        FarmEntity chVar;
+        FarmEntity chVar2;
+        FarmEntity chVar3;
+        FarmEntity chVar4;
+        FarmEntity chVar5;
+        FarmEntity chVar6;
+        FarmEntity chVar7;
+        FarmEntity chVar8;
         if (als != null) {
             chVar = null;
             chVar2 = null;
@@ -950,7 +950,7 @@ class ch {
             chVar6 = null;
             chVar7 = null;
             chVar8 = null;
-            for (ch chVar9 = als[1]; chVar9 != null; chVar9 = chVar9.aoi) {
+            for (FarmEntity chVar9 = als[1]; chVar9 != null; chVar9 = chVar9.aoi) {
                 if (chVar9.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && (chVar9.qj() || chVar9.qi())) {
                     if (chVar9.Kx == 54) {
                         if (chVar9.ano != 0) {
@@ -996,18 +996,18 @@ class ch {
             chVar7 = null;
             chVar8 = null;
         }
-        String str = "actor pick. move state;" + ci.avD + ",obj:" + ci.avE;
-        if (ci.avD != -1 && ci.avE != null) {
-            if (ci.avE == chVar2) {
+        String str = "actor pick. move state;" + FarmGameEngine.avD + ",obj:" + FarmGameEngine.avE;
+        if (FarmGameEngine.avD != -1 && FarmGameEngine.avE != null) {
+            if (FarmGameEngine.avE == chVar2) {
                 return chVar2;
             }
-            if (ci.avE == chVar4) {
+            if (FarmGameEngine.avE == chVar4) {
                 return chVar4;
             }
-            if (ci.avE == chVar3) {
+            if (FarmGameEngine.avE == chVar3) {
                 return chVar3;
             }
-            if (ci.avE == chVar) {
+            if (FarmGameEngine.avE == chVar) {
                 return chVar;
             }
         }
@@ -1034,7 +1034,7 @@ class ch {
 
     static int p(int i, int i2, int i3, int i4) {
         int i5 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == i2 && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && !chVar.fz(32) && !chVar.fz(Utility.DEFAULT_STREAM_BUFFER_SIZE) && chVar.aoC >= i3 && chVar.aoC <= i4) {
                 i5++;
             }
@@ -1043,8 +1043,8 @@ class ch {
     }
 
     static void pj() {
-        int i = ci.aZB == 0 ? ci.aZD : ci.aNG;
-        for (ch chVar = als[1]; chVar != null; chVar = chVar.aoi) {
+        int i = FarmGameEngine.aZB == 0 ? FarmGameEngine.aZD : FarmGameEngine.aNG;
+        for (FarmEntity chVar = als[1]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 50) {
                 switch (chVar.aoC) {
                     case 0:
@@ -1149,7 +1149,7 @@ class ch {
 
     static int q(int i, int i2, int i3, int i4) {
         int i5 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == i2 && chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && !chVar.fz(32) && !chVar.fz(Utility.DEFAULT_STREAM_BUFFER_SIZE) && ((chVar.aoC >= i3 && chVar.aoC <= i4) || chVar.aoC == i4 - 2)) {
                 i5++;
             }
@@ -1159,7 +1159,7 @@ class ch {
 
     static int x(int i, int i2, int i3) {
         int i4 = 0;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == i2 && chVar.fz(4096) && chVar.fz(i3)) {
                 i4++;
             }
@@ -1168,7 +1168,7 @@ class ch {
     }
 
     int A(int i, int i2, int i3) {
-        return ci.gf(i2);
+        return FarmGameEngine.gf(i2);
     }
 
     void a(int i, int i2, int i3, int i4, boolean z, boolean z2, int i5) {
@@ -1191,21 +1191,21 @@ class ch {
         int iBB = aVar.bB(i) + this.aou;
         int iBy = iBA + aVar.by(i);
         int iBz = iBB + aVar.bz(i);
-        if ((ci.kH() * 100.0f) / ci.aYP > 0.0f) {
-            iKH = (int) (((ci.kH() * 100.0f) / ci.aYP) + 0.5f);
+        if ((FarmGameEngine.kH() * 100.0f) / FarmGameEngine.aYP > 0.0f) {
+            iKH = (int) (((FarmGameEngine.kH() * 100.0f) / FarmGameEngine.aYP) + 0.5f);
         } else {
-            iKH = (((float) ci.kH()) * 100.0f) / ((float) ci.aYP) < 0.0f ? (int) (((ci.kH() * 100.0f) / ci.aYP) - 0.5f) : 0;
+            iKH = (((float) FarmGameEngine.kH()) * 100.0f) / ((float) FarmGameEngine.aYP) < 0.0f ? (int) (((FarmGameEngine.kH() * 100.0f) / FarmGameEngine.aYP) - 0.5f) : 0;
         }
         int i2 = 0 + iKH;
-        if ((ci.kI() * 100.0f) / ci.aYP > 0.0f) {
-            iKI = (int) (((ci.kI() * 100.0f) / ci.aYP) + 0.5f);
+        if ((FarmGameEngine.kI() * 100.0f) / FarmGameEngine.aYP > 0.0f) {
+            iKI = (int) (((FarmGameEngine.kI() * 100.0f) / FarmGameEngine.aYP) + 0.5f);
         } else {
-            iKI = (((float) ci.kI()) * 100.0f) / ((float) ci.aYP) < 0.0f ? (int) (((ci.kI() * 100.0f) / ci.aYP) - 0.5f) : 0;
+            iKI = (((float) FarmGameEngine.kI()) * 100.0f) / ((float) FarmGameEngine.aYP) < 0.0f ? (int) (((FarmGameEngine.kI() * 100.0f) / FarmGameEngine.aYP) - 0.5f) : 0;
         }
         return iBy > 0 && iBA < i2 && iBz > 0 && iBB < iKI + 0;
     }
 
-    boolean a(ch chVar, ch chVar2, int[] iArr) {
+    boolean a(FarmEntity chVar, FarmEntity chVar2, int[] iArr) {
         int i = chVar.aol < chVar2.aol ? 72 : -72;
         int i2 = chVar.aom < chVar2.aol ? 36 : -36;
         iArr[0] = chVar2.aol;
@@ -1217,7 +1217,7 @@ class ch {
                     int i6 = i2 * i5;
                     chVar2.aol = chVar.aol + i4;
                     chVar2.aom = chVar.aom + i6;
-                    boolean z = !ci.t(chVar2);
+                    boolean z = !FarmGameEngine.t(chVar2);
                     chVar2.aol = iArr[0];
                     chVar2.aom = iArr[1];
                     if (z) {
@@ -1238,7 +1238,7 @@ class ch {
 
     boolean aF(int i, int i2) {
         int i3 = i & 32767;
-        return a((32768 & i) != 0 ? ci.atf[i3] : ci.aZf[i3], i2);
+        return a((32768 & i) != 0 ? FarmGameEngine.atf[i3] : FarmGameEngine.aZf[i3], i2);
     }
 
     void aG(int i, int i2) {
@@ -1280,7 +1280,7 @@ class ch {
 
     void aI(int i, int i2) {
         int[] iArr = new int[2];
-        ci.c(new int[]{i, i2}, iArr);
+        FarmGameEngine.c(new int[]{i, i2}, iArr);
         aJ(iArr[0], iArr[1]);
     }
 
@@ -1319,8 +1319,8 @@ class ch {
         this.aol = 0;
         fp(0);
         fy(8);
-        ci.axt = 0;
-        ci.bbp = 0;
+        FarmGameEngine.axt = 0;
+        FarmGameEngine.bbp = 0;
     }
 
     void aO(int i, int i2) {
@@ -1334,7 +1334,7 @@ class ch {
         int i;
         int[] iArr = {0, 0, 14};
         b(47, 3, iArr).a(this.aol, this.aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, this.amk, 0);
-        if (ci.baf != null && ci.aZB == 0) {
+        if (FarmGameEngine.baf != null && FarmGameEngine.aZB == 0) {
             int i2 = z ? 116010 : 115424;
             if (this.aoC == 22 || this.aoC == 23) {
                 i2 = 150886;
@@ -1345,11 +1345,11 @@ class ch {
             bbVar.aiB = 116136;
             bbVar.aiC = i2;
             bbVar.aiE = this.amk;
-            bbVar.aiF = ci.FC();
-            ci.a(bbVar);
+            bbVar.aiF = FarmGameEngine.FC();
+            FarmGameEngine.a(bbVar);
         }
-        if (ci.aZB == 0 || ((ci.awV && ci.aYS != -1) || (ci.hF(5) < ci.Fw() && GLLib.L(0, 100) < ci.aZw[20]))) {
-            ch chVarB = b(47, 3, iArr);
+        if (FarmGameEngine.aZB == 0 || ((FarmGameEngine.awV && FarmGameEngine.aYS != -1) || (FarmGameEngine.hF(5) < FarmGameEngine.Fw() && GameRuntime.L(0, 100) < FarmGameEngine.aZw[20]))) {
+            FarmEntity chVarB = b(47, 3, iArr);
             int i3 = this.aoL;
             if (this.aoL == -1) {
                 return;
@@ -1362,20 +1362,20 @@ class ch {
             if (fz(1024)) {
                 i++;
             }
-            if (z && ci.aYR == -1) {
-                ci.N(this.aoU, i, 14);
+            if (z && FarmGameEngine.currentTutorialStepIndex == -1) {
+                FarmGameEngine.N(this.aoU, i, 14);
             }
-            if (ci.aYR == -1) {
+            if (FarmGameEngine.currentTutorialStepIndex == -1) {
                 if (this.aoC == 23 || this.aoC == 22) {
                     String str = "m_resourceGenerated  " + this.aoL;
-                    ci.aa(this.aoL + 4000, i, 14);
+                    FarmGameEngine.aa(this.aoL + 4000, i, 14);
                 } else {
-                    ci.aa(this.aoU, i, 14);
+                    FarmGameEngine.aa(this.aoU, i, 14);
                 }
             }
             chVarB.a(this.aol, this.aom, 59, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, i3 | (i << 16), 0);
         }
-        if (ci.FC() < ci.aLg[0] || GLLib.L(0, 100) >= ci.aZw[10]) {
+        if (FarmGameEngine.FC() < FarmGameEngine.aLg[0] || GameRuntime.L(0, 100) >= FarmGameEngine.aZw[10]) {
             return;
         }
         b(47, 3, iArr).a(this.aol - 60, this.aom, 60, 2000, false, false, 1, 0);
@@ -1396,19 +1396,19 @@ class ch {
         if (i3 == 59) {
             int i6 = this.anM & 65535;
             String str = "itemIndex : " + i6;
-            this.aoG = ci.aZM[i6] | Short.MIN_VALUE;
-            this.aoH = ci.aZN[i6];
+            this.aoG = FarmGameEngine.aZM[i6] | Short.MIN_VALUE;
+            this.aoH = FarmGameEngine.aZN[i6];
             String str2 = "sprite id :" + this.aoG + ",frame:" + this.aoH;
         } else if (i3 == 60) {
-            int iIe = ci.Ie();
+            int iIe = FarmGameEngine.Ie();
             int i7 = (iIe / 4) + 109;
             this.aoG = i7 | 32768;
             this.aoH = iIe % 4;
             String str3 = "Reward_Init sprite id :" + this.aoG + ",frame:" + this.aoH;
-            ci.s(1, i7, 1, 24);
-            GLLib.bk("/11");
-            ci.fP(1);
-            GLLib.ke();
+            FarmGameEngine.s(1, i7, 1, 24);
+            GameRuntime.bk("/11");
+            FarmGameEngine.fP(1);
+            GameRuntime.ke();
         } else {
             this.aoG = 32769;
             this.aoH = this.anG;
@@ -1420,19 +1420,19 @@ class ch {
         this.anV = 1;
     }
 
-    void b(ch chVar) {
+    void b(FarmEntity chVar) {
         this.amD = j.bY(0).KW[chVar.aoC][25] * 60;
-        this.amD = (this.amD * ci.md(this.aoU)) / 100;
+        this.amD = (this.amD * FarmGameEngine.md(this.aoU)) / 100;
         this.amD = (this.amD * 30) / 100;
         String str = "[Animal] prepare next care. dbid:" + chVar.aoC + ",time:" + this.amE;
     }
 
-    void c(ch chVar) {
+    void c(FarmEntity chVar) {
         this.aoG = chVar.aoG;
         this.aoH = chVar.aoH;
         this.ant = chVar.ant;
         this.aoC = chVar.aoC;
-        this.aoO = new aa(ci.aZf[this.aoG], this.aol, this.aom);
+        this.aoO = new aa(FarmGameEngine.aZf[this.aoG], this.aol, this.aom);
         if (chVar.fz(32)) {
             fx(32);
         }
@@ -1475,9 +1475,9 @@ class ch {
                 this.aoH = iArr[6];
                 this.aoy = iArr[7];
                 this.aoz = iArr[8];
-                this.aoA = ci.bF(this.aoy, this.aoz);
-                if (ci.aZf[this.aoG].hu() > 0) {
-                    this.aoO = new aa(ci.aZf[this.aoG], this.aol, this.aom);
+                this.aoA = FarmGameEngine.bF(this.aoy, this.aoz);
+                if (FarmGameEngine.aZf[this.aoG].hu() > 0) {
+                    this.aoO = new aa(FarmGameEngine.aZf[this.aoG], this.aol, this.aom);
                     this.aoO.Y(0, -1);
                     fx(33554432);
                 } else {
@@ -1503,7 +1503,7 @@ class ch {
                 this.aol = iArr[0];
                 this.aom = iArr[1];
                 this.aon = iArr[2];
-                this.aoO = new aa(ci.aZf[144], this.aol, this.aom);
+                this.aoO = new aa(FarmGameEngine.aZf[144], this.aol, this.aom);
                 this.aoO.Y(0, -1);
                 fx(514);
                 this.aoG = 144;
@@ -1531,7 +1531,7 @@ class ch {
                 this.aoH = iArr[4];
                 this.aoI = iArr[5];
                 if (iArr[6] != -1) {
-                    this.aoO = new aa(ci.aZf[this.aoG], this.aol, this.aom);
+                    this.aoO = new aa(FarmGameEngine.aZf[this.aoG], this.aol, this.aom);
                     this.aoO.Y(iArr[6], -1);
                 }
                 this.aoJ = this.aoG;
@@ -1547,7 +1547,7 @@ class ch {
                 this.aow = iArr[5];
                 this.aox = iArr[6];
                 if (iArr.length > 7) {
-                    this.aoO = new aa(ci.aZf[this.aoG], this.aol, this.aom);
+                    this.aoO = new aa(FarmGameEngine.aZf[this.aoG], this.aol, this.aom);
                     this.aoO.Y(iArr[7], iArr[8]);
                 } else {
                     fx(16777216);
@@ -1558,7 +1558,7 @@ class ch {
             case 34:
                 this.aon = iArr[0];
                 this.aoG = iArr[1];
-                this.aoO = new aa(ci.aZf[this.aoG], 0, 0);
+                this.aoO = new aa(FarmGameEngine.aZf[this.aoG], 0, 0);
                 this.aoO.Y(iArr[2], -1);
                 this.Bj = iArr[3];
                 switch (iArr[3]) {
@@ -1576,7 +1576,7 @@ class ch {
                 this.aom = iArr[1];
                 this.aon = iArr[2];
                 this.aoG = iArr[3];
-                this.aoO = new aa(ci.aZf[this.aoG], this.aol, this.aom);
+                this.aoO = new aa(FarmGameEngine.aZf[this.aoG], this.aol, this.aom);
                 this.aoE = this.aol;
                 this.aoF = this.aom;
                 this.aos = 150;
@@ -1624,7 +1624,7 @@ class ch {
                 this.aoH = iArr[5];
                 this.aoy = iArr[6];
                 this.aoz = iArr[7];
-                this.aoA = ci.bF(this.aoy, this.aoz);
+                this.aoA = FarmGameEngine.bF(this.aoy, this.aoz);
                 fx(16777730);
                 int i4 = iArr[8];
                 int i5 = iArr[9];
@@ -1641,8 +1641,8 @@ class ch {
                 if (this.aoC == 18) {
                     this.aoJ = 135;
                     this.aoK = 0;
-                    ci.aZW = this.aol;
-                    ci.aZX = this.aom;
+                    FarmGameEngine.aZW = this.aol;
+                    FarmGameEngine.aZX = this.aom;
                 }
                 break;
             case 51:
@@ -1650,7 +1650,7 @@ class ch {
                 this.aom = iArr[1];
                 this.aon = iArr[2];
                 this.aoG = iArr[4];
-                a aVar = ci.aZf[this.aoG];
+                a aVar = FarmGameEngine.aZf[this.aoG];
                 this.aoH = 0;
                 this.aoO = new aa(aVar, this.aol, this.aom);
                 this.aoE = this.aol;
@@ -1692,7 +1692,7 @@ class ch {
                 this.aoz = iArr[4];
                 this.aoA = 16;
                 String str = "[Actor SET] type ANIMAL sprite id=" + iArr[5];
-                a aVar2 = ci.aZf[iArr[5]];
+                a aVar2 = FarmGameEngine.aZf[iArr[5]];
                 this.aoI = iArr[6];
                 String str2 = "is kid animal:" + iArr[7];
                 if (iArr[7] == 1) {
@@ -1734,13 +1734,13 @@ class ch {
         }
     }
 
-    void d(ch chVar) {
+    void d(FarmEntity chVar) {
         if (this != null) {
             aN(chVar.aol, chVar.aom);
         }
     }
 
-    void e(ch chVar) {
+    void e(FarmEntity chVar) {
         this.aoM = chVar;
         chVar.aoM = this;
     }
@@ -1775,11 +1775,11 @@ class ch {
                         i4 = 1;
                     }
                 }
-                ci.gX(53);
+                FarmGameEngine.gX(53);
                 i2 = i4;
                 break;
             case 2:
-                switch (ci.aCd[ci.aCf]) {
+                switch (FarmGameEngine.aCd[FarmGameEngine.aCf]) {
                     case 0:
                         i5 = 46;
                         i2 = 4;
@@ -1789,7 +1789,7 @@ class ch {
                         i2 = 4;
                         break;
                     case 2:
-                        if (ci.aCe[ci.aCf] != null && (ci.aCe[ci.aCf].aoC == 0 || ci.aCe[ci.aCf].aoC == 51 || ci.aCe[ci.aCf].aoC == 52)) {
+                        if (FarmGameEngine.aCe[FarmGameEngine.aCf] != null && (FarmGameEngine.aCe[FarmGameEngine.aCf].aoC == 0 || FarmGameEngine.aCe[FarmGameEngine.aCf].aoC == 51 || FarmGameEngine.aCe[FarmGameEngine.aCf].aoC == 52)) {
                             i5 = 22;
                             i2 = 3;
                         } else {
@@ -1804,11 +1804,11 @@ class ch {
                         break;
                     case 4:
                         i2 = 4;
-                        if (ci.axm) {
-                            ci.axm = false;
+                        if (FarmGameEngine.axm) {
+                            FarmGameEngine.axm = false;
                             i3 = -1;
-                        } else if (ci.axn) {
-                            ci.axn = false;
+                        } else if (FarmGameEngine.axn) {
+                            FarmGameEngine.axn = false;
                             i3 = -1;
                         } else {
                             i3 = 35;
@@ -1829,7 +1829,7 @@ class ch {
                         i2 = 2;
                         break;
                 }
-                ci.gX(i5);
+                FarmGameEngine.gX(i5);
                 i5 = 1;
                 break;
             case 3:
@@ -1854,14 +1854,14 @@ class ch {
 
     void fh(int i) {
         String str = "CameraResetZoomLevel." + i;
-        if (ci.aYP != i) {
-            ci.aYP = i;
-            int iKH = GLLib.kH() >> 1;
-            int iKI = GLLib.kI() >> 1;
-            int i2 = (((ci.aZj.aol - ((ci.aYP * iKH) / 100)) + iKH) * 100) / ci.aYP;
-            int i3 = (((ci.aZj.aom - ((ci.aYP * iKI) / 100)) + iKI) * 100) / ci.aYP;
-            ci.aZj.aol = (((i2 + iKH) * ci.aYP) / 100) - iKH;
-            ci.aZj.aom = (((i3 + iKI) * ci.aYP) / 100) - iKI;
+        if (FarmGameEngine.aYP != i) {
+            FarmGameEngine.aYP = i;
+            int iKH = GameRuntime.kH() >> 1;
+            int iKI = GameRuntime.kI() >> 1;
+            int i2 = (((FarmGameEngine.aZj.aol - ((FarmGameEngine.aYP * iKH) / 100)) + iKH) * 100) / FarmGameEngine.aYP;
+            int i3 = (((FarmGameEngine.aZj.aom - ((FarmGameEngine.aYP * iKI) / 100)) + iKI) * 100) / FarmGameEngine.aYP;
+            FarmGameEngine.aZj.aol = (((i2 + iKH) * FarmGameEngine.aYP) / 100) - iKH;
+            FarmGameEngine.aZj.aom = (((i3 + iKI) * FarmGameEngine.aYP) / 100) - iKI;
         }
     }
 
@@ -1872,17 +1872,17 @@ class ch {
         }
         this.amn = true;
         this.aoC = (char) i;
-        this.aoL = ci.avT;
-        this.amk = ci.awd;
-        this.amf = ci.avV;
-        this.amg = ci.avW;
+        this.aoL = FarmGameEngine.avT;
+        this.amk = FarmGameEngine.awd;
+        this.amf = FarmGameEngine.avV;
+        this.amg = FarmGameEngine.avW;
         String str2 = "Crop_PrepareSeed m_cropCostCash : " + this.amg;
-        this.aoC = ci.avS;
-        this.aoU = ci.avZ;
-        this.aoV = ci.awa;
-        this.aoG = ci.awb;
-        this.aml = ci.awe;
-        this.ame = ci.ih((ci.avU * ci.lZ(this.aoU)) / 100);
+        this.aoC = FarmGameEngine.avS;
+        this.aoU = FarmGameEngine.avZ;
+        this.aoV = FarmGameEngine.awa;
+        this.aoG = FarmGameEngine.awb;
+        this.aml = FarmGameEngine.awe;
+        this.ame = FarmGameEngine.ih((FarmGameEngine.avU * FarmGameEngine.lZ(this.aoU)) / 100);
     }
 
     void fj(int i) {
@@ -1900,7 +1900,7 @@ class ch {
                 break;
             case 3:
                 this.aoH = 0;
-                this.amd = ci.MD();
+                this.amd = FarmGameEngine.MD();
                 this.aon = 11;
                 qq();
                 break;
@@ -1927,14 +1927,14 @@ class ch {
         qq();
         switch (this.Bj) {
             case 2:
-                this.amq = ci.MD();
+                this.amq = FarmGameEngine.MD();
                 this.aoH = 0;
                 break;
             case 3:
                 fy(32);
                 this.aoH = 1;
                 if (this.aoC == 22 || this.aoC == 23) {
-                    this.aoR = new aa(ci.aZf[187], this.aot, this.aou);
+                    this.aoR = new aa(FarmGameEngine.aZf[187], this.aot, this.aou);
                     this.aoR.Y(1, -1);
                     this.aoQ = 0;
                 }
@@ -1942,7 +1942,7 @@ class ch {
             case 4:
                 if (!this.amu) {
                     this.amu = true;
-                    this.amr = ci.ih((int) (((long) ci.ii(this.amr)) - ((ci.MD() - this.amq) / 1000)));
+                    this.amr = FarmGameEngine.ih((int) (((long) FarmGameEngine.ii(this.amr)) - ((FarmGameEngine.MD() - this.amq) / 1000)));
                 }
                 e(b(33, 1, new int[]{this.aol, this.aom, 150, 10, 22, -63, -117, 0, 1}));
                 break;
@@ -1951,24 +1951,24 @@ class ch {
                 e(b(33, 1, new int[]{this.aol, this.aom, 150, 10, 12, -63, -117, 0, 1}));
                 break;
             case 6:
-                ci.gX(31);
-                ci.axn = true;
+                FarmGameEngine.gX(31);
+                FarmGameEngine.axn = true;
                 break;
         }
     }
 
     void fl(int i) {
-        this.anx = ci.w(i);
+        this.anx = FarmGameEngine.w(i);
         this.any = this.anx;
     }
 
     void fm(int i) {
-        this.anz = ci.w(i);
+        this.anz = FarmGameEngine.w(i);
         this.anA = this.anz;
     }
 
     void fn(int i) {
-        this.anB = ci.w(i);
+        this.anB = FarmGameEngine.w(i);
         this.anC = this.anB;
     }
 
@@ -1980,8 +1980,8 @@ class ch {
     void fq(int i) {
         int i2 = 16;
         String str = "[actor ANIMAL] request feed bubble. type:" + i;
-        if (ci.aZB == 0 || i != 4) {
-            if (ci.aZB <= 0 || ci.aZB > 10 || !this.anw) {
+        if (FarmGameEngine.aZB == 0 || i != 4) {
+            if (FarmGameEngine.aZB <= 0 || FarmGameEngine.aZB > 10 || !this.anw) {
                 pT();
                 fx(i);
                 if (i == 4) {
@@ -2015,10 +2015,10 @@ class ch {
     }
 
     void fs(int i) {
-        ch[] chVarArr = new ch[100];
+        FarmEntity[] chVarArr = new FarmEntity[100];
         int iA = a(1, i, chVarArr, 100);
         if (iA > 0) {
-            int iL = GLLib.L(0, iA);
+            int iL = GameRuntime.L(0, iA);
             this.aol = chVarArr[iL].aol;
             this.aom = chVarArr[iL].aom;
             this.aoE = this.aol;
@@ -2107,32 +2107,32 @@ class ch {
     }
 
     boolean oT() {
-        if (ci.aYP == 100) {
-            return (this.aot < -144 || this.aot > ci.kH() + 144 || this.aou < -288 || this.aou > ci.kI() + 288) && this.aoo == -1;
+        if (FarmGameEngine.aYP == 100) {
+            return (this.aot < -144 || this.aot > FarmGameEngine.kH() + 144 || this.aou < -288 || this.aou > FarmGameEngine.kI() + 288) && this.aoo == -1;
         }
-        return (this.aot < -36 || this.aot > (ci.kH() << 1) + 36 || this.aou < -36 || this.aou > (ci.kI() << 1) + 36) && this.aoo == -1;
+        return (this.aot < -36 || this.aot > (FarmGameEngine.kH() << 1) + 36 || this.aou < -36 || this.aou > (FarmGameEngine.kI() << 1) + 36) && this.aoo == -1;
     }
 
     void oV() {
         int i = 0;
         if (this.aoo == 2) {
             this.aot = 0;
-            this.aou = ((((this.aom + this.aox) - 215) - ci.aZj.aom) * ci.aYP) / 100;
+            this.aou = ((((this.aom + this.aox) - 215) - FarmGameEngine.aZj.aom) * FarmGameEngine.aYP) / 100;
             return;
         }
         if (this.aoo != 1) {
-            this.aot = (this.aol + this.aow) - ci.aZj.aol;
-            this.aou = (this.aom + this.aox) - ci.aZj.aom;
+            this.aot = (this.aol + this.aow) - FarmGameEngine.aZj.aol;
+            this.aou = (this.aom + this.aox) - FarmGameEngine.aZj.aom;
             return;
         }
-        float f = (648 - ci.aZj.aom) / 648.0f;
-        this.aot = this.aol - (ci.aZj.aol >> 4);
+        float f = (648 - FarmGameEngine.aZj.aom) / 648.0f;
+        this.aot = this.aol - (FarmGameEngine.aZj.aol >> 4);
         if (this.aom - (f * 40.0f) > 0.0f) {
             i = (int) ((this.aom - (f * 40.0f)) + 0.5f);
         } else if (this.aom - (f * 40.0f) < 0.0f) {
             i = (int) ((this.aom - (f * 40.0f)) - 0.5f);
         }
-        this.aou = i - ci.aZj.aom;
+        this.aou = i - FarmGameEngine.aZj.aom;
     }
 
     int oW() {
@@ -2141,7 +2141,7 @@ class ch {
 
     void pA() {
         qr();
-        ci.o(this);
+        FarmGameEngine.o(this);
         j jVarBY = j.bY(11);
         int i = jVarBY.KW[this.aoC][3];
         int i2 = jVarBY.KW[this.aoC][4];
@@ -2157,63 +2157,63 @@ class ch {
         int iL = 0;
         int iFB = 0;
         if (i4 > 0) {
-            iL = GLLib.L(i3, i4 + 1);
+            iL = GameRuntime.L(i3, i4 + 1);
             if (iL > 0) {
                 b(47, 3, iArr).b(this.aol, this.aom, 6, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, iL);
-                iFB = ci.FB() + iL;
+                iFB = FarmGameEngine.FB() + iL;
                 String str = "cash_balance ==========" + iFB;
             }
         } else {
-            iFB = ci.FB();
+            iFB = FarmGameEngine.FB();
         }
-        String str2 = "Player_GetCash ==========" + ci.FB();
+        String str2 = "Player_GetCash ==========" + FarmGameEngine.FB();
         String str3 = "cash_balance ==========" + iFB;
-        if (ci.baf != null && ci.aZB == 0) {
-            ci.a(115443, new String[]{"INT:" + Integer.toString(iFB), "INT:" + Integer.toString(iL), "INT:" + Integer.toString(i2), "INT:" + Integer.toString(119043), "INT:" + Integer.toString(115433), "N/A", "N/A", "INT:" + Integer.toString(i), "INT:" + Integer.toString(ci.FC())});
+        if (FarmGameEngine.baf != null && FarmGameEngine.aZB == 0) {
+            FarmGameEngine.a(115443, new String[]{"INT:" + Integer.toString(iFB), "INT:" + Integer.toString(iL), "INT:" + Integer.toString(i2), "INT:" + Integer.toString(119043), "INT:" + Integer.toString(115433), "N/A", "N/A", "INT:" + Integer.toString(i), "INT:" + Integer.toString(FarmGameEngine.FC())});
         }
         oN();
     }
 
     int pB() {
-        long jX = ci.x(this.anx);
-        long jX2 = ci.x(this.any);
+        long jX = FarmGameEngine.x(this.anx);
+        long jX2 = FarmGameEngine.x(this.any);
         return jX != jX2 ? (int) jX2 : (int) jX;
     }
 
     int pC() {
-        long jX = ci.x(this.anz);
-        long jX2 = ci.x(this.anA);
+        long jX = FarmGameEngine.x(this.anz);
+        long jX2 = FarmGameEngine.x(this.anA);
         return jX != jX2 ? (int) jX2 : (int) jX;
     }
 
     int pD() {
-        long jX = ci.x(this.anB);
-        long jX2 = ci.x(this.anC);
+        long jX = FarmGameEngine.x(this.anB);
+        long jX2 = FarmGameEngine.x(this.anC);
         return jX != jX2 ? (int) jX2 : (int) jX;
     }
 
     void pE() {
         if (fz(32)) {
-            if (ci.ii(this.amI) > 0) {
-                this.amI = ci.ih((int) (((long) ci.ii(this.amI)) - ((ci.MD() / 1000) - this.amJ)));
+            if (FarmGameEngine.ii(this.amI) > 0) {
+                this.amI = FarmGameEngine.ih((int) (((long) FarmGameEngine.ii(this.amI)) - ((FarmGameEngine.MD() / 1000) - this.amJ)));
             }
-        } else if (ci.ii(this.amE) != 0) {
-            long jMD = (ci.MD() - this.amB) / 1000;
-            this.amE = ci.ih((int) (((long) ci.ii(this.amE)) - jMD));
+        } else if (FarmGameEngine.ii(this.amE) != 0) {
+            long jMD = (FarmGameEngine.MD() - this.amB) / 1000;
+            this.amE = FarmGameEngine.ih((int) (((long) FarmGameEngine.ii(this.amE)) - jMD));
             String str = jMD + " ----------------elapsedTime------m_nextAnimalCare--------- " + this.amE;
         }
         fp(9);
     }
 
     void pF() {
-        ch chVar;
+        FarmEntity chVar;
         if (this.anj || this.ank) {
-            ch chVarFl = ci.Fl();
+            FarmEntity chVarFl = FarmGameEngine.Fl();
             if (chVarFl == null) {
-                ch[] chVarArr = new ch[1];
+                FarmEntity[] chVarArr = new FarmEntity[1];
                 b(1, 69, 22, chVarArr, 1);
                 if (chVarArr[0] == null) {
-                    ch[] chVarArr2 = new ch[1];
+                    FarmEntity[] chVarArr2 = new FarmEntity[1];
                     b(1, 69, 23, chVarArr2, 1);
                     chVar = chVarArr2[0];
                 } else {
@@ -2229,36 +2229,36 @@ class ch {
             this.ani = true;
             return;
         }
-        if (ci.axt == 0) {
-            ci.axt = this.anj ? 1 : 2;
+        if (FarmGameEngine.axt == 0) {
+            FarmGameEngine.axt = this.anj ? 1 : 2;
             this.ani = true;
             if (chVar.Kx != 69) {
                 chVar.anq = true;
             }
             fx(8);
-            ci.bbp = 0;
+            FarmGameEngine.bbp = 0;
             if (chVar.Kx != 69) {
                 b(chVar);
             }
             if (this.anj) {
                 if (this.anl) {
-                    ci.gX(69);
+                    FarmGameEngine.gX(69);
                 }
-                if (!ci.ha(1)) {
-                    ci.q(62, false);
+                if (!FarmGameEngine.ha(1)) {
+                    FarmGameEngine.q(62, false);
                 }
-                ci.f(true, true);
-                if (ci.auj) {
-                    ci.aNa = ci.MD();
+                FarmGameEngine.f(true, true);
+                if (FarmGameEngine.auj) {
+                    FarmGameEngine.aNa = FarmGameEngine.MD();
                 }
-                if (!ci.auj || !ci.lN(299)) {
+                if (!FarmGameEngine.auj || !FarmGameEngine.lN(299)) {
                     int[] iArr = new int[2];
                     int[] iArr2 = {this.aol, this.aom};
-                    boolean zA = ci.a(this, iArr);
+                    boolean zA = FarmGameEngine.a(this, iArr);
                     this.aol = iArr2[0];
                     this.aom = iArr2[1];
                     if (zA) {
-                        if (ci.awV && iArr[0] == 1782 && iArr[1] == 711) {
+                        if (FarmGameEngine.awV && iArr[0] == 1782 && iArr[1] == 711) {
                             iArr[0] = iArr[0] - 10;
                             iArr[1] = iArr[1] - 10;
                         }
@@ -2268,26 +2268,26 @@ class ch {
                     } else {
                         z(chVar.aol, chVar.aom, 36);
                     }
-                } else if (ci.aMY != null) {
-                    aN(ci.aMY[0], ci.aMY[1]);
+                } else if (FarmGameEngine.aMY != null) {
+                    aN(FarmGameEngine.aMY[0], FarmGameEngine.aMY[1]);
                 } else {
                     z(chVar.aol, chVar.aom, 36);
                 }
                 this.anl = false;
             } else {
                 if (this.anm) {
-                    ci.gX(71);
+                    FarmGameEngine.gX(71);
                 }
-                if (!ci.ha(1)) {
-                    ci.q(62, false);
+                if (!FarmGameEngine.ha(1)) {
+                    FarmGameEngine.q(62, false);
                 }
-                ci.f(true, false);
-                if (ci.auj) {
-                    ci.aNa = ci.MD();
+                FarmGameEngine.f(true, false);
+                if (FarmGameEngine.auj) {
+                    FarmGameEngine.aNa = FarmGameEngine.MD();
                 }
                 int[] iArr3 = new int[2];
                 int[] iArr4 = {this.aol, this.aom};
-                boolean zA2 = ci.a(this, iArr3);
+                boolean zA2 = FarmGameEngine.a(this, iArr3);
                 this.aol = iArr4[0];
                 this.aom = iArr4[1];
                 if (zA2 || a(chVar, this, iArr3)) {
@@ -2302,195 +2302,195 @@ class ch {
     }
 
     void pJ() {
-        ci.bad = true;
-        int iL = GLLib.L(-4, 4);
-        int iL2 = GLLib.L(-4, 4);
+        FarmGameEngine.bad = true;
+        int iL = GameRuntime.L(-4, 4);
+        int iL2 = GameRuntime.L(-4, 4);
         int[] iArr = new int[2];
         int[] iArr2 = {this.aol, this.aom};
-        ci.f(iArr2, iArr);
+        FarmGameEngine.f(iArr2, iArr);
         int i = 0;
         do {
             iArr[0] = iArr[0] + iL;
             iArr[1] = iArr[1] + iL2;
-            if (this.anw && ci.axE) {
-                if (((ci.a(this, iArr[0], iArr[1]) || ci.C(iArr[0], iArr[1], this.aoy, this.aoz)) ? false : true) || i >= 50) {
-                    ci.axE = false;
+            if (this.anw && FarmGameEngine.axE) {
+                if (((FarmGameEngine.a(this, iArr[0], iArr[1]) || FarmGameEngine.C(iArr[0], iArr[1], this.aoy, this.aoz)) ? false : true) || i >= 50) {
+                    FarmGameEngine.axE = false;
                 } else {
                     i++;
                     iArr[0] = iArr[0] - iL;
                     iArr[1] = iArr[1] - iL2;
-                    iL = GLLib.L(-4, 4);
-                    iL2 = GLLib.L(-4, 4);
+                    iL = GameRuntime.L(-4, 4);
+                    iL2 = GameRuntime.L(-4, 4);
                 }
             }
-            if (!ci.axE) {
+            if (!FarmGameEngine.axE) {
                 break;
             }
         } while (this.anw);
-        if (ci.aYR != -1) {
+        if (FarmGameEngine.currentTutorialStepIndex != -1) {
             fp(0);
             return;
         }
-        if (!((ci.C(iArr[0], iArr[1], this.aoy, this.aoz) || ci.a(this, iArr[0], iArr[1]) || ((ci.r(this) != 0 || ci.bz(iArr[0], iArr[1])) && ci.r(this) <= 0)) ? false : true)) {
+        if (!((FarmGameEngine.C(iArr[0], iArr[1], this.aoy, this.aoz) || FarmGameEngine.a(this, iArr[0], iArr[1]) || ((FarmGameEngine.r(this) != 0 || FarmGameEngine.bz(iArr[0], iArr[1])) && FarmGameEngine.r(this) <= 0)) ? false : true)) {
             String str = "no move, collide test fail: " + this.aoW;
             fp(0);
         } else {
             String str2 = "Target collide test OK: " + this.aoW;
-            ci.g(iArr, iArr2);
+            FarmGameEngine.g(iArr, iArr2);
             aQ(iArr2[0], iArr2[1]);
         }
     }
 
     boolean pK() {
-        if ((!this.anw || ci.aZB == 0) && fz(8) && ci.awX != 1) {
+        if ((!this.anw || FarmGameEngine.aZB == 0) && fz(8) && FarmGameEngine.awX != 1) {
             String str = "step animal :" + this.Bj;
             if (this.Bj != 3 && this.Bj != 7 && this.Bj != 13) {
-                if (fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST) && ci.axt != 0) {
-                    String strDt = ci.dt(12327);
+                if (fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST) && FarmGameEngine.axt != 0) {
+                    String strDt = FarmGameEngine.dt(12327);
                     if (strDt == null) {
                         strDt = "";
                     }
-                    ci.m(strDt, 7, 0);
+                    FarmGameEngine.m(strDt, 7, 0);
                     return false;
                 }
                 if (this.Bj == 15) {
-                    ci.he(ci.awk);
+                    FarmGameEngine.he(FarmGameEngine.awk);
                     return true;
                 }
                 String str2 = "[actor Animal] Animal_Click. flag. need care." + fz(4) + ",flag ready produce:" + fz(16) + ",need clean:" + fz(256);
                 if (!this.anw && !this.anj && !this.ank) {
-                    ci.gX(this.aoY);
+                    FarmGameEngine.gX(this.aoY);
                 }
                 if (this.anw && fz(32)) {
-                    ci.gX(70);
+                    FarmGameEngine.gX(70);
                 }
-                if (ci.axY == this) {
-                    ci.Et();
+                if (FarmGameEngine.axY == this) {
+                    FarmGameEngine.Et();
                 }
                 if (!fz(Utility.DEFAULT_STREAM_BUFFER_SIZE)) {
                     if (fz(131072)) {
                         fp(15);
-                        ci.c(true, 2, 2);
-                        ci.aqY = this;
-                        ci.aV(true);
+                        FarmGameEngine.c(true, 2, 2);
+                        FarmGameEngine.aqY = this;
+                        FarmGameEngine.aV(true);
                         return true;
                     }
                     if (fz(4)) {
-                        String str3 = "Animal need care flag are active. feed:" + ci.hZ(this.amS) + ",cat:" + ((int) this.amS) + ",consume:" + this.amK;
+                        String str3 = "Animal need care flag are active. feed:" + FarmGameEngine.hZ(this.amS) + ",cat:" + ((int) this.amS) + ",consume:" + this.amK;
                         if (this.amK == 0 && this.anw) {
                             this.amK = 1;
                         }
-                        if (ci.aMj[this.amS] < 0) {
-                            ci.aMj[this.amS] = 0;
+                        if (FarmGameEngine.aMj[this.amS] < 0) {
+                            FarmGameEngine.aMj[this.amS] = 0;
                         }
-                        if (ci.aCg < 64 && !ci.b(4, this)) {
-                            if ((ci.aCi & 16) == 16) {
-                                if (ci.hZ(this.amS) - ci.aMj[this.amS] >= this.amK || (ci.aYS == 1045 && this.amS == 1)) {
-                                    int[] iArr = ci.aMj;
+                        if (FarmGameEngine.aCg < 64 && !FarmGameEngine.b(4, this)) {
+                            if ((FarmGameEngine.aCi & 16) == 16) {
+                                if (FarmGameEngine.hZ(this.amS) - FarmGameEngine.aMj[this.amS] >= this.amK || (FarmGameEngine.aYS == 1045 && this.amS == 1)) {
+                                    int[] iArr = FarmGameEngine.aMj;
                                     short s = this.amS;
                                     iArr[s] = iArr[s] + this.amK;
-                                    ci.a(4, this);
-                                } else if (!ci.awj) {
-                                    ci.S(401, 7, 0);
+                                    FarmGameEngine.a(4, this);
+                                } else if (!FarmGameEngine.awj) {
+                                    FarmGameEngine.S(401, 7, 0);
                                 }
                             }
                         }
                         return true;
                     }
                     if (fz(16)) {
-                        if (ci.hF(5) + fe(3) < ci.Fw() || ci.aZB != 0) {
-                            ci.a(7, this);
+                        if (FarmGameEngine.hF(5) + fe(3) < FarmGameEngine.Fw() || FarmGameEngine.aZB != 0) {
+                            FarmGameEngine.a(7, this);
                             return true;
                         }
-                        ci.H(481, 487, 7, 0);
+                        FarmGameEngine.H(481, 487, 7, 0);
                         return false;
                     }
                     if (fz(256)) {
-                        ci.a(4, this);
-                        ci.axm = true;
+                        FarmGameEngine.a(4, this);
+                        FarmGameEngine.axm = true;
                         this.anh = 0;
                         return true;
                     }
-                    if (this.anw && ci.aZB == 0 && ((this.Bj == 0 || this.Bj == 1) && !fz(32))) {
+                    if (this.anw && FarmGameEngine.aZB == 0 && ((this.Bj == 0 || this.Bj == 1) && !fz(32))) {
                         fp(15);
-                        ci.c(true, 2, 2);
-                        ci.aqY = this;
-                        ci.aV(true);
+                        FarmGameEngine.c(true, 2, 2);
+                        FarmGameEngine.aqY = this;
+                        FarmGameEngine.aV(true);
                         return true;
                     }
                     fp(0);
                     if (!this.anw) {
-                        ci.a(true, this);
+                        FarmGameEngine.a(true, this);
                     }
-                    if (!this.anw && !fz(32) && ci.ii(this.amE) == 0 && this.amB != 0 && ci.aZB == 0) {
+                    if (!this.anw && !fz(32) && FarmGameEngine.ii(this.amE) == 0 && this.amB != 0 && FarmGameEngine.aZB == 0) {
                         fq(16);
-                        ci.a(false, (ch) null);
+                        FarmGameEngine.a(false, (FarmEntity) null);
                     }
                     return false;
                 }
                 if (this.aol != this.aoE || this.aom != this.aoF) {
                     return false;
                 }
-                ch chVarFm = ci.Fm();
-                if (ci.aYS == 1022 || ci.aYS == 1049 || ci.aYS == 1056 || ci.aYS == 1063) {
-                    ci.axW = true;
-                } else if (ci.auj && ci.aZB <= 10 && ci.ii(ci.azx[ci.aZB - 1][5]) == 0) {
-                    if ((chVarFm == null || chVarFm.Bj != 8) && (ci.aYS == -1 || ci.aYS == 0)) {
-                        ci.S(12332, 7, 0);
+                FarmEntity chVarFm = FarmGameEngine.Fm();
+                if (FarmGameEngine.aYS == 1022 || FarmGameEngine.aYS == 1049 || FarmGameEngine.aYS == 1056 || FarmGameEngine.aYS == 1063) {
+                    FarmGameEngine.axW = true;
+                } else if (FarmGameEngine.auj && FarmGameEngine.aZB <= 10 && FarmGameEngine.ii(FarmGameEngine.azx[FarmGameEngine.aZB - 1][5]) == 0) {
+                    if ((chVarFm == null || chVarFm.Bj != 8) && (FarmGameEngine.aYS == -1 || FarmGameEngine.aYS == 0)) {
+                        FarmGameEngine.S(12332, 7, 0);
                         return false;
                     }
                 }
-                if (chVarFm == null && ci.lN(GLURLConnection.HTTP_FOUND)) {
-                    int iFv = ci.Fv();
+                if (chVarFm == null && FarmGameEngine.lN(GLURLConnection.HTTP_FOUND)) {
+                    int iFv = FarmGameEngine.Fv();
                     if (iFv != -1) {
-                        ci.hG(iFv);
+                        FarmGameEngine.hG(iFv);
                     }
-                    chVarFm = ci.Fm();
+                    chVarFm = FarmGameEngine.Fm();
                     if (chVarFm != null) {
-                        ci.avE = chVarFm;
-                        ci.DP();
-                        ci.aD(false);
-                        ci.avD = -1;
+                        FarmGameEngine.avE = chVarFm;
+                        FarmGameEngine.DP();
+                        FarmGameEngine.aD(false);
+                        FarmGameEngine.avD = -1;
                         chVarFm.amQ = true;
                     }
                 }
                 if (chVarFm == null) {
-                    ci.F(883, 885, 15, 0);
+                    FarmGameEngine.F(883, 885, 15, 0);
                 } else {
                     if (chVarFm.Bj == 8) {
                         return false;
                     }
-                    if (ci.b(chVarFm, this) || ci.auj || ci.lN(GLURLConnection.HTTP_FOUND)) {
-                        if (ci.auj && ci.baH) {
-                            ci.baH = false;
-                            ci.jQ(-1);
+                    if (FarmGameEngine.b(chVarFm, this) || FarmGameEngine.auj || FarmGameEngine.lN(GLURLConnection.HTTP_FOUND)) {
+                        if (FarmGameEngine.auj && FarmGameEngine.baH) {
+                            FarmGameEngine.baH = false;
+                            FarmGameEngine.jQ(-1);
                         }
                         chVarFm.ann = true;
-                        ci.aCn = ci.MD();
+                        FarmGameEngine.aCn = FarmGameEngine.MD();
                         chVarFm.d(this);
                     } else {
-                        String str4 = ci.aMw;
-                        String strDt2 = ci.dt(522);
+                        String str4 = FarmGameEngine.aMw;
+                        String strDt2 = FarmGameEngine.dt(522);
                         if (strDt2 == null) {
                             strDt2 = "";
                         }
                         if (!str4.equals(strDt2)) {
-                            String str5 = ci.aMw;
-                            String strDt3 = ci.dt(476);
+                            String str5 = FarmGameEngine.aMw;
+                            String strDt3 = FarmGameEngine.dt(476);
                             if (strDt3 == null) {
                                 strDt3 = "";
                             }
                             if (!str5.equals(strDt3)) {
-                                ci.aty = this;
-                                String strDt4 = ci.dt(1001);
+                                FarmGameEngine.aty = this;
+                                String strDt4 = FarmGameEngine.dt(1001);
                                 if (strDt4 == null) {
                                     strDt4 = "";
                                 }
-                                String strDt5 = ci.dt(1002);
+                                String strDt5 = FarmGameEngine.dt(1002);
                                 if (strDt5 == null) {
                                     strDt5 = "";
                                 }
-                                ci.d(strDt4, strDt5, 15, 0);
+                                FarmGameEngine.d(strDt4, strDt5, 15, 0);
                             }
                         }
                     }
@@ -2503,20 +2503,20 @@ class ch {
     }
 
     boolean pL() {
-        return (ci.awX == 1 || this.Bj == 3 || this.Bj == 7 || this.Bj == 13 || this.Bj == 15 || this.Bj == 8 || fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST) || fz(Utility.DEFAULT_STREAM_BUFFER_SIZE) || fz(GLURLConnection.BUFFER_SIZE) || fz(16) || fz(256)) ? false : true;
+        return (FarmGameEngine.awX == 1 || this.Bj == 3 || this.Bj == 7 || this.Bj == 13 || this.Bj == 15 || this.Bj == 8 || fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST) || fz(Utility.DEFAULT_STREAM_BUFFER_SIZE) || fz(GLURLConnection.BUFFER_SIZE) || fz(16) || fz(256)) ? false : true;
     }
 
     void pM() {
-        this.amE = ci.ih(j.bY(0).KW[this.aoC][25] * 60);
-        this.amE = ci.ih((ci.ii(this.amE) * ci.md(this.aoU)) / 100);
+        this.amE = FarmGameEngine.ih(j.bY(0).KW[this.aoC][25] * 60);
+        this.amE = FarmGameEngine.ih((FarmGameEngine.ii(this.amE) * FarmGameEngine.md(this.aoU)) / 100);
         String str = "[Animal] prepare next care. dbid:" + this.aoC + ",time:" + this.amE;
-        this.amB = ci.MD();
+        this.amB = FarmGameEngine.MD();
         String str2 = "last anim care:" + ((int) this.amB);
     }
 
     void pN() {
-        this.amI = ci.ih(j.bY(0).KW[this.aoC][14] * 60);
-        this.amJ = ci.MD() / 1000;
+        this.amI = FarmGameEngine.ih(j.bY(0).KW[this.aoC][14] * 60);
+        this.amJ = FarmGameEngine.MD() / 1000;
     }
 
     void pO() {
@@ -2524,27 +2524,27 @@ class ch {
             if (fz(256)) {
                 fp(7);
                 this.anb = true;
-                ci.aa(this.aoU, 1, 20);
+                FarmGameEngine.aa(this.aoU, 1, 20);
                 fy(256);
                 pT();
-                this.aoR = new aa(ci.aZf[13], this.aot, this.aou);
+                this.aoR = new aa(FarmGameEngine.aZf[13], this.aot, this.aou);
                 this.aoR.Y(0, 2);
                 this.aoP = this.amZ;
                 this.aoQ = this.ana;
-                ci.gX(31);
+                FarmGameEngine.gX(31);
                 return;
             }
             return;
         }
-        if (this.Bj == 3 || ci.aZB != 0) {
-            if (ci.aZB == 0) {
-                ci.gX(55);
+        if (this.Bj == 3 || FarmGameEngine.aZB != 0) {
+            if (FarmGameEngine.aZB == 0) {
+                FarmGameEngine.gX(55);
                 return;
             }
             fp(3);
             fy(4);
             pT();
-            this.amB = ci.MD();
+            this.amB = FarmGameEngine.MD();
             this.amL = false;
             this.amO = false;
             this.amN = false;
@@ -2552,12 +2552,12 @@ class ch {
             this.amP = false;
             return;
         }
-        if (ci.aYS == 1045) {
-            ci.axW = true;
+        if (FarmGameEngine.aYS == 1045) {
+            FarmGameEngine.axW = true;
         }
-        ci.bM(this.amK, this.amS);
-        if (ci.aMj[this.amS] > 0) {
-            int[] iArr = ci.aMj;
+        FarmGameEngine.bM(this.amK, this.amS);
+        if (FarmGameEngine.aMj[this.amS] > 0) {
+            int[] iArr = FarmGameEngine.aMj;
             short s = this.amS;
             iArr[s] = iArr[s] - this.amK;
         }
@@ -2569,15 +2569,15 @@ class ch {
             String str3 = "m_animalTapCountMax : " + this.amF;
             if (this.amG >= this.amF && !fz(2048)) {
                 fx(2048);
-                ci.e(479, 480, 7, 0, this.aoG + Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, this.aoH, this.aoI);
-                ci.lQ(0);
+                FarmGameEngine.e(479, 480, 7, 0, this.aoG + Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, this.aoH, this.aoI);
+                FarmGameEngine.lQ(0);
             }
             String str4 = "[ANIMAL] TAKE CARE. tapcount:" + this.amG + ",max:" + this.amF + ",uid:" + this.aoU;
         }
-        ci.aa(this.aoU, 1, 19);
+        FarmGameEngine.aa(this.aoU, 1, 19);
         fy(4);
         pT();
-        this.amB = ci.MD();
+        this.amB = FarmGameEngine.MD();
         this.amL = false;
         this.amO = false;
         this.amN = false;
@@ -2589,7 +2589,7 @@ class ch {
         fp(5);
         fy(16);
         pT();
-        this.amB = ci.MD();
+        this.amB = FarmGameEngine.MD();
     }
 
     /* JADX WARN: Code duplicated, block: B:50:0x033b  */
@@ -2598,14 +2598,14 @@ class ch {
         boolean z2;
         int[] iArr = {0, 0, 14};
         b(47, 3, iArr).b(this.aol, this.aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, 1);
-        if (ci.baf != null && ci.aZB == 0) {
+        if (FarmGameEngine.baf != null && FarmGameEngine.aZB == 0) {
             int i = 115423;
-            if (ci.gg(this.aoC)) {
+            if (FarmGameEngine.gg(this.aoC)) {
                 i = 119024;
-            } else if (ci.gh(this.aoC)) {
+            } else if (FarmGameEngine.gh(this.aoC)) {
                 i = 150869;
             }
-            ci.a(115443, new String[]{"INT:" + Integer.toString(ci.FB()), "INT:" + Integer.toString(0), "INT:" + Integer.toString(0), "INT:" + Integer.toString(116136), "INT:" + Integer.toString(i), "N/A", "N/A", "INT:" + Integer.toString(1), "INT:" + Integer.toString(ci.FC())});
+            FarmGameEngine.a(115443, new String[]{"INT:" + Integer.toString(FarmGameEngine.FB()), "INT:" + Integer.toString(0), "INT:" + Integer.toString(0), "INT:" + Integer.toString(116136), "INT:" + Integer.toString(i), "N/A", "N/A", "INT:" + Integer.toString(1), "INT:" + Integer.toString(FarmGameEngine.FC())});
         }
         j jVarBY = j.bY(0);
         int i2 = jVarBY.KW[this.aoC][18];
@@ -2625,14 +2625,14 @@ class ch {
             this.amP = false;
         }
         int i8 = i5;
-        if (ci.aZB == 0 || (ci.hF(5) < ci.Fw() && GLLib.L(0, 100) < ci.aZw[20])) {
-            int iL = GLLib.L(0, 100);
+        if (FarmGameEngine.aZB == 0 || (FarmGameEngine.hF(5) < FarmGameEngine.Fw() && GameRuntime.L(0, 100) < FarmGameEngine.aZw[20])) {
+            int iL = GameRuntime.L(0, 100);
             int i9 = 0;
             if (iL < i4) {
                 this.aoL = i3;
                 int i10 = i2 << 16;
-                ch chVarB = b(47, 3, iArr);
-                i9 = ci.aZB != 0 ? 65536 : i10;
+                FarmEntity chVarB = b(47, 3, iArr);
+                i9 = FarmGameEngine.aZB != 0 ? 65536 : i10;
                 chVarB.b(this.aol, this.aom, 59, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, this.aoL | i9);
                 z = true;
             } else {
@@ -2640,7 +2640,7 @@ class ch {
             }
             if (iL >= i7) {
                 z2 = z;
-            } else if (ci.aZB == 0) {
+            } else if (FarmGameEngine.aZB == 0) {
                 this.aoL = i6;
                 b(47, 3, iArr).b(this.aol + 50, this.aom + 10, 59, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, (i8 << 16) | this.aoL);
                 z2 = true;
@@ -2653,22 +2653,22 @@ class ch {
             }
             if (fz(2048) && this.amR > 0) {
                 b(47, 3, iArr).b(this.aol + 65, this.aom, 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, this.amR);
-                if (ci.baf != null && ci.aZB == 0) {
-                    ci.a(115443, new String[]{"INT:" + Integer.toString(ci.FB()), "INT:" + Integer.toString(0), "INT:" + Integer.toString(this.amR), "INT:" + Integer.toString(116136), "INT:" + Integer.toString(115423), "N/A", "N/A", "INT:" + Integer.toString(1), "INT:" + Integer.toString(ci.FC())});
+                if (FarmGameEngine.baf != null && FarmGameEngine.aZB == 0) {
+                    FarmGameEngine.a(115443, new String[]{"INT:" + Integer.toString(FarmGameEngine.FB()), "INT:" + Integer.toString(0), "INT:" + Integer.toString(this.amR), "INT:" + Integer.toString(116136), "INT:" + Integer.toString(115423), "N/A", "N/A", "INT:" + Integer.toString(1), "INT:" + Integer.toString(FarmGameEngine.FC())});
                 }
             }
         } else {
             z2 = false;
         }
         if (z2) {
-            ci.c(this.aoU, 1, 41, fz(2048));
+            FarmGameEngine.c(this.aoU, 1, 41, fz(2048));
         }
     }
 
     void pR() {
         if (fz(32)) {
             int i = this.aoU;
-            ci.a(false, (ch) null);
+            FarmGameEngine.a(false, (FarmEntity) null);
             fy(32);
             this.aoC++;
             j jVarBY = j.bY(0);
@@ -2679,7 +2679,7 @@ class ch {
             this.aoy = jVarBY.KW[this.aoC][27];
             this.aoz = jVarBY.KW[this.aoC][28];
             this.amH = jVarBY.KW[this.aoC][8];
-            a aVar = ci.aZf[jVarBY.KW[this.aoC][31]];
+            a aVar = FarmGameEngine.aZf[jVarBY.KW[this.aoC][31]];
             this.aoI = jVarBY.KW[this.aoC][32];
             this.aoH = jVarBY.KW[this.aoC][33];
             this.amV = (short) jVarBY.KW[this.aoC][29];
@@ -2690,18 +2690,18 @@ class ch {
                 this.aoO.Y(0, -1);
             }
             startGrowthEffect();
-            if (ci.aZB == 0) {
+            if (FarmGameEngine.aZB == 0) {
                 if (this.anw) {
-                    ci.axj = i;
+                    FarmGameEngine.axj = i;
                 } else {
-                    ci.aa(i, 1, 21);
+                    FarmGameEngine.aa(i, 1, 21);
                 }
             }
             this.aoU = jVarBY.KW[this.aoC][1];
             this.aoV = jVarBY.KW[this.aoC][2];
-            if (ci.aZB == 0) {
-                ci.lQ(this.aoU);
-                ci.aX(true);
+            if (FarmGameEngine.aZB == 0) {
+                FarmGameEngine.lQ(this.aoU);
+                FarmGameEngine.aX(true);
             }
             if (!this.anw) {
                 pM();
@@ -2715,7 +2715,7 @@ class ch {
             }
             String str2 = "m_animalIncomeResourceQty1 : " + this.anf;
             String str3 = "m_animalIncomeResourceQty2 : " + this.ang;
-            ci.gX(43);
+            FarmGameEngine.gX(43);
             int iV = aVar.v(this.amV, 0);
             this.amX = aVar.bw(iV);
             this.amY = aVar.bx(iV);
@@ -2729,13 +2729,13 @@ class ch {
     }
 
     private void startGrowthEffect() {
-        this.aoR = new aa(ci.aZf[13], this.aot, this.aou - 50);
+        this.aoR = new aa(FarmGameEngine.aZf[13], this.aot, this.aou - 50);
         this.aoR.Y(1, 1);
-        tutorialGrowthEpoch = TutorialFlowController.captureCallback(ci.aYR, ci.aYS, ci.awV);
+        tutorialGrowthEpoch = TutorialFlowController.captureCallback(FarmGameEngine.currentTutorialStepIndex, FarmGameEngine.aYS, FarmGameEngine.awV);
     }
 
     void restoreTutorialGrowthEffect() {
-        if (ci.aYR != 18 || this.Kx != 54 || this.aoC != 17
+        if (FarmGameEngine.currentTutorialStepIndex != 18 || this.Kx != 54 || this.aoC != 17
                 || this.anw || fz(32) || this.aoR != null) return;
         startGrowthEffect();
     }
@@ -2747,8 +2747,8 @@ class ch {
             this.anq = false;
             fy(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST);
             pT();
-            this.amB = ci.MD();
-            this.amJ = ci.MD() / 1000;
+            this.amB = FarmGameEngine.MD();
+            this.amJ = FarmGameEngine.MD() / 1000;
             fp(0);
             this.anb = true;
             fx(64);
@@ -2788,12 +2788,12 @@ class ch {
             }
         }
         int[] iArr = new int[2];
-        ci.d(new int[]{this.aol, this.aom}, iArr);
-        if (iArr[0] > 5 && iArr[0] < GLLib.kH() - 5 && iArr[1] > 5 && iArr[1] < GLLib.kI() - 5 && !this.anE) {
+        FarmGameEngine.d(new int[]{this.aol, this.aom}, iArr);
+        if (iArr[0] > 5 && iArr[0] < GameRuntime.kH() - 5 && iArr[1] > 5 && iArr[1] < GameRuntime.kI() - 5 && !this.anE) {
             this.anF = true;
         }
         if (!this.anE && qs() && this.aoC == 2 && this.anF) {
-            ci.gX(21);
+            FarmGameEngine.gX(21);
             this.anE = true;
             this.anF = false;
         }
@@ -2801,10 +2801,10 @@ class ch {
 
     void pX() {
         if (fz(8)) {
-            ci.axd = true;
+            FarmGameEngine.axd = true;
             if (!this.anN) {
-                this.anT += GLLib.Qy;
-                this.anU += GLLib.Qy;
+                this.anT += GameRuntime.Qy;
+                this.anU += GameRuntime.Qy;
                 int i = this.anT * 2;
                 int i2 = this.anO ? 1 : -1;
                 if (this.anV < 3) {
@@ -2820,93 +2820,93 @@ class ch {
                     }
                 } else {
                     this.anN = true;
-                    long jMD = ci.MD();
-                    if (jMD - ci.avC >= 700) {
-                        ci.gX(37);
-                        ci.avC = jMD;
+                    long jMD = FarmGameEngine.MD();
+                    if (jMD - FarmGameEngine.avC >= 700) {
+                        FarmGameEngine.gX(37);
+                        FarmGameEngine.avC = jMD;
                     }
                     if (this.anG == 60) {
-                        ci.h(true, (((this.aoG & (-32769)) - 109) * 4) + this.aoH);
+                        FarmGameEngine.h(true, (((this.aoG & (-32769)) - 109) * 4) + this.aoH);
                     }
                 }
                 this.aol = this.anJ + this.anP;
                 this.aom = this.anK + this.anQ;
                 return;
             }
-            this.anH += GLLib.Qy * 4;
+            this.anH += GameRuntime.Qy * 4;
             if (this.anG == 57) {
-                this.aoE = ci.aZj.aol + ci.atc[1][30][2] + (ci.atf[1].by(33) >> 1);
-                this.aoF = ci.aZj.aom + ci.atc[1][30][3] + (ci.atf[1].by(33) >> 1);
+                this.aoE = FarmGameEngine.aZj.aol + FarmGameEngine.atc[1][30][2] + (FarmGameEngine.atf[1].by(33) >> 1);
+                this.aoF = FarmGameEngine.aZj.aom + FarmGameEngine.atc[1][30][3] + (FarmGameEngine.atf[1].by(33) >> 1);
             } else if (this.anG >= 59) {
                 if ((this.anM & 65535) == 5) {
-                    this.aoE = ci.aZj.aol + ci.atc[1][32][2];
-                    this.aoF = ci.aZj.aom + ci.atc[1][32][3];
+                    this.aoE = FarmGameEngine.aZj.aol + FarmGameEngine.atc[1][32][2];
+                    this.aoF = FarmGameEngine.aZj.aom + FarmGameEngine.atc[1][32][3];
                 } else {
-                    this.aoE = ci.aZj.aol + ci.atc[1][78][2];
-                    this.aoF = ci.aZj.aom + ci.atc[1][78][3];
+                    this.aoE = FarmGameEngine.aZj.aol + FarmGameEngine.atc[1][78][2];
+                    this.aoF = FarmGameEngine.aZj.aom + FarmGameEngine.atc[1][78][3];
                 }
             } else if (this.anG == 37) {
-                this.aoE = ci.aZj.aol + ci.atc[1][25][2] + (ci.atf[1].by(4) >> 1);
-                this.aoF = ci.aZj.aom + ci.atc[1][25][3] + (ci.atf[1].by(4) >> 1);
+                this.aoE = FarmGameEngine.aZj.aol + FarmGameEngine.atc[1][25][2] + (FarmGameEngine.atf[1].by(4) >> 1);
+                this.aoF = FarmGameEngine.aZj.aom + FarmGameEngine.atc[1][25][3] + (FarmGameEngine.atf[1].by(4) >> 1);
             } else {
-                this.aoE = ci.aZj.aol;
-                this.aoF = ci.aZj.aom;
+                this.aoE = FarmGameEngine.aZj.aol;
+                this.aoF = FarmGameEngine.aZj.aom;
             }
             if (this.anG == 60) {
-                this.aoE = ci.aZj.aol + ci.atc[1][this.aoH + FacebookRequestErrorClassification.EC_INVALID_SESSION][2];
-                this.aoF = ci.aZj.aom + ci.atc[1][this.aoH + FacebookRequestErrorClassification.EC_INVALID_SESSION][3];
+                this.aoE = FarmGameEngine.aZj.aol + FarmGameEngine.atc[1][this.aoH + FacebookRequestErrorClassification.EC_INVALID_SESSION][2];
+                this.aoF = FarmGameEngine.aZj.aom + FarmGameEngine.atc[1][this.aoH + FacebookRequestErrorClassification.EC_INVALID_SESSION][3];
             }
             if (this.anG == 67 || this.anG == 67) {
-                this.aoE = ci.aZj.aol + ci.atc[1][120][2];
-                this.aoF = ci.aZj.aom + ci.atc[1][120][3];
+                this.aoE = FarmGameEngine.aZj.aol + FarmGameEngine.atc[1][120][2];
+                this.aoF = FarmGameEngine.aZj.aom + FarmGameEngine.atc[1][120][3];
             }
             if (this.anI > 0) {
-                this.aol = this.anJ + (((((this.aoE * 100) / ci.aYP) - this.anJ) * this.anH) / this.anI);
-                this.aom = this.anK + ((((((this.aoF * 100) / ci.aYP) - this.anK) * (this.anH * this.anH)) / this.anI) / this.anI);
+                this.aol = this.anJ + (((((this.aoE * 100) / FarmGameEngine.aYP) - this.anJ) * this.anH) / this.anI);
+                this.aom = this.anK + ((((((this.aoF * 100) / FarmGameEngine.aYP) - this.anK) * (this.anH * this.anH)) / this.anI) / this.anI);
             }
             if (this.anH > this.anI) {
                 fx(8);
-                ci.aCk = false;
+                FarmGameEngine.aCk = false;
                 if (this.anX) {
                     oN();
-                    ci.axd = false;
+                    FarmGameEngine.axd = false;
                     this.anX = false;
                     if (this.anG == 37) {
-                        ci.hX(this.anM);
+                        FarmGameEngine.hX(this.anM);
                     } else if (this.anG == 36) {
-                        ci.hS(this.anM);
+                        FarmGameEngine.hS(this.anM);
                     } else if (this.anG == 6) {
-                        ci.hT(this.anM);
+                        FarmGameEngine.hT(this.anM);
                     } else if (this.anG == 59) {
                         int i4 = this.anM & 65535;
                         int i5 = (this.anM & (-65536)) >> 16;
                         if (i4 == 110) {
-                            ci.hV(i5);
-                            short s = ci.aZL[i4];
-                            ci.N(s, i5, 34);
-                            ci.aa(s, i5, 34);
-                            ci.aa(s, i5, 22);
+                            FarmGameEngine.hV(i5);
+                            short s = FarmGameEngine.aZL[i4];
+                            FarmGameEngine.N(s, i5, 34);
+                            FarmGameEngine.aa(s, i5, 34);
+                            FarmGameEngine.aa(s, i5, 22);
                         } else if (i4 == 5) {
-                            ci.hU(i5);
+                            FarmGameEngine.hU(i5);
                         } else if (i4 < 111 || i4 > 116) {
-                            ci.O(0, i4, i5);
+                            FarmGameEngine.O(0, i4, i5);
                             if (i5 > 0) {
-                                ci.hI(-i5);
+                                FarmGameEngine.hI(-i5);
                             }
-                            ci.Fy();
+                            FarmGameEngine.Fy();
                         } else {
-                            ci.bN(i5, i4 - 111);
+                            FarmGameEngine.bN(i5, i4 - 111);
                         }
                         String str = "Reward item. add item.:" + i4;
                         if (i4 >= 0 && i4 < 6) {
-                            ci.aa(ci.aZL[i4], i5, 22);
+                            FarmGameEngine.aa(FarmGameEngine.aZL[i4], i5, 22);
                         }
                     } else if (this.anG != 60 && this.anG == 67) {
-                        ci.hg(this.anM);
-                        ci.bW(1, 121);
+                        FarmGameEngine.hg(this.anM);
+                        FarmGameEngine.bW(1, 121);
                     }
-                    if (ci.aYS == 1069) {
-                        ci.axW = true;
+                    if (FarmGameEngine.aYS == 1069) {
+                        FarmGameEngine.axW = true;
                     }
                 }
             }
@@ -2919,13 +2919,13 @@ class ch {
 
     void pe() {
         float f = 0.0f;
-        if ((ci.aAy - ci.aAw < 0 ? -(ci.aAy - ci.aAw) : ci.aAy - ci.aAw) <= 0) {
-            if ((ci.aAz - ci.aAx < 0 ? -(ci.aAz - ci.aAx) : ci.aAz - ci.aAx) <= 0) {
+        if ((FarmGameEngine.aAy - FarmGameEngine.aAw < 0 ? -(FarmGameEngine.aAy - FarmGameEngine.aAw) : FarmGameEngine.aAy - FarmGameEngine.aAw) <= 0) {
+            if ((FarmGameEngine.aAz - FarmGameEngine.aAx < 0 ? -(FarmGameEngine.aAz - FarmGameEngine.aAx) : FarmGameEngine.aAz - FarmGameEngine.aAx) <= 0) {
                 return;
             }
         }
-        int i = ci.aAy - ci.aAw;
-        int i2 = ci.aAz - ci.aAx;
+        int i = FarmGameEngine.aAy - FarmGameEngine.aAw;
+        int i2 = FarmGameEngine.aAz - FarmGameEngine.aAx;
         float fSqrt = (float) Math.sqrt((i * i) + (i2 * i2));
         this.alK = i / fSqrt;
         this.alL = i2 / fSqrt;
@@ -2934,9 +2934,9 @@ class ch {
             return;
         }
         float f2 = (i * i) + (i2 * i2);
-        float fSqrt2 = (float) Math.sqrt((ci.kH() * ci.kH()) + (ci.kI() * ci.kI()));
-        if ((1000 - ci.aAA) / 1000.0f >= 0.0f) {
-            f = ((float) (1000 - ci.aAA)) / 1000.0f > 1.0f ? 1.0f : (1000 - ci.aAA) / 1000.0f;
+        float fSqrt2 = (float) Math.sqrt((FarmGameEngine.kH() * FarmGameEngine.kH()) + (FarmGameEngine.kI() * FarmGameEngine.kI()));
+        if ((1000 - FarmGameEngine.aAA) / 1000.0f >= 0.0f) {
+            f = ((float) (1000 - FarmGameEngine.aAA)) / 1000.0f > 1.0f ? 1.0f : (1000 - FarmGameEngine.aAA) / 1000.0f;
         }
         this.alI = f * ((100.0f * fSqrt) / fSqrt2);
         this.alJ = (1.0f - (fSqrt / fSqrt2)) * 0.5f;
@@ -2947,194 +2947,194 @@ class ch {
     }
 
     void ph() {
-        ci.awX = 1;
+        FarmGameEngine.awX = 1;
         fu(4);
     }
 
     void pi() {
-        ci.awX = 2;
+        FarmGameEngine.awX = 2;
         fv(-1);
     }
 
     boolean pm() {
-        if (ci.aYR == 1 || ci.aYR == 2 || ci.aYR == 3 || (ci.aYR >= 32 && ci.aYR <= 36)) {
+        if (FarmGameEngine.currentTutorialStepIndex == 1 || FarmGameEngine.currentTutorialStepIndex == 2 || FarmGameEngine.currentTutorialStepIndex == 3 || (FarmGameEngine.currentTutorialStepIndex >= 32 && FarmGameEngine.currentTutorialStepIndex <= 36)) {
             return false;
         }
         String str = "[Actor CROP] Crop_Pressed. cropState:" + this.Bj;
         if (this.Bj == 5) {
-            ci.hc(1);
+            FarmGameEngine.hc(1);
         }
         return pn();
     }
 
     boolean pn() {
-        String str = "Crop_Over m_cropType :" + ci.avS;
-        if (ci.aYR == 4 || ci.aYR == 7 || ci.aYR == 45) {
-            ci.axW = true;
+        String str = "Crop_Over m_cropType :" + FarmGameEngine.avS;
+        if (FarmGameEngine.currentTutorialStepIndex == 4 || FarmGameEngine.currentTutorialStepIndex == 7 || FarmGameEngine.currentTutorialStepIndex == 45) {
+            FarmGameEngine.axW = true;
         }
-        if (this.Bj != 1 || ci.avP != 0) {
-            if (this.Bj != 5 || ci.avP != 1) {
+        if (this.Bj != 1 || FarmGameEngine.avP != 0) {
+            if (this.Bj != 5 || FarmGameEngine.avP != 1) {
                 return false;
             }
-            if (((ci.aCi & 2) == 2) && !ci.aAY) {
-                if ((ci.aZB != 0 || ci.hF(5) + fe(3) + 1 <= ci.Fw()) && (ci.aZB != 0 || ci.hF(5) + ci.aAX + 1 <= ci.Fw())) {
-                    ci.a(1, this);
-                    if (ci.aYR != 5) {
+            if (((FarmGameEngine.aCi & 2) == 2) && !FarmGameEngine.aAY) {
+                if ((FarmGameEngine.aZB != 0 || FarmGameEngine.hF(5) + fe(3) + 1 <= FarmGameEngine.Fw()) && (FarmGameEngine.aZB != 0 || FarmGameEngine.hF(5) + FarmGameEngine.aAX + 1 <= FarmGameEngine.Fw())) {
+                    FarmGameEngine.a(1, this);
+                    if (FarmGameEngine.currentTutorialStepIndex != 5) {
                         return true;
                     }
-                    ci.ayp = false;
+                    FarmGameEngine.ayp = false;
                     return true;
                 }
-                ci.aAY = true;
-                ci.c(false, 1, ci.avR);
-                ci.awH = false;
-                ci.avP = -1;
-                ci.H(481, 487, 7, 0);
+                FarmGameEngine.aAY = true;
+                FarmGameEngine.c(false, 1, FarmGameEngine.avR);
+                FarmGameEngine.awH = false;
+                FarmGameEngine.avP = -1;
+                FarmGameEngine.H(481, 487, 7, 0);
                 return false;
             }
             return false;
         }
-        if (ci.awc > ci.FC()) {
+        if (FarmGameEngine.awc > FarmGameEngine.FC()) {
             return true;
         }
-        if (ci.aYR == 46) {
-            String str2 = "[crop] over. plant tomato. set croptype tomato.:" + ci.avS + ", tomat:1";
-            ci.avS = 1;
+        if (FarmGameEngine.currentTutorialStepIndex == 46) {
+            String str2 = "[crop] over. plant tomato. set croptype tomato.:" + FarmGameEngine.avS + ", tomat:1";
+            FarmGameEngine.avS = 1;
         }
-        fi(ci.avS);
-        if ((ci.avV > 0 && ci.hO(ci.avV)) || (ci.avW > 0 && ci.hP(ci.avW))) {
-            ci.a(0, this);
-            if (ci.aYR != 5 && ci.aYR != 8) {
+        fi(FarmGameEngine.avS);
+        if ((FarmGameEngine.avV > 0 && FarmGameEngine.hO(FarmGameEngine.avV)) || (FarmGameEngine.avW > 0 && FarmGameEngine.hP(FarmGameEngine.avW))) {
+            FarmGameEngine.a(0, this);
+            if (FarmGameEngine.currentTutorialStepIndex != 5 && FarmGameEngine.currentTutorialStepIndex != 8) {
                 return true;
             }
-            ci.ayp = false;
+            FarmGameEngine.ayp = false;
             return true;
         }
-        ci.aLV = -1;
-        if (ci.avV > 0) {
-            ci.aSX = 4;
-            ci.aSW = this;
-            ci.b(ci.avV - ci.FA(), (short) 19);
-            if (ci.avV > ci.FA()) {
-                ci.bal = ci.avV - ci.FA();
-                ci.bak = ci.ge(ci.avV - ci.FA());
+        FarmGameEngine.aLV = -1;
+        if (FarmGameEngine.avV > 0) {
+            FarmGameEngine.aSX = 4;
+            FarmGameEngine.aSW = this;
+            FarmGameEngine.b(FarmGameEngine.avV - FarmGameEngine.FA(), (short) 19);
+            if (FarmGameEngine.avV > FarmGameEngine.FA()) {
+                FarmGameEngine.bal = FarmGameEngine.avV - FarmGameEngine.FA();
+                FarmGameEngine.bak = FarmGameEngine.ge(FarmGameEngine.avV - FarmGameEngine.FA());
             }
-        } else if (ci.avW > 0) {
-            String str3 = "not enough cash : " + ci.avW;
-            ci.aSX = 4;
-            ci.aSW = this;
-            ci.a(ci.avW - ci.FB(), (short) 20);
+        } else if (FarmGameEngine.avW > 0) {
+            String str3 = "not enough cash : " + FarmGameEngine.avW;
+            FarmGameEngine.aSX = 4;
+            FarmGameEngine.aSW = this;
+            FarmGameEngine.a(FarmGameEngine.avW - FarmGameEngine.FB(), (short) 20);
         }
-        if (ci.aLV != -1) {
-            ci.fE(35);
-            ci.bax = true;
+        if (FarmGameEngine.aLV != -1) {
+            FarmGameEngine.fE(35);
+            FarmGameEngine.bax = true;
         }
-        ci.avP = -1;
+        FarmGameEngine.avP = -1;
         this.amn = false;
         return true;
     }
 
     boolean po() {
-        String str = "[Crop] clicked/" + this.Bj + "," + ci.avP;
-        if (ci.aYR == 38) {
+        String str = "[Crop] clicked/" + this.Bj + "," + FarmGameEngine.avP;
+        if (FarmGameEngine.currentTutorialStepIndex == 38) {
             return false;
         }
-        if (this.Bj == 1 && ci.avP != 0) {
-            if ((ci.aCi & 1) == 1) {
-                ci.hc(0);
+        if (this.Bj == 1 && FarmGameEngine.avP != 0) {
+            if ((FarmGameEngine.aCi & 1) == 1) {
+                FarmGameEngine.hc(0);
                 return true;
             }
         }
-        if (ci.aYR >= 14 && ci.aYR <= 35) {
-            String str2 = "ignore in tutorial guide step." + ci.awW;
+        if (FarmGameEngine.currentTutorialStepIndex >= 14 && FarmGameEngine.currentTutorialStepIndex <= 35) {
+            String str2 = "ignore in tutorial guide step." + FarmGameEngine.awW;
             return false;
         }
-        if ((this.Bj != 3 && this.Bj != 4) || ci.avP != -1) {
+        if ((this.Bj != 3 && this.Bj != 4) || FarmGameEngine.avP != -1) {
             return false;
         }
-        String str3 = "[Crop] . cut tuto.:" + ci.aYR + ",endtuto:-1";
-        if (ci.aYR != -1) {
+        String str3 = "[Crop] . cut tuto.:" + FarmGameEngine.currentTutorialStepIndex + ",endtuto:-1";
+        if (FarmGameEngine.currentTutorialStepIndex != -1) {
             return false;
         }
-        long jMD = ci.MD();
-        if (jMD - ci.avC >= 700) {
-            ci.gX(46);
-            ci.avC = jMD;
+        long jMD = FarmGameEngine.MD();
+        if (jMD - FarmGameEngine.avC >= 700) {
+            FarmGameEngine.gX(46);
+            FarmGameEngine.avC = jMD;
         }
-        ci.a(true, this);
+        FarmGameEngine.a(true, this);
         return false;
     }
 
     void pp() {
         String str = "Crop_PlantSeed m_dataBaseID : " + this.aoC + " m_cropCostCash : " + this.amg;
-        String str2 = "m_cropType :" + ci.avS + " m_name : " + this.aoV;
-        if ((this.amf <= 0 || !ci.hN(this.amf)) && (this.amg <= 0 || !ci.hQ(this.amg))) {
-            ci.aLV = -1;
+        String str2 = "m_cropType :" + FarmGameEngine.avS + " m_name : " + this.aoV;
+        if ((this.amf <= 0 || !FarmGameEngine.hN(this.amf)) && (this.amg <= 0 || !FarmGameEngine.hQ(this.amg))) {
+            FarmGameEngine.aLV = -1;
             if (this.amf > 0) {
-                ci.aSX = 5;
-                ci.aSW = this;
-                ci.b(ci.avV - ci.FA(), (short) 19);
-                if (ci.avV > ci.FA()) {
-                    ci.bal = ci.avV - ci.FA();
-                    ci.bak = ci.ge(ci.avV - ci.FA());
+                FarmGameEngine.aSX = 5;
+                FarmGameEngine.aSW = this;
+                FarmGameEngine.b(FarmGameEngine.avV - FarmGameEngine.FA(), (short) 19);
+                if (FarmGameEngine.avV > FarmGameEngine.FA()) {
+                    FarmGameEngine.bal = FarmGameEngine.avV - FarmGameEngine.FA();
+                    FarmGameEngine.bak = FarmGameEngine.ge(FarmGameEngine.avV - FarmGameEngine.FA());
                 }
             } else if (this.amg > 0) {
                 String str3 = "not enough cash : " + this.amg;
-                ci.aSX = 5;
-                ci.aSW = this;
-                ci.a(this.amg - ci.FB(), (short) 20);
+                FarmGameEngine.aSX = 5;
+                FarmGameEngine.aSW = this;
+                FarmGameEngine.a(this.amg - FarmGameEngine.FB(), (short) 20);
             }
-            if (ci.aLV != -1) {
-                ci.fE(35);
-                ci.bax = true;
+            if (FarmGameEngine.aLV != -1) {
+                FarmGameEngine.fE(35);
+                FarmGameEngine.bax = true;
             }
-            ci.avP = -1;
+            FarmGameEngine.avP = -1;
             this.amn = false;
-            if (this.amf > 0 && this.amf > ci.FA()) {
-                ci.bal = this.amf - ci.FA();
+            if (this.amf > 0 && this.amf > FarmGameEngine.FA()) {
+                FarmGameEngine.bal = this.amf - FarmGameEngine.FA();
                 return;
             } else {
-                if (this.amg <= 0 || this.amg <= ci.FB()) {
+                if (this.amg <= 0 || this.amg <= FarmGameEngine.FB()) {
                     return;
                 }
-                ci.bak = this.amg - ci.FB();
+                FarmGameEngine.bak = this.amg - FarmGameEngine.FB();
                 return;
             }
         }
-        String str4 = "namvt +++++++++++++++++ Promo Coin : " + ci.avY + " - Promo Cash : " + ci.avX;
+        String str4 = "namvt +++++++++++++++++ Promo Coin : " + FarmGameEngine.avY + " - Promo Cash : " + FarmGameEngine.avX;
         j jVarBY = j.bY(2);
         bb bbVar = new bb();
         bbVar.aiw = 1;
-        bbVar.aiG = ci.FB();
+        bbVar.aiG = FarmGameEngine.FB();
         bbVar.aiH = this.amf > 0 ? 111552 : 111551;
         bbVar.aiD = jVarBY.KW[this.aoC][30];
-        bbVar.aiI = ci.baj;
-        bbVar.aiJ = ci.bai;
+        bbVar.aiI = FarmGameEngine.baj;
+        bbVar.aiJ = FarmGameEngine.bai;
         bbVar.aiK = this.amf > 0 ? this.amf : this.amg;
-        bbVar.aiL = ci.avX > 0 ? ci.avX : ci.avY;
-        bbVar.aiM = ci.ban;
-        bbVar.aiF = ci.FC();
+        bbVar.aiL = FarmGameEngine.avX > 0 ? FarmGameEngine.avX : FarmGameEngine.avY;
+        bbVar.aiM = FarmGameEngine.ban;
+        bbVar.aiF = FarmGameEngine.FC();
         bbVar.aiN = this.aoC;
-        ci.a(bbVar);
+        FarmGameEngine.a(bbVar);
         fj(3);
-        String str5 = "[crop] actor . plant seed. :" + ci.aYR + ",db id:" + this.aoC + ",uid:" + this.aoU;
-        if (ci.aYR == 46) {
-            ci.ayf++;
-        } else if (ci.aYR == 8) {
-            ci.ayf++;
-        } else if (ci.aYR == -1) {
-            ci.aa(this.aoU, 1, 12);
+        String str5 = "[crop] actor . plant seed. :" + FarmGameEngine.currentTutorialStepIndex + ",db id:" + this.aoC + ",uid:" + this.aoU;
+        if (FarmGameEngine.currentTutorialStepIndex == 46) {
+            FarmGameEngine.ayf++;
+        } else if (FarmGameEngine.currentTutorialStepIndex == 8) {
+            FarmGameEngine.ayf++;
+        } else if (FarmGameEngine.currentTutorialStepIndex == -1) {
+            FarmGameEngine.aa(this.aoU, 1, 12);
         }
     }
 
     void pq() {
         fj(1);
-        if (ci.aYR == 38 || ci.aYR == 5) {
-            ci.ayf++;
+        if (FarmGameEngine.currentTutorialStepIndex == 38 || FarmGameEngine.currentTutorialStepIndex == 5) {
+            FarmGameEngine.ayf++;
         }
         at(false);
-        this.aoU = ci.aZE[0];
-        this.aoV = ci.aZF[0];
+        this.aoU = FarmGameEngine.aZE[0];
+        this.aoV = FarmGameEngine.aZF[0];
         fy(1024);
     }
 
@@ -3144,32 +3144,32 @@ class ch {
 
     void ps() {
         if (this.Bj == 2) {
-            long jMD = (ci.MD() - this.amq) / 1000;
-            if (jMD >= ci.ii(this.amr)) {
+            long jMD = (FarmGameEngine.MD() - this.amq) / 1000;
+            if (jMD >= FarmGameEngine.ii(this.amr)) {
                 fk(3);
-                if (ci.aYS == 1067 || ci.aYS == 1066) {
-                    ci.axW = true;
-                    if (ci.aYS == 1066) {
-                        ci.axN = 1068;
+                if (FarmGameEngine.aYS == 1067 || FarmGameEngine.aYS == 1066) {
+                    FarmGameEngine.axW = true;
+                    if (FarmGameEngine.aYS == 1066) {
+                        FarmGameEngine.axN = 1068;
                     }
                 }
             }
-            if (ci.aZo == this && ci.ii(this.amr) != 0) {
-                ci.ba((int) jMD, ci.ii(this.amr));
-                this.aoX = A(this.amp, (int) (((long) ci.ii(this.amr)) - jMD), ci.ii(this.amr));
+            if (FarmGameEngine.aZo == this && FarmGameEngine.ii(this.amr) != 0) {
+                FarmGameEngine.ba((int) jMD, FarmGameEngine.ii(this.amr));
+                this.aoX = A(this.amp, (int) (((long) FarmGameEngine.ii(this.amr)) - jMD), FarmGameEngine.ii(this.amr));
             }
-        } else if (ci.aZo == this) {
-            ci.a(false, (ch) null);
+        } else if (FarmGameEngine.aZo == this) {
+            FarmGameEngine.a(false, (FarmEntity) null);
         }
         if (this.aoC == 22 || this.aoC == 23) {
             if (this.Bj == 6 && (this.aoR == null || (this.aoR != null && this.aoR.lQ()))) {
                 fk(2);
-                if (ci.aYS == 1073) {
-                    ci.axW = true;
+                if (FarmGameEngine.aYS == 1073) {
+                    FarmGameEngine.axW = true;
                 }
             }
             if (this.aoR != null) {
-                this.aoR.dV(GLLib.Qy);
+                this.aoR.dV(GameRuntime.Qy);
             }
         }
     }
@@ -3179,9 +3179,9 @@ class ch {
             return false;
         }
         if (this.Bj == 3) {
-            ci.hc(1);
+            FarmGameEngine.hc(1);
             if (this.aoC == 22 || this.aoC == 23) {
-                ci.awH = false;
+                FarmGameEngine.awH = false;
             }
         }
         return pu();
@@ -3189,36 +3189,36 @@ class ch {
 
     boolean pv() {
         if (this.amu) {
-            String strDt = ci.dt(12413);
+            String strDt = FarmGameEngine.dt(12413);
             if (strDt == null) {
                 strDt = "";
             }
-            ci.m(strDt, 7, 0);
+            FarmGameEngine.m(strDt, 7, 0);
             return false;
         }
         String str = "tree clicked. sate :" + this.Bj;
         if (this.Bj == 2) {
-            if (ci.aYR != 18) {
-                String str2 = "[tree] show progess bar.:paint actino:" + ci.avP;
-                if (ci.avP == -1) {
-                    if (ci.aYS == 1066) {
-                        ci.gX(79);
-                        ci.axW = true;
+            if (FarmGameEngine.currentTutorialStepIndex != 18) {
+                String str2 = "[tree] show progess bar.:paint actino:" + FarmGameEngine.avP;
+                if (FarmGameEngine.avP == -1) {
+                    if (FarmGameEngine.aYS == 1066) {
+                        FarmGameEngine.gX(79);
+                        FarmGameEngine.axW = true;
                     } else if (this.aoC == 22 || this.aoC == 23) {
-                        ci.gX(79);
+                        FarmGameEngine.gX(79);
                     } else {
-                        ci.gX(46);
+                        FarmGameEngine.gX(46);
                     }
-                    ci.a(true, this);
+                    FarmGameEngine.a(true, this);
                     return true;
                 }
             }
-        } else if (this.Bj == 3 && ci.avP != 1) {
-            ci.hc(1);
+        } else if (this.Bj == 3 && FarmGameEngine.avP != 1) {
+            FarmGameEngine.hc(1);
             if (this.aoC != 22 && this.aoC != 23) {
                 return true;
             }
-            ci.awH = false;
+            FarmGameEngine.awH = false;
             return true;
         }
         return false;
@@ -3233,7 +3233,7 @@ class ch {
         } else {
             fk(2);
         }
-        this.amr = ci.ih((this.apj * ci.ma(this.aoU)) / 100);
+        this.amr = FarmGameEngine.ih((this.apj * FarmGameEngine.ma(this.aoU)) / 100);
         at(true);
         fy(1024);
     }
@@ -3260,7 +3260,7 @@ class ch {
 
     void pz() {
         fk(6);
-        this.aoR = new aa(ci.aZf[13], this.aot, this.aou);
+        this.aoR = new aa(FarmGameEngine.aZf[13], this.aot, this.aou);
         this.aoR.Y(0, 2);
         this.aoQ = -50;
     }
@@ -3293,12 +3293,12 @@ class ch {
     }
 
     void qg() {
-        ci.o(this);
+        FarmGameEngine.o(this);
         oN();
     }
 
     void qh() {
-        ci.n(this);
+        FarmGameEngine.n(this);
         this.Bj = 1;
         this.aoO.Y(0, -1);
         this.aoH = 0;
@@ -3310,24 +3310,24 @@ class ch {
 
     void ql() {
         if (this.Kx == 49) {
-            this.ame = ci.ih(0);
+            this.ame = FarmGameEngine.ih(0);
             fj(5);
             return;
         }
         if (this.Kx == 54) {
             if (fz(32)) {
-                this.amI = ci.ih(0);
+                this.amI = FarmGameEngine.ih(0);
                 pR();
             } else {
-                this.amE = ci.ih(0);
+                this.amE = FarmGameEngine.ih(0);
             }
-            ci.aZq = 100;
-            ci.aZr = "0:0:0";
+            FarmGameEngine.aZq = 100;
+            FarmGameEngine.aZr = "0:0:0";
             return;
         }
         if (this.Kx == 52 || this.Kx == 69) {
-            if (ci.aYS == 1067) {
-                ci.axW = true;
+            if (FarmGameEngine.aYS == 1067) {
+                FarmGameEngine.axW = true;
             }
             fk(3);
         } else if (this.Kx == 50) {
@@ -3347,7 +3347,7 @@ class ch {
             for (int i = 0; i < 3; i++) {
                 iArr2[0] = this.aoZ.dO(i);
                 iArr2[1] = this.aoZ.dP(i);
-                ci.g(iArr2, iArr3);
+                FarmGameEngine.g(iArr2, iArr3);
                 iArr4[i] = iArr3[0];
                 iArr5[i] = iArr3[1];
             }
@@ -3359,9 +3359,9 @@ class ch {
             if (this.apb <= 0) {
                 this.apa = 0;
             } else {
-                GLLib.a(iArr4[0], iArr5[0], iArr4[1], iArr5[1], iArr4[2], iArr5[2], this.apb);
-                iArr[0] = GLLib.jX();
-                iArr[1] = GLLib.jY();
+                GameRuntime.a(iArr4[0], iArr5[0], iArr4[1], iArr5[1], iArr4[2], iArr5[2], this.apb);
+                iArr[0] = GameRuntime.jX();
+                iArr[1] = GameRuntime.jY();
                 if (this.Kx == 42) {
                     aG(iArr[0], iArr[1]);
                 }
@@ -3369,7 +3369,7 @@ class ch {
         }
         int i2 = iArr[0] - this.aol;
         int i3 = iArr[1] - this.aom;
-        int iCR = GLLib.cR((i2 * i2) + (i3 * i3));
+        int iCR = GameRuntime.cR((i2 * i2) + (i3 * i3));
         if (iCR == 0) {
             this.aol = iArr[0];
             this.aom = iArr[1];
@@ -3380,7 +3380,7 @@ class ch {
             }
             return;
         }
-        int i4 = ((this.aos * GLLib.Qy) << 8) / Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS;
+        int i4 = ((this.aos * GameRuntime.Qy) << 8) / Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS;
         int i5 = ((i2 * i4) / iCR) >> 8;
         int i6 = ((i4 * i3) / iCR) >> 8;
         int i7 = i5 < 0 ? -i5 : i5;
@@ -3428,30 +3428,30 @@ class ch {
             if (this.Bj == 3 || this.Bj == 4) {
                 iQn = qn();
                 fj(1);
-                this.aoU = ci.aZE[0];
-                this.aoV = ci.aZF[0];
+                this.aoU = FarmGameEngine.aZE[0];
+                this.aoV = FarmGameEngine.aZF[0];
                 fy(1024);
             } else {
                 if (fz(2)) {
-                    ci.o(this);
+                    FarmGameEngine.o(this);
                 }
                 iQn = qn();
                 oN();
             }
         } else {
             if (fz(2)) {
-                ci.o(this);
+                FarmGameEngine.o(this);
             }
             iQn = qn();
             oN();
         }
         qq();
-        ci.a(false, iQn, this.aol, this.aom);
-        if (ci.baf != null) {
+        FarmGameEngine.a(false, iQn, this.aol, this.aom);
+        if (FarmGameEngine.baf != null) {
             int i2 = 119043;
             switch (this.Kx) {
                 case 20:
-                    if (ci.gj(this.aoC)) {
+                    if (FarmGameEngine.gj(this.aoC)) {
                         i = 150885;
                     } else if (this.aoC != 68) {
                         i = 115430;
@@ -3464,20 +3464,20 @@ class ch {
                     i = 115424;
                     break;
                 case 50:
-                    if (ci.gi(this.aoC)) {
+                    if (FarmGameEngine.gi(this.aoC)) {
                         i = 150870;
                     } else {
                         i = 115421;
                         i2 = 116460;
                     }
-                    ci.l(this);
+                    FarmGameEngine.l(this);
                     break;
                 case 52:
                     i = 116010;
                     break;
                 case 54:
-                    if (!ci.gg(this.aoC)) {
-                        i = !ci.gh(this.aoC) ? 115423 : 150869;
+                    if (!FarmGameEngine.gg(this.aoC)) {
+                        i = !FarmGameEngine.gh(this.aoC) ? 115423 : 150869;
                     } else {
                         i = 119024;
                     }
@@ -3489,7 +3489,7 @@ class ch {
                     i = 0;
                     break;
             }
-            ci.a(115443, new String[]{"INT:" + Integer.toString(ci.FB()), "INT:" + Integer.toString(0), "INT:" + Integer.toString(iQn), "INT:" + Integer.toString(i2), "INT:" + Integer.toString(i), "N/A", "N/A", "INT:" + Integer.toString(0), "INT:" + Integer.toString(ci.FC())});
+            FarmGameEngine.a(115443, new String[]{"INT:" + Integer.toString(FarmGameEngine.FB()), "INT:" + Integer.toString(0), "INT:" + Integer.toString(iQn), "INT:" + Integer.toString(i2), "INT:" + Integer.toString(i), "N/A", "N/A", "INT:" + Integer.toString(0), "INT:" + Integer.toString(FarmGameEngine.FC())});
         }
     }
 
@@ -3526,7 +3526,7 @@ class ch {
         int i2;
         int i3 = 8;
         int[] iArr = new int[2];
-        ci.d(new int[]{this.aol, this.aom}, iArr);
+        FarmGameEngine.d(new int[]{this.aol, this.aom}, iArr);
         if (this.Kx == 50) {
             j jVarBY = j.bY(3);
             if ((this.aoC >= 0 && this.aoC <= 8) || this.aoC == 19) {
@@ -3551,9 +3551,9 @@ class ch {
             i2 = 0;
         }
         if (this.aoC == 17 && this.Kx == 50) {
-            return iArr[0] > (-i2) / 2 && iArr[0] < (i2 / 2) + GLLib.kH() && iArr[1] >= (-i) / 2 && iArr[1] < (i / 2) + GLLib.kI();
+            return iArr[0] > (-i2) / 2 && iArr[0] < (i2 / 2) + GameRuntime.kH() && iArr[1] >= (-i) / 2 && iArr[1] < (i / 2) + GameRuntime.kI();
         }
-        return iArr[0] > (-100) - i2 && iArr[0] < i2 + (GLLib.kH() + 100) && iArr[1] >= (-100) - i && iArr[1] < i + (GLLib.kI() + 100);
+        return iArr[0] > (-100) - i2 && iArr[0] < i2 + (GameRuntime.kH() + 100) && iArr[1] >= (-100) - i && iArr[1] < i + (GameRuntime.kI() + 100);
     }
 
     void y(int i, int i2, int i3) {
@@ -3565,7 +3565,7 @@ class ch {
 
     void z(int i, int i2, int i3) {
         int[] iArr = new int[2];
-        if (!ci.a(this, iArr, i + i3, i2 + i3)) {
+        if (!FarmGameEngine.a(this, iArr, i + i3, i2 + i3)) {
             aN(i, i2);
             return;
         }
@@ -3577,7 +3577,7 @@ class ch {
 
     void mg() {
         if (this.aoO != null) {
-            this.aoO.dV(GLLib.Qy);
+            this.aoO.dV(GameRuntime.Qy);
         }
         if (fz(8) && this.Kx != 11) {
             this.apk = qs();
@@ -3658,15 +3658,15 @@ class ch {
             aaVar.aaL = i;
             aaVar.aaM = i2;
             aa aaVar2 = this.aoR;
-            int i3 = ci.aYP;
+            int i3 = FarmGameEngine.aYP;
             if (w.Zo) {
                 aaVar2.aaW = i3;
             } else {
-                GLLib.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
+                GameRuntime.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
             }
-            GLLib.l(18, 5, 1);
+            GameRuntime.l(18, 5, 1);
             this.aoR.lR();
-            GLLib.l(18, 5, 0);
+            GameRuntime.l(18, 5, 0);
         }
         if (this.aoS != null) {
             aa aaVar3 = this.aoS;
@@ -3675,48 +3675,48 @@ class ch {
             aaVar3.aaL = i4;
             aaVar3.aaM = i5;
             aa aaVar4 = this.aoS;
-            int i6 = ci.aYP;
+            int i6 = FarmGameEngine.aYP;
             if (w.Zo) {
                 aaVar4.aaW = i6;
             } else {
-                GLLib.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
+                GameRuntime.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
             }
-            GLLib.l(18, 5, 1);
+            GameRuntime.l(18, 5, 1);
             this.aoS.lR();
-            GLLib.l(18, 5, 0);
+            GameRuntime.l(18, 5, 0);
         }
     }
 
     void pl() {
         if (this.aoR != null) {
-            this.aoR.dV(GLLib.Qy);
+            this.aoR.dV(GameRuntime.Qy);
         }
         if (this.Bj == 3) {
-            long jMD = (ci.MD() - this.amd) / 1000;
-            if (jMD >= ci.ii(this.ame) / 2 && ci.aYR != 8 && ci.aYR != 46) {
+            long jMD = (FarmGameEngine.MD() - this.amd) / 1000;
+            if (jMD >= FarmGameEngine.ii(this.ame) / 2 && FarmGameEngine.currentTutorialStepIndex != 8 && FarmGameEngine.currentTutorialStepIndex != 46) {
                 fj(4);
             }
-            if (ci.aZo == this && ci.ii(this.ame) != 0) {
-                ci.ba((int) jMD, ci.ii(this.ame));
-                this.aoX = A(this.aml, (int) (((long) ci.ii(this.ame)) - jMD), ci.ii(this.ame));
+            if (FarmGameEngine.aZo == this && FarmGameEngine.ii(this.ame) != 0) {
+                FarmGameEngine.ba((int) jMD, FarmGameEngine.ii(this.ame));
+                this.aoX = A(this.aml, (int) (((long) FarmGameEngine.ii(this.ame)) - jMD), FarmGameEngine.ii(this.ame));
             }
         } else if (this.Bj == 4) {
-            long jMD2 = (ci.MD() - this.amd) / 1000;
-            if (jMD2 >= ci.ii(this.ame) && ((ci.aYR < 47 || ci.aYR > 58) && ci.aYR != 8 && ci.aYR != 46)) {
+            long jMD2 = (FarmGameEngine.MD() - this.amd) / 1000;
+            if (jMD2 >= FarmGameEngine.ii(this.ame) && ((FarmGameEngine.currentTutorialStepIndex < 47 || FarmGameEngine.currentTutorialStepIndex > 58) && FarmGameEngine.currentTutorialStepIndex != 8 && FarmGameEngine.currentTutorialStepIndex != 46)) {
                 fj(5);
             }
-            if (ci.aZo == this && ci.ii(this.ame) != 0) {
-                ci.ba((int) jMD2, ci.ii(this.ame));
-                this.aoX = A(this.aml, (int) (((long) ci.ii(this.ame)) - jMD2), ci.ii(this.ame));
+            if (FarmGameEngine.aZo == this && FarmGameEngine.ii(this.ame) != 0) {
+                FarmGameEngine.ba((int) jMD2, FarmGameEngine.ii(this.ame));
+                this.aoX = A(this.aml, (int) (((long) FarmGameEngine.ii(this.ame)) - jMD2), FarmGameEngine.ii(this.ame));
             }
-        } else if (ci.aZo == this) {
-            ci.a(false, (ch) null);
+        } else if (FarmGameEngine.aZo == this) {
+            FarmGameEngine.a(false, (FarmEntity) null);
         }
-        if ((this.aoR == null || this.aoR.aaO != ci.aZf[16]) && this.Bj == 5) {
-            this.aoR = new aa(ci.aZf[16], this.aot, this.aou);
+        if ((this.aoR == null || this.aoR.aaO != FarmGameEngine.aZf[16]) && this.Bj == 5) {
+            this.aoR = new aa(FarmGameEngine.aZf[16], this.aot, this.aou);
             this.aoR.Y(0, -1);
             this.aoR.aaY = 0;
-        } else if (this.aoR != null && this.Bj != 5 && this.aoR.aaO == ci.aZf[16]) {
+        } else if (this.aoR != null && this.Bj != 5 && this.aoR.aaO == FarmGameEngine.aZf[16]) {
             this.aoR = null;
         }
         if (this.aoR == null || this.Bj != 5) {
@@ -3735,23 +3735,23 @@ class ch {
             }
             this.aoO = null;
             this.Kx = -1;
-            if (a(1, 21, new ch[1], 1) == 0) {
+            if (a(1, 21, new FarmEntity[1], 1) == 0) {
             }
             return;
         }
-        int iL = GLLib.L(25, 29);
+        int iL = GameRuntime.L(25, 29);
         String str = "Fireworks sndIndex : " + iL;
-        ci.gX(iL);
+        FarmGameEngine.gX(iL);
         this.aoO.Y(0, 1);
         int iBy = this.aoO.aaO.by(0);
         int iBz = this.aoO.aaO.bz(0);
-        this.aol = ((GLLib.L(iBy, GLLib.kH() - iBy) + ci.aZj.aol) * 100) / ci.aYP;
-        this.aom = ((ci.aZj.aom + GLLib.L(iBz, GLLib.kI() - iBz)) * 100) / ci.aYP;
-        if (ci.apC[ci.apB] == 14) {
-            this.aot = ((this.aol * ci.aYP) / 100) - ci.aZj.aol;
-            this.aou = ((this.aom * ci.aYP) / 100) - ci.aZj.aom;
+        this.aol = ((GameRuntime.L(iBy, GameRuntime.kH() - iBy) + FarmGameEngine.aZj.aol) * 100) / FarmGameEngine.aYP;
+        this.aom = ((FarmGameEngine.aZj.aom + GameRuntime.L(iBz, GameRuntime.kI() - iBz)) * 100) / FarmGameEngine.aYP;
+        if (FarmGameEngine.apC[FarmGameEngine.apB] == 14) {
+            this.aot = ((this.aol * FarmGameEngine.aYP) / 100) - FarmGameEngine.aZj.aol;
+            this.aou = ((this.aom * FarmGameEngine.aYP) / 100) - FarmGameEngine.aZj.aom;
         }
-        this.aoO.aaY = GLLib.L(0, this.aoO.aaO.hw());
+        this.aoO.aaY = GameRuntime.L(0, this.aoO.aaO.hw());
         if (anY > -1) {
             anY++;
         }
@@ -3762,8 +3762,8 @@ class ch {
             this.aoO.Y(1, 1);
             int iBy = this.aoO.aaO.by(0);
             int iBz = this.aoO.aaO.bz(0);
-            this.aol = GLLib.L(-iBy, iBy) + aoc;
-            this.aom = aod + GLLib.L(-iBz, iBz);
+            this.aol = GameRuntime.L(-iBy, iBy) + aoc;
+            this.aom = aod + GameRuntime.L(-iBz, iBz);
             if (aoa > -1) {
                 aoa++;
                 return;
@@ -3775,24 +3775,24 @@ class ch {
         }
         this.aoO = null;
         this.Kx = -1;
-        a(1, 23, new ch[1], 1);
+        a(1, 23, new FarmEntity[1], 1);
         pj();
-        ch[] chVarArr = new ch[1];
+        FarmEntity[] chVarArr = new FarmEntity[1];
         a(1, 42, chVarArr, 1);
         if (chVarArr != null) {
             chVarArr[0].fg(3);
-            ci.gX(33);
+            FarmGameEngine.gX(33);
         }
         ft(3);
     }
 
     void qd() {
-        if (!ci.ha(1) && aog) {
+        if (!FarmGameEngine.ha(1) && aog) {
             this.aoO = null;
-            ci.awX = 0;
-            ci.DJ();
+            FarmGameEngine.awX = 0;
+            FarmGameEngine.DJ();
             aog = false;
-            ci.fE(42);
+            FarmGameEngine.fE(42);
         }
         if (this.aoO == null || !this.aoO.lQ() || (aoe != -1 && aoe >= aof)) {
             if (this.aoO == null || !this.aoO.lQ() || aoe >= aof) {
@@ -3802,13 +3802,13 @@ class ch {
         this.aoO.Y(0, 1);
         int iBy = this.aoO.aaO.by(0);
         int iBz = this.aoO.aaO.bz(0);
-        this.aol = ((GLLib.L(iBy, GLLib.kH() - iBy) + ci.aZj.aol) * 100) / ci.aYP;
-        this.aom = ((ci.aZj.aom + GLLib.L(iBz, GLLib.kI() - iBz)) * 100) / ci.aYP;
-        if (ci.apC[ci.apB] == 14) {
-            this.aot = ((this.aol * ci.aYP) / 100) - ci.aZj.aol;
-            this.aou = ((this.aom * ci.aYP) / 100) - ci.aZj.aom;
+        this.aol = ((GameRuntime.L(iBy, GameRuntime.kH() - iBy) + FarmGameEngine.aZj.aol) * 100) / FarmGameEngine.aYP;
+        this.aom = ((FarmGameEngine.aZj.aom + GameRuntime.L(iBz, GameRuntime.kI() - iBz)) * 100) / FarmGameEngine.aYP;
+        if (FarmGameEngine.apC[FarmGameEngine.apB] == 14) {
+            this.aot = ((this.aol * FarmGameEngine.aYP) / 100) - FarmGameEngine.aZj.aol;
+            this.aou = ((this.aom * FarmGameEngine.aYP) / 100) - FarmGameEngine.aZj.aom;
         }
-        this.aoO.aaY = GLLib.L(0, this.aoO.aaO.hw());
+        this.aoO.aaY = GameRuntime.L(0, this.aoO.aaO.hw());
         if (aoe > -1) {
             aoe++;
         }
@@ -3818,7 +3818,7 @@ class ch {
     /* JADX WARN: Code duplicated, block: B:4:0x000d  */
     void fp(int i) {
         if (i == 3) {
-            tutorialEatingEpoch = TutorialFlowController.captureCallback(ci.aYR, ci.aYS, ci.awV);
+            tutorialEatingEpoch = TutorialFlowController.captureCallback(FarmGameEngine.currentTutorialStepIndex, FarmGameEngine.aYS, FarmGameEngine.awV);
         }
         boolean z;
         int i2;
@@ -3831,18 +3831,18 @@ class ch {
         fx(1);
         switch (i) {
             case 0:
-                int iL2 = GLLib.L(1, 100);
+                int iL2 = GameRuntime.L(1, 100);
                 if (fz(32)) {
                     i5 = iL2 < 70 ? 5 : 7;
                 } else {
                     i5 = iL2 < 70 ? 0 : 2;
                     if (this.anw) {
-                        if (!fz(131072) || ci.axE) {
-                            String str = " time_dog_idle = " + ci.axf;
-                            String str2 = " cGame.time_dog_idle_start = " + ci.axe;
+                        if (!fz(131072) || FarmGameEngine.axE) {
+                            String str = " time_dog_idle = " + FarmGameEngine.axf;
+                            String str2 = " cGame.time_dog_idle_start = " + FarmGameEngine.axe;
                             if (iL2 < 40) {
                                 if (iL2 < 20) {
-                                    ci.axE = true;
+                                    FarmGameEngine.axE = true;
                                 }
                                 i5 = 0;
                             } else if (iL2 < 60) {
@@ -3855,10 +3855,10 @@ class ch {
                         }
                     }
                 }
-                int iL3 = (!fz(131072) || (ci.axE && this.anw)) ? GLLib.L(1, 5) : -1;
+                int iL3 = (!fz(131072) || (FarmGameEngine.axE && this.anw)) ? GameRuntime.L(1, 5) : -1;
                 if (i5 == 23 || i5 == 22) {
                     z = false;
-                    iL = GLLib.L(1, 3);
+                    iL = GameRuntime.L(1, 3);
                     i2 = i5;
                 } else {
                     z = false;
@@ -3915,13 +3915,13 @@ class ch {
                     i2 = 0;
                 } else {
                     z = false;
-                    i2 = GLLib.L(1, 100) >= 70 ? 7 : 5;
+                    i2 = GameRuntime.L(1, 100) >= 70 ? 7 : 5;
                 }
                 break;
             case 3:
                 fy(1);
                 int i10 = fz(32) ? 6 : 1;
-                ci.axi = true;
+                FarmGameEngine.axi = true;
                 z = false;
                 iL = 3;
                 i2 = i10;
@@ -3956,15 +3956,15 @@ class ch {
                 break;
             case 9:
                 if (!fz(Utility.DEFAULT_STREAM_BUFFER_SIZE)) {
-                    int iL4 = GLLib.L(1, 100);
+                    int iL4 = GameRuntime.L(1, 100);
                     int i11 = fz(32) ? iL4 < 70 ? 5 : 7 : iL4 < 70 ? 0 : 2;
                     z = false;
-                    iL = GLLib.L(1, 5);
+                    iL = GameRuntime.L(1, 5);
                     i2 = i11;
                 } else {
-                    int i12 = GLLib.L(1, 100) < 70 ? 0 : 2;
+                    int i12 = GameRuntime.L(1, 100) < 70 ? 0 : 2;
                     z = false;
-                    iL = GLLib.L(1, 5);
+                    iL = GameRuntime.L(1, 5);
                     i2 = i12;
                 }
                 break;
@@ -3979,8 +3979,8 @@ class ch {
                     pT();
                 }
                 int i13 = (this.anD + 17) - 64;
-                ci.axh = true;
-                ci.aa(ci.aZL[118], 1, 44);
+                FarmGameEngine.axh = true;
+                FarmGameEngine.aa(FarmGameEngine.aZL[118], 1, 44);
                 z = false;
                 iL = 2;
                 i2 = i13;
@@ -3992,10 +3992,10 @@ class ch {
                     this.anm = true;
                 }
                 if (this.anp == 1) {
-                    this.aoS = new aa(ci.aZf[171], this.aot, this.aou);
+                    this.aoS = new aa(FarmGameEngine.aZf[171], this.aot, this.aou);
                     this.aoS.Y(12, 3);
                 } else if (this.anp == 2) {
-                    this.aoS = new aa(ci.aZf[172], this.aot, this.aou);
+                    this.aoS = new aa(FarmGameEngine.aZf[172], this.aot, this.aou);
                     this.aoS.Y(12, 3);
                 }
                 this.aoP = this.amZ;
@@ -4006,7 +4006,7 @@ class ch {
                 break;
             case 15:
                 fy(1);
-                ci.axh = true;
+                FarmGameEngine.axh = true;
                 z = false;
                 iL = 3;
                 i2 = 10;
@@ -4029,7 +4029,7 @@ class ch {
     void oX() {
         switch (this.Bj) {
             case 0:
-                if (ci.aYR == -1) {
+                if (FarmGameEngine.currentTutorialStepIndex == -1) {
                     if (alt) {
                         e(b(33, 1, new int[]{this.aol, this.aom, 150, 10, 23, -63, -117, 0, 1}));
                         alt = false;
@@ -4038,10 +4038,10 @@ class ch {
                         qq();
                     }
                     if (!b.Kc || b.Kg) {
-                        if (b.JU || (ci.bbd != 0 && ci.MD() - ci.bbd < alu)) {
+                        if (b.JU || (FarmGameEngine.bbd != 0 && FarmGameEngine.MD() - FarmGameEngine.bbd < alu)) {
                             b.Kd = false;
                             qq();
-                        } else if (ci.qO()) {
+                        } else if (FarmGameEngine.qO()) {
                             b.Kc = true;
                             b.JL = true;
                             b.Kd = true;
@@ -4062,7 +4062,7 @@ class ch {
                     if (b.Kd) {
                         switch (b.JP) {
                             case 1:
-                                ci.dE("enter_section_video_bubble");
+                                FarmGameEngine.dE("enter_section_video_bubble");
                                 b.JP = 0;
                                 qq();
                                 break;
@@ -4098,58 +4098,58 @@ class ch {
                 int i = this.aoO.aaP;
                 if (this.aoO.lQ() || i == 2) {
                     fg(0);
-                    ci.aCh = 3;
+                    FarmGameEngine.aCh = 3;
                 }
                 break;
             case 3:
                 if (this.aoO.lQ()) {
-                    ci.aCl = false;
+                    FarmGameEngine.aCl = false;
                     fg(0);
-                    ci.n(300, 301, 15, 0, 1);
-                    if (ci.qN()) {
-                        String str = "character jump. manor restored.:" + ci.aZD;
-                        if (ci.aZD == 3 && ci.aTK) {
-                            ci.aLV = 14;
+                    FarmGameEngine.n(300, 301, 15, 0, 1);
+                    if (FarmGameEngine.qN()) {
+                        String str = "character jump. manor restored.:" + FarmGameEngine.aZD;
+                        if (FarmGameEngine.aZD == 3 && FarmGameEngine.aTK) {
+                            FarmGameEngine.aLV = 14;
                         }
                     }
-                    ci.awX = 0;
+                    FarmGameEngine.awX = 0;
                 }
                 break;
         }
     }
 
     private void finishEatingTutorial() {
-        if (!ci.awO && ci.qD() == 19 && ci.aYR == 32
-                && TutorialFlowController.callbackCurrent(tutorialEatingEpoch, ci.aYR, ci.aYS, ci.awV)) {
-            ci.awO = true;
-            ci.axW = false;
-            ci.axV = false;
-            ci.aYR = 33;
+        if (!FarmGameEngine.awO && FarmGameEngine.currentEngineState() == 19 && FarmGameEngine.currentTutorialStepIndex == 32
+                && TutorialFlowController.callbackCurrent(tutorialEatingEpoch, FarmGameEngine.currentTutorialStepIndex, FarmGameEngine.aYS, FarmGameEngine.awV)) {
+            FarmGameEngine.awO = true;
+            FarmGameEngine.axW = false;
+            FarmGameEngine.axV = false;
+            FarmGameEngine.currentTutorialStepIndex = 33;
         }
     }
 
     void pH() {
-        ch chVarFn;
+        FarmEntity chVarFn;
         String strDt;
-        ch chVarHA = null;
+        FarmEntity chVarHA = null;
         switch (this.Bj) {
             case 0:
-                if (this.anw && ci.axh && qs() && ci.aZB == 0) {
+                if (this.anw && FarmGameEngine.axh && qs() && FarmGameEngine.aZB == 0) {
                     if (this.aoO.aaQ == 6 && this.aoO.aaP == 23) {
-                        ci.gX(64);
-                        ci.axh = false;
+                        FarmGameEngine.gX(64);
+                        FarmGameEngine.axh = false;
                     } else if (this.aoO.aaQ == 1 && (this.aoO.aaP == 2 || this.aoO.aaP == 22)) {
-                        ci.gX(75);
-                        ci.axh = false;
+                        FarmGameEngine.gX(75);
+                        FarmGameEngine.axh = false;
                     }
                 }
                 if (this.anw && this.aoO.aaQ == 0) {
-                    ci.axh = true;
+                    FarmGameEngine.axh = true;
                 }
-                if (!ci.axE || !this.anw) {
+                if (!FarmGameEngine.axE || !this.anw) {
                     if (this.aoO.lQ()) {
-                        if (ci.avD != 0 && ci.avD != 1 && ci.avD != 3 && ((!ci.ss() || ci.aZo != this) && ((qs() || fz(Utility.DEFAULT_STREAM_BUFFER_SIZE)) && !ci.bad && this.anp == 0))) {
-                            if (GLLib.L(0, 100) >= (!this.anw ? 20 : 0)) {
+                        if (FarmGameEngine.avD != 0 && FarmGameEngine.avD != 1 && FarmGameEngine.avD != 3 && ((!FarmGameEngine.ss() || FarmGameEngine.aZo != this) && ((qs() || fz(Utility.DEFAULT_STREAM_BUFFER_SIZE)) && !FarmGameEngine.bad && this.anp == 0))) {
+                            if (GameRuntime.L(0, 100) >= (!this.anw ? 20 : 0)) {
                                 if (!fz(Utility.DEFAULT_STREAM_BUFFER_SIZE)) {
                                     pJ();
                                 } else if (!this.ani) {
@@ -4174,38 +4174,38 @@ class ch {
                 qm();
                 if (!this.amT) {
                     int[] iArr = new int[2];
-                    ci.f(new int[]{this.aol, this.aom}, iArr);
-                    if (ci.ss() && ci.aZo == this) {
+                    FarmGameEngine.f(new int[]{this.aol, this.aom}, iArr);
+                    if (FarmGameEngine.ss() && FarmGameEngine.aZo == this) {
                         this.aol = i;
                         this.aom = i2;
                         fp(0);
                     }
-                    if (!ci.bD(iArr[0], iArr[1]) && !this.anw && !this.anj && !this.ank) {
+                    if (!FarmGameEngine.bD(iArr[0], iArr[1]) && !this.anw && !this.anj && !this.ank) {
                         this.aol = i;
                         this.aom = i2;
                         fp(0);
                         break;
                     } else if (this.aol == this.aoE && this.aom == this.aoF && this.aoE != 0 && this.aoF != 0) {
-                        if (((this.anj && !this.anl) || (this.ank && !this.anm)) && ci.axt != 0) {
+                        if (((this.anj && !this.anl) || (this.ank && !this.anm)) && FarmGameEngine.axt != 0) {
                             fp(9);
                         } else if (this.anw && this.ann) {
                             this.ann = false;
-                            if (ci.axt == 1) {
-                                chVarHA = ci.hA(73);
-                            } else if (ci.axt == 2) {
-                                chVarHA = ci.hA(74);
+                            if (FarmGameEngine.axt == 1) {
+                                chVarHA = FarmGameEngine.hA(73);
+                            } else if (FarmGameEngine.axt == 2) {
+                                chVarHA = FarmGameEngine.hA(74);
                             }
                             if (chVarHA != null) {
                                 c(true, chVarHA.anj);
                             }
                             fp(8);
-                            if (!ci.avp) {
-                                ci.DJ();
-                                ci.g(3, 68, false);
-                                ci.avp = true;
+                            if (!FarmGameEngine.avp) {
+                                FarmGameEngine.DJ();
+                                FarmGameEngine.g(3, 68, false);
+                                FarmGameEngine.avp = true;
                             }
-                            int i3 = ci.axt == 2 ? 4 : 3;
-                            this.aoS = new aa(ci.aZf[13], this.aot, this.aou);
+                            int i3 = FarmGameEngine.axt == 2 ? 4 : 3;
+                            this.aoS = new aa(FarmGameEngine.aZf[13], this.aot, this.aou);
                             this.aoS.Y(i3, 5);
                             this.aoP = this.amZ;
                             this.aoQ = this.ana;
@@ -4213,8 +4213,8 @@ class ch {
                             fp(0);
                             if (this.anj || this.ank) {
                                 fy(8);
-                                ci.axt = 0;
-                                ci.bbp = 0;
+                                FarmGameEngine.axt = 0;
+                                FarmGameEngine.bbp = 0;
                             }
                         }
                         break;
@@ -4232,21 +4232,21 @@ class ch {
                 }
                 break;
             case 3:
-                if (this.aoO.aaQ == 2 && ci.axi) {
-                    ci.gX(78);
-                    ci.axi = false;
+                if (this.aoO.aaQ == 2 && FarmGameEngine.axi) {
+                    FarmGameEngine.gX(78);
+                    FarmGameEngine.axi = false;
                 }
                 if (this.aoO.lQ() && !fz(GLURLConnection.BUFFER_SIZE)) {
-                    String str = "ANIMAL EATING animation over. step:" + ci.awW + ",guide cow:" + ci.awO;
+                    String str = "ANIMAL EATING animation over. step:" + FarmGameEngine.awW + ",guide cow:" + FarmGameEngine.awO;
                     finishEatingTutorial();
                     if (this.anw) {
                         if (fz(32)) {
                             pR();
-                            if (ci.aYS == 1019) {
-                                ci.axW = true;
+                            if (FarmGameEngine.aYS == 1019) {
+                                FarmGameEngine.axW = true;
                             }
                         }
-                        ci.c(this, true);
+                        FarmGameEngine.c(this, true);
                     }
                     fp(0);
                     if (this.anw && pC() <= 5) {
@@ -4256,7 +4256,7 @@ class ch {
                 }
                 break;
             case 5:
-                if (!(this.anw && !ci.lM(ci.aZQ[298])) && !fz(GLURLConnection.BUFFER_SIZE)) {
+                if (!(this.anw && !FarmGameEngine.lM(FarmGameEngine.aZQ[298])) && !fz(GLURLConnection.BUFFER_SIZE)) {
                     pQ();
                     pM();
                     fp(2);
@@ -4268,7 +4268,7 @@ class ch {
                     fp(0);
                     this.amP = true;
                     if (this.anw) {
-                        ci.c(this, false);
+                        FarmGameEngine.c(this, false);
                     }
                     break;
                 }
@@ -4280,57 +4280,57 @@ class ch {
                     }
                     if (this.aoS == null || this.aoS.lQ()) {
                         fp(0);
-                        ch chVarHA2 = ci.axt == 1 ? ci.hA(73) : ci.axt == 2 ? ci.hA(74) : null;
+                        FarmEntity chVarHA2 = FarmGameEngine.axt == 1 ? FarmGameEngine.hA(73) : FarmGameEngine.axt == 2 ? FarmGameEngine.hA(74) : null;
                         if (chVarHA2 != null) {
-                            boolean zA = ci.auj ? true : ci.a(this, chVarHA2);
+                            boolean zA = FarmGameEngine.auj ? true : FarmGameEngine.a(this, chVarHA2);
                             au(false);
-                            ci.f(false, false);
-                            ci.DJ();
-                            ci.avp = false;
-                            if (!ci.auj) {
-                                ci.gX(76);
+                            FarmGameEngine.f(false, false);
+                            FarmGameEngine.DJ();
+                            FarmGameEngine.avp = false;
+                            if (!FarmGameEngine.auj) {
+                                FarmGameEngine.gX(76);
                             }
-                            if (ci.auj) {
-                                ci.azz[ci.aNI][6] = ci.MD() / 1000;
-                                ci.aa((ci.aZJ[0] + ci.aZB) - 1, 1, 24);
+                            if (FarmGameEngine.auj) {
+                                FarmGameEngine.azz[FarmGameEngine.aNI][6] = FarmGameEngine.MD() / 1000;
+                                FarmGameEngine.aa((FarmGameEngine.aZJ[0] + FarmGameEngine.aZB) - 1, 1, 24);
                             }
                             chVarHA2.fp(14);
-                            if (!ci.awV && ci.aYS != -1) {
+                            if (!FarmGameEngine.awV && FarmGameEngine.aYS != -1) {
                                 String[] strArr = new String[2];
-                                strArr[0] = ci.aPn[ci.aPp];
+                                strArr[0] = FarmGameEngine.aPn[FarmGameEngine.aPp];
                                 if (chVarHA2.anj) {
-                                    strDt = ci.dt(992);
+                                    strDt = FarmGameEngine.dt(992);
                                     if (strDt == null) {
                                         strDt = "";
                                     }
                                 } else {
-                                    strDt = ci.dt(993);
+                                    strDt = FarmGameEngine.dt(993);
                                     if (strDt == null) {
                                         strDt = "";
                                     }
                                 }
                                 strArr[1] = strDt;
-                                ci.m(ci.a(959, (Object[]) strArr), 7, 0);
+                                FarmGameEngine.m(FarmGameEngine.a(959, (Object[]) strArr), 7, 0);
                             }
-                            int iA = ci.a(this, chVarHA2, -1, (ch) null, zA);
-                            if (ci.lN(GLURLConnection.HTTP_FOUND) && (chVarFn = ci.Fn()) != null) {
+                            int iA = FarmGameEngine.a(this, chVarHA2, -1, (FarmEntity) null, zA);
+                            if (FarmGameEngine.lN(GLURLConnection.HTTP_FOUND) && (chVarFn = FarmGameEngine.Fn()) != null) {
                                 chVarFn.pT();
                                 if (chVarFn.fz(2)) {
-                                    ci.o(chVarFn);
+                                    FarmGameEngine.o(chVarFn);
                                 }
-                                ci.w(chVarFn);
-                                ci.avF = null;
+                                FarmGameEngine.w(chVarFn);
+                                FarmGameEngine.avF = null;
                             }
-                            if (ci.auj) {
+                            if (FarmGameEngine.auj) {
                                 int i4 = 52183;
                                 int i5 = 52009;
-                                if (ci.aND.equals("")) {
+                                if (FarmGameEngine.aND.equals("")) {
                                     i4 = 52185;
                                     i5 = 0;
                                 }
-                                ci.a(51811, new String[]{"INT:0", "INT:" + Integer.toString(150855), "INT:" + Integer.toString(i4), "INT:0", "INT:0", "INT:0", "INT:" + Integer.toString(i5), "INT:" + Integer.toString(iA), "INT:" + Integer.toString(ci.FC())});
+                                FarmGameEngine.a(51811, new String[]{"INT:0", "INT:" + Integer.toString(150855), "INT:" + Integer.toString(i4), "INT:0", "INT:0", "INT:0", "INT:" + Integer.toString(i5), "INT:" + Integer.toString(iA), "INT:" + Integer.toString(FarmGameEngine.FC())});
                             } else {
-                                ch chVarFo = ci.Fo();
+                                FarmEntity chVarFo = FarmGameEngine.Fo();
                                 if (!zA && chVarFo != null) {
                                     int[] iArr2 = new int[2];
                                     if (a(chVarFo, this, iArr2)) {
@@ -4340,17 +4340,17 @@ class ch {
                                     }
                                 }
                             }
-                            if (ci.aYS == 1023 || ci.aYS == 1050 || ci.aYS == 1057 || ci.aYS == 1064) {
-                                ci.axW = true;
+                            if (FarmGameEngine.aYS == 1023 || FarmGameEngine.aYS == 1050 || FarmGameEngine.aYS == 1057 || FarmGameEngine.aYS == 1064) {
+                                FarmGameEngine.axW = true;
                             }
-                            ci.aa(2999, 1, 43);
+                            FarmGameEngine.aa(2999, 1, 43);
                         }
                         break;
                     } else {
-                        if (ci.axt == 1) {
-                            chVarHA = ci.hA(73);
-                        } else if (ci.axt == 2) {
-                            chVarHA = ci.hA(74);
+                        if (FarmGameEngine.axt == 1) {
+                            chVarHA = FarmGameEngine.hA(73);
+                        } else if (FarmGameEngine.axt == 2) {
+                            chVarHA = FarmGameEngine.hA(74);
                         }
                         if (chVarHA != null && chVarHA.aoO.aaP != 15) {
                             chVarHA.aoO.Y(15, -1);
@@ -4358,7 +4358,7 @@ class ch {
                         }
                     }
                 } else {
-                    if (!ci.auj) {
+                    if (!FarmGameEngine.auj) {
                         fp(14);
                     }
                     break;
@@ -4367,7 +4367,7 @@ class ch {
             case 9:
                 if (!fz(Utility.DEFAULT_STREAM_BUFFER_SIZE)) {
                     if (!fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST)) {
-                        ci.a(false, (ch) null);
+                        FarmGameEngine.a(false, (FarmEntity) null);
                         fq(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST);
                         fy(64);
                         fy(128);
@@ -4380,28 +4380,28 @@ class ch {
                     if (this.aoO.lQ()) {
                         fp(9);
                     }
-                    if (ci.aYS == 1021) {
-                        ci.axS++;
+                    if (FarmGameEngine.aYS == 1021) {
+                        FarmGameEngine.axS++;
                     }
-                    if (ci.aYS == 1021 && (!ci.axd || ci.axS == 25)) {
-                        ci.axS = 30;
-                        ci.axd = false;
-                        ci.axW = true;
-                        ci.aMw = "";
-                        String strDt2 = ci.dt(957);
+                    if (FarmGameEngine.aYS == 1021 && (!FarmGameEngine.axd || FarmGameEngine.axS == 25)) {
+                        FarmGameEngine.axS = 30;
+                        FarmGameEngine.axd = false;
+                        FarmGameEngine.axW = true;
+                        FarmGameEngine.aMw = "";
+                        String strDt2 = FarmGameEngine.dt(957);
                         if (strDt2 == null) {
                             strDt2 = "";
                         }
-                        ci.m(strDt2, 7, 0);
+                        FarmGameEngine.m(strDt2, 7, 0);
                     }
-                    if (ci.auj && ci.aNb) {
-                        long jMD = (ci.MD() / 1000) - (ci.aNa / 1000);
+                    if (FarmGameEngine.auj && FarmGameEngine.aNb) {
+                        long jMD = (FarmGameEngine.MD() / 1000) - (FarmGameEngine.aNa / 1000);
                         String str2 = "elapsedSecTime :: show arrow ::" + jMD;
                         if (jMD > 30) {
-                            ci.b(this, 0, -70);
-                            ci.aZj.y(this.aol, this.aom, 0);
-                            ci.aNb = false;
-                            ci.aNa = ci.MD();
+                            FarmGameEngine.b(this, 0, -70);
+                            FarmGameEngine.aZj.y(this.aol, this.aom, 0);
+                            FarmGameEngine.aNb = false;
+                            FarmGameEngine.aNa = FarmGameEngine.MD();
                         }
                         break;
                     }
@@ -4416,54 +4416,54 @@ class ch {
                 break;
             case 13:
                 if (this.aoO.lQ()) {
-                    ci.a(this, (ch) null, this.anD, (ch) null, false);
+                    FarmGameEngine.a(this, (FarmEntity) null, this.anD, (FarmEntity) null, false);
                     fp(0);
                 }
                 switch (this.anD) {
                     case 64:
-                        if (this.aoO.aaQ == 9 && ci.axh) {
-                            ci.axh = false;
-                            ci.gX(67);
+                        if (this.aoO.aaQ == 9 && FarmGameEngine.axh) {
+                            FarmGameEngine.axh = false;
+                            FarmGameEngine.gX(67);
                         }
                         if (this.aoO.aaQ != 9) {
-                            ci.axh = true;
+                            FarmGameEngine.axh = true;
                         }
                         break;
                     case 65:
-                        if (this.aoO.aaQ == 9 && ci.axh) {
-                            ci.gX(67);
-                            ci.axh = false;
+                        if (this.aoO.aaQ == 9 && FarmGameEngine.axh) {
+                            FarmGameEngine.gX(67);
+                            FarmGameEngine.axh = false;
                         }
                         if (this.aoO.aaQ != 9) {
-                            ci.axh = true;
+                            FarmGameEngine.axh = true;
                         }
                         break;
                     case 66:
-                        if (this.aoO.aaQ == 9 && ci.axh) {
-                            ci.gX(72);
-                            ci.axh = false;
+                        if (this.aoO.aaQ == 9 && FarmGameEngine.axh) {
+                            FarmGameEngine.gX(72);
+                            FarmGameEngine.axh = false;
                         }
                         if (this.aoO.aaQ != 9) {
-                            ci.axh = true;
+                            FarmGameEngine.axh = true;
                         }
                         break;
                     case 67:
-                        if (this.aoO.aaQ == 9 && ci.axh) {
-                            ci.gX(72);
-                            ci.axh = false;
+                        if (this.aoO.aaQ == 9 && FarmGameEngine.axh) {
+                            FarmGameEngine.gX(72);
+                            FarmGameEngine.axh = false;
                         }
                         if (this.aoO.aaQ != 9) {
-                            ci.axh = true;
+                            FarmGameEngine.axh = true;
                         }
                         break;
                 }
                 break;
             case 14:
-                ci.f(false, false);
+                FarmGameEngine.f(false, false);
                 aN(0, 0);
                 break;
             case 15:
-                if (!ci.atx) {
+                if (!FarmGameEngine.atx) {
                     fp(0);
                 }
                 if (this.aoO.lQ() && this.aoO.aaP == 10) {
@@ -4483,25 +4483,25 @@ class ch {
                     aaVar2.Y(0, -1);
                 }
                 if (this.anw && !fz(32)) {
-                    if (this.aoO.aaQ == 1 && this.aoO.aaP == 10 && ci.axh) {
-                        ci.axh = false;
+                    if (this.aoO.aaQ == 1 && this.aoO.aaP == 10 && FarmGameEngine.axh) {
+                        FarmGameEngine.axh = false;
                         long jCurrentTimeMillis = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         if (Math.abs(jCurrentTimeMillis) / 2 == 0) {
-                            ci.gX(77);
+                            FarmGameEngine.gX(77);
                         } else {
-                            ci.gX(64);
+                            FarmGameEngine.gX(64);
                         }
                     }
-                    if (this.aoO.aaP == 2 && this.aoO.aaQ == 1 && ci.axh) {
-                        ci.axh = false;
-                        ci.gX(75);
+                    if (this.aoO.aaP == 2 && this.aoO.aaQ == 1 && FarmGameEngine.axh) {
+                        FarmGameEngine.axh = false;
+                        FarmGameEngine.gX(75);
                     }
                     if (this.aoO.aaQ != 1 && this.aoO.aaQ != 2) {
                         if (this.aoO.aaP == 10 || this.aoO.aaP == 2) {
-                            ci.axh = true;
+                            FarmGameEngine.axh = true;
                         }
                         break;
                     }
@@ -4517,7 +4517,7 @@ class ch {
         int i2;
         if (fz(8)) {
             int i3 = this.aoO.aaP;
-            if ((i3 == 1 || i3 == 6) && ci.atf[1] != null) {
+            if ((i3 == 1 || i3 == 6) && FarmGameEngine.atf[1] != null) {
                 if (this.aoC == 68) {
                     i = 10;
                 } else {
@@ -4525,12 +4525,12 @@ class ch {
                 }
                 int i4 = this.aot + this.amX + i;
                 int i5 = (this.aou + this.amY) - i;
-                if (ci.aYP == 100) {
-                    ci.atf[1].a(GLLib.Qj, this.anw ? 75 : 34, (float) i4, (float) i5, 0);
+                if (FarmGameEngine.aYP == 100) {
+                    FarmGameEngine.atf[1].a(GameRuntime.Qj, this.anw ? 75 : 34, (float) i4, (float) i5, 0);
                 } else {
-                    GLLib.l(18, 5, 1);
-                    ci.atf[1].b(GLLib.Qj, this.anw ? 75 : 34, i4, i5, 0, ci.aYP);
-                    GLLib.l(18, 5, 0);
+                    GameRuntime.l(18, 5, 1);
+                    FarmGameEngine.atf[1].b(GameRuntime.Qj, this.anw ? 75 : 34, i4, i5, 0, FarmGameEngine.aYP);
+                    GameRuntime.l(18, 5, 0);
                 }
             }
             if (this.anw) {
@@ -4567,7 +4567,7 @@ class ch {
                 }
                 if (z) {
                     int i6 = j.bY(4).KW[this.anD][3];
-                    a aVar = i6 < 1000 ? ci.atf[i6] : ci.aZf[i6 - 1000];
+                    a aVar = i6 < 1000 ? FarmGameEngine.atf[i6] : FarmGameEngine.aZf[i6 - 1000];
                     if (aVar != null) {
                         switch (this.anD) {
                             case 64:
@@ -4588,41 +4588,41 @@ class ch {
                         }
                         int i7 = this.amX + this.aot;
                         int i8 = this.amY + this.aou;
-                        if (ci.aYP == 100) {
-                            aVar.a(GLLib.Qj, i2, (float) i7, (float) i8, 0);
+                        if (FarmGameEngine.aYP == 100) {
+                            aVar.a(GameRuntime.Qj, i2, (float) i7, (float) i8, 0);
                         } else {
-                            GLLib.l(18, 5, 1);
-                            aVar.b(GLLib.Qj, i2, i7, i8, 0, ci.aYP);
-                            GLLib.l(18, 5, 0);
+                            GameRuntime.l(18, 5, 1);
+                            aVar.b(GameRuntime.Qj, i2, i7, i8, 0, FarmGameEngine.aYP);
+                            GameRuntime.l(18, 5, 0);
                         }
                     }
                 }
-                if (this.anw && ci.axv) {
-                    String strDt = ci.dt(12330);
+                if (this.anw && FarmGameEngine.axv) {
+                    String strDt = FarmGameEngine.dt(12330);
                     if (strDt == null) {
                         strDt = "";
                     }
-                    ci.a(strDt, ci.axx, ci.axy - (ci.axw * 4), 0, 0, 0, 0, 2, 1, false, false);
-                    if (ci.axw > 10) {
-                        ci.axv = false;
-                        if (ci.aYS == 1019) {
-                            ci.axW = true;
+                    FarmGameEngine.a(strDt, FarmGameEngine.axx, FarmGameEngine.axy - (FarmGameEngine.axw * 4), 0, 0, 0, 0, 2, 1, false, false);
+                    if (FarmGameEngine.axw > 10) {
+                        FarmGameEngine.axv = false;
+                        if (FarmGameEngine.aYS == 1019) {
+                            FarmGameEngine.axW = true;
                         }
                     } else {
-                        ci.axw++;
+                        FarmGameEngine.axw++;
                     }
                 }
             }
             if (fz(2048)) {
                 int i9 = this.aot + 5;
                 int i10 = this.aou - 80;
-                if (ci.aYP == 100) {
-                    ci.atf[1].a(GLLib.Qj, 64, (float) i9, (float) i10, 0);
+                if (FarmGameEngine.aYP == 100) {
+                    FarmGameEngine.atf[1].a(GameRuntime.Qj, 64, (float) i9, (float) i10, 0);
                     return;
                 }
-                GLLib.l(18, 5, 1);
-                ci.atf[1].b(GLLib.Qj, 64, i9, i10, 0, ci.aYP);
-                GLLib.l(18, 5, 0);
+                GameRuntime.l(18, 5, 1);
+                FarmGameEngine.atf[1].b(GameRuntime.Qj, 64, i9, i10, 0, FarmGameEngine.aYP);
+                GameRuntime.l(18, 5, 0);
             }
         }
     }
@@ -4651,7 +4651,7 @@ class ch {
         }
         this.Bj = i;
         aa aaVar = this.aoO;
-        GLLib.c(aaVar.aaO != null, "GLLibPlayer.GetNbanim().sprite is not set");
+        GameRuntime.c(aaVar.aaO != null, "GLLibPlayer.GetNbanim().sprite is not set");
         if (aaVar.aaO.hu() > i2) {
             this.aoO.Y(i2, -1);
             if (z) {
@@ -4665,11 +4665,11 @@ class ch {
     void qa() {
         if (this.aoO != null) {
             aa aaVar = this.aoO;
-            int i = ci.aYP;
+            int i = FarmGameEngine.aYP;
             if (w.Zo) {
                 aaVar.aaW = i;
             } else {
-                GLLib.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
+                GameRuntime.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
             }
             aa aaVar2 = this.aoO;
             int i2 = this.aot;
@@ -4686,20 +4686,20 @@ class ch {
         if (i <= -1 || i2 <= -1) {
             return;
         }
-        a aVar = ci.aZf[0];
+        a aVar = FarmGameEngine.aZf[0];
         if (w.WY) {
             i3 = aVar.GE[0] & 65535;
         } else {
             i3 = aVar.GG[0] & 255;
         }
-        a aVar2 = ci.aZf[0];
+        a aVar2 = FarmGameEngine.aZf[0];
         if (w.WY) {
             i4 = aVar2.GF[0] & 65535;
         } else {
             i4 = aVar2.GH[0] & 255;
         }
         int i5 = i & 32767;
-        a aVar3 = (32768 & i) != 0 ? ci.atf[i5] : ci.aZf[i5];
+        a aVar3 = (32768 & i) != 0 ? FarmGameEngine.atf[i5] : FarmGameEngine.aZf[i5];
         if (aVar3.bG(i2) > 0) {
             aVar3.a(ape, i2, this.aol, this.aom, 0, false, false);
             ape[0] = (ape[0] / i3) * i3;
@@ -4714,7 +4714,7 @@ class ch {
 
     static void eX(int i) {
         boolean z = false;
-        for (ch chVar = als[i]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = als[i]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 10) {
                 z = true;
             }
@@ -4724,7 +4724,7 @@ class ch {
             chVar.oU();
         }
         if (z) {
-            aa.a(GLLib.Qj, 0, 0, 0);
+            aa.a(GameRuntime.Qj, 0, 0, 0);
         }
     }
 
@@ -4734,12 +4734,12 @@ class ch {
             if (this.alI > 1.0f) {
                 this.aol -= (int) (this.alK * this.alI);
                 this.aom -= (int) (this.alL * this.alI);
-                this.alI -= (this.alI * this.alJ) * (GLLib.Qy / 100.0f);
+                this.alI -= (this.alI * this.alJ) * (GameRuntime.Qy / 100.0f);
             }
             int i2 = this.alE;
             int i3 = this.alG;
-            int iKH = this.alF - ((ci.kH() * 100) / ci.aYP);
-            int iKI = this.alH - ((ci.kI() * 100) / ci.aYP);
+            int iKH = this.alF - ((FarmGameEngine.kH() * 100) / FarmGameEngine.aYP);
+            int iKI = this.alH - ((FarmGameEngine.kI() * 100) / FarmGameEngine.aYP);
             if (this.aol < i2) {
                 this.aol = i2;
             } else if (this.aol > iKH) {
@@ -4751,46 +4751,46 @@ class ch {
                 this.aom = iKI;
             }
         } else if (this.Bj == 1) {
-            this.alM -= GLLib.Qy;
+            this.alM -= GameRuntime.Qy;
             int[] iArr = new int[2];
-            ci.c(new int[]{ci.kH() >> 1, ci.kI() >> 1}, iArr);
+            FarmGameEngine.c(new int[]{FarmGameEngine.kH() >> 1, FarmGameEngine.kI() >> 1}, iArr);
             int i4 = this.aoE - iArr[0];
             int i5 = this.aoF - iArr[1];
             if (this.alM > 0) {
-                i = (GLLib.Qy * 100) / this.alM;
+                i = (GameRuntime.Qy * 100) / this.alM;
                 if (i > 100) {
                     i = 100;
                 }
             } else {
                 this.alM = 0;
                 this.Bj = 0;
-                if (ci.aYS == 1005) {
-                    ci.axW = true;
+                if (FarmGameEngine.aYS == 1005) {
+                    FarmGameEngine.axW = true;
                 }
-                if (ci.aum) {
-                    String strDt = ci.dt(12393);
+                if (FarmGameEngine.aum) {
+                    String strDt = FarmGameEngine.dt(12393);
                     if (strDt == null) {
                         strDt = "";
                     }
-                    ci.aMR = strDt;
-                    if (ci.ayK[0]) {
-                        String str = ci.aMR;
-                        String strDt2 = ci.dt(ci.EI() + 320);
+                    FarmGameEngine.aMR = strDt;
+                    if (FarmGameEngine.ayK[0]) {
+                        String str = FarmGameEngine.aMR;
+                        String strDt2 = FarmGameEngine.dt(FarmGameEngine.EI() + 320);
                         if (strDt2 == null) {
                             strDt2 = "";
                         }
-                        ci.aMR = ci.l(str, "Acre", strDt2);
+                        FarmGameEngine.aMR = FarmGameEngine.l(str, "Acre", strDt2);
                     } else {
-                        String str2 = ci.aMR;
-                        String strDt3 = ci.dt(320);
+                        String str2 = FarmGameEngine.aMR;
+                        String strDt3 = FarmGameEngine.dt(320);
                         if (strDt3 == null) {
                             strDt3 = "";
                         }
-                        ci.aMR = ci.l(str2, "Acre", strDt3);
+                        FarmGameEngine.aMR = FarmGameEngine.l(str2, "Acre", strDt3);
                     }
-                    ci.b(ci.azd[ci.EI() + 1], 0, -80);
-                    ci.m(ci.aMR, 7, 0);
-                    ci.aum = false;
+                    FarmGameEngine.b(FarmGameEngine.azd[FarmGameEngine.EI() + 1], 0, -80);
+                    FarmGameEngine.m(FarmGameEngine.aMR, 7, 0);
+                    FarmGameEngine.aum = false;
                 }
                 i = 100;
             }
@@ -4798,8 +4798,8 @@ class ch {
             this.aom = ((i * i5) / 100) + this.aom;
             int i6 = this.alE;
             int i7 = this.alG;
-            int iKH2 = this.alF - ((ci.kH() * 100) / ci.aYP);
-            int iKI2 = this.alH - ((ci.kI() * 100) / ci.aYP);
+            int iKH2 = this.alF - ((FarmGameEngine.kH() * 100) / FarmGameEngine.aYP);
+            int iKI2 = this.alH - ((FarmGameEngine.kI() * 100) / FarmGameEngine.aYP);
             if (this.aol < i6) {
                 this.aol = i6;
             } else if (this.aol > iKH2) {
@@ -4812,36 +4812,36 @@ class ch {
             }
         }
         aa.u(0, this.aol, this.aom);
-        aa.abW = ci.aYP;
+        aa.abW = FarmGameEngine.aYP;
     }
 
     void oR() {
         int i;
-        if (this.Kx != 10 || ci.aZj.aom >= 648) {
+        if (this.Kx != 10 || FarmGameEngine.aZj.aom >= 648) {
             return;
         }
-        float f = (648 - ci.aZj.aom) / 648.0f;
+        float f = (648 - FarmGameEngine.aZj.aom) / 648.0f;
         if (648.0f - (f * 215.0f) > 0.0f) {
             i = (int) ((648.0f - (f * 215.0f)) + 0.5f);
         } else {
             i = 648.0f - (f * 215.0f) < 0.0f ? (int) ((648.0f - (f * 215.0f)) - 0.5f) : 0;
         }
-        int i2 = i - ci.aZj.aom;
-        if (ci.Mt()) {
-            ci.dk(-15287308);
+        int i2 = i - FarmGameEngine.aZj.aom;
+        if (FarmGameEngine.Mt()) {
+            FarmGameEngine.dk(-15287308);
         } else {
-            ci.dk(-15682062);
+            FarmGameEngine.dk(-15682062);
         }
-        GLLib.b(GLLib.Qj, 0.0f, 0.0f, aa.abT[0][5], i2, true);
+        GameRuntime.b(GameRuntime.Qj, 0.0f, 0.0f, aa.abT[0][5], i2, true);
     }
 
     void pV() {
-        if ((GLLib.L(0, 100) & 1) == 0) {
-            this.aol = GLLib.L(aa.abT[0][5] >> 1, aa.abT[0][5]);
+        if ((GameRuntime.L(0, 100) & 1) == 0) {
+            this.aol = GameRuntime.L(aa.abT[0][5] >> 1, aa.abT[0][5]);
             this.aom = aa.abT[0][6];
         } else {
             this.aol = aa.abT[0][5];
-            this.aom = GLLib.L(aa.abT[0][6] >> 1, aa.abT[0][6]);
+            this.aom = GameRuntime.L(aa.abT[0][6] >> 1, aa.abT[0][6]);
         }
         this.aoE = 0;
         this.aoF = 0;
@@ -4870,24 +4870,24 @@ class ch {
         int[] iArr = {i, i2};
         if (this.aoZ == null) {
             for (int i3 = 0; i3 < 9216; i3++) {
-                ci.aAQ[i3] = (byte) (ci.aAP[i3] & 1);
+                FarmGameEngine.aAQ[i3] = (byte) (FarmGameEngine.aAP[i3] & 1);
             }
             this.aoZ = new z();
-            this.aoZ.a(96, 96, ci.aAQ, 14, 10, 10, 8);
+            this.aoZ.a(96, 96, FarmGameEngine.aAQ, 14, 10, 10, 8);
         }
         int[] iArr2 = new int[2];
-        ci.f(iArr, iArr2);
+        FarmGameEngine.f(iArr, iArr2);
         iArr2[0] = iArr2[0] < 0 ? 0 : iArr2[0] > 95 ? 95 : iArr2[0];
         iArr2[1] = iArr2[1] < 0 ? 0 : iArr2[1] > 95 ? 95 : iArr2[1];
         String str = "targetGridPos x : " + iArr2[0] + " y : " + iArr2[1];
         int[] iArr3 = new int[2];
-        ci.f(new int[]{this.aol, this.aom}, iArr3);
+        FarmGameEngine.f(new int[]{this.aol, this.aom}, iArr3);
         iArr3[0] = iArr3[0] < 0 ? 0 : iArr3[0] > 95 ? 95 : iArr3[0];
         iArr3[1] = iArr3[1] < 0 ? 0 : iArr3[1] > 95 ? 95 : iArr3[1];
         String str2 = "characterGridPos x : " + iArr3[0] + " y : " + iArr3[1];
         this.aoZ.c(iArr3[0], iArr3[1], 0, iArr2[0], iArr2[1]);
         int iLK = this.aoZ.lK();
-        this.apb = GLLib.Rk;
+        this.apb = GameRuntime.Rk;
         this.apa = 0;
         if (this.Kx != 42 && (this.Kx != 54 || ((!this.anw || !this.ann) && !this.anj && !this.ank))) {
             if (this.Kx == 54) {
@@ -4914,7 +4914,7 @@ class ch {
         if (this.apa > 2) {
             this.apa = 2;
             int[] iArr4 = new int[2];
-            ci.g(new int[]{this.aoZ.dO(this.apa), this.aoZ.dP(this.apa)}, iArr4);
+            FarmGameEngine.g(new int[]{this.aoZ.dO(this.apa), this.aoZ.dP(this.apa)}, iArr4);
             this.aol = iArr4[0];
             this.aom = iArr4[1];
             return;
@@ -4946,7 +4946,7 @@ class ch {
             } else if (this.amW == 0) {
                 j jVarBY = j.bY(0);
                 this.amW = (short) jVarBY.KW[this.aoC][30];
-                a aVar = ci.aZf[jVarBY.KW[this.aoC][31]];
+                a aVar = FarmGameEngine.aZf[jVarBY.KW[this.aoC][31]];
                 int iV = aVar.v(this.amW, 0);
                 this.amZ = aVar.bw(iV);
                 this.ana = aVar.bx(iV);
@@ -4954,32 +4954,32 @@ class ch {
                 this.aoQ = this.ana;
             }
             aa aaVar2 = this.aoR;
-            int i4 = ci.aYP;
+            int i4 = FarmGameEngine.aYP;
             if (w.Zo) {
                 aaVar2.aaW = i4;
             } else {
-                GLLib.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
+                GameRuntime.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
             }
             if (this.aoR.lQ()) {
                 if (i == 1) {
-                    if (ci.aYR == 18 && TutorialFlowController.callbackCurrent(tutorialGrowthEpoch, ci.aYR, ci.aYS, ci.awV)) {
-                        ci.axW = true;
+                    if (FarmGameEngine.currentTutorialStepIndex == 18 && TutorialFlowController.callbackCurrent(tutorialGrowthEpoch, FarmGameEngine.currentTutorialStepIndex, FarmGameEngine.aYS, FarmGameEngine.awV)) {
+                        FarmGameEngine.axW = true;
                     }
-                    if (this.anw && ci.axj != -1) {
-                        ci.aa(ci.axj, 1, 21);
-                        ci.axj = -1;
+                    if (this.anw && FarmGameEngine.axj != -1) {
+                        FarmGameEngine.aa(FarmGameEngine.axj, 1, 21);
+                        FarmGameEngine.axj = -1;
                     }
                 }
                 this.aoR = null;
             } else {
-                this.aoR.dV(GLLib.Qy);
+                this.aoR.dV(GameRuntime.Qy);
             }
         }
-        if ((this.aoR == null || this.aoR.aaO != ci.aZf[16]) && this.amP) {
-            this.aoR = new aa(ci.aZf[16], this.aot, this.aou);
+        if ((this.aoR == null || this.aoR.aaO != FarmGameEngine.aZf[16]) && this.amP) {
+            this.aoR = new aa(FarmGameEngine.aZf[16], this.aot, this.aou);
             this.aoR.Y(0, -1);
             this.aoR.aaY = 1;
-        } else if (this.aoR != null && !this.amP && this.aoR.aaO == ci.aZf[16]) {
+        } else if (this.aoR != null && !this.amP && this.aoR.aaO == FarmGameEngine.aZf[16]) {
             this.aoR = null;
         }
         if (this.aoS != null) {
@@ -4990,145 +4990,145 @@ class ch {
             aaVar3.aaL = i6;
             aaVar3.aaM = i7;
             aa aaVar4 = this.aoS;
-            int i8 = ci.aYP;
+            int i8 = FarmGameEngine.aYP;
             if (w.Zo) {
                 aaVar4.aaW = i8;
             } else {
-                GLLib.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
+                GameRuntime.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
             }
             if (this.aoS.lQ()) {
                 if (i5 == 1) {
-                    if (ci.aYR == 18 && TutorialFlowController.callbackCurrent(tutorialGrowthEpoch, ci.aYR, ci.aYS, ci.awV)) {
-                        ci.axW = true;
+                    if (FarmGameEngine.currentTutorialStepIndex == 18 && TutorialFlowController.callbackCurrent(tutorialGrowthEpoch, FarmGameEngine.currentTutorialStepIndex, FarmGameEngine.aYS, FarmGameEngine.awV)) {
+                        FarmGameEngine.axW = true;
                     }
-                    if (this.anw && ci.axj != -1) {
-                        ci.aa(ci.axj, 1, 21);
-                        ci.axj = -1;
+                    if (this.anw && FarmGameEngine.axj != -1) {
+                        FarmGameEngine.aa(FarmGameEngine.axj, 1, 21);
+                        FarmGameEngine.axj = -1;
                     }
                 }
                 this.aoS = null;
             } else {
-                this.aoS.dV(GLLib.Qy);
+                this.aoS.dV(GameRuntime.Qy);
             }
         }
         if (fz(Utility.DEFAULT_STREAM_BUFFER_SIZE)) {
-            if (ci.FC() >= 10 && ci.aZB == 0 && !ci.auj && ci.lM(ci.aZQ[298]) && !ci.lN(GLURLConnection.HTTP_FOUND)) {
-                String str = "time when active game :: " + (ci.bbp / Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
-                String str2 = "m_maxTimeThieveAppearPerDay :: " + ci.awo;
-                String str3 = "m_timeAppearPerDay :: " + ci.awp;
-                if (ci.axt == 1) {
-                    if (this.anj && (ci.MD() / 1000) - this.amC >= 86400) {
-                        ci.asQ = true;
-                        ci.awp = 1;
-                        this.amC = ci.MD() / 1000;
+            if (FarmGameEngine.FC() >= 10 && FarmGameEngine.aZB == 0 && !FarmGameEngine.auj && FarmGameEngine.lM(FarmGameEngine.aZQ[298]) && !FarmGameEngine.lN(GLURLConnection.HTTP_FOUND)) {
+                String str = "time when active game :: " + (FarmGameEngine.bbp / Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
+                String str2 = "m_maxTimeThieveAppearPerDay :: " + FarmGameEngine.awo;
+                String str3 = "m_timeAppearPerDay :: " + FarmGameEngine.awp;
+                if (FarmGameEngine.axt == 1) {
+                    if (this.anj && (FarmGameEngine.MD() / 1000) - this.amC >= 86400) {
+                        FarmGameEngine.asQ = true;
+                        FarmGameEngine.awp = 1;
+                        this.amC = FarmGameEngine.MD() / 1000;
                     }
-                } else if (ci.axt == 2) {
-                    if (this.ank && (ci.MD() / 1000) - this.amC >= 86400) {
-                        ci.asQ = true;
-                        ci.awp = 1;
-                        this.amC = ci.MD() / 1000;
+                } else if (FarmGameEngine.axt == 2) {
+                    if (this.ank && (FarmGameEngine.MD() / 1000) - this.amC >= 86400) {
+                        FarmGameEngine.asQ = true;
+                        FarmGameEngine.awp = 1;
+                        this.amC = FarmGameEngine.MD() / 1000;
                     }
-                } else if (ci.axt == 0 && ci.avD == -1 && (ci.bbp / Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS >= ci.awn || ((ci.axk || ci.axl) && ci.bbp / Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS > 10))) {
-                    if (ci.awm == -1) {
+                } else if (FarmGameEngine.axt == 0 && FarmGameEngine.avD == -1 && (FarmGameEngine.bbp / Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS >= FarmGameEngine.awn || ((FarmGameEngine.axk || FarmGameEngine.axl) && FarmGameEngine.bbp / Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS > 10))) {
+                    if (FarmGameEngine.awm == -1) {
                         int iL = 0;
-                        if (ci.aMg != null && ci.aMg.pB() >= 3) {
-                            iL = GLLib.L(0, 10);
+                        if (FarmGameEngine.aMg != null && FarmGameEngine.aMg.pB() >= 3) {
+                            iL = GameRuntime.L(0, 10);
                         }
                         if (iL <= 5) {
-                            ci.awm = 0;
+                            FarmGameEngine.awm = 0;
                         } else {
-                            ci.awm = 1;
+                            FarmGameEngine.awm = 1;
                         }
                     }
-                    if (ci.axk) {
-                        ci.awm = 0;
-                    } else if (ci.axl) {
-                        ci.awm = 1;
+                    if (FarmGameEngine.axk) {
+                        FarmGameEngine.awm = 0;
+                    } else if (FarmGameEngine.axl) {
+                        FarmGameEngine.awm = 1;
                     }
-                    if (this.anj && ci.awm == 0) {
+                    if (this.anj && FarmGameEngine.awm == 0) {
                         if (this.anl) {
                             boolean z = true;
-                            long jMD = (ci.MD() / 1000) - this.amC;
-                            if (ci.awp < ci.awo) {
-                                ci.awp++;
+                            long jMD = (FarmGameEngine.MD() / 1000) - this.amC;
+                            if (FarmGameEngine.awp < FarmGameEngine.awo) {
+                                FarmGameEngine.awp++;
                                 z = false;
                                 if (jMD >= 86400) {
-                                    ci.asQ = true;
-                                    ci.awp = 1;
-                                    this.amC = ci.MD() / 1000;
+                                    FarmGameEngine.asQ = true;
+                                    FarmGameEngine.awp = 1;
+                                    this.amC = FarmGameEngine.MD() / 1000;
                                 }
                             }
-                            if (ci.awp >= ci.awo && jMD >= 86400) {
-                                ci.asQ = true;
-                                ci.awp = 0;
-                                this.amC = ci.MD() / 1000;
+                            if (FarmGameEngine.awp >= FarmGameEngine.awo && jMD >= 86400) {
+                                FarmGameEngine.asQ = true;
+                                FarmGameEngine.awp = 0;
+                                this.amC = FarmGameEngine.MD() / 1000;
                             }
-                            if (ci.axk && ci.axt == 0) {
+                            if (FarmGameEngine.axk && FarmGameEngine.axt == 0) {
                                 this.ani = false;
-                                ci.axk = false;
-                            } else if (ci.axt == 0 && !z) {
+                                FarmGameEngine.axk = false;
+                            } else if (FarmGameEngine.axt == 0 && !z) {
                                 this.ani = false;
                                 fr(151148);
                             }
-                            ci.awm = -1;
+                            FarmGameEngine.awm = -1;
                         }
-                    } else if (this.ank && ci.awm == 1 && this.anm) {
+                    } else if (this.ank && FarmGameEngine.awm == 1 && this.anm) {
                         boolean z2 = true;
-                        long jMD2 = (ci.MD() / 1000) - this.amC;
-                        if (ci.awp < ci.awo) {
-                            ci.awp++;
+                        long jMD2 = (FarmGameEngine.MD() / 1000) - this.amC;
+                        if (FarmGameEngine.awp < FarmGameEngine.awo) {
+                            FarmGameEngine.awp++;
                             z2 = false;
                             if (jMD2 >= 86400) {
-                                ci.asQ = true;
-                                ci.awp = 1;
-                                this.amC = ci.MD() / 1000;
+                                FarmGameEngine.asQ = true;
+                                FarmGameEngine.awp = 1;
+                                this.amC = FarmGameEngine.MD() / 1000;
                             }
                         }
-                        if (ci.awp >= ci.awo && jMD2 >= 86400) {
-                            ci.asQ = true;
-                            ci.awp = 0;
-                            this.amC = ci.MD() / 1000;
+                        if (FarmGameEngine.awp >= FarmGameEngine.awo && jMD2 >= 86400) {
+                            FarmGameEngine.asQ = true;
+                            FarmGameEngine.awp = 0;
+                            this.amC = FarmGameEngine.MD() / 1000;
                         }
-                        if (ci.axl && ci.axt == 0) {
+                        if (FarmGameEngine.axl && FarmGameEngine.axt == 0) {
                             this.ani = false;
-                            ci.axl = false;
-                        } else if (ci.axt == 0 && !z2) {
+                            FarmGameEngine.axl = false;
+                        } else if (FarmGameEngine.axt == 0 && !z2) {
                             this.ani = false;
                             fr(151149);
                         }
-                        ci.awm = -1;
+                        FarmGameEngine.awm = -1;
                     }
                 }
-                if (ci.asQ) {
-                    ci.asQ = false;
-                    ch chVarHA = ci.hA(73);
-                    ch chVarHA2 = ci.hA(74);
+                if (FarmGameEngine.asQ) {
+                    FarmGameEngine.asQ = false;
+                    FarmEntity chVarHA = FarmGameEngine.hA(73);
+                    FarmEntity chVarHA2 = FarmGameEngine.hA(74);
                     if (chVarHA.amC > chVarHA2.amC) {
                         chVarHA2.amC = chVarHA.amC;
                     } else {
                         chVarHA.amC = chVarHA2.amC;
                     }
                 }
-                if (ci.bbp / Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS > ci.awn) {
-                    ci.bbp = ci.awn * Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS;
+                if (FarmGameEngine.bbp / Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS > FarmGameEngine.awn) {
+                    FarmGameEngine.bbp = FarmGameEngine.awn * Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS;
                 }
-            } else if ((ci.aYS == 1004 || ci.aYS == 1046) && this.anj) {
-                ci.axW = true;
+            } else if ((FarmGameEngine.aYS == 1004 || FarmGameEngine.aYS == 1046) && this.anj) {
+                FarmGameEngine.axW = true;
                 this.ani = false;
-            } else if (ci.auj) {
-                if (this.anj && ci.auk == 0 && !ci.aul && this.aol == 0 && this.aom == 0) {
-                    ci.aul = true;
+            } else if (FarmGameEngine.auj) {
+                if (this.anj && FarmGameEngine.auk == 0 && !FarmGameEngine.aul && this.aol == 0 && this.aom == 0) {
+                    FarmGameEngine.aul = true;
                     this.ani = false;
-                    if (ci.aYS == 1055) {
-                        ci.axW = true;
+                    if (FarmGameEngine.aYS == 1055) {
+                        FarmGameEngine.axW = true;
                     }
                     fr(151148);
-                } else if (this.ank && ci.auk == 1 && !ci.aul && this.aol == 0 && this.aom == 0) {
-                    ci.aul = true;
+                } else if (this.ank && FarmGameEngine.auk == 1 && !FarmGameEngine.aul && this.aol == 0 && this.aom == 0) {
+                    FarmGameEngine.aul = true;
                     this.ani = false;
                     fr(151149);
                 }
-            } else if (((ci.lM(ci.aZQ[298]) && !ci.lN(GLURLConnection.HTTP_FOUND)) || ci.FC() < 10) && ci.aZB <= 10 && (this.aol != 0 || this.aom != 0)) {
+            } else if (((FarmGameEngine.lM(FarmGameEngine.aZQ[298]) && !FarmGameEngine.lN(GLURLConnection.HTTP_FOUND)) || FarmGameEngine.FC() < 10) && FarmGameEngine.aZB <= 10 && (this.aol != 0 || this.aom != 0)) {
                 aN(0, 0);
             }
         }
@@ -5140,9 +5140,9 @@ class ch {
             return;
         }
         if (qs()) {
-            if (!this.amT && ci.avE != null && ci.avE != this && this.aol > ci.aZW + 150 && this.aol < ci.aZW + 530 && this.aom > ci.aZX + 340 && this.aom < ci.aZX + 570) {
+            if (!this.amT && FarmGameEngine.avE != null && FarmGameEngine.avE != this && this.aol > FarmGameEngine.aZW + 150 && this.aol < FarmGameEngine.aZW + 530 && this.aom > FarmGameEngine.aZX + 340 && this.aom < FarmGameEngine.aZX + 570) {
                 this.amT = true;
-                aM(ci.aZW + 150, ci.aZX + 446);
+                aM(FarmGameEngine.aZW + 150, FarmGameEngine.aZX + 446);
             }
             if (this.amT && this.aol == this.aoE && this.aom == this.aoF) {
                 this.amT = false;
@@ -5152,40 +5152,40 @@ class ch {
             }
         }
         pH();
-        if (!fz(Utility.DEFAULT_STREAM_BUFFER_SIZE) && !fz(131072) && this.Bj != 13 && this.Bj != 15 && this.Bj != 8 && (!this.anw || !ci.axK)) {
+        if (!fz(Utility.DEFAULT_STREAM_BUFFER_SIZE) && !fz(131072) && this.Bj != 13 && this.Bj != 15 && this.Bj != 8 && (!this.anw || !FarmGameEngine.axK)) {
             if (!fz(32) || fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST)) {
                 if (!fz(4) && !fz(16) && !fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST)) {
-                    long jMD3 = ci.MD();
-                    if (ci.aYR == 33) {
+                    long jMD3 = FarmGameEngine.MD();
+                    if (FarmGameEngine.currentTutorialStepIndex == 33) {
                         this.amB = jMD3;
                         String str4 = "set last animal care delay:" + (jMD3 / 1000);
                     }
                     long j = (jMD3 - this.amB) / 1000;
-                    if (!fz(256) && (ci.lN(20) || ci.lM(ci.aZQ[20]))) {
-                        if (j > (ci.ii(this.amE) * 3) / 4 && this.amB > 0 && !this.amM) {
+                    if (!fz(256) && (FarmGameEngine.lN(20) || FarmGameEngine.lM(FarmGameEngine.aZQ[20]))) {
+                        if (j > (FarmGameEngine.ii(this.amE) * 3) / 4 && this.amB > 0 && !this.amM) {
                             this.amM = true;
                             if (!this.amL) {
-                                int iL2 = GLLib.L(0, 100);
+                                int iL2 = GameRuntime.L(0, 100);
                                 String str5 = "Check animal request clean.!!!!!" + iL2;
                                 if (iL2 < 35) {
                                     fq(256);
                                     this.amL = true;
                                 }
                             }
-                        } else if (j > (ci.ii(this.amE) >> 1) && this.amB > 0 && !this.amN) {
+                        } else if (j > (FarmGameEngine.ii(this.amE) >> 1) && this.amB > 0 && !this.amN) {
                             this.amN = true;
                             if (!this.amL) {
-                                int iL3 = GLLib.L(0, 100);
+                                int iL3 = GameRuntime.L(0, 100);
                                 String str6 = "Check animal request clean2.!!!!!" + iL3;
                                 if (iL3 < 35) {
                                     fq(256);
                                     this.amL = true;
                                 }
                             }
-                        } else if (j > (ci.ii(this.amE) >> 2) && this.amB > 0 && !this.amO) {
+                        } else if (j > (FarmGameEngine.ii(this.amE) >> 2) && this.amB > 0 && !this.amO) {
                             this.amO = true;
                             if (!this.amL) {
-                                int iL4 = GLLib.L(0, 100);
+                                int iL4 = GameRuntime.L(0, 100);
                                 String str7 = "Check animal request clean3.!!!!!" + iL4;
                                 if (iL4 < 35) {
                                     fq(256);
@@ -5194,47 +5194,47 @@ class ch {
                             }
                         }
                     }
-                    if (!this.anw && j >= ci.ii(this.amE) && this.amB != 0) {
-                        if (ci.aYR == 35) {
-                            ci.axW = true;
+                    if (!this.anw && j >= FarmGameEngine.ii(this.amE) && this.amB != 0) {
+                        if (FarmGameEngine.currentTutorialStepIndex == 35) {
+                            FarmGameEngine.axW = true;
                         }
-                        if (ci.aYR != 34) {
+                        if (FarmGameEngine.currentTutorialStepIndex != 34) {
                             String str8 = j + " -------------------------------ANIMAL_READY_PRODUCE------------------------- " + this.amE;
-                            if (j != 0 || ci.ii(this.amE) >= 0) {
+                            if (j != 0 || FarmGameEngine.ii(this.amE) >= 0) {
                                 fq(16);
-                                ci.a(false, (ch) null);
+                                FarmGameEngine.a(false, (FarmEntity) null);
                             } else {
                                 pM();
                             }
                         }
                     }
-                    if (this.anw && j >= ci.ii(this.amE) && this.amB != 0 && ci.aYR != 34) {
+                    if (this.anw && j >= FarmGameEngine.ii(this.amE) && this.amB != 0 && FarmGameEngine.currentTutorialStepIndex != 34) {
                         pM();
                         fp(2);
                     }
-                    if (ci.aZo == this && ci.ii(this.amE) != 0) {
-                        ci.ba((int) j, ci.ii(this.amE));
-                        this.aoX = A(this.amH, (int) (((long) ci.ii(this.amE)) - j), ci.ii(this.amE));
+                    if (FarmGameEngine.aZo == this && FarmGameEngine.ii(this.amE) != 0) {
+                        FarmGameEngine.ba((int) j, FarmGameEngine.ii(this.amE));
+                        this.aoX = A(this.amH, (int) (((long) FarmGameEngine.ii(this.amE)) - j), FarmGameEngine.ii(this.amE));
                     }
                 }
             } else if (!this.anw) {
-                long jMD4 = ci.MD();
+                long jMD4 = FarmGameEngine.MD();
                 long j2 = (jMD4 / 1000) - this.amJ;
                 if (this.and && this.ane > 0) {
-                    this.amI = ci.ih((int) (((jMD4 - this.ane) / 1000) + ((long) (j.bY(0).KW[this.aoC][14] * 60))));
+                    this.amI = FarmGameEngine.ih((int) (((jMD4 - this.ane) / 1000) + ((long) (j.bY(0).KW[this.aoC][14] * 60))));
                 }
-                if (ci.ii(this.amI) > 0 && ci.aZo == this) {
-                    ci.ba((int) j2, ci.ii(this.amI));
-                    this.aoX = A(this.amH, (int) (((long) ci.ii(this.amI)) - j2), ci.ii(this.amI));
+                if (FarmGameEngine.ii(this.amI) > 0 && FarmGameEngine.aZo == this) {
+                    FarmGameEngine.ba((int) j2, FarmGameEngine.ii(this.amI));
+                    this.aoX = A(this.amH, (int) (((long) FarmGameEngine.ii(this.amI)) - j2), FarmGameEngine.ii(this.amI));
                 }
-                if (j2 >= ci.ii(this.amI)) {
+                if (j2 >= FarmGameEngine.ii(this.amI)) {
                     pR();
                 }
-            } else if (ci.avD == -1 && !fz(4) && this.Bj == 0 && ci.aZB == 0) {
+            } else if (FarmGameEngine.avD == -1 && !fz(4) && this.Bj == 0 && FarmGameEngine.aZB == 0) {
                 pM();
                 fp(2);
             }
-            if (fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST) && ci.axt != 0 && !this.anw && (this.aoM == null || this.aoM.Kx == -1)) {
+            if (fz(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST) && FarmGameEngine.axt != 0 && !this.anw && (this.aoM == null || this.aoM.Kx == -1)) {
                 fq(NativeProtocol.MESSAGE_GET_ACCESS_TOKEN_REQUEST);
                 return;
             }
@@ -5263,16 +5263,16 @@ class ch {
         }
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
-        if (jCurrentTimeMillis - this.amv <= 7000 || ci.qD() != 18) {
+        if (jCurrentTimeMillis - this.amv <= 7000 || FarmGameEngine.currentEngineState() != 18) {
             return;
         }
-        if (ci.avE == null || ci.avE != this) {
-            if (!this.anw && GLLib.L(0, 100) < 10) {
-                ci.gY(this.aoY);
+        if (FarmGameEngine.avE == null || FarmGameEngine.avE != this) {
+            if (!this.anw && GameRuntime.L(0, 100) < 10) {
+                FarmGameEngine.gY(this.aoY);
             }
-            this.amv = ci.MD();
+            this.amv = FarmGameEngine.MD();
         }
     }
 
@@ -5280,56 +5280,56 @@ class ch {
         if (this.aoC == 18) {
             return;
         }
-        if ((this.aoC == 12 || this.aoC == 11) && ci.aZB == 0 && fz(AdRequest.MAX_CONTENT_URL_LENGTH)) {
+        if ((this.aoC == 12 || this.aoC == 11) && FarmGameEngine.aZB == 0 && fz(AdRequest.MAX_CONTENT_URL_LENGTH)) {
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             long j = (jCurrentTimeMillis / 1000) - this.alV;
-            if (j < ci.ii(alU) && ci.aZo == this) {
-                ci.ba((int) j, ci.ii(alU));
-                this.aoX = ci.gf((int) (((long) ci.ii(alU)) - j));
+            if (j < FarmGameEngine.ii(alU) && FarmGameEngine.aZo == this) {
+                FarmGameEngine.ba((int) j, FarmGameEngine.ii(alU));
+                this.aoX = FarmGameEngine.gf((int) (((long) FarmGameEngine.ii(alU)) - j));
             }
-            if (this.alW || j < ci.ii(alU)) {
+            if (this.alW || j < FarmGameEngine.ii(alU)) {
                 return;
             }
             this.alW = true;
             fx(16);
             e(b(33, 1, new int[]{this.aol, this.aom, 150, 10, 13, -63, -117, 0, 1}));
-            if (ci.ss()) {
-                ci.a(false, (ch) null);
+            if (FarmGameEngine.ss()) {
+                FarmGameEngine.a(false, (FarmEntity) null);
                 return;
             }
             return;
         }
-        if (this.aoC == 15 && ci.aTK) {
+        if (this.aoC == 15 && FarmGameEngine.aTK) {
             aa aaVar = this.aoO;
-            if (ci.EN() || ci.EM()) {
+            if (FarmGameEngine.EN() || FarmGameEngine.EM()) {
                 if (this.alZ >= 0) {
-                    this.alZ -= GLLib.Qy;
+                    this.alZ -= GameRuntime.Qy;
                     if (this.alZ < 0) {
-                        this.aoO = new aa(ci.aZf[this.aoG], this.aot, this.aou);
+                        this.aoO = new aa(FarmGameEngine.aZf[this.aoG], this.aot, this.aou);
                         this.aoO.Y(0, 1);
                     }
                 } else if (this.aoO != null) {
-                    this.aoO.dV(GLLib.Qy);
+                    this.aoO.dV(GameRuntime.Qy);
                     if (this.aoO.lQ()) {
                         this.aoO = null;
-                        this.alZ = GLLib.L(Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, 4000);
+                        this.alZ = GameRuntime.L(Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, 4000);
                     }
                 }
-            } else if (ci.aNU > 0 || ci.aNY > 0) {
+            } else if (FarmGameEngine.aNU > 0 || FarmGameEngine.aNY > 0) {
                 if (this.alZ >= 0) {
-                    this.alZ -= GLLib.Qy;
+                    this.alZ -= GameRuntime.Qy;
                     if (this.alZ < 0) {
-                        this.aoO = new aa(ci.aZf[this.aoG], this.aot, this.aou);
+                        this.aoO = new aa(FarmGameEngine.aZf[this.aoG], this.aot, this.aou);
                         this.aoO.Y(0, 1);
                     }
                 } else if (this.aoO != null) {
-                    this.aoO.dV(GLLib.Qy);
+                    this.aoO.dV(GameRuntime.Qy);
                     if (this.aoO.lQ()) {
                         this.aoO = null;
-                        this.alZ = GLLib.L(Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, 4000);
+                        this.alZ = GameRuntime.L(Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, 4000);
                     }
                 }
             } else if (this.aoO != null) {
@@ -5343,7 +5343,7 @@ class ch {
         }
         if (this.aoC == 9) {
             aa aaVar2 = this.aoO;
-            if (ci.aZB != 0 || !ci.EQ()) {
+            if (FarmGameEngine.aZB != 0 || !FarmGameEngine.EQ()) {
                 if (this.aoO != null) {
                     this.aoO = null;
                     qr();
@@ -5355,23 +5355,23 @@ class ch {
                 }
                 return;
             }
-            if (!this.ama && ci.lM(ci.aZQ[0]) && ci.lM(ci.aZQ[1])) {
+            if (!this.ama && FarmGameEngine.lM(FarmGameEngine.aZQ[0]) && FarmGameEngine.lM(FarmGameEngine.aZQ[1])) {
                 this.ama = true;
                 e(b(33, 1, new int[]{this.aol, this.aom, 150, 10, 13, -63, -117, 0, 1}));
             }
             if (this.alZ >= 0) {
-                this.alZ -= GLLib.Qy;
+                this.alZ -= GameRuntime.Qy;
                 if (this.alZ < 0) {
-                    this.aoO = new aa(ci.aZf[this.aoG], this.aot, this.aou);
+                    this.aoO = new aa(FarmGameEngine.aZf[this.aoG], this.aot, this.aou);
                     this.aoO.Y(0, 1);
                     return;
                 }
                 return;
             }
             if (this.aoO != null) {
-                this.aoO.dV(GLLib.Qy);
+                this.aoO.dV(GameRuntime.Qy);
                 if (this.aoO.lQ()) {
-                    this.alZ = GLLib.L(10000, 30000);
+                    this.alZ = GameRuntime.L(10000, 30000);
                     this.aoO = null;
                     return;
                 }
@@ -5380,7 +5380,7 @@ class ch {
             return;
         }
         if (this.aoC == 2) {
-            if (!ci.GT()) {
+            if (!FarmGameEngine.GT()) {
                 if (this.aoR != null) {
                     this.aoR = null;
                     return;
@@ -5388,35 +5388,35 @@ class ch {
                 return;
             }
             if (this.aoR == null) {
-                a aVar = ci.aZf[this.aoG];
+                a aVar = FarmGameEngine.aZf[this.aoG];
                 int iV = aVar.v(1, 0);
                 this.aoP = aVar.bw(iV);
                 this.aoQ = aVar.bx(iV);
-                this.aoR = new aa(ci.aZf[147], this.aot, this.aou);
+                this.aoR = new aa(FarmGameEngine.aZf[147], this.aot, this.aou);
             }
             if (this.alZ >= 0) {
-                this.alZ -= GLLib.Qy;
+                this.alZ -= GameRuntime.Qy;
                 if (this.alZ < 0) {
                     this.aoR.Y(0, 1);
                     return;
                 }
                 return;
             }
-            this.aoR.dV(GLLib.Qy);
+            this.aoR.dV(GameRuntime.Qy);
             if (this.aoR.lQ()) {
-                this.alZ = GLLib.L(3000, 4000);
+                this.alZ = GameRuntime.L(3000, 4000);
                 return;
             }
             return;
         }
         if (this.aoC == 1) {
-            if (ci.aZB == 0) {
+            if (FarmGameEngine.aZB == 0) {
                 long jCurrentTimeMillis2 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 long j2 = jCurrentTimeMillis2 / 1000;
-                if (!ci.IL() || !ci.aTK) {
+                if (!FarmGameEngine.IL() || !FarmGameEngine.aTK) {
                     if (this.aoR != null) {
                         this.aoR = null;
                         return;
@@ -5424,14 +5424,14 @@ class ch {
                     return;
                 } else {
                     if (this.aoR != null) {
-                        this.aoR.dV(GLLib.Qy);
+                        this.aoR.dV(GameRuntime.Qy);
                         return;
                     }
-                    a aVar2 = ci.aZf[this.aoG];
-                    int iV2 = aVar2.v(ci.aZD < 4 ? 4 : 1, 0);
+                    a aVar2 = FarmGameEngine.aZf[this.aoG];
+                    int iV2 = aVar2.v(FarmGameEngine.aZD < 4 ? 4 : 1, 0);
                     this.aoP = aVar2.bw(iV2);
                     this.aoQ = aVar2.bx(iV2);
-                    this.aoR = new aa(ci.aZf[148], this.aot, this.aou);
+                    this.aoR = new aa(FarmGameEngine.aZf[148], this.aot, this.aou);
                     this.aoR.Y(0, -1);
                     return;
                 }
@@ -5439,31 +5439,31 @@ class ch {
             return;
         }
         if (this.aoC == 28) {
-            if (!this.alW && ci.Hi()) {
+            if (!this.alW && FarmGameEngine.Hi()) {
                 this.alW = true;
                 fx(16);
                 e(b(33, 1, new int[]{this.aol, this.aom, 150, 10, 13, -63, -117, 0, 1}));
             }
             long jCurrentTimeMillis3 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             long j3 = jCurrentTimeMillis3 / 1000;
             boolean z = false;
-            for (int i = 0; !z && i < ci.aGm; i++) {
-                z = ci.aGo[i] && ci.aGs[i] > 0 && j3 < ci.aGs[i] + ((long) ci.ii(ci.aGr[i]));
+            for (int i = 0; !z && i < FarmGameEngine.aGm; i++) {
+                z = FarmGameEngine.aGo[i] && FarmGameEngine.aGs[i] > 0 && j3 < FarmGameEngine.aGs[i] + ((long) FarmGameEngine.ii(FarmGameEngine.aGr[i]));
             }
             if (z) {
                 if (this.aoO != null) {
-                    this.aoO.dV(GLLib.Qy);
+                    this.aoO.dV(GameRuntime.Qy);
                     return;
                 } else {
-                    this.aoO = new aa(ci.aZf[this.aoG], this.aot, this.aou);
+                    this.aoO = new aa(FarmGameEngine.aZf[this.aoG], this.aot, this.aou);
                     this.aoO.Y(1, -1);
                     return;
                 }
             }
-            if (ci.bL(0, 119) >= ci.aGa) {
+            if (FarmGameEngine.bL(0, 119) >= FarmGameEngine.aGa) {
                 this.aoH = 0;
             } else {
                 this.aoH = 7;
@@ -5475,19 +5475,19 @@ class ch {
             return;
         }
         if (this.aoC == 14) {
-            if (!this.alW && ci.Hh()) {
+            if (!this.alW && FarmGameEngine.Hh()) {
                 this.alW = true;
                 fx(16);
                 e(b(33, 1, new int[]{this.aol, this.aom, 150, 10, 13, -63, -117, 0, 1}));
             }
             long jCurrentTimeMillis4 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             long j4 = jCurrentTimeMillis4 / 1000;
             boolean z2 = false;
-            for (int i2 = 0; !z2 && i2 < ci.GY(); i2++) {
-                z2 = ci.aHa[i2] > 0 && j4 < ci.aHa[i2] + ((long) ci.ii(ci.aGZ[i2]));
+            for (int i2 = 0; !z2 && i2 < FarmGameEngine.GY(); i2++) {
+                z2 = FarmGameEngine.aHa[i2] > 0 && j4 < FarmGameEngine.aHa[i2] + ((long) FarmGameEngine.ii(FarmGameEngine.aGZ[i2]));
             }
             if (!z2) {
                 if (this.aoO != null) {
@@ -5496,41 +5496,41 @@ class ch {
                 }
                 return;
             } else if (this.aoO != null) {
-                this.aoO.dV(GLLib.Qy);
+                this.aoO.dV(GameRuntime.Qy);
                 return;
             } else {
-                this.aoO = new aa(ci.aZf[this.aoG], this.aot, this.aou);
+                this.aoO = new aa(FarmGameEngine.aZf[this.aoG], this.aot, this.aou);
                 this.aoO.Y(1, -1);
                 return;
             }
         }
         if (this.aoC == 17) {
             if (this.alZ >= 0) {
-                this.alZ -= GLLib.Qy;
+                this.alZ -= GameRuntime.Qy;
                 if (this.alZ < 0) {
-                    this.aoO = new aa(ci.aZf[this.aoG], this.aot, this.aou);
+                    this.aoO = new aa(FarmGameEngine.aZf[this.aoG], this.aot, this.aou);
                     this.aoO.Y(0, 1);
                     if (qs()) {
-                        ci.gX(29);
+                        FarmGameEngine.gX(29);
                     }
                 }
             } else if (this.aoO != null) {
-                this.aoO.dV(GLLib.Qy);
+                this.aoO.dV(GameRuntime.Qy);
                 if (this.aoO.lQ()) {
                     this.aoO = null;
-                    this.alZ = GLLib.L(10000, 30000);
+                    this.alZ = GameRuntime.L(10000, 30000);
                 }
             }
-            if (ci.aZB == 0) {
+            if (FarmGameEngine.aZB == 0) {
                 long jCurrentTimeMillis5 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis5 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis5 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
-                ci.aUl = jCurrentTimeMillis5;
-                if (fz(AdRequest.MAX_CONTENT_URL_LENGTH) && ((this.aoM == null || this.aoM.Kx == -1) && ci.aUl > ci.aUm)) {
+                FarmGameEngine.aUl = jCurrentTimeMillis5;
+                if (fz(AdRequest.MAX_CONTENT_URL_LENGTH) && ((this.aoM == null || this.aoM.Kx == -1) && FarmGameEngine.aUl > FarmGameEngine.aUm)) {
                     e(b(33, 1, new int[]{this.aol, this.aom, 150, 10, 13, -63, -117, 0, 1}));
                 } else {
-                    if (!fz(AdRequest.MAX_CONTENT_URL_LENGTH) || this.aoM == null || this.aoM.Kx == -1 || ci.aUl > ci.aUm) {
+                    if (!fz(AdRequest.MAX_CONTENT_URL_LENGTH) || this.aoM == null || this.aoM.Kx == -1 || FarmGameEngine.aUl > FarmGameEngine.aUm) {
                         return;
                     }
                     qq();
@@ -5549,19 +5549,19 @@ class ch {
             i = this.anG == 59 ? (this.anM & (-65536)) >> 16 : 0;
         }
         if (i > 0 || this.anG == 67 || this.anG == 67 || this.anG == 68 || this.anG == 69) {
-            GLLib.l(18, 5, 1);
-            if ((((this.aol + this.aow) - ci.aZj.aol) * ci.aYP) / 100.0f > 0.0f) {
-                i2 = (int) (((((this.aol + this.aow) - ci.aZj.aol) * ci.aYP) / 100.0f) + 0.5f);
+            GameRuntime.l(18, 5, 1);
+            if ((((this.aol + this.aow) - FarmGameEngine.aZj.aol) * FarmGameEngine.aYP) / 100.0f > 0.0f) {
+                i2 = (int) (((((this.aol + this.aow) - FarmGameEngine.aZj.aol) * FarmGameEngine.aYP) / 100.0f) + 0.5f);
             } else {
-                i2 = ((float) (((this.aol + this.aow) - ci.aZj.aol) * ci.aYP)) / 100.0f < 0.0f ? (int) (((((this.aol + this.aow) - ci.aZj.aol) * ci.aYP) / 100.0f) - 0.5f) : 0;
+                i2 = ((float) (((this.aol + this.aow) - FarmGameEngine.aZj.aol) * FarmGameEngine.aYP)) / 100.0f < 0.0f ? (int) (((((this.aol + this.aow) - FarmGameEngine.aZj.aol) * FarmGameEngine.aYP) / 100.0f) - 0.5f) : 0;
             }
-            if ((((this.aom + this.aox) - ci.aZj.aom) * ci.aYP) / 100.0f > 0.0f) {
-                i3 = (int) (((((this.aom + this.aox) - ci.aZj.aom) * ci.aYP) / 100.0f) + 0.5f);
+            if ((((this.aom + this.aox) - FarmGameEngine.aZj.aom) * FarmGameEngine.aYP) / 100.0f > 0.0f) {
+                i3 = (int) (((((this.aom + this.aox) - FarmGameEngine.aZj.aom) * FarmGameEngine.aYP) / 100.0f) + 0.5f);
             } else {
-                i3 = ((float) (((this.aom + this.aox) - ci.aZj.aom) * ci.aYP)) / 100.0f < 0.0f ? (int) (((((this.aom + this.aox) - ci.aZj.aom) * ci.aYP) / 100.0f) - 0.5f) : 0;
+                i3 = ((float) (((this.aom + this.aox) - FarmGameEngine.aZj.aom) * FarmGameEngine.aYP)) / 100.0f < 0.0f ? (int) (((((this.aom + this.aox) - FarmGameEngine.aZj.aom) * FarmGameEngine.aYP) / 100.0f) - 0.5f) : 0;
             }
-            ci.a((i > 0 ? "+" : "") + ci.a(i, ci.aYU, " "), i2 + 10, i3 + 10, 0, 0, 0, 0, 2, 1, false, false);
-            GLLib.l(18, 5, 0);
+            FarmGameEngine.a((i > 0 ? "+" : "") + FarmGameEngine.a(i, FarmGameEngine.aYU, " "), i2 + 10, i3 + 10, 0, 0, 0, 0, 2, 1, false, false);
+            GameRuntime.l(18, 5, 0);
         }
     }
 
@@ -5570,7 +5570,7 @@ class ch {
             return;
         }
         int i3 = i & 32767;
-        a aVar = (32768 & i) != 0 ? ci.atf[i3] : ci.aZf[i3];
+        a aVar = (32768 & i) != 0 ? FarmGameEngine.atf[i3] : FarmGameEngine.aZf[i3];
         int iHw = this.aoI;
         if (aF(i, i2)) {
             if (aVar == null || i2 < 0) {
@@ -5581,13 +5581,13 @@ class ch {
                 iHw += aVar.hw() >> 1;
             }
             aVar.bQ(iHw);
-            if (ci.aYP == 100 || this.aoo == 2) {
-                aVar.a(GLLib.Qj, i2, (float) this.aot, (float) this.aou, 0);
+            if (FarmGameEngine.aYP == 100 || this.aoo == 2) {
+                aVar.a(GameRuntime.Qj, i2, (float) this.aot, (float) this.aou, 0);
                 return;
             }
-            GLLib.l(18, 5, 1);
-            aVar.b(GLLib.Qj, i2, this.aot, this.aou, 0, ci.aYP);
-            GLLib.l(18, 5, 0);
+            GameRuntime.l(18, 5, 1);
+            aVar.b(GameRuntime.Qj, i2, this.aot, this.aou, 0, FarmGameEngine.aYP);
+            GameRuntime.l(18, 5, 0);
         }
     }
 
@@ -5613,15 +5613,15 @@ class ch {
                 aaVar.aaL = i5;
                 aaVar.aaM = i6;
                 aa aaVar2 = this.aoO;
-                int i7 = ci.aYP;
+                int i7 = FarmGameEngine.aYP;
                 if (w.Zo) {
                     aaVar2.aaW = i7;
                 } else {
-                    GLLib.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
+                    GameRuntime.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
                 }
-                GLLib.l(18, 5, 1);
+                GameRuntime.l(18, 5, 1);
                 this.aoO.lR();
-                GLLib.l(18, 5, 0);
+                GameRuntime.l(18, 5, 0);
             } else if (this.aoG > -1) {
                 aE(this.aoG, this.aoH);
             }
@@ -5637,21 +5637,21 @@ class ch {
                 pI();
                 break;
         }
-        if (!this.aoT || ci.avE != this) {
+        if (!this.aoT || FarmGameEngine.avE != this) {
             return;
         }
-        if (ci.t(this) && aF(14, this.aoA)) {
+        if (FarmGameEngine.t(this) && aF(14, this.aoA)) {
             int i8 = this.aot;
             int i9 = this.aou;
-            if (ci.j(this)) {
+            if (FarmGameEngine.j(this)) {
                 i9 += 108;
             }
             r(14, this.aoA, i8, i9);
         }
-        if (!ci.j(ci.avE)) {
+        if (!FarmGameEngine.j(FarmGameEngine.avE)) {
             return;
         }
-        if (ci.avE.aoC == 20) {
+        if (FarmGameEngine.avE.aoC == 20) {
             i = 161;
             i2 = 162;
             i3 = 164;
@@ -5662,9 +5662,9 @@ class ch {
             i3 = 163;
             z = true;
         }
-        int[] iArr = {ci.avE.aol, ci.avE.aom};
+        int[] iArr = {FarmGameEngine.avE.aol, FarmGameEngine.avE.aom};
         int[] iArr2 = {i + 1, i};
-        ci.f(iArr, iArr2);
+        FarmGameEngine.f(iArr, iArr2);
         int i10 = iArr2[0];
         int i11 = iArr2[1];
         int i12 = 0;
@@ -5674,85 +5674,85 @@ class ch {
                 iArr2[0] = i10;
                 iArr2[1] = i11 + 1;
                 for (int i14 = 0; i14 < 6; i14++) {
-                    ci.g(iArr2, iArr);
-                    r(i2, 0, iArr[0] - ci.aZj.aol, iArr[1] - ci.aZj.aom);
+                    FarmGameEngine.g(iArr2, iArr);
+                    r(i2, 0, iArr[0] - FarmGameEngine.aZj.aol, iArr[1] - FarmGameEngine.aZj.aom);
                     iArr2[1] = iArr2[1] + 2;
                 }
                 iArr2[0] = i10 + 1;
                 iArr2[1] = i11 + 12;
                 for (int i15 = 0; i15 < 6; i15++) {
-                    ci.g(iArr2, iArr);
-                    r(i, 0, iArr[0] - ci.aZj.aol, iArr[1] - ci.aZj.aom);
+                    FarmGameEngine.g(iArr2, iArr);
+                    r(i, 0, iArr[0] - FarmGameEngine.aZj.aol, iArr[1] - FarmGameEngine.aZj.aom);
                     iArr2[0] = iArr2[0] + 2;
                 }
                 iArr2[0] = i10 + 12;
                 iArr2[1] = i11 + 1;
                 for (int i16 = 0; i16 < 6; i16++) {
-                    ci.g(iArr2, iArr);
-                    r(i2, 0, iArr[0] - ci.aZj.aol, iArr[1] - ci.aZj.aom);
+                    FarmGameEngine.g(iArr2, iArr);
+                    r(i2, 0, iArr[0] - FarmGameEngine.aZj.aol, iArr[1] - FarmGameEngine.aZj.aom);
                     iArr2[1] = iArr2[1] + 2;
                 }
                 if (z) {
                     iArr2[0] = i10 + 3;
                     iArr2[1] = i11;
                     for (int i17 = 0; i17 < 6; i17 += 2) {
-                        ci.g(iArr2, iArr);
-                        r(168, 2, iArr[0] - ci.aZj.aol, iArr[1] - ci.aZj.aom);
+                        FarmGameEngine.g(iArr2, iArr);
+                        r(168, 2, iArr[0] - FarmGameEngine.aZj.aol, iArr[1] - FarmGameEngine.aZj.aom);
                         iArr2[0] = iArr2[0] + 4;
                     }
                     iArr2[0] = i10;
                     iArr2[1] = i11 + 3;
                     for (int i18 = 0; i18 < 6; i18 += 2) {
-                        ci.g(iArr2, iArr);
-                        r(168, 3, iArr[0] - ci.aZj.aol, iArr[1] - ci.aZj.aom);
+                        FarmGameEngine.g(iArr2, iArr);
+                        r(168, 3, iArr[0] - FarmGameEngine.aZj.aol, iArr[1] - FarmGameEngine.aZj.aom);
                         iArr2[1] = iArr2[1] + 4;
                     }
                     iArr2[0] = i10 + 3;
                     iArr2[1] = i11 + 12;
                     for (int i19 = 0; i19 < 6; i19 += 2) {
-                        ci.g(iArr2, iArr);
-                        r(168, 2, iArr[0] - ci.aZj.aol, iArr[1] - ci.aZj.aom);
+                        FarmGameEngine.g(iArr2, iArr);
+                        r(168, 2, iArr[0] - FarmGameEngine.aZj.aol, iArr[1] - FarmGameEngine.aZj.aom);
                         iArr2[0] = iArr2[0] + 4;
                     }
                     iArr2[0] = i10 + 12;
                     iArr2[1] = i11 + 3;
                     for (int i20 = 0; i20 < 6; i20 += 2) {
-                        ci.g(iArr2, iArr);
-                        r(168, 3, iArr[0] - ci.aZj.aol, iArr[1] - ci.aZj.aom);
+                        FarmGameEngine.g(iArr2, iArr);
+                        r(168, 3, iArr[0] - FarmGameEngine.aZj.aol, iArr[1] - FarmGameEngine.aZj.aom);
                         iArr2[1] = iArr2[1] + 4;
                     }
                     int[] iArr3 = {0, 0, 4, 0, 8, 0, 12, 0, 12, 4, 0, 4, 0, 8, 12, 8, 12, 12, 8, 12, 4, 12, 0, 12};
                     for (int i21 = 0; i21 < 12; i21++) {
                         iArr2[0] = iArr3[i21 * 2] + i10;
                         iArr2[1] = iArr3[(i21 * 2) + 1] + i11;
-                        ci.g(iArr2, iArr);
-                        r(168, (i21 % 2) + 0, iArr[0] - ci.aZj.aol, (iArr[1] - ci.aZj.aom) + 13);
+                        FarmGameEngine.g(iArr2, iArr);
+                        r(168, (i21 % 2) + 0, iArr[0] - FarmGameEngine.aZj.aol, (iArr[1] - FarmGameEngine.aZj.aom) + 13);
                     }
                     return;
                 }
                 return;
             }
-            ci.g(iArr2, iArr);
+            FarmGameEngine.g(iArr2, iArr);
             if (i13 == 0) {
                 iArr[1] = iArr[1] - 3;
                 i4 = i3;
             } else {
                 i4 = i;
             }
-            r(i4, 0, iArr[0] - ci.aZj.aol, iArr[1] - ci.aZj.aom);
+            r(i4, 0, iArr[0] - FarmGameEngine.aZj.aol, iArr[1] - FarmGameEngine.aZj.aom);
             iArr2[0] = iArr2[0] + 2;
             i12 = i13 + 1;
         }
     }
 
     void r(int i, int i2, int i3, int i4) {
-        if (ci.aYP != 100) {
-            GLLib.l(18, 5, 1);
-            ci.aZf[i].b(GLLib.Qj, i2, i3, i4, 0, ci.aYP);
-            GLLib.l(18, 5, 0);
+        if (FarmGameEngine.aYP != 100) {
+            GameRuntime.l(18, 5, 1);
+            FarmGameEngine.aZf[i].b(GameRuntime.Qj, i2, i3, i4, 0, FarmGameEngine.aYP);
+            GameRuntime.l(18, 5, 0);
             return;
         }
-        ci.aZf[i].a(GLLib.Qj, i2, (float) i3, (float) i4, 0);
+        FarmGameEngine.aZf[i].a(GameRuntime.Qj, i2, (float) i3, (float) i4, 0);
     }
 
     /* JADX WARN: Code duplicated, block: B:19:0x0048  */
@@ -5768,116 +5768,116 @@ class ch {
         if (this.amu) {
             return false;
         }
-        if (this.Bj != 3 || ci.avP != 1) {
-            if (this.Bj != 5 || GLLib.dy(0) == 3) {
+        if (this.Bj != 3 || FarmGameEngine.avP != 1) {
+            if (this.Bj != 5 || GameRuntime.dy(0) == 3) {
                 return false;
             }
-            ci.a(4, this);
+            FarmGameEngine.a(4, this);
             return true;
         }
-        if (ci.aAY) {
+        if (FarmGameEngine.aAY) {
             return false;
         }
-        String str = "m_countToStore : " + ci.aAX;
+        String str = "m_countToStore : " + FarmGameEngine.aAX;
         int i = this.aoC != 23 ? 3 : 4;
-        if (ci.aZB == 0) {
-            if (fe(3) + ci.hF(5) + i <= ci.Fw()) {
-                if (ci.aZB == 0 && i + ci.hF(5) + ci.aAX > ci.Fw()) {
-                    if (ci.aYS != 1069) {
-                        ci.aAY = true;
-                        ci.c(false, 1, ci.avR);
-                        ci.awH = false;
-                        ci.avP = -1;
-                        if (ci.hF(5) < ci.Fw()) {
-                            strDt = ci.dt(486);
+        if (FarmGameEngine.aZB == 0) {
+            if (fe(3) + FarmGameEngine.hF(5) + i <= FarmGameEngine.Fw()) {
+                if (FarmGameEngine.aZB == 0 && i + FarmGameEngine.hF(5) + FarmGameEngine.aAX > FarmGameEngine.Fw()) {
+                    if (FarmGameEngine.aYS != 1069) {
+                        FarmGameEngine.aAY = true;
+                        FarmGameEngine.c(false, 1, FarmGameEngine.avR);
+                        FarmGameEngine.awH = false;
+                        FarmGameEngine.avP = -1;
+                        if (FarmGameEngine.hF(5) < FarmGameEngine.Fw()) {
+                            strDt = FarmGameEngine.dt(486);
                             if (strDt == null) {
                                 strDt = "";
                             }
-                            String strL = ci.l(strDt, "%slots", "3");
-                            strDt2 = ci.dt(485);
+                            String strL = FarmGameEngine.l(strDt, "%slots", "3");
+                            strDt2 = FarmGameEngine.dt(485);
                             if (strDt2 == null) {
                                 strDt2 = "";
                             }
-                            ci.g(strDt2, strL, 7, 0);
+                            FarmGameEngine.g(strDt2, strL, 7, 0);
                         } else {
-                            ci.H(481, 487, 7, 0);
+                            FarmGameEngine.H(481, 487, 7, 0);
                         }
                         return false;
                     }
                 }
-            } else if (ci.aYS != 1069) {
-                ci.aAY = true;
-                ci.c(false, 1, ci.avR);
-                ci.awH = false;
-                ci.avP = -1;
-                if (ci.hF(5) < ci.Fw()) {
-                    strDt = ci.dt(486);
+            } else if (FarmGameEngine.aYS != 1069) {
+                FarmGameEngine.aAY = true;
+                FarmGameEngine.c(false, 1, FarmGameEngine.avR);
+                FarmGameEngine.awH = false;
+                FarmGameEngine.avP = -1;
+                if (FarmGameEngine.hF(5) < FarmGameEngine.Fw()) {
+                    strDt = FarmGameEngine.dt(486);
                     if (strDt == null) {
                         strDt = "";
                     }
-                    String strL2 = ci.l(strDt, "%slots", "3");
-                    strDt2 = ci.dt(485);
+                    String strL2 = FarmGameEngine.l(strDt, "%slots", "3");
+                    strDt2 = FarmGameEngine.dt(485);
                     if (strDt2 == null) {
                         strDt2 = "";
                     }
-                    ci.g(strDt2, strL2, 7, 0);
+                    FarmGameEngine.g(strDt2, strL2, 7, 0);
                 } else {
-                    ci.H(481, 487, 7, 0);
+                    FarmGameEngine.H(481, 487, 7, 0);
                 }
                 return false;
             }
-        } else if (ci.aZB == 0) {
-            if (ci.aYS != 1069) {
-                ci.aAY = true;
-                ci.c(false, 1, ci.avR);
-                ci.awH = false;
-                ci.avP = -1;
-                if (ci.hF(5) < ci.Fw()) {
-                    strDt = ci.dt(486);
+        } else if (FarmGameEngine.aZB == 0) {
+            if (FarmGameEngine.aYS != 1069) {
+                FarmGameEngine.aAY = true;
+                FarmGameEngine.c(false, 1, FarmGameEngine.avR);
+                FarmGameEngine.awH = false;
+                FarmGameEngine.avP = -1;
+                if (FarmGameEngine.hF(5) < FarmGameEngine.Fw()) {
+                    strDt = FarmGameEngine.dt(486);
                     if (strDt == null) {
                         strDt = "";
                     }
-                    String strL3 = ci.l(strDt, "%slots", "3");
-                    strDt2 = ci.dt(485);
+                    String strL3 = FarmGameEngine.l(strDt, "%slots", "3");
+                    strDt2 = FarmGameEngine.dt(485);
                     if (strDt2 == null) {
                         strDt2 = "";
                     }
-                    ci.g(strDt2, strL3, 7, 0);
+                    FarmGameEngine.g(strDt2, strL3, 7, 0);
                 } else {
-                    ci.H(481, 487, 7, 0);
+                    FarmGameEngine.H(481, 487, 7, 0);
                 }
                 return false;
             }
         }
-        ci.a(1, this);
+        FarmGameEngine.a(1, this);
         return true;
     }
 
     void pb() {
         int i = 50;
         if (this.Bj == 0) {
-            if (GLLib.dB(0)) {
+            if (GameRuntime.dB(0)) {
                 this.alv = this.aol;
                 this.alw = this.aom;
-                this.alx = GLLib.dG(0);
-                this.aly = GLLib.dH(0);
+                this.alx = GameRuntime.dG(0);
+                this.aly = GameRuntime.dH(0);
                 this.alA = true;
-            } else if (this.alB || !GLLib.dC(0) || !this.alA || ci.awH) {
-                if (GLLib.dA(0)) {
-                    if (this.alA && ci.Fb() > 50) {
+            } else if (this.alB || !GameRuntime.dC(0) || !this.alA || FarmGameEngine.awH) {
+                if (GameRuntime.dA(0)) {
+                    if (this.alA && FarmGameEngine.Fb() > 50) {
                         pe();
                     }
                     this.alA = false;
                 }
             } else {
-                this.aol = this.alv + (((this.alx - GLLib.dG(0)) * 100) / ci.aYP);
-                this.aom = this.alw + (((this.aly - GLLib.dH(0)) * 100) / ci.aYP);
-                if (ci.avP == 0 && !ci.awH) {
-                    ci.avP = -1;
-                    ci.c(false, 0, ci.avR);
+                this.aol = this.alv + (((this.alx - GameRuntime.dG(0)) * 100) / FarmGameEngine.aYP);
+                this.aom = this.alw + (((this.aly - GameRuntime.dH(0)) * 100) / FarmGameEngine.aYP);
+                if (FarmGameEngine.avP == 0 && !FarmGameEngine.awH) {
+                    FarmGameEngine.avP = -1;
+                    FarmGameEngine.c(false, 0, FarmGameEngine.avR);
                 }
             }
-            if (!GLLib.dF(0) || !GLLib.dF(1)) {
+            if (!GameRuntime.dF(0) || !GameRuntime.dF(1)) {
                 if (this.alB) {
                     this.alB = false;
                     this.alA = false;
@@ -5885,84 +5885,84 @@ class ch {
                 }
                 return;
             }
-            int iKH = ci.kH() >> 1;
-            int iKI = ci.kI() >> 1;
+            int iKH = FarmGameEngine.kH() >> 1;
+            int iKI = FarmGameEngine.kI() >> 1;
             if (!this.alB) {
                 this.alB = true;
-                this.alz = ci.aYP;
-                this.alC = Math.abs(GLLib.dG(0) - GLLib.dG(1));
-                this.alD = Math.abs(GLLib.dH(0) - GLLib.dH(1));
-                this.alv = this.aol + ((iKH * 100) / ci.aYP);
-                this.alw = this.aom + ((iKI * 100) / ci.aYP);
+                this.alz = FarmGameEngine.aYP;
+                this.alC = Math.abs(GameRuntime.dG(0) - GameRuntime.dG(1));
+                this.alD = Math.abs(GameRuntime.dH(0) - GameRuntime.dH(1));
+                this.alv = this.aol + ((iKH * 100) / FarmGameEngine.aYP);
+                this.alw = this.aom + ((iKI * 100) / FarmGameEngine.aYP);
             }
-            int iAbs = Math.abs(GLLib.dG(0) - GLLib.dG(1));
-            int iAbs2 = Math.abs(GLLib.dH(0) - GLLib.dH(1));
-            int i2 = ci.aYP;
+            int iAbs = Math.abs(GameRuntime.dG(0) - GameRuntime.dG(1));
+            int iAbs2 = Math.abs(GameRuntime.dH(0) - GameRuntime.dH(1));
+            int i2 = FarmGameEngine.aYP;
             if (this.alz + ((int) (((double) (iAbs - this.alC)) * 0.1d)) + ((int) (((double) (iAbs2 - this.alD)) * 0.1d)) >= 50) {
                 i = (this.alz + ((int) (((double) (iAbs - this.alC)) * 0.1d))) + ((int) (((double) (iAbs2 - this.alD)) * 0.1d)) > 100 ? 100 : this.alz + ((int) (((double) (iAbs - this.alC)) * 0.1d)) + ((int) (((double) (iAbs2 - this.alD)) * 0.1d));
             }
-            ci.aYP = i;
-            if (ci.getDeviceName().equals("LG-P700") && ci.aYP <= 65) {
-                ci.aYP = 65;
+            FarmGameEngine.aYP = i;
+            if (FarmGameEngine.getDeviceName().equals("LG-P700") && FarmGameEngine.aYP <= 65) {
+                FarmGameEngine.aYP = 65;
             }
-            if (i2 != ci.aYP) {
-                this.aol = this.alv - ((iKH * 100) / ci.aYP);
-                this.aom = this.alw - ((iKI * 100) / ci.aYP);
+            if (i2 != FarmGameEngine.aYP) {
+                this.aol = this.alv - ((iKH * 100) / FarmGameEngine.aYP);
+                this.aom = this.alw - ((iKI * 100) / FarmGameEngine.aYP);
             }
         }
     }
 
     void pc() {
-        if (this.Bj == 0 && GLLib.dC(0)) {
-            if (GLLib.dG(0) < 40) {
-                this.aol -= GLLib.Qy * 1;
-            } else if (GLLib.dG(0) > GLLib.kH() - 40) {
-                this.aol += GLLib.Qy * 1;
+        if (this.Bj == 0 && GameRuntime.dC(0)) {
+            if (GameRuntime.dG(0) < 40) {
+                this.aol -= GameRuntime.Qy * 1;
+            } else if (GameRuntime.dG(0) > GameRuntime.kH() - 40) {
+                this.aol += GameRuntime.Qy * 1;
             }
-            if (GLLib.dH(0) < 40) {
-                this.aom -= GLLib.Qy * 1;
-            } else if (GLLib.dH(0) > GLLib.kI() - 40) {
-                this.aom += GLLib.Qy * 1;
+            if (GameRuntime.dH(0) < 40) {
+                this.aom -= GameRuntime.Qy * 1;
+            } else if (GameRuntime.dH(0) > GameRuntime.kI() - 40) {
+                this.aom += GameRuntime.Qy * 1;
             }
         }
     }
 
     boolean oZ() {
         boolean z;
-        if (this.Bj == 3 || ci.aCg != 0 || ci.Fb() >= 50) {
+        if (this.Bj == 3 || FarmGameEngine.aCg != 0 || FarmGameEngine.Fb() >= 50) {
             return false;
         }
         int[] iArr = new int[2];
-        int[] iArr2 = {GLLib.dG(0), GLLib.dH(0)};
-        ci.c(iArr2, iArr);
-        ci.f(iArr, iArr2);
-        if (!GLLib.dA(0) || ci.avD != -1) {
-            if (ci.aZB != 0 || ci.awX != 0 || !GLLib.dF(0) || ci.hB(ci.bE(iArr2[0], iArr2[1])) || ci.bE(iArr2[0], iArr2[1]) <= 0 || ci.avD != -1) {
+        int[] iArr2 = {GameRuntime.dG(0), GameRuntime.dH(0)};
+        FarmGameEngine.c(iArr2, iArr);
+        FarmGameEngine.f(iArr, iArr2);
+        if (!GameRuntime.dA(0) || FarmGameEngine.avD != -1) {
+            if (FarmGameEngine.aZB != 0 || FarmGameEngine.awX != 0 || !GameRuntime.dF(0) || FarmGameEngine.hB(FarmGameEngine.bE(iArr2[0], iArr2[1])) || FarmGameEngine.bE(iArr2[0], iArr2[1]) <= 0 || FarmGameEngine.avD != -1) {
                 return false;
             }
-            int iBE = ci.bE(iArr2[0], iArr2[1]);
-            if (ci.bE(iArr2[0], iArr2[1]) <= 0 || ci.aYR != -1 || ci.ayM != null) {
+            int iBE = FarmGameEngine.bE(iArr2[0], iArr2[1]);
+            if (FarmGameEngine.bE(iArr2[0], iArr2[1]) <= 0 || FarmGameEngine.currentTutorialStepIndex != -1 || FarmGameEngine.ayM != null) {
                 return false;
             }
-            String str = "pressed expandable area... quest 1:" + ci.lM(ci.aZQ[0]) + ",q2:" + ci.lM(ci.aZQ[1]);
-            ci.ayJ = iBE;
-            ci.aze = true;
+            String str = "pressed expandable area... quest 1:" + FarmGameEngine.lM(FarmGameEngine.aZQ[0]) + ",q2:" + FarmGameEngine.lM(FarmGameEngine.aZQ[1]);
+            FarmGameEngine.ayJ = iBE;
+            FarmGameEngine.aze = true;
             return false;
         }
-        if (ci.bD(iArr2[0], iArr2[1])) {
-            aI(GLLib.dG(0), GLLib.dH(0));
+        if (FarmGameEngine.bD(iArr2[0], iArr2[1])) {
+            aI(GameRuntime.dG(0), GameRuntime.dH(0));
             return true;
         }
-        if (ci.aZB != 0 || ci.awX != 0 || ci.bE(iArr2[0], iArr2[1]) <= 0 || ci.hh(ci.aYS)) {
+        if (FarmGameEngine.aZB != 0 || FarmGameEngine.awX != 0 || FarmGameEngine.bE(iArr2[0], iArr2[1]) <= 0 || FarmGameEngine.hh(FarmGameEngine.aYS)) {
             return false;
         }
-        int iBE2 = ci.bE(iArr2[0], iArr2[1]);
+        int iBE2 = FarmGameEngine.bE(iArr2[0], iArr2[1]);
         String str2 = "clickGridPos[0] : " + iArr2[0] + " clickGridPos[1] : " + iArr2[1];
         String str3 = "Grid_GetZoneNumber : " + iBE2;
-        if (iBE2 < 1 || ci.ayK[iBE2]) {
+        if (iBE2 < 1 || FarmGameEngine.ayK[iBE2]) {
             return false;
         }
-        ch[] chVarArr = new ch[10];
+        FarmEntity[] chVarArr = new FarmEntity[10];
         a(3, 47, chVarArr, 10);
         int i = 0;
         while (true) {
@@ -5977,27 +5977,27 @@ class ch {
             }
             i++;
         }
-        if (ci.aYR != -1 || ci.ayM != null || z) {
+        if (FarmGameEngine.currentTutorialStepIndex != -1 || FarmGameEngine.ayM != null || z) {
             return false;
         }
-        int iLz = ci.Lz();
-        if (iLz == -1 || ci.aTH) {
-            ci.ayJ = iBE2;
-            ci.fE(13);
+        int iLz = FarmGameEngine.Lz();
+        if (iLz == -1 || FarmGameEngine.aTH) {
+            FarmGameEngine.ayJ = iBE2;
+            FarmGameEngine.fE(13);
             return false;
         }
-        ci.aVF = iLz;
-        ci.fE(27);
-        ci.awC = false;
-        ci.awD = (char) 0;
-        ci.e(1, 54, false);
-        ci.f(1, 54, false);
+        FarmGameEngine.aVF = iLz;
+        FarmGameEngine.fE(27);
+        FarmGameEngine.awC = false;
+        FarmGameEngine.awD = (char) 0;
+        FarmGameEngine.e(1, 54, false);
+        FarmGameEngine.f(1, 54, false);
         return false;
     }
 
     boolean oY() {
         int[] iArr = new int[2];
-        ci.c(new int[]{GLLib.dG(0), GLLib.dH(0)}, iArr);
+        FarmGameEngine.c(new int[]{GameRuntime.dG(0), GameRuntime.dH(0)}, iArr);
         if (aH(iArr[0], iArr[1])) {
             String str = "#HOAN clickWorldPos m_x-x TRUE:" + (this.aol - iArr[0]) + " m_y-y:" + (this.aom - iArr[1]);
             return true;
@@ -6009,25 +6009,25 @@ class ch {
     boolean qi() {
         int[] iArr = new int[2];
         int[] iArr2 = {this.aol, this.aom};
-        ci.f(iArr2, iArr);
+        FarmGameEngine.f(iArr2, iArr);
         iArr[0] = iArr[0] - (this.aoy >> 1);
         iArr[1] = iArr[1] - (this.aoz >> 1);
-        int[] iArr3 = {GLLib.dG(0), GLLib.dH(0)};
-        ci.c(iArr3, iArr2);
-        ci.f(iArr2, iArr3);
+        int[] iArr3 = {GameRuntime.dG(0), GameRuntime.dH(0)};
+        FarmGameEngine.c(iArr3, iArr2);
+        FarmGameEngine.f(iArr2, iArr3);
         return iArr3[0] >= iArr[0] && iArr3[0] < iArr[0] + this.aoy && iArr3[1] >= iArr[1] && iArr3[1] < iArr[1] + this.aoz;
     }
 
     boolean qj() {
         if (this.aoG != -1 && this.aoH != -1 && (this.aoG & (-65536)) == 0) {
-            if (((this.aoG & 32768) != 0 ? ci.atf[this.aoG & 32767].bG(this.aoH) : ci.aZf[this.aoG].bG(this.aoH)) > 0) {
+            if (((this.aoG & 32768) != 0 ? FarmGameEngine.atf[this.aoG & 32767].bG(this.aoH) : FarmGameEngine.aZf[this.aoG].bG(this.aoH)) > 0) {
                 int[] iArr = new int[4];
                 int[] iArr2 = new int[2];
-                ci.c(new int[]{GLLib.dG(0), GLLib.dH(0)}, iArr2);
+                FarmGameEngine.c(new int[]{GameRuntime.dG(0), GameRuntime.dH(0)}, iArr2);
                 if ((this.aoG & 32768) != 0) {
-                    ci.atf[this.aoG & 32767].a(this.aoH, 0, iArr, 0);
+                    FarmGameEngine.atf[this.aoG & 32767].a(this.aoH, 0, iArr, 0);
                 } else {
-                    ci.aZf[this.aoG].a(this.aoH, 0, iArr, 0);
+                    FarmGameEngine.aZf[this.aoG].a(this.aoH, 0, iArr, 0);
                 }
                 int i = this.aol + iArr[0];
                 int i2 = this.aom + iArr[1];

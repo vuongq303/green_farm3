@@ -1,0 +1,19 @@
+test_actual_snapshot_and_original_settlement (test_pending_reward_state.PendingRewardStateTest.test_actual_snapshot_and_original_settlement) ... ok
+test_actual_helper_and_original_pose_codec (test_entity_pose_state.EntityPoseStateTest.test_actual_helper_and_original_pose_codec) ... ok
+test_original_building_codec_and_lazy_sprite_update (test_entity_pose_state.EntityPoseStateTest.test_original_building_codec_and_lazy_sprite_update)
+Building 17 has a periodic sprite, absent immediately after ci.s. ... ok
+test_original_bytecode_matches_converted_models (test_kotlin_medium_models.KotlinMediumModelsTest.test_original_bytecode_matches_converted_models) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 30.109s
+
+OK
+PASS pending reward snapshots, original settlement once, cold load, chest stage, malformed records, rollback and retry
+PASS entity transforms, original reversed allocation/grid codec, duplicate occurrences, aaN vs aaR, malformed/mismatch atomicity and retry
+PASS original FarmGameEngine.c/FarmGameEngine.s building codec, FarmEntity.d initializer, periodic FarmEntity.pf allocation and FarmEntity.mg restore hook
+PASS medium Kotlin differential matrix ed3e72037f28b8c54fb865d048bef2f293ffdb60a088d75fec147cf12591c8f7
+PASS medium Kotlin differential random b35f9ef5f2b8487d3ad0f46ef36fd02484ff8408b6d4cb8da3107e7e34dcb055
+PASS medium Kotlin differential cloud f8ca7cb4f26c37fd7736af7020451e02db13fca88895bdc31dd90277111cafd7
+PASS medium Kotlin differential profiler d175c7dfe28c7f27dbc2cfcd85e4da2bb5f4fefedfd0102bd92f5ad761ace8da
+PASS medium Kotlin differential tables 118e1f38c49cfd8dc33e706bfb2ebce4e2e6988ef11db58e5bbbd16e83a3b6ca
+PASS medium Kotlin differential ads ecf46938b228574ba3ab504cd4eec3f1e620b56a66d24fce02269d5bd4b6bc30

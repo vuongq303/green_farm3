@@ -118,7 +118,7 @@ public class am implements Runnable {
         this.BF = 256;
         this.acC = z;
         bR("application/x-www-form-urlencoded");
-        GLLib.c(!z, "modifyPostRequest==true seems like not used anymore, so it's deprecated. Please mail to World-GLLib if you need this.");
+        GameRuntime.c(!z, "modifyPostRequest==true seems like not used anymore, so it's deprecated. Please mail to World-GLLib if you need this.");
         bP("" + hashCode());
     }
 
@@ -137,7 +137,7 @@ public class am implements Runnable {
         }
         if (this.acD != null) {
             if (w.XZ) {
-                GLLib.b("HTTP:[" + this.acJ + "]: cancel", "HTTP", 3);
+                GameRuntime.b("HTTP:[" + this.acJ + "]: cancel", "HTTP", 3);
             }
             if (this.BK != null) {
                 try {
@@ -186,11 +186,11 @@ public class am implements Runnable {
         if (w.Vf) {
         }
         if (w.XZ) {
-            GLLib.b("HTTP:[" + this.acJ + "]: " + new String[]{"GET", "POST", "DELETE"}[i] + ": url [" + str + "] [" + str2 + "] ", "HTTP", 3);
+            GameRuntime.b("HTTP:[" + this.acJ + "]: " + new String[]{"GET", "POST", "DELETE"}[i] + ": url [" + str + "] [" + str2 + "] ", "HTTP", 3);
         }
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         this.acB = jCurrentTimeMillis;
         mq();
@@ -233,7 +233,7 @@ public class am implements Runnable {
     public void run() {
         if (this.BH == null) {
             if (w.XZ) {
-                GLLib.b("HTTP:[" + this.acJ + "]: run: URL is null", "HTTP", 3);
+                GameRuntime.b("HTTP:[" + this.acJ + "]: run: URL is null", "HTTP", 3);
             }
             cancel();
             this.BT = true;
@@ -242,7 +242,7 @@ public class am implements Runnable {
         }
         if (this.acE == 1 && this.BI == null) {
             if (w.XZ) {
-                GLLib.b("HTTP:[" + this.acJ + "]: run: Query is null", "HTTP", 3);
+                GameRuntime.b("HTTP:[" + this.acJ + "]: run: Query is null", "HTTP", 3);
             }
             cancel();
             this.BT = true;
@@ -253,12 +253,12 @@ public class am implements Runnable {
             try {
                 this.BT = false;
                 if (w.XZ) {
-                    GLLib.b("HTTP:[" + this.acJ + "]: run:connecting to [" + this.BH + "]", "HTTP", 3);
+                    GameRuntime.b("HTTP:[" + this.acJ + "]: run:connecting to [" + this.BH + "]", "HTTP", 3);
                 }
                 if (this.BS) {
                     this.BR = false;
                     if (w.XZ) {
-                        GLLib.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
+                        GameRuntime.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
                     }
                     if (!this.acF) {
                         cancel();
@@ -266,10 +266,10 @@ public class am implements Runnable {
                     this.acF = false;
                     return;
                 }
-                String strBy = GLLib.by(this.BH);
-                String strBA = GLLib.bA(this.BH);
-                String strBC = GLLib.bC(this.BH);
-                String strBB = GLLib.bB(this.BH);
+                String strBy = GameRuntime.by(this.BH);
+                String strBA = GameRuntime.bA(this.BH);
+                String strBC = GameRuntime.bC(this.BH);
+                String strBB = GameRuntime.bB(this.BH);
                 if (strBC == null) {
                     strBC = "https".equals(strBy) ? "443" : "80";
                 }
@@ -301,7 +301,7 @@ public class am implements Runnable {
                         String str = (String) enumerationKeys.nextElement();
                         String str2 = (String) this.acL.get(str);
                         this.acD.setRequestProperty(str, str2);
-                        GLLib.b("HTTP:[" + this.acJ + "]: Set header field " + str + ":" + str2, "HTTP", 3);
+                        GameRuntime.b("HTTP:[" + this.acJ + "]: Set header field " + str + ":" + str2, "HTTP", 3);
                     }
                     mo();
                 }
@@ -314,7 +314,7 @@ public class am implements Runnable {
                     this.BL.flush();
                 }
                 if (w.XZ) {
-                    GLLib.b("HTTP:[" + this.acJ + "]: run: receive", "HTTP", 3);
+                    GameRuntime.b("HTTP:[" + this.acJ + "]: run: receive", "HTTP", 3);
                 }
                 this.Bg = this.acD.getResponseCode();
                 this.acH = this.acD.getResponseMessage();
@@ -324,7 +324,7 @@ public class am implements Runnable {
                     this.acF = true;
                     c(this.acD.getHeaderField("Location"), this.BI, this.acE);
                     if (w.XZ) {
-                        GLLib.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
+                        GameRuntime.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
                     }
                     if (!this.acF) {
                         cancel();
@@ -338,7 +338,7 @@ public class am implements Runnable {
                         String headerField = this.acD.getHeaderField(str4);
                         if (headerField != null) {
                             if (w.XZ) {
-                                GLLib.b("HTTP:[" + this.acJ + "]: Get header field " + str4 + ":" + headerField, "HTTP", 3);
+                                GameRuntime.b("HTTP:[" + this.acJ + "]: Get header field " + str4 + ":" + headerField, "HTTP", 3);
                             }
                             this.acN.put(str4, headerField);
                         }
@@ -347,14 +347,14 @@ public class am implements Runnable {
                 }
                 if (this.Bg != 200 && this.Bg != 202) {
                     if (w.XZ) {
-                        GLLib.b("HTTP:[" + this.acJ + "]:  Error: response code: " + this.Bg, "HTTP", 3);
-                        GLLib.b("HTTP:[" + this.acJ + "]:  Error: message: " + this.acH, "HTTP", 3);
+                        GameRuntime.b("HTTP:[" + this.acJ + "]:  Error: response code: " + this.Bg, "HTTP", 3);
+                        GameRuntime.b("HTTP:[" + this.acJ + "]:  Error: message: " + this.acH, "HTTP", 3);
                     }
                     cancel();
                     this.BT = true;
                     this.BR = false;
                     if (w.XZ) {
-                        GLLib.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
+                        GameRuntime.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
                     }
                     if (!this.acF) {
                         cancel();
@@ -365,7 +365,7 @@ public class am implements Runnable {
                 if (this.BS) {
                     this.BR = false;
                     if (w.XZ) {
-                        GLLib.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
+                        GameRuntime.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
                     }
                     if (!this.acF) {
                         cancel();
@@ -393,7 +393,7 @@ public class am implements Runnable {
                     if (this.BS) {
                         this.BR = false;
                         if (w.XZ) {
-                            GLLib.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
+                            GameRuntime.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
                         }
                         if (!this.acF) {
                             cancel();
@@ -404,12 +404,12 @@ public class am implements Runnable {
                     if (w.XP) {
                         long jCurrentTimeMillis = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         if (jCurrentTimeMillis - this.acB > w.XQ) {
                             cancel();
                             if (w.XZ) {
-                                GLLib.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
+                                GameRuntime.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
                             }
                             if (!this.acF) {
                                 cancel();
@@ -443,16 +443,16 @@ public class am implements Runnable {
                             this.BW = i6;
                             i2 = i6;
                         } else if (w.XZ) {
-                            GLLib.b("HTTP:[" + this.acJ + "]: run: file size [ " + this.BP.length + " ] is smaller than the file received [ " + (i2 + i3) + " ]", "HTTP", 3);
+                            GameRuntime.b("HTTP:[" + this.acJ + "]: run: file size [ " + this.BP.length + " ] is smaller than the file received [ " + (i2 + i3) + " ]", "HTTP", 3);
                         }
                     }
                 }
                 if (w.XZ) {
                     if (this.acG) {
-                        GLLib.b("HTTP:[" + this.acJ + "]: run: total bytes read: [" + i2 + "]", "HTTP", 3);
+                        GameRuntime.b("HTTP:[" + this.acJ + "]: run: total bytes read: [" + i2 + "]", "HTTP", 3);
                     } else {
-                        GLLib.b("HTTP:[" + this.acJ + "]: run: received [" + byteArrayOutputStream.toString() + "]", "HTTP", 3);
-                        GLLib.b("HTTP:[" + this.acJ + "]: run: total bytes read: [" + byteArrayOutputStream.size() + "]", "HTTP", 3);
+                        GameRuntime.b("HTTP:[" + this.acJ + "]: run: received [" + byteArrayOutputStream.toString() + "]", "HTTP", 3);
+                        GameRuntime.b("HTTP:[" + this.acJ + "]: run: total bytes read: [" + byteArrayOutputStream.size() + "]", "HTTP", 3);
                     }
                 }
                 if (!this.acG) {
@@ -460,7 +460,7 @@ public class am implements Runnable {
                     this.BM = new String(this.BP, AndroidWebView.UTF_8);
                 }
                 if (w.XZ) {
-                    GLLib.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
+                    GameRuntime.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
                 }
                 if (!this.acF) {
                     cancel();
@@ -468,14 +468,14 @@ public class am implements Runnable {
                 this.acF = false;
             } catch (Exception e) {
                 if (w.XZ) {
-                    GLLib.b("HTTP:[" + this.acJ + "]: run: exception : " + e.toString(), "HTTP", 3);
-                    GLLib.d(e);
+                    GameRuntime.b("HTTP:[" + this.acJ + "]: run: exception : " + e.toString(), "HTTP", 3);
+                    GameRuntime.d(e);
                 }
                 this.BT = true;
                 this.BR = false;
                 e(e);
                 if (w.XZ) {
-                    GLLib.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
+                    GameRuntime.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
                 }
                 if (!this.acF) {
                     cancel();
@@ -484,7 +484,7 @@ public class am implements Runnable {
             }
         } catch (Throwable th) {
             if (w.XZ) {
-                GLLib.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
+                GameRuntime.b("HTTP:[" + this.acJ + "]: run: finally", "HTTP", 3);
             }
             if (!this.acF) {
                 cancel();

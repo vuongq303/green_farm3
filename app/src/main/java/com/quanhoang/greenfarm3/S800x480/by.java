@@ -118,8 +118,8 @@ class by extends Thread {
                 }
                 this.akK = false;
                 if (w.XX) {
-                    GLLib.b("TCP: recv exception: " + failure.toString(), "TCP", 6);
-                    GLLib.d(failure);
+                    GameRuntime.b("TCP: recv exception: " + failure.toString(), "TCP", 6);
+                    GameRuntime.d(failure);
                 }
             }
         }
@@ -185,7 +185,7 @@ class by extends Thread {
         this.akN = new byte[0];
         this.akM = 0;
         if (w.XX) {
-            GLLib.b("TCPRecv: Starting receiver", "TCP", 3);
+            GameRuntime.b("TCPRecv: Starting receiver", "TCP", 3);
         }
         while (this.akK) {
             int length;
@@ -214,7 +214,7 @@ class by extends Thread {
                 this.akJ.addElement(bytes);
             }
             if (w.XX) {
-                GLLib.b("TCPRecv: Received " + length + " bytes packet:" + new String(bytes), "TCP", 3);
+                GameRuntime.b("TCPRecv: Received " + length + " bytes packet:" + new String(bytes), "TCP", 3);
             }
             try {
                 sleep(300L);

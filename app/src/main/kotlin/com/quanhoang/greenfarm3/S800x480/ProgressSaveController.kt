@@ -45,7 +45,7 @@ object ProgressSaveController {
         val language: Int,
         val completion: LanguageRestartController.SaveCompletion
     ) {
-        val previousLanguage = ci.aYU
+        val previousLanguage = FarmGameEngine.aYU
         var sequence = 0L
         var preferencePhase = false
         var preferenceCommitted = false
@@ -106,8 +106,8 @@ object ProgressSaveController {
         languageCheckpoint == null
 
     private fun worldEligible(): Boolean {
-        val engineState = ci.qD()
-        return worldReady && !loadBlocked && ci.avD == -1 && engineState != -1 &&
+        val engineState = FarmGameEngine.currentEngineState()
+        return worldReady && !loadBlocked && FarmGameEngine.avD == -1 && engineState != -1 &&
             engineState != 1 && engineState != 2 && engineState != 4
     }
 
@@ -153,10 +153,10 @@ object ProgressSaveController {
             GameSaveStore.initialize()
             GameSaveStore.beginLoading()
             if (failedLoadStep == 47) {
-                ch.oL()
-                ci.aZi = null
-                ci.aZj = null
-                ci.FN()
+                FarmEntity.oL()
+                FarmGameEngine.aZi = null
+                FarmGameEngine.aZj = null
+                FarmGameEngine.FN()
                 EntityPoseState.resetForLoad()
                 PendingRewardState.resetForLoad()
             }
@@ -228,7 +228,7 @@ object ProgressSaveController {
             !hasPendingChanges() && legacyCallbackSequence < durableRequestSequence) {
             legacyCallbackSequence = durableRequestSequence
             try {
-                ci.progressSaveCommitted()
+                FarmGameEngine.progressSaveCommitted()
             } catch (legacyFailure: RuntimeException) {
                 Log.w("GreenFarmSave", "legacy_save_callback_failed", legacyFailure)
             }
@@ -269,10 +269,10 @@ object ProgressSaveController {
     private fun observeChanges(now: Long) {
         // Transfer dirty flags to a monotonic request before clearing them.
         // Commit A must never clear changes accepted while A was writing.
-        if (ci.baa || ci.bab) {
+        if (FarmGameEngine.hasUnsavedGameChanges || FarmGameEngine.bab) {
             requestedSequence.incrementAndGet()
-            ci.bab = false
-            ci.baa = false
+            FarmGameEngine.bab = false
+            FarmGameEngine.hasUnsavedGameChanges = false
         }
         val current = requestedSequence.get()
         if (current != lastObservedRequestSequence) {
@@ -288,13 +288,13 @@ object ProgressSaveController {
         lastCaptureAttemptUptimeMillis = SystemClock.uptimeMillis()
         snapshotBoundary = true
         forcedCheckpoint = force
-        val previousLanguage = ci.aYU
+        val previousLanguage = FarmGameEngine.aYU
         try {
             if (checkpoint is LanguageCheckpoint && checkpoint.preferencePhase) {
-                ci.aYU = checkpoint.language
+                FarmGameEngine.aYU = checkpoint.language
             }
-            GameSaveStore.beginCapture(ci.aZB == 0)
-            if (ci.aZB == 0) ci.av(false) else ci.rs()
+            GameSaveStore.beginCapture(FarmGameEngine.aZB == 0)
+            if (FarmGameEngine.aZB == 0) FarmGameEngine.av(false) else FarmGameEngine.rs()
             val snapshot = GameSaveStore.finishCapture()
             sqliteWriteQueue!!.submit(snapshot, sequence, checkpoint)
             batchPolicy.captured()
@@ -313,7 +313,7 @@ object ProgressSaveController {
             Log.e("GreenFarmSave", "capture_failed", failure)
             return -1L
         } finally {
-            ci.aYU = previousLanguage
+            FarmGameEngine.aYU = previousLanguage
             forcedCheckpoint = false
             snapshotBoundary = false
         }
@@ -409,21 +409,21 @@ object ProgressSaveController {
 
     @JvmStatic
     fun checkpointBeforeMove() {
-        synchronized(ci::class.java) {
-            val previousMoveMode = ci.avD
-            if (previousMoveMode == 3 && ci.avE == null) ci.avD = -1
+        synchronized(FarmGameEngine::class.java) {
+            val previousMoveMode = FarmGameEngine.avD
+            if (previousMoveMode == 3 && FarmGameEngine.avE == null) FarmGameEngine.avD = -1
             try {
                 observeChanges(SystemClock.uptimeMillis())
                 capture(true, null)
             } finally {
-                ci.avD = previousMoveMode
+                FarmGameEngine.avD = previousMoveMode
             }
         }
     }
 
     @JvmStatic
-    fun flushForLifecycle(): Boolean = synchronized(ci::class.java) {
-        ci.cancelMovePreviewForInterruption()
+    fun flushForLifecycle(): Boolean = synchronized(FarmGameEngine::class.java) {
+        FarmGameEngine.cancelMovePreviewForInterruption()
         if (sqliteWriteQueue == null) return@synchronized true
         drainCompletions()
         if (languageCheckpoint == null && worldEligible()) {
@@ -436,26 +436,26 @@ object ProgressSaveController {
     }
 
     @JvmStatic
-    fun prepareWorldUnload(): Boolean = synchronized(ci::class.java) {
+    fun prepareWorldUnload(): Boolean = synchronized(FarmGameEngine::class.java) {
         drainCompletions()
         if (loadBlocked || languageCheckpoint != null) return@synchronized false
         if (!worldReady) return@synchronized sqliteWriteQueue?.isIdle() ?: true
-        if (pendingUnloadSaveSequence >= 0L && (pendingUnloadAction != ci.apA || pendingUnloadTargetState != ci.apz ||
-                pendingUnloadStackDepth != ci.apB)) pendingUnloadSaveSequence = -1L
+        if (pendingUnloadSaveSequence >= 0L && (pendingUnloadAction != FarmGameEngine.apA || pendingUnloadTargetState != FarmGameEngine.apz ||
+                pendingUnloadStackDepth != FarmGameEngine.apB)) pendingUnloadSaveSequence = -1L
         if (pendingUnloadSaveSequence >= 0L) {
             observeChanges(SystemClock.uptimeMillis())
             if (!sqliteWriteQueue!!.isIdle() || sqliteWriteQueue!!.durableSequence() < pendingUnloadSaveSequence) return@synchronized false
             if (requestedSequence.get() <= pendingUnloadSaveSequence) return@synchronized true
         }
-        ci.cancelMovePreviewForInterruption()
+        FarmGameEngine.cancelMovePreviewForInterruption()
         if (!canSerialize()) return@synchronized false
-        ch.oM()
+        FarmEntity.oM()
         observeChanges(SystemClock.uptimeMillis())
         pendingUnloadSaveSequence = capture(true, null)
-        pendingUnloadAction = ci.apA
-        pendingUnloadTargetState = ci.apz
-        pendingUnloadStackDepth = ci.apB
-        if (!ci.pendingTransitionUnloadsWorld()) pendingUnloadSaveSequence = -1L
+        pendingUnloadAction = FarmGameEngine.apA
+        pendingUnloadTargetState = FarmGameEngine.apz
+        pendingUnloadStackDepth = FarmGameEngine.apB
+        if (!FarmGameEngine.pendingTransitionUnloadsWorld()) pendingUnloadSaveSequence = -1L
         false // Resume the pending command after its durable acknowledgement.
     }
 
@@ -487,7 +487,7 @@ object ProgressSaveController {
     }
 
     private fun requestLanguageCapture(request: LanguageCheckpoint): Long {
-        ci.cancelMovePreviewForInterruption()
+        FarmGameEngine.cancelMovePreviewForInterruption()
         if (worldEligible()) {
             observeChanges(SystemClock.uptimeMillis())
             lastObservedRequestSequence = requestedSequence.incrementAndGet()
@@ -514,7 +514,7 @@ object ProgressSaveController {
 
     @JvmStatic
     fun hasPendingChanges(): Boolean = requestedSequence.get() > durableRequestSequence ||
-        (sqliteWriteQueue?.let { !it.isIdle() } ?: false) || ci.baa || ci.bab
+        (sqliteWriteQueue?.let { !it.isIdle() } ?: false) || FarmGameEngine.hasUnsavedGameChanges || FarmGameEngine.bab
 
     private fun foregroundActivity(): Activity? = MIDlet.cnz ?: MIDlet.cnA
 }

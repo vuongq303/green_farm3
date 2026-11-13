@@ -43,16 +43,16 @@ open class ah {
             }
         }
         @JvmStatic fun mh() { ao.ms().m("1001", "/InitialFeed.bin", "en") }
-        @JvmStatic fun mi() { ci.qI() }
+        @JvmStatic fun mi() { FarmGameEngine.qI() }
         @JvmStatic fun md() {
-            i.ic().h(GLLib.Qy.toLong())
+            i.ic().h(GameRuntime.Qy.toLong())
             val manager = ao.ms()
             if (manager.mw() && !acv) { acv = true; mi() }
             val updateState = manager.my()
             if (updateState == 0) mi()
             if (updateState == 1) {
                 if (manager.mv() == 0) {
-                    ci.aqB = true
+                    FarmGameEngine.aqB = true
                     mi()
                     val configuration = manager.mu()
                     if (configuration != null) d(configuration)
@@ -78,6 +78,6 @@ open class ah {
             me()
             mf()
         }
-        private fun nowMillis(): Long = if (w.Vl) (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To else System.currentTimeMillis()
+        private fun nowMillis(): Long = if (w.Vl) (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To else System.currentTimeMillis()
     }
 }

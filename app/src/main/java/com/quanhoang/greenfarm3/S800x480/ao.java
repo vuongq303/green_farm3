@@ -79,7 +79,7 @@ public class ao {
             } else {
                 if (this.ade != null) {
                     if ("java.io.IOException".equals(this.ade.getClass().getName()) || "java.net.ConnectException".equals(this.ade.getClass().getName())) {
-                        GLLib.be("No Internet connection");
+                        GameRuntime.be("No Internet connection");
                     }
                     adh = -1;
                     return;
@@ -96,7 +96,7 @@ public class ao {
         }
         Object objCd = new bc(str).cd("expiry");
         if (objCd == null) {
-            GLLib.be("config invalid: missing expiry field");
+            GameRuntime.be("config invalid: missing expiry field");
             return 3;
         }
         String str3 = (String) objCd;
@@ -114,7 +114,7 @@ public class ao {
             c(vector);
             mE();
             try {
-                GLLib.e(str4, bArrB);
+                GameRuntime.e(str4, bArrB);
             } catch (Exception e) {
                 return -6;
             }
@@ -153,30 +153,30 @@ public class ao {
 
     private byte[] a(byte[] bArr, String str) {
         try {
-            byte[] bArrB = GLLib.b(bArr, str, true);
+            byte[] bArrB = GameRuntime.b(bArr, str, true);
             if (bArrB == null) {
                 adh = -3;
                 return null;
             }
-            int iL = GLLib.l(bArrB, 0);
+            int iL = GameRuntime.l(bArrB, 0);
             byte[] bArr2 = new byte[(bArrB.length - iL) - 4];
-            GLLib.b(bArrB, iL + 4, bArr2);
+            GameRuntime.b(bArrB, iL + 4, bArr2);
             try {
                 new String(bArr2, "ISO-8859-1");
                 byte[] bArr3 = new byte[iL + 4];
                 System.arraycopy(bArrB, 0, bArr3, 0, bArr3.length);
-                GLLib.kM();
+                GameRuntime.kM();
                 try {
-                    GLLib.A(new String(bArr3, "ISO-8859-1"), "ISO-8859-1");
+                    GameRuntime.A(new String(bArr3, "ISO-8859-1"), "ISO-8859-1");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
                 try {
-                    GLLib.kP();
+                    GameRuntime.kP();
                 } catch (Exception e2) {
                 }
                 byte[] bArr4 = new byte[iL];
-                GLLib.b(bArr3, 4, bArr4);
+                GameRuntime.b(bArr3, 4, bArr4);
                 adh = 0;
                 return bArr4;
             } catch (Exception e3) {
@@ -192,33 +192,33 @@ public class ao {
         String strKP;
         int length = bArr.length;
         byte[] bArr2 = new byte[length + 4];
-        GLLib.d(bArr2, 0, length);
-        GLLib.a(bArr2, 4, bArr);
-        GLLib.kM();
+        GameRuntime.d(bArr2, 0, length);
+        GameRuntime.a(bArr2, 4, bArr);
+        GameRuntime.kM();
         try {
-            GLLib.A(new String(bArr2, "ISO-8859-1"), "ISO-8859-1");
+            GameRuntime.A(new String(bArr2, "ISO-8859-1"), "ISO-8859-1");
             try {
-                strKP = GLLib.kP();
+                strKP = GameRuntime.kP();
             } catch (Exception e) {
                 strKP = null;
             }
             try {
                 byte[] bytes = strKP.getBytes("ISO-8859-1");
                 byte[] bArr3 = new byte[length + 4 + bytes.length];
-                GLLib.d(bArr3, 0, length);
-                GLLib.a(bArr3, 4, bArr);
-                GLLib.a(bArr3, length + 4, bytes);
+                GameRuntime.d(bArr3, 0, length);
+                GameRuntime.a(bArr3, 4, bArr);
+                GameRuntime.a(bArr3, length + 4, bytes);
                 try {
-                    return GLLib.a(bArr3, str, true);
+                    return GameRuntime.a(bArr3, str, true);
                 } catch (Exception e2) {
-                    GLLib.be("Hestia encrypt config fail");
+                    GameRuntime.be("Hestia encrypt config fail");
                     return null;
                 }
             } catch (Exception e3) {
                 return null;
             }
         } catch (UnsupportedEncodingException e4) {
-            GLLib.be(e4.toString());
+            GameRuntime.be(e4.toString());
             return null;
         }
     }
@@ -335,7 +335,7 @@ public class ao {
     private int ey(int i) {
         while (i < acV.size()) {
             try {
-                GLLib.bG((String) ((Vector) acV.elementAt(i)).elementAt(1));
+                GameRuntime.bG((String) ((Vector) acV.elementAt(i)).elementAt(1));
             } catch (Exception e) {
             }
             acV.removeElementAt(i);
@@ -358,9 +358,9 @@ public class ao {
 
     private void mB() throws Exception {
         if (this.adi) {
-            GLLib.be("Config Refresh Failed");
+            GameRuntime.be("Config Refresh Failed");
         } else {
-            GLLib.be("Configs Succesfully Refreshed");
+            GameRuntime.be("Configs Succesfully Refreshed");
         }
         if (this.adl) {
             ms().mD();
@@ -391,7 +391,7 @@ public class ao {
             return -2;
         }
         try {
-            GLLib.e("filesConfig", bArrB);
+            GameRuntime.e("filesConfig", bArrB);
             return 0;
         } catch (Exception e) {
             return -6;
@@ -399,7 +399,7 @@ public class ao {
     }
 
     private int mF() {
-        byte[] bArrBF = GLLib.bF("filesConfig");
+        byte[] bArrBF = GameRuntime.bF("filesConfig");
         if (bArrBF == null) {
             return -7;
         }
@@ -469,7 +469,7 @@ public class ao {
                 inputStreamA.read(bArr);
                 inputStreamA.close();
             } catch (Exception e) {
-                GLLib.be("Error in read file default game config");
+                GameRuntime.be("Error in read file default game config");
             }
         } catch (Exception e2) {
             bArr = null;
@@ -751,7 +751,7 @@ public class ao {
             Vector vector = (Vector) acV.elementAt(i);
             if (Long.parseLong((String) vector.elementAt(0)) < jIR) {
                 try {
-                    GLLib.bG((String) vector.elementAt(1));
+                    GameRuntime.bG((String) vector.elementAt(1));
                 } catch (Exception e) {
                 }
                 acV.removeElementAt(i);
@@ -763,7 +763,7 @@ public class ao {
     }
 
     public String mI() {
-        byte[] bArrBF = GLLib.bF((String) ((Vector) acV.elementAt(0)).elementAt(1));
+        byte[] bArrBF = GameRuntime.bF((String) ((Vector) acV.elementAt(0)).elementAt(1));
         if (bArrBF == null) {
             adh = -5;
             return null;

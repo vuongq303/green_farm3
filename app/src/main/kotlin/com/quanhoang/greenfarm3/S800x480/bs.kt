@@ -11,7 +11,7 @@ open class bs : Random(0L) {
     private var outputBytes = ByteArray(akf.im())
     private var outputCounter = 1L
     init {
-        setSeed(if (w.Vl) (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To else System.currentTimeMillis())
+        setSeed(if (w.Vl) (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To else System.currentTimeMillis())
     }
     override fun nextBytes(bytes: ByteArray?) { h(bytes) }
     override fun setSeed(seed: Long) {

@@ -4,7 +4,7 @@ class cj : Runnable {
     override fun run() {
         val anonymousId = s.iY()
         val anonymousPassword = s.aR(anonymousId)
-        s.f(if (GLLib.jr() != null) GLLib.jr() else "NULL_ID", true)
+        s.f(if (GameRuntime.jr() != null) GameRuntime.jr() else "NULL_ID", true)
         s.aX(GloftGF2F.acx!!.bY("GAME-PRODUCT-ID"))
         s.aY(GloftGF2F.acx!!.bY("GAME-GGI"))
         s.aZ(GloftGF2F.acx!!.bY("MIDlet-Version"))

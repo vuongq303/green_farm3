@@ -38,12 +38,12 @@ class i {
     }
 
     private int a(bc bcVar, String str) {
-        GLLib.be("Call function: LogEventViaGLOT. Param: " + bcVar.toString());
+        GameRuntime.be("Call function: LogEventViaGLOT. Param: " + bcVar.toString());
         return 0;
     }
 
     public boolean a(boolean z, bc bcVar) throws JSONException {
-        GLLib.be("Call function: ALogEventCallback. Param: " + bcVar.toString());
+        GameRuntime.be("Call function: ALogEventCallback. Param: " + bcVar.toString());
         if (bcVar.cb(ShareConstants.WEB_DIALOG_PARAM_DATA)) {
             bc bcVar2 = (bc) bcVar.cd(ShareConstants.WEB_DIALOG_PARAM_DATA);
             if (!bcVar2.cb("pointcut_id") || bcVar2.cd("pointcut_id").toString().equals("")) {
@@ -59,10 +59,10 @@ class i {
     }
 
     private boolean b(boolean z, bc bcVar) throws JSONException {
-        GLLib.be("Call function: GlotWrapperCallback. Param: " + bcVar.toString());
+        GameRuntime.be("Call function: GlotWrapperCallback. Param: " + bcVar.toString());
         try {
             if (com.gameloft.android2d.d.b.Qm() == null) {
-                GLLib.be("TrackingManager.GetManager(): null");
+                GameRuntime.be("TrackingManager.GetManager(): null");
                 return false;
             }
             if (!bcVar.cb("type")) {
@@ -110,8 +110,8 @@ class i {
             }
             return true;
         } catch (NoClassDefFoundError e2) {
-            GLLib.be(e2.toString());
-            GLLib.be("Call function: GlotWrapperCallback: Please enable GLOTv3 feature in Java-Android Wrapper(SET USE_GLOT3=1).");
+            GameRuntime.be(e2.toString());
+            GameRuntime.be("Call function: GlotWrapperCallback: Please enable GLOTv3 feature in Java-Android Wrapper(SET USE_GLOT3=1).");
             return false;
         }
     }
@@ -248,7 +248,7 @@ class i {
                     bcVarArr[i].a("json", (String) this.KP.elementAt(i));
                 }
                 bcVar.a(ShareConstants.WEB_DIALOG_PARAM_DATA, bcVarArr);
-                GLLib.e(KQ, bcVar.toString().getBytes());
+                GameRuntime.e(KQ, bcVar.toString().getBytes());
             } catch (Exception e) {
                 return -32;
             }
@@ -258,7 +258,7 @@ class i {
 
     private int ii() throws Exception {
         bc[] bcVarArrCj;
-        byte[] bArrBF = GLLib.bF(KQ);
+        byte[] bArrBF = GameRuntime.bF(KQ);
         if (bArrBF == null) {
             return -33;
         }
@@ -309,7 +309,7 @@ class i {
             bcVar.a(ShareConstants.WEB_DIALOG_PARAM_DATA, bcVarArr);
         }
         try {
-            GLLib.e(KS, bcVar.toString().getBytes());
+            GameRuntime.e(KS, bcVar.toString().getBytes());
             return 0;
         } catch (Exception e) {
             return -32;
@@ -320,7 +320,7 @@ class i {
         byte[] bArrBF;
         bc[] bcVarArrCj;
         try {
-            bArrBF = GLLib.bF(KS);
+            bArrBF = GameRuntime.bF(KS);
             if (bArrBF == null) {
                 return -33;
             }
@@ -362,41 +362,41 @@ class i {
     }
 
     private int ay(String str) {
-        GLLib.be("Call function: DownloadOfflineWS. Param: " + str);
+        GameRuntime.be("Call function: DownloadOfflineWS. Param: " + str);
         try {
             com.gameloft.android2d.g.a.mY(0);
             com.gameloft.android2d.g.a.x(str, KJ);
             com.gameloft.android2d.g.a.mY(1);
         } catch (NoClassDefFoundError e) {
-            GLLib.be(e.toString());
-            GLLib.be("Call function: DownloadOfflineWS: Please enable Welcome Screen feature in Java-Android Wrapper(SET USE_WELCOME_SCREEN=1).");
+            GameRuntime.be(e.toString());
+            GameRuntime.be("Call function: DownloadOfflineWS: Please enable Welcome Screen feature in Java-Android Wrapper(SET USE_WELCOME_SCREEN=1).");
         }
         return 0;
     }
 
     private int az(String str) {
-        GLLib.be("Call function: DeleteOfflineWS. Param: " + str);
+        GameRuntime.be("Call function: DeleteOfflineWS. Param: " + str);
         try {
             com.gameloft.android2d.g.a.mY(0);
             com.gameloft.android2d.g.a.dQ(str);
             com.gameloft.android2d.g.a.mY(1);
         } catch (NoClassDefFoundError e) {
-            GLLib.be(e.toString());
-            GLLib.be("Call function: DeleteOfflineWS: Please enable Welcome Screen feature in Java-Android Wrapper(SET USE_WELCOME_SCREEN=1).");
+            GameRuntime.be(e.toString());
+            GameRuntime.be("Call function: DeleteOfflineWS: Please enable Welcome Screen feature in Java-Android Wrapper(SET USE_WELCOME_SCREEN=1).");
         }
         return 0;
     }
 
     private boolean aA(String str) {
-        GLLib.be("Call function: IsOfflineWSAvailable. Param: " + str);
+        GameRuntime.be("Call function: IsOfflineWSAvailable. Param: " + str);
         try {
             com.gameloft.android2d.g.a.mY(0);
             boolean z = com.gameloft.android2d.g.a.y(str, KJ) == 1;
             com.gameloft.android2d.g.a.mY(1);
             return z;
         } catch (NoClassDefFoundError e) {
-            GLLib.be(e.toString());
-            GLLib.be("Call function: IsOfflineWSAvailable: Please enable Welcome Screen feature in Java-Android Wrapper(SET USE_WELCOME_SCREEN=1).");
+            GameRuntime.be(e.toString());
+            GameRuntime.be("Call function: IsOfflineWSAvailable: Please enable Welcome Screen feature in Java-Android Wrapper(SET USE_WELCOME_SCREEN=1).");
             return false;
         }
     }
@@ -410,7 +410,7 @@ class i {
         bcVar2.t(ShareConstants.WEB_DIALOG_PARAM_ACTION_TYPE, i);
         bcVar2.a(ShareConstants.WEB_DIALOG_PARAM_DATA, bcVar);
         a(bcVar2, NativeProtocol.WEB_DIALOG_ACTION);
-        GLLib.QD.c(z, bcVar);
+        GameRuntime.QD.c(z, bcVar);
     }
 
     private int b(Vector vector) {

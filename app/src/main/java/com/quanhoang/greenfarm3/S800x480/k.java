@@ -83,25 +83,25 @@ public class k {
 
     public int g(byte[] bArr, int i) {
         io();
-        GLLib.b(this.Lg, bArr, i);
-        GLLib.b(this.Lh, bArr, i + 4);
-        GLLib.b(this.Li, bArr, i + 8);
-        GLLib.b(this.Lj, bArr, i + 12);
-        GLLib.b(this.Lk, bArr, i + 16);
-        GLLib.b(this.KY, bArr, i + 20);
-        GLLib.b(this.KZ, bArr, i + 24);
-        GLLib.b(this.La, bArr, i + 28);
+        GameRuntime.b(this.Lg, bArr, i);
+        GameRuntime.b(this.Lh, bArr, i + 4);
+        GameRuntime.b(this.Li, bArr, i + 8);
+        GameRuntime.b(this.Lj, bArr, i + 12);
+        GameRuntime.b(this.Lk, bArr, i + 16);
+        GameRuntime.b(this.KY, bArr, i + 20);
+        GameRuntime.b(this.KZ, bArr, i + 24);
+        GameRuntime.b(this.La, bArr, i + 28);
         ip();
         return 32;
     }
 
     public int h(byte[] bArr, int i) {
         io();
-        GLLib.b(this.Lg, bArr, i);
-        GLLib.b(this.Lh, bArr, i + 4);
-        GLLib.b(this.Li, bArr, i + 8);
-        GLLib.b(this.Lj, bArr, i + 12);
-        GLLib.b(this.Lk, bArr, i + 16);
+        GameRuntime.b(this.Lg, bArr, i);
+        GameRuntime.b(this.Lh, bArr, i + 4);
+        GameRuntime.b(this.Li, bArr, i + 8);
+        GameRuntime.b(this.Lj, bArr, i + 12);
+        GameRuntime.b(this.Lk, bArr, i + 16);
         ip();
         return 20;
     }

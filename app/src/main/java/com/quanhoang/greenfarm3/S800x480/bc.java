@@ -56,7 +56,7 @@ public class bc {
                     return;
                 }
             } catch (Exception e) {
-                GLLib.d(e);
+                GameRuntime.d(e);
                 return;
             }
         }

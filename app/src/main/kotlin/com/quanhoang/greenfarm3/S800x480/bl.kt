@@ -68,5 +68,5 @@ open class bl(displayName: String?) : Comparable<Any?> {
     }
     override fun compareTo(other: Any?): Int = a(other as bl?)
     open fun a(other: bl?): Int = if (other == null) 1 else if (maximumElapsedMillis == other.maximumElapsedMillis) 0 else if (maximumElapsedMillis > other.maximumElapsedMillis) -1 else 1
-    private fun nowMillis(): Long = if (w.Vl) (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To else System.currentTimeMillis()
+    private fun nowMillis(): Long = if (w.Vl) (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To else System.currentTimeMillis()
 }

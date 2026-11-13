@@ -85,3 +85,20 @@ một JOIN SELECT nguyên tử. **23/23 kiểm tra Android SQLite từ productio
 đã đạt**: [kết quả](kotlin-validation/save-transfer-source-sqlite.json).
 Không tính kết quả đó là UI hoặc probe từ APK cài đặt; các lần thoát137 cũ được
 giữ làm bằng chứng lỗi đã tìm được, không phải lỗi Kotlin/thiếu RAM.
+
+## Checkpoint tên có nghĩa
+
+Đã áp dụng [bảy ánh xạ](VERIFIED_GAME_NAMES.md) bằng symbol owner đã resolve:
+`ci/ch/GLLib` → `FarmGameEngine/FarmEntity/GameRuntime`, hai field và hai accessor
+state. Javac Trees sửa 5.160 vị trí trong 22 file Java; Kotlin có guard sửa 326
+tham chiếu trong 39 file. Không đổi biến local trùng tên, overload khác hoặc
+member thuộc owner khác. Field tutorial vẫn là int và codec vẫn ép byte như cũ.
+
+`:app:assembleDebug --stacktrace` đạt 1m56s/44 task sau refactor. APK checkpoint
+SHA256 `138fc0e9439a08fe5cfeccbb43667f206d8a42933fc9bd8d461055520fc135cb`;
+merger/relocator xác minh mode rename, full inverse, không còn lớp game package
+cũ, tài nguyên/native/chữ ký/component đều đạt. Các test tập trung queue/controller/
+Gloft/refactor đạt 9/9; reward/pose/model đạt 4/4 sau rename.
+
+Tên chưa đủ bằng chứng vẫn giữ và được liệt kê trong inventory/mapping; không
+tuyên bố toàn bộ 72 nghìn dòng engine đã được đặt tên hoặc chuyển Kotlin.

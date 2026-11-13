@@ -41,7 +41,7 @@ open class GloftGF2F : MIDlet() {
             ProgressSaveController.showStartupError()
             return
         }
-        val game = ci(this, javax.microedition.lcdui.r.b(this))
+        val game = FarmGameEngine(this, javax.microedition.lcdui.r.b(this))
         acw = game
         game.Init()
         try { acx!!.jf("MIDlet://stayAwake") } catch (unavailableKeepAwake: Exception) {
@@ -53,17 +53,17 @@ open class GloftGF2F : MIDlet() {
 
     public override fun al(unconditional: Boolean) {
         if (acw == null) return
-        ci.HH()
-        ci.EZ()
-        ci.Ms()
-        ci.rE()
+        FarmGameEngine.HH()
+        FarmGameEngine.EZ()
+        FarmGameEngine.Ms()
+        FarmGameEngine.rE()
         if (!ProgressSaveController.flushForLifecycle()) return
-        GLLib.be("GLLib.quit")
-        GLLib.Qn = -1
+        GameRuntime.be("GLLib.quit")
+        GameRuntime.Qn = -1
     }
 
     companion object {
-        @JvmField var acw: ci? = null
+        @JvmField var acw: FarmGameEngine? = null
         @JvmField var acx: GloftGF2F? = null
     }
 }

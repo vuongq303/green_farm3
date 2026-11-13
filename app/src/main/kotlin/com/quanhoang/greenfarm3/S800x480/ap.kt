@@ -4,7 +4,7 @@ open class ap(@JvmField val ady: ao?, @JvmField var adx: Array<Any?>?) : Thread(
     private fun mJ() {
         ao.a(ady, false)
         ao.b(ady, true)
-        GLLib.be("thread ended")
+        GameRuntime.be("thread ended")
     }
     override fun run() {
         when (ao.a(ady)) {

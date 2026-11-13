@@ -1,11 +1,11 @@
 package com.quanhoang.greenfarm3.S800x480
 
-open class cs(@JvmField val bbN: ci?) : Thread() {
-    constructor(owner: ci?, ignored: cj?) : this(owner)
-    private fun mJ() { ci.a(bbN, false) }
+open class cs(@JvmField val bbN: FarmGameEngine?) : Thread() {
+    constructor(owner: FarmGameEngine?, ignored: cj?) : this(owner)
+    private fun mJ() { FarmGameEngine.a(bbN, false) }
     override fun run() {
-        ci.a(bbN, true)
-        ci.Mn()
+        FarmGameEngine.a(bbN, true)
+        FarmGameEngine.Mn()
         mJ()
     }
 }

@@ -29,7 +29,7 @@ public class z {
     }
 
     public void a(int i, int i2, byte[] bArr, int i3, int i4, int i5, int i6, int i7) {
-        GLLib.c(i6 == 4 || i6 == 8, "PathFinding_Init nDirCount should be 4 or 8.");
+        GameRuntime.c(i6 == 4 || i6 == 8, "PathFinding_Init nDirCount should be 4 or 8.");
         this.aaD = i;
         this.aaE = i2;
         this.aaF = bArr;
@@ -94,7 +94,7 @@ public class z {
         int i10;
         int iA;
         int i11;
-        GLLib.c(this.aaK, "GLLibPathFinding not initialized");
+        GameRuntime.c(this.aaK, "GLLibPathFinding not initialized");
         if (i6 < 0) {
             i8 += i6;
             i6 = 0;
@@ -104,9 +104,9 @@ public class z {
             i7 = 0;
         }
         if (w.YV) {
-            GLLib.be("------------- execPathFinding -------------");
-            GLLib.be("execPathFinding from (" + i + ", " + i2 + ") to (" + i4 + ", " + i5 + ")");
-            GLLib.be("  searching sub-area (" + i6 + ", " + i7 + ") to (" + (i6 + i8) + ", " + (i7 + i9) + ")");
+            GameRuntime.be("------------- execPathFinding -------------");
+            GameRuntime.be("execPathFinding from (" + i + ", " + i2 + ") to (" + i4 + ", " + i5 + ")");
+            GameRuntime.be("  searching sub-area (" + i6 + ", " + i7 + ") to (" + (i6 + i8) + ", " + (i7 + i9) + ")");
         }
         for (int i12 = 0; i12 < w.YU; i12++) {
             this.aau[i12] = -1;
@@ -134,12 +134,12 @@ public class z {
                 if (!w.YV) {
                     break;
                 }
-                GLLib.be("a path has been found");
+                GameRuntime.be("a path has been found");
                 break;
             }
             if (w.YV) {
                 i16++;
-                GLLib.be("current node[" + i17 + "] is {" + (i19 + i6) + " (" + i19 + " + " + i6 + "), " + (i20 + i7) + " (" + i20 + " + " + i7 + ")}");
+                GameRuntime.be("current node[" + i17 + "] is {" + (i19 + i6) + " (" + i19 + " + " + i6 + "), " + (i20 + i7) + " (" + i20 + " + " + i7 + ")}");
             }
             int i21 = i16;
             for (int i22 = 0; i22 < this.aaC; i22++) {
@@ -147,16 +147,16 @@ public class z {
                     int i23 = i19 + aat[(i22 << 1) + 0];
                     int i24 = i20 + aat[(i22 << 1) + 1];
                     if (w.YV) {
-                        GLLib.be("position is {" + (i23 + i6) + " (" + i23 + " + " + i6 + "), " + (i24 + i7) + " (" + i24 + " + " + i7 + ")}");
+                        GameRuntime.be("position is {" + (i23 + i6) + " (" + i23 + " + " + i6 + "), " + (i24 + i7) + " (" + i24 + " + " + i7 + ")}");
                     }
                     if (i23 < 0 || i23 >= i8) {
                         if (w.YV) {
-                            GLLib.be("x position is not in the map");
+                            GameRuntime.be("x position is not in the map");
                         }
                     } else if (i24 >= 0 && i24 < i9) {
                         int i25 = (i24 * i8) + i23;
                         if (w.YV) {
-                            GLLib.be("\tadjacent node[" + i25 + "] is {" + (i23 + i6) + " (" + i23 + " + " + i6 + "), " + (i24 + i7) + " (" + i24 + " + " + i7 + ")}");
+                            GameRuntime.be("\tadjacent node[" + i25 + "] is {" + (i23 + i6) + " (" + i23 + " + " + i6 + "), " + (i24 + i7) + " (" + i24 + " + " + i7 + ")}");
                         }
                         if (this.aax[i25] != -1) {
                             if (w.YW) {
@@ -191,7 +191,7 @@ public class z {
                                 }
                                 if (!z && (this.aaF[i23 + i6 + ((i24 + i7) * this.aaD)] & this.aaG) != 0) {
                                     if (w.YV) {
-                                        GLLib.be("\tnode is a wall");
+                                        GameRuntime.be("\tnode is a wall");
                                     }
                                     continue;
                                 }
@@ -212,35 +212,35 @@ public class z {
                                 this.aax[i25] = (short) i29;
                                 this.aay[i25] = (short) i11;
                                 if (w.YV) {
-                                    GLLib.be("\tadd adjacent node to open list (score : " + (i11 + i29) + ")");
+                                    GameRuntime.be("\tadd adjacent node to open list (score : " + (i11 + i29) + ")");
                                 }
                                 dQ(i25);
                             } else if (this.aax[i25] > i29) {
                                 this.aau[i25] = (short) i17;
                                 this.aax[i25] = (short) i29;
                                 if (w.YV) {
-                                    GLLib.be("\trelink adjacent node to current node");
+                                    GameRuntime.be("\trelink adjacent node to current node");
                                 }
                                 dR(i25);
                                 dQ(i25);
                             }
                         } else if (w.YV) {
-                            GLLib.be("\tnode has been already checked");
+                            GameRuntime.be("\tnode has been already checked");
                         }
                     } else if (w.YV) {
-                        GLLib.be("y position is not in the map");
+                        GameRuntime.be("y position is not in the map");
                     }
                 }
             }
             i17 = this.aaJ;
             if (w.YV) {
-                GLLib.be("change current node to : " + i17 + " {" + ((i17 % i8) + i6) + "(" + (i17 % i8) + " + " + i6 + ")," + ((i17 / i8) + i7) + "(" + (i17 / i8) + " + " + i7 + ")}");
+                GameRuntime.be("change current node to : " + i17 + " {" + ((i17 % i8) + i6) + "(" + (i17 % i8) + " + " + i6 + ")," + ((i17 / i8) + i7) + "(" + (i17 / i8) + " + " + i7 + ")}");
             }
             if (i17 != -1) {
                 short s2 = this.aau[i17];
                 int i30 = i17 % i8 != s2 % i8 ? i17 % i8 > s2 % i8 ? 3 : 2 : i17 / i8 != s2 / i8 ? 1 : 0;
                 if (w.YV) {
-                    GLLib.be("new node[" + i17 + "] (score : " + (this.aax[i17] + this.aay[i17]) + ") is {" + ((i17 % i8) + i6) + " (" + (i17 % i8) + " + " + i6 + "), " + ((i17 / i8) + i7) + " (" + (i17 / i8) + " + " + i7 + ")}");
+                    GameRuntime.be("new node[" + i17 + "] (score : " + (this.aax[i17] + this.aay[i17]) + ") is {" + ((i17 % i8) + i6) + " (" + (i17 % i8) + " + " + i6 + "), " + ((i17 / i8) + i7) + " (" + (i17 / i8) + " + " + i7 + ")}");
                 }
                 i10 = i30;
             } else {
@@ -251,8 +251,8 @@ public class z {
         }
         if (i17 == -1) {
             if (w.YV) {
-                GLLib.be("opened list is empty... there is no path");
-                GLLib.be("-------------------------------------------");
+                GameRuntime.be("opened list is empty... there is no path");
+                GameRuntime.be("-------------------------------------------");
             }
             this.aaI = -1;
             return;
@@ -268,28 +268,28 @@ public class z {
         }
         this.aaI--;
         if (w.YV) {
-            GLLib.be("-------------------------------------------");
-            GLLib.be("Path was found with " + i16 + " nodes visited");
+            GameRuntime.be("-------------------------------------------");
+            GameRuntime.be("Path was found with " + i16 + " nodes visited");
             for (int i33 = this.aaI; i33 >= 0; i33--) {
                 short s3 = this.aaH[i33];
-                GLLib.be("node [" + i33 + "]\t= (" + (s3 % this.aaD) + ", " + (s3 / this.aaD) + ")");
+                GameRuntime.be("node [" + i33 + "]\t= (" + (s3 % this.aaD) + ", " + (s3 / this.aaD) + ")");
             }
-            GLLib.be("-------------------------------------------");
+            GameRuntime.be("-------------------------------------------");
         }
     }
 
     public int lK() {
-        GLLib.c(this.aaK, "GLLibPathFinding not initialized");
+        GameRuntime.c(this.aaK, "GLLibPathFinding not initialized");
         return this.aaI + 1;
     }
 
     public int dO(int i) {
-        GLLib.c(this.aaK, "GLLibPathFinding not initialized");
+        GameRuntime.c(this.aaK, "GLLibPathFinding not initialized");
         return this.aaH[i] % this.aaD;
     }
 
     public int dP(int i) {
-        GLLib.c(this.aaK, "GLLibPathFinding not initialized");
+        GameRuntime.c(this.aaK, "GLLibPathFinding not initialized");
         return this.aaH[i] / this.aaD;
     }
 

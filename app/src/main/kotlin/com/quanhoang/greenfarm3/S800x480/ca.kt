@@ -4,7 +4,7 @@ open class ca(@JvmField val akV: bz?, @JvmField var adx: Array<Any?>?) : Thread(
     private fun mJ() {
         bz.`access$002`(false)
         bz.aq(true)
-        GLLib.be("oss: thread ended")
+        GameRuntime.be("oss: thread ended")
     }
     override fun run() {
         if (w.ZU) {

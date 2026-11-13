@@ -37,7 +37,7 @@ open class bt {
             if (!bu.cE(identifier)) {
                 val image = SocialSdk.ha(identifier) ?: return null
                 val result = ay(image)
-                GLLib.be("Facebook : [Non-Friends] put to buffer " + identifier)
+                GameRuntime.be("Facebook : [Non-Friends] put to buffer " + identifier)
                 bu.a(identifier, result)
                 return result
             }

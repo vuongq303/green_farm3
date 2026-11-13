@@ -6,14 +6,14 @@ open class bg {
     private var promotion = bn()
     open fun aw(buffer: String?): Int {
         if (initialized) {
-            GLLib.be("Offline Store is already initialized.")
+            GameRuntime.be("Offline Store is already initialized.")
             return -2147483645
         }
         items = bw()
         promotion = bn()
         val result = e(bc(buffer).cd("offline_store") as bc?)
         if (result != 0) {
-            GLLib.be("Offline Store failed to parse the buffer.")
+            GameRuntime.be("Offline Store failed to parse the buffer.")
             return result
         }
         initialized = true
@@ -21,7 +21,7 @@ open class bg {
     }
     open fun cs(buffer: String?): Int {
         if (e(bc(buffer).cd("offline_store") as bc?) == 0) return 0
-        GLLib.be("Offline Store failed to parse the buffer.")
+        GameRuntime.be("Offline Store failed to parse the buffer.")
         return -2147483622
     }
     open fun nw(): bw = items
@@ -29,14 +29,14 @@ open class bg {
         if (data == null) return -2147483622
         val result = items.a(data)
         if (result != 0) {
-            GLLib.be("Offline Store failed to parse the items buffer.")
+            GameRuntime.be("Offline Store failed to parse the items buffer.")
             return result
         }
         promotion.hM()
         promotion.a(data)
         // Preserve the old parser's result check, without an unrelated logic fix.
         if (result != 0) {
-            GLLib.be("Offline Store failed to parse the promotion buffer.")
+            GameRuntime.be("Offline Store failed to parse the promotion buffer.")
             return result
         }
         return result

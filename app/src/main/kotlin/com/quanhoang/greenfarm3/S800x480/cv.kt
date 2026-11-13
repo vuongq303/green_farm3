@@ -4,10 +4,10 @@ open class cv(@JvmField var bbV: Int) : ar {
     override fun D(statusCode: Int, responseBody: String?) {
         if (statusCode == 200) {
             val diagnostic = "[OnlineQuest]OnlineQuestGetLeaderboard Success " + responseBody
-            if (ci.apC[ci.apB] == 52 && bbV == ci.aPZ) ci.dd(responseBody)
+            if (FarmGameEngine.apC[FarmGameEngine.apB] == 52 && bbV == FarmGameEngine.aPZ) FarmGameEngine.dd(responseBody)
         } else {
             val diagnostic = "[OnlineQuest]OnlineQuestGetLeaderboard Error " + Integer.toString(statusCode)
         }
-        ci.aPU = true
+        FarmGameEngine.aPU = true
     }
 }

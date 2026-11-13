@@ -30,7 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /* JADX INFO: loaded from: classes.dex */
-public final class ci extends GLLib implements av {
+public final class FarmGameEngine extends GameRuntime implements av {
     public static int CR;
     public static int CS;
     private static boolean Tm;
@@ -168,7 +168,7 @@ public final class ci extends GLLib implements av {
     public static String aCb;
     public static boolean aCc;
     static int[] aCd;
-    static ch[] aCe;
+    static FarmEntity[] aCe;
     static int aCf;
     static int aCg;
     static int aCh;
@@ -460,12 +460,12 @@ public final class ci extends GLLib implements av {
     static boolean aIH;
     static int[] aII;
     static int aIJ;
-    static ch[][] aIK;
+    static FarmEntity[][] aIK;
     static int[] aIL;
     static long aIM;
     static boolean aIN;
     static long[] aIO;
-    static ch[] aIP;
+    static FarmEntity[] aIP;
     static boolean aIQ;
     static boolean[] aIR;
     static boolean[] aIS;
@@ -583,7 +583,7 @@ public final class ci extends GLLib implements av {
     static short[] aKa;
     static int aKb;
     static boolean aKc;
-    static ch aKd;
+    static FarmEntity aKd;
     static int aKe;
     static int aKf;
     static int aKg;
@@ -667,7 +667,7 @@ public final class ci extends GLLib implements av {
     static boolean aMG;
     static int aMH;
     static int aMI;
-    static ch aMJ;
+    static FarmEntity aMJ;
     static String aMK;
     static int aML;
     static int aMM;
@@ -676,7 +676,7 @@ public final class ci extends GLLib implements av {
     public static long aMP;
     public static boolean aMQ;
     public static String aMR;
-    static ch aMS;
+    static FarmEntity aMS;
     static boolean aMT;
     static int[] aMU;
     public static boolean aMV;
@@ -690,7 +690,7 @@ public final class ci extends GLLib implements av {
     static boolean aMd;
     static boolean aMe;
     static boolean aMf;
-    static ch aMg;
+    static FarmEntity aMg;
     static boolean aMh;
     static boolean aMi;
     static int[] aMj;
@@ -992,7 +992,7 @@ public final class ci extends GLLib implements av {
     public static int aST;
     public static int aSU;
     public static int aSV;
-    public static ch aSW;
+    public static FarmEntity aSW;
     public static int aSX;
     public static int aSY;
     public static int aSZ;
@@ -1296,7 +1296,7 @@ public final class ci extends GLLib implements av {
     static final String aYO;
     static int aYP;
     static int aYQ;
-    static int aYR;
+    static int currentTutorialStepIndex;
     static int aYS;
     static boolean aYT;
     public static int aYU;
@@ -1313,7 +1313,7 @@ public final class ci extends GLLib implements av {
     static int aYf;
     static int aYg;
     public static int aYh;
-    static ch aYi;
+    static FarmEntity aYi;
     static int aYj;
     static int aYk;
     static int aYl;
@@ -1365,13 +1365,13 @@ public final class ci extends GLLib implements av {
     public static a[] aZf;
     static a[] aZg;
     static a[] aZh;
-    static ch aZi;
-    static ch aZj;
-    static ch aZk;
-    static ch aZl;
-    static ch aZm;
-    static ch aZn;
-    static ch aZo;
+    static FarmEntity aZi;
+    static FarmEntity aZj;
+    static FarmEntity aZk;
+    static FarmEntity aZl;
+    static FarmEntity aZm;
+    static FarmEntity aZn;
+    static FarmEntity aZo;
     static int aZp;
     static int aZq;
     static String aZr;
@@ -1394,7 +1394,7 @@ public final class ci extends GLLib implements av {
     public static int[][] aqA;
     public static int aqC;
     public static boolean[] aqJ;
-    public static ch aqY;
+    public static FarmEntity aqY;
     public static int[] aqg;
     public static boolean[] aqh;
     public static long[] aqi;
@@ -1463,10 +1463,10 @@ public final class ci extends GLLib implements av {
     public static int[] auP;
     static long avC;
     static int avD;
-    static ch avE;
+    static FarmEntity avE;
     // A drag edits avE for rendering only. avM/avN and this facing remain committed
     // until the explicit confirmation button accepts the placement.
-    private static ch moveOriginalActor;
+    private static FarmEntity moveOriginalActor;
     private static int moveOriginalTransform;
     private static boolean moveConfirmRequested;
     private static boolean movePlacementConfirmed;
@@ -1474,9 +1474,9 @@ public final class ci extends GLLib implements av {
     private static volatile boolean moveInterruptionRequested;
     private int moveSurfaceWidth = -1;
     private int moveSurfaceHeight = -1;
-    static ch avF;
-    static ch avG;
-    static ch[] avH;
+    static FarmEntity avF;
+    static FarmEntity avG;
+    static FarmEntity[] avH;
     static boolean avI;
     static boolean avJ;
     static int avK;
@@ -1575,7 +1575,7 @@ public final class ci extends GLLib implements av {
     static boolean axV;
     static boolean axW;
     static String axX;
-    static ch axY;
+    static FarmEntity axY;
     static int axZ;
     static boolean axa;
     static boolean axb;
@@ -1631,7 +1631,7 @@ public final class ci extends GLLib implements av {
     static int ayZ;
     static int aya;
     static int ayb;
-    static ch ayc;
+    static FarmEntity ayc;
     static int[] ayd;
     static boolean aye;
     static int ayf;
@@ -1684,7 +1684,7 @@ public final class ci extends GLLib implements av {
     static boolean aza;
     static int azb;
     static int azc;
-    static ch[] azd;
+    static FarmEntity[] azd;
     static boolean aze;
     static boolean[] azf;
     static boolean[] azg;
@@ -1733,7 +1733,7 @@ public final class ci extends GLLib implements av {
     static boolean baX;
     static boolean baY;
     public static boolean baZ;
-    public static boolean baa;
+    public static boolean hasUnsavedGameChanges;
     public static boolean bab;
     static boolean bac;
     static boolean bad;
@@ -1954,7 +1954,7 @@ public final class ci extends GLLib implements av {
     static boolean atu = false;
     static boolean atv = true;
     static boolean atw = true;
-    public static ch aty = null;
+    public static FarmEntity aty = null;
     public static int atz = -1;
     static boolean atA = false;
     static boolean atB = false;
@@ -2059,7 +2059,7 @@ public final class ci extends GLLib implements av {
         int[] iArr = new int[2];
         int[] iArr2 = new int[2];
         int i5 = 0;
-        for (ch chVar = ch.als[1]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = FarmEntity.als[1]; chVar != null; chVar = chVar.aoi) {
             switch (chVar.Kx) {
                 case 54:
                     if (!chVar.fz(4096) && chVar.qs()) {
@@ -2434,9 +2434,9 @@ public final class ci extends GLLib implements av {
         f(15, 159, true);
         aKC = 0;
         s(1, 109, 1, 24);
-        GLLib.bk("/11");
+        GameRuntime.bk("/11");
         fP(1);
-        GLLib.ke();
+        GameRuntime.ke();
         AK();
         Ff();
         gM(15);
@@ -2535,9 +2535,9 @@ public final class ci extends GLLib implements av {
     public static void AK() {
         int i = aKC + 109;
         s(1, i, 1, 24);
-        GLLib.bk("/11");
+        GameRuntime.bk("/11");
         fP(1);
-        GLLib.ke();
+        GameRuntime.ke();
         atc[15][105][5] = (short) i;
         atc[15][106][5] = (short) i;
         atc[15][107][5] = (short) i;
@@ -2679,7 +2679,7 @@ public final class ci extends GLLib implements av {
         }
         j(0, 0, true);
         aZD = 1;
-        ch.pj();
+        FarmEntity.pj();
         String str4 = "s_manorLevel : " + aZD;
         for (int i = aVG - 1; i >= 0; i--) {
             if (aUT[i] >= 0) {
@@ -2689,7 +2689,7 @@ public final class ci extends GLLib implements av {
         }
         j(4, 0, true);
         aZD = 2;
-        ch.pj();
+        FarmEntity.pj();
         String str5 = "s_manorLevel : " + aZD;
         for (int i2 = aVG - 1; i2 >= 0; i2--) {
             if (aUT[i2] >= 0) {
@@ -2699,7 +2699,7 @@ public final class ci extends GLLib implements av {
         }
         j(5, 0, true);
         aZD = 3;
-        ch.pj();
+        FarmEntity.pj();
         String str6 = "s_manorLevel : " + aZD;
         for (int i3 = aVG - 1; i3 >= 0; i3--) {
             if (aUT[i3] >= 0) {
@@ -2736,7 +2736,7 @@ public final class ci extends GLLib implements av {
     static void Ac() {
         gX(60);
         aZD = 9;
-        ch.pj();
+        FarmEntity.pj();
     }
 
     static void Ad() {
@@ -2829,7 +2829,7 @@ public final class ci extends GLLib implements av {
 
     static void Ap() {
         gX(60);
-        ch chVarFm = Fm();
+        FarmEntity chVarFm = Fm();
         if (chVarFm != null) {
             b(chVarFm, true);
         } else {
@@ -2839,7 +2839,7 @@ public final class ci extends GLLib implements av {
 
     static void Aq() {
         gX(60);
-        ch chVarFm = Fm();
+        FarmEntity chVarFm = Fm();
         if (chVarFm != null) {
             b(chVarFm, false);
         } else {
@@ -2869,12 +2869,12 @@ public final class ci extends GLLib implements av {
         aQr = true;
         aQz = MD();
         int iFC = FC();
-        int iL = GLLib.L(0, 2);
+        int iL = GameRuntime.L(0, 2);
         if (iFC > 11 && iFC <= 15) {
-            iL = GLLib.L(2, 4);
+            iL = GameRuntime.L(2, 4);
         }
         if (iFC > 15) {
-            iL = GLLib.L(4, 7);
+            iL = GameRuntime.L(4, 7);
         }
         if (iL >= 7) {
             iL = 6;
@@ -2901,7 +2901,7 @@ public final class ci extends GLLib implements av {
 
     static void Ax() {
         gX(60);
-        baa = true;
+        hasUnsavedGameChanges = true;
         kp(1);
     }
 
@@ -3103,7 +3103,7 @@ public final class ci extends GLLib implements av {
     }
 
     static boolean B(int i, int i2, int i3, int i4) {
-        for (ch chVar = ch.als[1]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = FarmEntity.als[1]; chVar != null; chVar = chVar.aoi) {
             switch (chVar.Kx) {
                 case 54:
                     if (!chVar.fz(4096) && chVar.qs()) {
@@ -3371,18 +3371,18 @@ public final class ci extends GLLib implements av {
     }
 
     static void Bc() {
-        if (b.JU && qE() == 18) {
+        if (b.JU && previousEngineState() == 18) {
             b.JU = false;
             AdsManager.ShowIncentivized("enter_section_video_bubble");
             return;
         }
-        if (b.JV && qE() == 61) {
+        if (b.JV && previousEngineState() == 61) {
             b.JV = false;
             AdsManager.ShowIncentivized("enter_section_video_lucky_wheel");
-        } else if (b.JW && qE() == 63) {
+        } else if (b.JW && previousEngineState() == 63) {
             b.JW = false;
             AdsManager.ShowIncentivized("enter_section_video_daily_stamp");
-        } else if (qE() == 61) {
+        } else if (previousEngineState() == 61) {
             b.JV = false;
             AdsManager.ShowIncentivized("enter_section_video_lucky_wheel");
         }
@@ -3624,7 +3624,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Bp() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jw(33);
                 break;
@@ -3635,7 +3635,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Bq() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jw(1);
                 break;
@@ -3646,7 +3646,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Br() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jw(32);
                 break;
@@ -3657,7 +3657,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Bs() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jy(0);
                 break;
@@ -3668,7 +3668,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Bt() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jy(1);
                 break;
@@ -3679,7 +3679,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Bu() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jy(2);
                 break;
@@ -3690,7 +3690,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Bv() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jy(3);
                 break;
@@ -3701,7 +3701,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Bw() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jy(4);
                 break;
@@ -3945,7 +3945,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void CV() {
-        if ((!lN(298) || aYS >= 1035) && aYR == -1 && awW == 160) {
+        if ((!lN(298) || aYS >= 1035) && currentTutorialStepIndex == -1 && awW == 160) {
             bax = true;
             Kz();
             fE(35);
@@ -3956,7 +3956,7 @@ public final class ci extends GLLib implements av {
         avk = false;
         auA = true;
         gX(59);
-        if ((!lN(298) || aYS >= 1035) && aYR == -1 && awW == 160) {
+        if ((!lN(298) || aYS >= 1035) && currentTutorialStepIndex == -1 && awW == 160) {
             bax = true;
             Ky();
             fE(35);
@@ -3965,7 +3965,7 @@ public final class ci extends GLLib implements av {
 
     static void CX() {
         gX(56);
-        if (qE() != 56) {
+        if (previousEngineState() != 56) {
             qB();
         } else if (aMh) {
             fH(30);
@@ -4002,7 +4002,7 @@ public final class ci extends GLLib implements av {
     static void Cc() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (!qN() || strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         if (aNV > -1) {
@@ -4022,7 +4022,7 @@ public final class ci extends GLLib implements av {
     static void Cd() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (!qN() || strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         if (aNV > -1) {
@@ -4102,11 +4102,11 @@ public final class ci extends GLLib implements av {
             aux = true;
             if (aYU == 20) {
                 GloftGF2F gloftGF2F = GloftGF2F.acx;
-                ci ciVar = GloftGF2F.acw;
+                FarmGameEngine ciVar = GloftGF2F.acw;
                 bK("le");
             } else {
                 GloftGF2F gloftGF2F2 = GloftGF2F.acx;
-                ci ciVar2 = GloftGF2F.acw;
+                FarmGameEngine ciVar2 = GloftGF2F.acw;
                 bK(GloftGF2F.acw.dr(aYU));
             }
             ro();
@@ -4287,7 +4287,7 @@ public final class ci extends GLLib implements av {
         }
         int i10 = atm[i][7] > iArr[3] + s3 ? (-atm[i][7]) + s3 + iArr[3] : 0;
         int i11 = s3 > atm[i][5] ? s3 - atm[i][5] : 0;
-        int iQD = qD();
+        int iQD = currentEngineState();
         if (iQD == 28 || iQD == 12) {
             return;
         }
@@ -4419,7 +4419,7 @@ public final class ci extends GLLib implements av {
         for (int i2 = 0; i2 < 30; i2++) {
             if (atg[i2] != null) {
                 try {
-                    atg[i2].dV(GLLib.Qy);
+                    atg[i2].dV(GameRuntime.Qy);
                 } catch (Exception e) {
                 }
             }
@@ -4474,7 +4474,7 @@ public final class ci extends GLLib implements av {
 
     static void DR() {
         if (awf != null) {
-            awf.dV(GLLib.Qy);
+            awf.dV(GameRuntime.Qy);
             if (avE != null) {
                 int[] iArr = new int[2];
                 d(new int[]{avE.aol, avE.aom}, iArr);
@@ -4589,10 +4589,10 @@ public final class ci extends GLLib implements av {
         moveInterruptionRequested = false;
         // Each lb drains one of press/drag/release per pointer. Three drains
         // empty all pending types, then la returns every pointer to idle.
-        GLLib.lb();
-        GLLib.lb();
-        GLLib.lb();
-        GLLib.la();
+        GameRuntime.lb();
+        GameRuntime.lb();
+        GameRuntime.lb();
+        GameRuntime.la();
         aAG = aAH = aAI = aAJ = aAK = -1;
         aZn = null;
         aZp = 0;
@@ -4621,8 +4621,8 @@ public final class ci extends GLLib implements av {
 
     static void DT() {
         if (avE.fz(2)) {
-            ch[] chVarArr = new ch[100];
-            int iA = ch.a(1, 54, chVarArr, 100, avE);
+            FarmEntity[] chVarArr = new FarmEntity[100];
+            int iA = FarmEntity.a(1, 54, chVarArr, 100, avE);
             for (int i = 0; i < iA; i++) {
                 if (!chVarArr[i].fz(4096)) {
                     int[] iArr = new int[2];
@@ -4673,7 +4673,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void DV() {
-        ch.oJ();
+        FarmEntity.oJ();
         EA();
         DS();
         gJ(1);
@@ -4839,7 +4839,7 @@ public final class ci extends GLLib implements av {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (!qN() || strBY == null || strBY.equals("off")) {
             aPi = true;
-            E(qD(), true);
+            E(currentEngineState(), true);
         } else {
             if (bt.nY()) {
                 return;
@@ -4883,7 +4883,7 @@ public final class ci extends GLLib implements av {
         bw(true);
         aQE = true;
         Ky();
-        if (qE() == 35) {
+        if (previousEngineState() == 35) {
             fE(35);
             return;
         }
@@ -4960,9 +4960,9 @@ public final class ci extends GLLib implements av {
         String str2 = "http://www.gameloft.com/eula/?lang=" + rh();
         try {
             if (rh().equals("pt") || rh().equals("PT")) {
-                GLLib.bd(com.gameloft.android.wrapper.au.ew("br"));
+                GameRuntime.bd(com.gameloft.android.wrapper.au.ew("br"));
             } else {
-                GLLib.bd(com.gameloft.android.wrapper.au.ew(rh()));
+                GameRuntime.bd(com.gameloft.android.wrapper.au.ew(rh()));
             }
         } catch (Exception e2) {
             e2.printStackTrace();
@@ -5068,7 +5068,7 @@ public final class ci extends GLLib implements av {
                 aMy = "";
             }
             String strBY = GloftGF2F.acx.bY("conectivity");
-            if (i > 4 && ((qD() != 20 || aME) && (strBY == null || strBY.equals("off")))) {
+            if (i > 4 && ((currentEngineState() != 20 || aME) && (strBY == null || strBY.equals("off")))) {
                 aMG = true;
                 F(164, 825, 15, 0);
             }
@@ -5146,7 +5146,7 @@ public final class ci extends GLLib implements av {
                 iArr[7] = -1;
                 iArr[8] = 0;
                 if (aZB == 0) {
-                    azd[i] = ch.b(32, 1, iArr);
+                    azd[i] = FarmEntity.b(32, 1, iArr);
                     azd[i].fx(16777216);
                 }
             }
@@ -5159,9 +5159,9 @@ public final class ci extends GLLib implements av {
     static boolean EF() {
         String str = "Expansion_IsMaxAnimal : " + ayJ;
         EC();
-        ch[] chVarArr = new ch[100];
+        FarmEntity[] chVarArr = new FarmEntity[100];
         String str2 = " unlock area. x,x,y,y, :" + ayO + "," + ayQ + "," + ayP + "," + ayR;
-        int iA = ch.a(1, 54, ayO, ayQ, ayP, ayR, chVarArr, 100);
+        int iA = FarmEntity.a(1, 54, ayO, ayQ, ayP, ayR, chVarArr, 100);
         String str3 = "plusAnimalCount : " + iA;
         int i = 0;
         for (int i2 = 0; i2 < iA; i2++) {
@@ -5169,7 +5169,7 @@ public final class ci extends GLLib implements av {
             String str4 = "m_weight : " + ((int) chVarArr[i2].aoB);
         }
         String str5 = "plusAnimalWeight : " + i;
-        int iAD = ch.aD(1, 54);
+        int iAD = FarmEntity.aD(1, 54);
         String str6 = "curAnimalWeight : " + iAD;
         String str7 = "total : " + (iAD + i);
         String str8 = "m_maxAnimals : " + FK();
@@ -5180,9 +5180,9 @@ public final class ci extends GLLib implements av {
         String str = "Expansion_IsMaxTree : " + ayJ;
         EC();
         String str2 = " unlock area. x,x,y,y, :" + ayO + "," + ayQ + "," + ayP + "," + ayR;
-        int iA = ch.a(1, 52, ayO, ayQ, ayP, ayR, new ch[100], 100);
+        int iA = FarmEntity.a(1, 52, ayO, ayQ, ayP, ayR, new FarmEntity[100], 100);
         String str3 = "plusTreeCount : " + iA;
-        int iAw = ch.aw(1, 52);
+        int iAw = FarmEntity.aw(1, 52);
         String str4 = "curTreeCount : " + iAw;
         String str5 = "total : " + (iAw + iA);
         String str6 = "m_maxTrees : " + FJ();
@@ -5354,7 +5354,7 @@ public final class ci extends GLLib implements av {
                 hp(i);
             }
             if (azz[i][5] > 0 && jMD - azz[i][5] >= 86400) {
-                if (jVarBY.KW[i][10] <= azx[i][1] && GLLib.L(0, 100) < jVarBY.KW[i][9]) {
+                if (jVarBY.KW[i][10] <= azx[i][1] && GameRuntime.L(0, 100) < jVarBY.KW[i][9]) {
                     int iFC = jVarBY2.KV - 1;
                     while (iFC > 0 && jVarBY2.KW[iFC][12] > azx[i][1]) {
                         iFC--;
@@ -5572,7 +5572,7 @@ public final class ci extends GLLib implements av {
         }
         for (int i2 = 0; i2 < 76; i2++) {
             if (jVarBY.KW[i2][34] != 1) {
-                aAc[i2] = (short) ch.p(1, 54, i2, i2);
+                aAc[i2] = (short) FarmEntity.p(1, 54, i2, i2);
             }
         }
         int i3 = 0;
@@ -5690,9 +5690,9 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axV = true;
                     axa = false;
-                    if (qD() == 18) {
-                        ch[] chVarArr = new ch[1];
-                        ch.b(1, 50, 18, chVarArr, 1);
+                    if (currentEngineState() == 18) {
+                        FarmEntity[] chVarArr = new FarmEntity[1];
+                        FarmEntity.b(1, 50, 18, chVarArr, 1);
                         if (chVarArr[0] != null) {
                             aZj.y(chVarArr[0].aol, chVarArr[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                         }
@@ -5729,13 +5729,13 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axW = false;
                     axV = true;
-                    if (qD() == 18) {
-                        ch[] chVarArr2 = new ch[1];
-                        ch.b(1, 50, 18, chVarArr2, 1);
+                    if (currentEngineState() == 18) {
+                        FarmEntity[] chVarArr2 = new FarmEntity[1];
+                        FarmEntity.b(1, 50, 18, chVarArr2, 1);
                         b(chVarArr2[0], 0, -50);
                     }
                 }
-                if (qD() == 18 && bh(1, 53)) {
+                if (currentEngineState() == 18 && bh(1, 53)) {
                     f(1, 53, false);
                     DF();
                     gK(1);
@@ -5765,8 +5765,8 @@ public final class ci extends GLLib implements av {
                         strDt2 = "";
                     }
                     m(strDt2, 7, 0);
-                    ch[] chVarArr3 = new ch[1];
-                    ch.b(1, 50, 15, chVarArr3, 1);
+                    FarmEntity[] chVarArr3 = new FarmEntity[1];
+                    FarmEntity.b(1, 50, 15, chVarArr3, 1);
                     if (chVarArr3[0] != null) {
                         aZj.y(chVarArr3[0].aol, chVarArr3[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                     }
@@ -5782,8 +5782,8 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axV = true;
                     axW = false;
-                    ch[] chVarArr4 = new ch[1];
-                    ch.b(1, 50, 15, chVarArr4, 1);
+                    FarmEntity[] chVarArr4 = new FarmEntity[1];
+                    FarmEntity.b(1, 50, 15, chVarArr4, 1);
                     if (chVarArr4[0] != null) {
                         b(chVarArr4[0], 0, -70);
                     }
@@ -5817,7 +5817,7 @@ public final class ci extends GLLib implements av {
     }
 
     static int Ed() {
-        ch chVarFo = Fo();
+        FarmEntity chVarFo = Fo();
         if (chVarFo != null) {
             return j.bY(3).KW[chVarFo.aoC][35];
         }
@@ -5919,7 +5919,7 @@ public final class ci extends GLLib implements av {
     static void Ek() {
         if (b.Kf) {
             if (b.JS == 0) {
-                b.JS = GLLib.L(5, 10);
+                b.JS = GameRuntime.L(5, 10);
             }
             b.JU = true;
             gX(60);
@@ -5931,7 +5931,7 @@ public final class ci extends GLLib implements av {
         if (aYW) {
             return;
         }
-        ch.oJ();
+        FarmEntity.oJ();
         EA();
         DS();
         gJ(1);
@@ -5995,22 +5995,22 @@ public final class ci extends GLLib implements av {
     }
 
     static void Er() {
-        aYR++;
+        currentTutorialStepIndex++;
         axW = false;
         axV = false;
     }
 
     static void Es() {
-        if (!TutorialFlowController.beginStep(1, aYR, aYS, awV)) return;
-        String str = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SwitchTutorialState @@@@@@@@@@@@@@@@@@@@@@@@@@ s_curTutorial== " + aYR;
-        switch (aYR) {
+        if (!TutorialFlowController.beginStep(1, currentTutorialStepIndex, aYS, awV)) return;
+        String str = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SwitchTutorialState @@@@@@@@@@@@@@@@@@@@@@@@@@ s_curTutorial== " + currentTutorialStepIndex;
+        switch (currentTutorialStepIndex) {
             case 1:
                 if (!axV) {
                     axV = true;
                     aCi &= -256;
                     Ep();
-                    ch[] chVarArr = new ch[20];
-                    int iA = ch.a(1, 49, chVarArr, 20);
+                    FarmEntity[] chVarArr = new FarmEntity[20];
+                    int iA = FarmEntity.a(1, 49, chVarArr, 20);
                     for (int i = 0; i < iA; i++) {
                         chVarArr[i].fj(5);
                     }
@@ -6023,7 +6023,7 @@ public final class ci extends GLLib implements av {
                 }
                 if (axW) {
                     Er();
-                    aYR = 2;
+                    currentTutorialStepIndex = 2;
                 }
                 axW = true;
                 break;
@@ -6048,7 +6048,7 @@ public final class ci extends GLLib implements av {
                     }
                     axV = true;
                     axW = false;
-                    hj(aYR);
+                    hj(currentTutorialStepIndex);
                     String strDt = dt(4);
                     if (strDt == null) {
                         strDt = "";
@@ -6064,7 +6064,7 @@ public final class ci extends GLLib implements av {
                 }
                 if (axW) {
                     Er();
-                    aYR = 5;
+                    currentTutorialStepIndex = 5;
                 }
                 axW = true;
                 break;
@@ -6072,8 +6072,8 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axW = false;
                     axV = true;
-                    ch[] chVarArr2 = new ch[5];
-                    ch.a(1, 49, chVarArr2, 5);
+                    FarmEntity[] chVarArr2 = new FarmEntity[5];
+                    FarmEntity.a(1, 49, chVarArr2, 5);
                     if (chVarArr2[1] != null) {
                         b(chVarArr2[1], 35, -100);
                         aZj.y(chVarArr2[1].aol, chVarArr2[1].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
@@ -6102,12 +6102,12 @@ public final class ci extends GLLib implements av {
                     ayw = 900;
                     ayf = 0;
                 }
-                ch[] chVarArr3 = new ch[1];
-                ch.a(3, 47, chVarArr3, 1);
+                FarmEntity[] chVarArr3 = new FarmEntity[1];
+                FarmEntity.a(3, 47, chVarArr3, 1);
                 axW = ayf >= 6 && chVarArr3[0] == null;
                 if (axW) {
                     Er();
-                    aYR = 6;
+                    currentTutorialStepIndex = 6;
                     aCi &= -3;
                     if (baf != null) {
                         String string4 = Integer.toString(52245);
@@ -6143,8 +6143,8 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axV = true;
                     axW = false;
-                    ch[] chVarArr4 = new ch[3];
-                    ch.a(1, 49, chVarArr4, 3);
+                    FarmEntity[] chVarArr4 = new FarmEntity[3];
+                    FarmEntity.a(1, 49, chVarArr4, 3);
                     if (chVarArr4[1] != null) {
                         b(chVarArr4[1], 0, -50);
                         aZj.y(chVarArr4[1].aol, chVarArr4[1].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
@@ -6179,8 +6179,8 @@ public final class ci extends GLLib implements av {
                     bl(3, 1);
                     ayf = 0;
                 }
-                ch[] chVarArr5 = new ch[1];
-                ch.a(3, 47, chVarArr5, 1);
+                FarmEntity[] chVarArr5 = new FarmEntity[1];
+                FarmEntity.a(3, 47, chVarArr5, 1);
                 axW = ayf >= 6 && chVarArr5[0] == null;
                 if (axW) {
                     c(false, 0, avR);
@@ -6324,8 +6324,8 @@ public final class ci extends GLLib implements av {
             case FacebookRequestErrorClassification.EC_USER_TOO_MANY_CALLS /* 17 */:
                 if (!axV) {
                     axV = true;
-                    ch[] chVarArr6 = new ch[1];
-                    ch.b(1, 54, 16, chVarArr6, 1);
+                    FarmEntity[] chVarArr6 = new FarmEntity[1];
+                    FarmEntity.b(1, 54, 16, chVarArr6, 1);
                     b(chVarArr6[0], -30, -185);
                 }
                 if (bh(1, 53)) {
@@ -6344,8 +6344,8 @@ public final class ci extends GLLib implements av {
             case 18:
                 if (!axV) {
                     axV = true;
-                    ch[] chVarArr7 = new ch[1];
-                    ch.b(1, 54, 16, chVarArr7, 1);
+                    FarmEntity[] chVarArr7 = new FarmEntity[1];
+                    FarmEntity.b(1, 54, 16, chVarArr7, 1);
                     if (chVarArr7[0] != null) {
                         a(true, chVarArr7[0]);
                         H(0, 220, -50);
@@ -6453,8 +6453,8 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axV = true;
                     axW = false;
-                    ch[] chVarArr8 = new ch[1];
-                    ch.b(1, 50, 14, chVarArr8, 1);
+                    FarmEntity[] chVarArr8 = new FarmEntity[1];
+                    FarmEntity.b(1, 50, 14, chVarArr8, 1);
                     String str2 = "Tap Feed Mill. :" + chVarArr8[0];
                     if (chVarArr8[0] != null) {
                         b(chVarArr8[0], 5, -100);
@@ -6627,8 +6627,8 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axV = true;
                     axW = false;
-                    ch[] chVarArr9 = new ch[1];
-                    ch.b(1, 54, 17, chVarArr9, 1);
+                    FarmEntity[] chVarArr9 = new FarmEntity[1];
+                    FarmEntity.b(1, 54, 17, chVarArr9, 1);
                     String str4 = "actor cow:" + chVarArr9[0];
                     if (chVarArr9[0] != null) {
                         b(chVarArr9[0], -30, -100);
@@ -6668,8 +6668,8 @@ public final class ci extends GLLib implements av {
                     axW = false;
                     f(1, 53, false);
                     f(1, 54, false);
-                    ch[] chVarArr10 = new ch[1];
-                    ch.b(1, 54, 17, chVarArr10, 1);
+                    FarmEntity[] chVarArr10 = new FarmEntity[1];
+                    FarmEntity.b(1, 54, 17, chVarArr10, 1);
                     if (chVarArr10[0] != null) {
                         chVarArr10[0].pM();
                         b(chVarArr10[0], -30, -100);
@@ -6692,8 +6692,8 @@ public final class ci extends GLLib implements av {
                     axV = true;
                     f(1, 53, false);
                     f(1, 54, false);
-                    ch[] chVarArr11 = new ch[1];
-                    ch.b(1, 54, 17, chVarArr11, 1);
+                    FarmEntity[] chVarArr11 = new FarmEntity[1];
+                    FarmEntity.b(1, 54, 17, chVarArr11, 1);
                     String str6 = "x : " + (aYP == 50 ? 250 : 70);
                     if (!chVarArr11[0].fz(16)) {
                         a(true, chVarArr11[0]);
@@ -6730,8 +6730,8 @@ public final class ci extends GLLib implements av {
             case 37:
                 if (!axV) {
                     axV = true;
-                    ch[] chVarArr12 = new ch[40];
-                    int iA2 = ch.a(1, 49, chVarArr12, 40);
+                    FarmEntity[] chVarArr12 = new FarmEntity[40];
+                    int iA2 = FarmEntity.a(1, 49, chVarArr12, 40);
                     aCi |= 1;
                     for (int i2 = 0; i2 < iA2; i2++) {
                         chVarArr12[i2].ql();
@@ -6758,12 +6758,12 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axV = true;
                     axW = false;
-                    hj(aYR);
+                    hj(currentTutorialStepIndex);
                     ayf = 0;
                     aCi &= Integer.MAX_VALUE;
                     aCi |= 2;
-                    ch[] chVarArr13 = new ch[1];
-                    ch.a(1, 49, chVarArr13, 1);
+                    FarmEntity[] chVarArr13 = new FarmEntity[1];
+                    FarmEntity.a(1, 49, chVarArr13, 1);
                     if (chVarArr13[0] != null) {
                         b(chVarArr13[0], 0, -50);
                         aZj.y(chVarArr13[0].aol, chVarArr13[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
@@ -6774,11 +6774,11 @@ public final class ci extends GLLib implements av {
                     aym = true;
                     Et();
                 }
-                int iB = ch.b(1, 49, 4, new ch[40], 40);
+                int iB = FarmEntity.b(1, 49, 4, new FarmEntity[40], 40);
                 axW = false;
                 if (ayf >= 6 || iB == 0) {
-                    ch[] chVarArr14 = new ch[1];
-                    ch.a(3, 47, chVarArr14, 1);
+                    FarmEntity[] chVarArr14 = new FarmEntity[1];
+                    FarmEntity.a(3, 47, chVarArr14, 1);
                     if (chVarArr14[0] == null) {
                         axW = true;
                     }
@@ -6798,7 +6798,7 @@ public final class ci extends GLLib implements av {
             case 39:
                 if (!axV) {
                     axV = true;
-                    hj(aYR);
+                    hj(currentTutorialStepIndex);
                     aCi &= -2;
                     String strDt9 = dt(13);
                     if (strDt9 == null) {
@@ -6823,7 +6823,7 @@ public final class ci extends GLLib implements av {
                     axV = true;
                     axW = false;
                     e(1, 82, true);
-                    hj(aYR);
+                    hj(currentTutorialStepIndex);
                 }
                 if (axW) {
                     Er();
@@ -6832,7 +6832,7 @@ public final class ci extends GLLib implements av {
                 break;
             case 41:
                 if (!axV) {
-                    hk(aYR);
+                    hk(currentTutorialStepIndex);
                     e(2, 207, true);
                     e(2, 10, true);
                     f(2, 10, false);
@@ -6853,7 +6853,7 @@ public final class ci extends GLLib implements av {
                 break;
             case 42:
                 if (!axV) {
-                    hk(aYR);
+                    hk(currentTutorialStepIndex);
                     e(2, 207, true);
                     e(2, 10, true);
                     f(2, 10, true);
@@ -6878,7 +6878,7 @@ public final class ci extends GLLib implements av {
                     aMo = true;
                     e(1, 84, false);
                     f(1, 84, false);
-                    hj(aYR);
+                    hj(currentTutorialStepIndex);
                     aCi |= 32;
                     ayf = 0;
                     if (avE != null) {
@@ -6913,7 +6913,7 @@ public final class ci extends GLLib implements av {
             case 44:
                 if (!axV) {
                     axV = true;
-                    hj(aYR);
+                    hj(currentTutorialStepIndex);
                     String strDt10 = dt(15);
                     if (strDt10 == null) {
                         strDt10 = "";
@@ -6936,8 +6936,8 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axV = true;
                     axW = false;
-                    ch[] chVarArr15 = new ch[5];
-                    ch.a(1, 49, chVarArr15, 5);
+                    FarmEntity[] chVarArr15 = new FarmEntity[5];
+                    FarmEntity.a(1, 49, chVarArr15, 5);
                     b(chVarArr15[4], 0, -50);
                     aCi |= 1;
                 }
@@ -6996,8 +6996,8 @@ public final class ci extends GLLib implements av {
                     axW = false;
                     aCi &= -256;
                     Ep();
-                    ch[] chVarArr16 = new ch[1];
-                    ch.b(1, 50, 10, chVarArr16, 1);
+                    FarmEntity[] chVarArr16 = new FarmEntity[1];
+                    FarmEntity.b(1, 50, 10, chVarArr16, 1);
                     String str8 = "Outro crop. actorsFound. deactivate flag:" + chVarArr16[0];
                     if (chVarArr16[0] != null) {
                         chVarArr16[0].fy(AdRequest.MAX_CONTENT_URL_LENGTH);
@@ -7019,8 +7019,8 @@ public final class ci extends GLLib implements av {
                     m(strDt11, 7, 0);
                 }
                 if (axW) {
-                    ch[] chVarArr17 = new ch[1];
-                    ch.b(1, 50, 10, chVarArr17, 1);
+                    FarmEntity[] chVarArr17 = new FarmEntity[1];
+                    FarmEntity.b(1, 50, 10, chVarArr17, 1);
                     String str9 = "NPC_Storage. done mission. actorsFound:" + chVarArr17[0];
                     if (chVarArr17[0] != null) {
                         b(chVarArr17[0], 0, -100);
@@ -7034,9 +7034,9 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axW = false;
                     axV = true;
-                    hj(aYR);
-                    ch[] chVarArr18 = new ch[1];
-                    ch.b(1, 50, 10, chVarArr18, 1);
+                    hj(currentTutorialStepIndex);
+                    FarmEntity[] chVarArr18 = new FarmEntity[1];
+                    FarmEntity.b(1, 50, 10, chVarArr18, 1);
                     if (chVarArr18[0] != null) {
                         chVarArr18[0].fx(AdRequest.MAX_CONTENT_URL_LENGTH);
                     }
@@ -7049,7 +7049,7 @@ public final class ci extends GLLib implements av {
                 break;
             case 51:
                 if (!axV) {
-                    hm(aYR);
+                    hm(currentTutorialStepIndex);
                     axV = true;
                 }
                 if (axW) {
@@ -7059,7 +7059,7 @@ public final class ci extends GLLib implements av {
                 break;
             case 52:
                 if (!axV) {
-                    hm(aYR);
+                    hm(currentTutorialStepIndex);
                     axV = true;
                 }
                 if (axW) {
@@ -7118,12 +7118,12 @@ public final class ci extends GLLib implements av {
                 break;
             case 55:
                 if (!axV) {
-                    ch[] chVarArr19 = new ch[1];
-                    ch.b(1, 50, 9, chVarArr19, 1);
+                    FarmEntity[] chVarArr19 = new FarmEntity[1];
+                    FarmEntity.b(1, 50, 9, chVarArr19, 1);
                     if (chVarArr19[0] != null) {
                         b(chVarArr19[0], 0, -100);
                     }
-                    hj(aYR);
+                    hj(currentTutorialStepIndex);
                     axW = false;
                     axV = true;
                     if (baf != null) {
@@ -7136,7 +7136,7 @@ public final class ci extends GLLib implements av {
                 }
                 if (axW) {
                     Er();
-                    aYR = 57;
+                    currentTutorialStepIndex = 57;
                     Et();
                 }
                 break;
@@ -7152,7 +7152,7 @@ public final class ci extends GLLib implements av {
             case 57:
                 if (!axV) {
                     axV = true;
-                    hl(aYR);
+                    hl(currentTutorialStepIndex);
                 }
                 if (axW) {
                     Er();
@@ -7172,8 +7172,8 @@ public final class ci extends GLLib implements av {
                     axV = true;
                     aym = false;
                 }
-                ch[] chVarArr20 = new ch[1];
-                ch.a(3, 47, chVarArr20, 1);
+                FarmEntity[] chVarArr20 = new FarmEntity[1];
+                FarmEntity.a(3, 47, chVarArr20, 1);
                 if (chVarArr20[0] != null) {
                     aym = true;
                 }
@@ -7258,12 +7258,12 @@ public final class ci extends GLLib implements av {
                     String str10 = "wait level2: level:" + FC();
                     axV = true;
                     axW = false;
-                    hj(aYR);
+                    hj(currentTutorialStepIndex);
                     aCi = 255 | aCi;
                     c(false, 0, avR);
                     b(true, false, false);
                     aC(true);
-                    a(false, (ch) null);
+                    a(false, (FarmEntity) null);
                 }
                 axW = FC() >= 2;
                 if (axW) {
@@ -7274,7 +7274,7 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axV = true;
                     axW = false;
-                    aYR = -1;
+                    currentTutorialStepIndex = -1;
                     rr();
                     Ls();
                     e(1, 53, true);
@@ -7283,8 +7283,8 @@ public final class ci extends GLLib implements av {
                     awW = 160;
                     avB = true;
                     aCi = 255 | aCi;
-                    ch[] chVarArr21 = new ch[1];
-                    ch.b(1, 50, 14, chVarArr21, 1);
+                    FarmEntity[] chVarArr21 = new FarmEntity[1];
+                    FarmEntity.b(1, 50, 14, chVarArr21, 1);
                     n(chVarArr21[0]);
                     c(false, 0, avR);
                     if (aDc) {
@@ -7434,11 +7434,11 @@ public final class ci extends GLLib implements av {
                     atc[11][i7 + 29][6] = s5;
                     atc[11][i7 + 29][8] = s3;
                     if (i7 != 0) {
-                        ayX = ch.ay(1, i6);
+                        ayX = FarmEntity.ay(1, i6);
                         ayX += bL(3, i6 - 2000);
                         ayX = ih(ayX);
                     } else {
-                        ayV = ch.ay(1, i4);
+                        ayV = FarmEntity.ay(1, i4);
                         ayV += bL(3, i4 - 2000);
                         ayV = ih(ayV);
                     }
@@ -7489,11 +7489,11 @@ public final class ci extends GLLib implements av {
                     atc[11][i7 + 29][8] = 0;
                     aX(1, atc[11][i7 + 29][5]);
                     if (i7 != 0) {
-                        ayX = ch.ay(1, i6);
+                        ayX = FarmEntity.ay(1, i6);
                         ayX += bL(4, (i6 - 3000) - 12);
                         ayX = ih(ayX);
                     } else {
-                        ayV = ch.ay(1, i4);
+                        ayV = FarmEntity.ay(1, i4);
                         ayV += bL(4, (i4 - 3000) - 12);
                         ayV = ih(ayV);
                     }
@@ -7663,7 +7663,7 @@ public final class ci extends GLLib implements av {
         }
         ayK[0] = true;
         if (aZB == 0) {
-            azd = new ch[13];
+            azd = new FarmEntity[13];
         }
         if (azf == null || azg == null) {
             azf = new boolean[13];
@@ -7696,14 +7696,14 @@ public final class ci extends GLLib implements av {
         e(4, 40, false);
         e(4, 41, false);
         if (i == 164 && i2 == 825) {
-            if (aYR != -1 && aYR != 0) {
+            if (currentTutorialStepIndex != -1 && currentTutorialStepIndex != 0) {
                 return;
             }
-            if (aYR == -1 && !bg(1, 46) && qD() == 18) {
+            if (currentTutorialStepIndex == -1 && !bg(1, 46) && currentEngineState() == 18) {
                 return;
             }
         }
-        if (i == 164 && i2 == 825 && qD() == 42) {
+        if (i == 164 && i2 == 825 && currentEngineState() == 42) {
             aMT = true;
         }
         String strDt = dt(i);
@@ -7722,13 +7722,13 @@ public final class ci extends GLLib implements av {
         switch (i) {
             case 0:
                 arI = false;
-                if (qD() == 26) {
+                if (currentEngineState() == 26) {
                     aUH = true;
                     e(20, 18, false);
                     e(20, 17, false);
                     e(20, 16, false);
                     f(20, 16, false);
-                } else if (qD() == 14) {
+                } else if (currentEngineState() == 14) {
                     aKl = true;
                     if (!aUO) {
                         aZY = -1;
@@ -7738,7 +7738,7 @@ public final class ci extends GLLib implements av {
                     e(12, 32, false);
                     f(12, 32, false);
                 }
-                if (qD() == 20) {
+                if (currentEngineState() == 20) {
                     if (!aUO) {
                         aZY = -1;
                     }
@@ -7746,7 +7746,7 @@ public final class ci extends GLLib implements av {
                     aMy = aMw;
                     aMF = true;
                 }
-                ch.b(47, 3, new int[]{0, 0, 14}).b((GLLib.kH() >> 1) + aZj.aol, (GLLib.kI() >> 1) + aZj.aom + 50, 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aZw[29]);
+                FarmEntity.b(47, 3, new int[]{0, 0, 14}).b((GameRuntime.kH() >> 1) + aZj.aol, (GameRuntime.kI() >> 1) + aZj.aom + 50, 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aZw[29]);
                 if (!arS && aTK) {
                     arS = true;
                     F(42, 44, 15, 0);
@@ -7758,7 +7758,7 @@ public final class ci extends GLLib implements av {
                 aqa = 0;
                 if (!aMV) {
                     String strBY = GloftGF2F.acx.bY("IAP-GameCodeIGP");
-                    String str3 = "FBOOK  url:" + ("from=" + strBY + "&game=" + strBY + "&op=ANMP&ctg=FBOOK&udid=" + GLLib.jr() + "&ver=" + GloftGF2F.acx.bY("GameVer") + "&lg=" + System.getProperty("microedition.locale") + "&country=" + System.getProperty("microedition.locale.country") + "&f=" + System.getProperty("microedition.device.version") + "&d=" + System.getProperty("microedition.device"));
+                    String str3 = "FBOOK  url:" + ("from=" + strBY + "&game=" + strBY + "&op=ANMP&ctg=FBOOK&udid=" + GameRuntime.jr() + "&ver=" + GloftGF2F.acx.bY("GameVer") + "&lg=" + System.getProperty("microedition.locale") + "&country=" + System.getProperty("microedition.locale.country") + "&f=" + System.getProperty("microedition.device.version") + "&d=" + System.getProperty("microedition.device"));
                     try {
                         aMV = true;
                         new am(false);
@@ -7771,7 +7771,7 @@ public final class ci extends GLLib implements av {
             case 1:
                 break;
             case 2:
-                if (qD() == 20) {
+                if (currentEngineState() == 20) {
                     String str4 = aMw;
                     String strDt = dt(164);
                     if (strDt == null) {
@@ -7780,7 +7780,7 @@ public final class ci extends GLLib implements av {
                     if (str4 == strDt) {
                     }
                 }
-                if (qD() == 20) {
+                if (currentEngineState() == 20) {
                     aMy = aMw;
                     aMz = aMx;
                     aMC = aME;
@@ -7888,8 +7888,8 @@ public final class ci extends GLLib implements av {
     static void FE() {
         int i;
         int i2;
-        ch[] chVarArr = new ch[1];
-        ch.b(1, 50, 18, chVarArr, 1);
+        FarmEntity[] chVarArr = new FarmEntity[1];
+        FarmEntity.b(1, 50, 18, chVarArr, 1);
         String str = "player clear keeping reward. xp:" + aBC + ",coin:" + aBD + ",cash:" + aBE;
         if (chVarArr[0] != null) {
             int i3 = chVarArr[0].aol;
@@ -7901,15 +7901,15 @@ public final class ci extends GLLib implements av {
         }
         int[] iArr = {0, 0, 14};
         if (aBC > 0) {
-            ch.b(47, 3, iArr).b(i2 - 50, i, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, aBC);
+            FarmEntity.b(47, 3, iArr).b(i2 - 50, i, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, aBC);
             aBC = 0;
         }
         if (aBD > 0) {
-            ch.b(47, 3, iArr).b(i2, i, 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aBD);
+            FarmEntity.b(47, 3, iArr).b(i2, i, 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aBD);
             aBD = 0;
         }
         if (aBE > 0) {
-            ch.b(47, 3, iArr).b(i2 + 50, i, 6, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aBE);
+            FarmEntity.b(47, 3, iArr).b(i2 + 50, i, 6, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aBE);
             aBE = 0;
         }
     }
@@ -7920,27 +7920,27 @@ public final class ci extends GLLib implements av {
         }
         atc[1][33][7] = -1;
         bo(1, 33);
-        baa = true;
+        hasUnsavedGameChanges = true;
         return true;
     }
 
     static void FG() {
-        aBJ = Integer.toString(hE(1) + ch.ax(1, 1));
-        aBK = Integer.toString(hE(0) + ch.ax(1, 0));
-        aBL = Integer.toString(hE(2) + ch.ax(1, 2));
-        aBM = Integer.toString(hD(50) + ch.aw(1, 50));
+        aBJ = Integer.toString(hE(1) + FarmEntity.ax(1, 1));
+        aBK = Integer.toString(hE(0) + FarmEntity.ax(1, 0));
+        aBL = Integer.toString(hE(2) + FarmEntity.ax(1, 2));
+        aBM = Integer.toString(hD(50) + FarmEntity.aw(1, 50));
         aBN = Integer.toString(Ig());
         aBO = Integer.toString(ii(aBt));
         aBP = Integer.toString(aGm);
-        aBQ = Integer.toString(ch.fb(1));
-        aBR = Integer.toString((aZB == 0 ? ch.aw(1, 20) : 0) + hD(20));
+        aBQ = Integer.toString(FarmEntity.fb(1));
+        aBR = Integer.toString((aZB == 0 ? FarmEntity.aw(1, 20) : 0) + hD(20));
         aBS = Integer.toString(EK());
         if (aZB != 0) {
             aBS = AppEventsConstants.EVENT_PARAM_VALUE_NO;
         }
         aBT = Integer.toString(FH());
         aBU = Integer.toString(aZD);
-        aBV = Integer.toString(ch.aw(1, 48));
+        aBV = Integer.toString(FarmEntity.aw(1, 48));
         if (aZB != 0) {
             aBV = AppEventsConstants.EVENT_PARAM_VALUE_NO;
         }
@@ -7948,7 +7948,7 @@ public final class ci extends GLLib implements av {
         aBX = Integer.toString(Fu());
         aBY = Integer.toString(hD(49));
         aBZ = Integer.toString(hD(52));
-        aCa = Integer.toString(hF(4) + (aZB == 0 ? ch.aw(1, 52) : 0));
+        aCa = Integer.toString(hF(4) + (aZB == 0 ? FarmEntity.aw(1, 52) : 0));
     }
 
     static int FH() {
@@ -7990,7 +7990,7 @@ public final class ci extends GLLib implements av {
 
     static void FM() {
         aCd = new int[64];
-        aCe = new ch[64];
+        aCe = new FarmEntity[64];
         aCj = new int[64];
         aCi = -1;
         FN();
@@ -8054,9 +8054,9 @@ public final class ci extends GLLib implements av {
 
     static final void FR() {
         fK(aCu);
-        GLLib.bk("/14");
-        byte[] bArrDb = GLLib.db(aCu);
-        GLLib.ke();
+        GameRuntime.bk("/14");
+        byte[] bArrDb = GameRuntime.db(aCu);
+        GameRuntime.ke();
         byte bJ = j(bArrDb, 0);
         int i = 1;
         for (int i2 = 0; i2 < bJ; i2++) {
@@ -8095,7 +8095,7 @@ public final class ci extends GLLib implements av {
                     if (aCq < aCr[iM4if] + 1) {
                         aCq = (short) (aCr[iM4if] + 1);
                     }
-                    int iJ = GLLib.j(bArrDb, i8);
+                    int iJ = GameRuntime.j(bArrDb, i8);
                     i = i8 + 1;
                     if (aCs[iM4if] == null) {
                         aCs[iM4if] = new short[iJ];
@@ -8105,43 +8105,43 @@ public final class ci extends GLLib implements av {
                     }
                     int length = aCs[iM4if].length;
                     for (int i9 = length - iJ; i9 < length; i9++) {
-                        byte bJ3 = GLLib.j(bArrDb, i);
+                        byte bJ3 = GameRuntime.j(bArrDb, i);
                         i++;
                         aCs[iM4if][i9] = bJ3;
                         switch (bJ3) {
                             case R.styleable.CardView_contentPaddingTop /* 11 */:
-                                aCt[iM4if][i9 * 6] = GLLib.k(bArrDb, i);
+                                aCt[iM4if][i9 * 6] = GameRuntime.k(bArrDb, i);
                                 int i10 = i + 2;
-                                aCt[iM4if][(i9 * 6) + 1] = GLLib.k(bArrDb, i10);
+                                aCt[iM4if][(i9 * 6) + 1] = GameRuntime.k(bArrDb, i10);
                                 i = i10 + 2;
                                 break;
                             case R.styleable.CardView_contentPaddingBottom /* 12 */:
-                                aCt[iM4if][i9 * 6] = GLLib.k(bArrDb, i);
+                                aCt[iM4if][i9 * 6] = GameRuntime.k(bArrDb, i);
                                 int i11 = i + 2;
-                                aCt[iM4if][(i9 * 6) + 1] = GLLib.k(bArrDb, i11);
+                                aCt[iM4if][(i9 * 6) + 1] = GameRuntime.k(bArrDb, i11);
                                 i = i11 + 2;
                                 break;
                             case 21:
                                 aCt[iM4if][i9 * 6] = sK;
-                                aCt[iM4if][(i9 * 6) + 1] = GLLib.k(bArrDb, i);
+                                aCt[iM4if][(i9 * 6) + 1] = GameRuntime.k(bArrDb, i);
                                 int i12 = i + 2;
-                                aCt[iM4if][(i9 * 6) + 2] = GLLib.k(bArrDb, i12);
+                                aCt[iM4if][(i9 * 6) + 2] = GameRuntime.k(bArrDb, i12);
                                 i = i12 + 2;
-                                if (aYR == 1) {
+                                if (currentTutorialStepIndex == 1) {
                                     aCt[iM4if][(i9 * 6) + 1] = aCt[iM4if][(i9 * 6) + 1] + ((w.screenWidth - 800) >> 1);
                                     aCt[iM4if][(i9 * 6) + 2] = aCt[iM4if][(i9 * 6) + 2] + ((w.screenHeight - 480) >> 1);
                                 }
                                 break;
                             case 22:
                                 aCt[iM4if][i9 * 6] = sK;
-                                aCt[iM4if][(i9 * 6) + 1] = GLLib.j(bArrDb, i);
+                                aCt[iM4if][(i9 * 6) + 1] = GameRuntime.j(bArrDb, i);
                                 int i13 = i + 1;
-                                aCt[iM4if][(i9 * 6) + 2] = GLLib.j(bArrDb, i13);
+                                aCt[iM4if][(i9 * 6) + 2] = GameRuntime.j(bArrDb, i13);
                                 i = i13 + 1;
                                 break;
                             case FacebookRequestErrorClassification.EC_INVALID_SESSION /* 102 */:
                             case 107:
-                                aCt[iM4if][i9 * 6] = GLLib.k(bArrDb, i);
+                                aCt[iM4if][i9 * 6] = GameRuntime.k(bArrDb, i);
                                 i += 2;
                                 break;
                             case 103:
@@ -8149,15 +8149,15 @@ public final class ci extends GLLib implements av {
                             case 105:
                             case 108:
                             case 109:
-                                aCt[iM4if][i9 * 6] = GLLib.k(bArrDb, i);
+                                aCt[iM4if][i9 * 6] = GameRuntime.k(bArrDb, i);
                                 int i14 = i + 2;
-                                aCt[iM4if][(i9 * 6) + 1] = GLLib.k(bArrDb, i14);
+                                aCt[iM4if][(i9 * 6) + 1] = GameRuntime.k(bArrDb, i14);
                                 int i15 = i14 + 2;
-                                aCt[iM4if][(i9 * 6) + 2] = GLLib.k(bArrDb, i15);
+                                aCt[iM4if][(i9 * 6) + 2] = GameRuntime.k(bArrDb, i15);
                                 int i16 = i15 + 2;
-                                aCt[iM4if][(i9 * 6) + 3] = GLLib.k(bArrDb, i16);
+                                aCt[iM4if][(i9 * 6) + 3] = GameRuntime.k(bArrDb, i16);
                                 i = i16 + 2;
-                                if (aYR == 1 && (bJ3 == 108 || bJ3 == 109)) {
+                                if (currentTutorialStepIndex == 1 && (bJ3 == 108 || bJ3 == 109)) {
                                     aCt[iM4if][(i9 * 6) + 2] = (aCt[iM4if][(i9 * 6) + 2] * 1) + ((w.screenWidth - 800) >> 1);
                                     aCt[iM4if][(i9 * 6) + 3] = (aCt[iM4if][(i9 * 6) + 3] * 1) + ((w.screenHeight - 480) >> 1);
                                 }
@@ -8167,35 +8167,35 @@ public final class ci extends GLLib implements av {
                                 }
                                 break;
                             case 106:
-                                aCt[iM4if][i9 * 6] = GLLib.k(bArrDb, i);
+                                aCt[iM4if][i9 * 6] = GameRuntime.k(bArrDb, i);
                                 int i17 = i + 2;
-                                aCt[iM4if][(i9 * 6) + 1] = GLLib.k(bArrDb, i17);
+                                aCt[iM4if][(i9 * 6) + 1] = GameRuntime.k(bArrDb, i17);
                                 i = i17 + 2;
                                 break;
                             case 110:
-                                aCt[iM4if][i9 * 6] = GLLib.k(bArrDb, i);
+                                aCt[iM4if][i9 * 6] = GameRuntime.k(bArrDb, i);
                                 int i18 = i + 2;
-                                aCt[iM4if][(i9 * 6) + 1] = GLLib.k(bArrDb, i18);
+                                aCt[iM4if][(i9 * 6) + 1] = GameRuntime.k(bArrDb, i18);
                                 int i19 = i18 + 2;
-                                aCt[iM4if][(i9 * 6) + 2] = GLLib.k(bArrDb, i19);
+                                aCt[iM4if][(i9 * 6) + 2] = GameRuntime.k(bArrDb, i19);
                                 i = i19 + 2;
                                 break;
                             case 111:
                                 aCt[iM4if][i9 * 6] = sK;
-                                aCt[iM4if][(i9 * 6) + 1] = GLLib.k(bArrDb, i);
+                                aCt[iM4if][(i9 * 6) + 1] = GameRuntime.k(bArrDb, i);
                                 int i20 = i + 2;
-                                aCt[iM4if][(i9 * 6) + 2] = GLLib.k(bArrDb, i20);
+                                aCt[iM4if][(i9 * 6) + 2] = GameRuntime.k(bArrDb, i20);
                                 i = i20 + 2;
-                                if (aYR == 1 || (awW == 21 && iM4if != 1 && iM4if != 3)) {
+                                if (currentTutorialStepIndex == 1 || (awW == 21 && iM4if != 1 && iM4if != 3)) {
                                     aCt[iM4if][(i9 * 6) + 1] = (aCt[iM4if][(i9 * 6) + 1] * 1) + ((w.screenWidth - 800) >> 1);
                                     aCt[iM4if][(i9 * 6) + 2] = (aCt[iM4if][(i9 * 6) + 2] * 1) + ((w.screenHeight - 480) >> 1);
                                 }
                                 break;
                             case 112:
                                 aCt[iM4if][i9 * 6] = sK;
-                                aCt[iM4if][(i9 * 6) + 1] = GLLib.k(bArrDb, i);
+                                aCt[iM4if][(i9 * 6) + 1] = GameRuntime.k(bArrDb, i);
                                 int i21 = i + 2;
-                                aCt[iM4if][(i9 * 6) + 2] = GLLib.k(bArrDb, i21);
+                                aCt[iM4if][(i9 * 6) + 2] = GameRuntime.k(bArrDb, i21);
                                 i = i21 + 2;
                                 break;
                             case 113:
@@ -8203,16 +8203,16 @@ public final class ci extends GLLib implements av {
                                 break;
                             case 114:
                                 aCt[iM4if][i9 * 6] = sK;
-                                aCt[iM4if][(i9 * 6) + 1] = GLLib.k(bArrDb, i);
+                                aCt[iM4if][(i9 * 6) + 1] = GameRuntime.k(bArrDb, i);
                                 int i22 = i + 2;
-                                aCt[iM4if][(i9 * 6) + 2] = GLLib.k(bArrDb, i22);
+                                aCt[iM4if][(i9 * 6) + 2] = GameRuntime.k(bArrDb, i22);
                                 i = i22 + 2;
                                 break;
                             case 115:
                                 aCt[iM4if][i9 * 6] = sK;
-                                aCt[iM4if][(i9 * 6) + 1] = GLLib.k(bArrDb, i);
+                                aCt[iM4if][(i9 * 6) + 1] = GameRuntime.k(bArrDb, i);
                                 int i23 = i + 2;
-                                aCt[iM4if][(i9 * 6) + 2] = GLLib.k(bArrDb, i23);
+                                aCt[iM4if][(i9 * 6) + 2] = GameRuntime.k(bArrDb, i23);
                                 i = i23 + 2;
                                 break;
                             case 116:
@@ -8225,13 +8225,13 @@ public final class ci extends GLLib implements av {
         }
         aCv = aCr.length;
         fN(aCu + 1);
-        GLLib.bk("/9");
+        GameRuntime.bk("/9");
         if (aYU == 7) {
             aZf[81] = b(158, 1, true, false);
         } else {
             aZf[81] = b(81, 1, true, false);
         }
-        GLLib.ke();
+        GameRuntime.ke();
     }
 
     static void FS() {
@@ -8273,7 +8273,7 @@ public final class ci extends GLLib implements av {
                     aZj.y(aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1], 1500);
                     break;
                 case 21:
-                    ch chVarAC = ch.aC(1, aCt[aCo][i * 6]);
+                    FarmEntity chVarAC = FarmEntity.aC(1, aCt[aCo][i * 6]);
                     String str = "id " + aCt[aCo][i * 6] + (chVarAC == null ? " not found" : " found");
                     chVarAC.aol = aCt[aCo][(i * 6) + 1];
                     chVarAC.aom = aCt[aCo][(i * 6) + 2];
@@ -8282,43 +8282,43 @@ public final class ci extends GLLib implements av {
                     String str2 = "k_CMD_OBJLAYER_SETPOS " + chVarAC.aol + " " + chVarAC.aom;
                     break;
                 case 22:
-                    ch chVarAC2 = ch.aC(1, aCt[aCo][i * 6]);
+                    FarmEntity chVarAC2 = FarmEntity.aC(1, aCt[aCo][i * 6]);
                     if (chVarAC2.aoO == null) {
                         chVarAC2.aoO = new aa(aZf[chVarAC2.aoG], chVarAC2.aot, chVarAC2.aou);
                     }
                     chVarAC2.aoO.Y(aCt[aCo][(i * 6) + 1], aCt[aCo][(i * 6) + 2] == 0 ? 1 : -1);
                     break;
                 case 103:
-                    ch chVarBs = bs(aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1]);
+                    FarmEntity chVarBs = bs(aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1]);
                     chVarBs.aol = aZj.aol + aCt[aCo][(i * 6) + 2];
                     chVarBs.aom = aZj.aom + aCt[aCo][(i * 6) + 3];
                     chVarBs.aoE = chVarBs.aol;
                     chVarBs.aoF = chVarBs.aom;
                     break;
                 case 104:
-                    ch[] chVarArr = new ch[2];
-                    ch.b(1, aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1], chVarArr, 1);
+                    FarmEntity[] chVarArr = new FarmEntity[2];
+                    FarmEntity.b(1, aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1], chVarArr, 1);
                     c(chVarArr[0], aCt[aCo][(i * 6) + 2], aCt[aCo][(i * 6) + 3]);
                     break;
                 case 105:
-                    ch[] chVarArr2 = new ch[2];
+                    FarmEntity[] chVarArr2 = new FarmEntity[2];
                     String str3 = "arg1 " + aCt[aCo][i * 6] + " arg2 " + aCt[aCo][(i * 6) + 1];
-                    ch.b(1, aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1], chVarArr2, 1);
+                    FarmEntity.b(1, aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1], chVarArr2, 1);
                     if (chVarArr2[0].aoO == null) {
                         chVarArr2[0].aoO = new aa(aZf[chVarArr2[0].aoG], chVarArr2[0].aot, chVarArr2[0].aou);
                     }
                     chVarArr2[0].aoO.Y(aCt[aCo][(i * 6) + 2], aCt[aCo][(i * 6) + 3]);
                     break;
                 case 106:
-                    ch[] chVarArr3 = new ch[2];
-                    ch.b(1, aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1], chVarArr3, 1);
+                    FarmEntity[] chVarArr3 = new FarmEntity[2];
+                    FarmEntity.b(1, aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1], chVarArr3, 1);
                     chVarArr3[0].oN();
                     break;
                 case 107:
                     fL(aCt[aCo][i * 6]);
                     break;
                 case 108:
-                    ch chVarBs2 = bs(aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1]);
+                    FarmEntity chVarBs2 = bs(aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1]);
                     chVarBs2.aol = aCt[aCo][(i * 6) + 2];
                     chVarBs2.aom = aCt[aCo][(i * 6) + 3];
                     chVarBs2.aoE = chVarBs2.aol;
@@ -8326,8 +8326,8 @@ public final class ci extends GLLib implements av {
                     String str4 = "POP ACTOR " + chVarBs2.aol + " " + chVarBs2.aom;
                     break;
                 case 109:
-                    ch[] chVarArr4 = new ch[2];
-                    ch.b(1, aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1], chVarArr4, 1);
+                    FarmEntity[] chVarArr4 = new FarmEntity[2];
+                    FarmEntity.b(1, aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1], chVarArr4, 1);
                     c(chVarArr4[0], aCt[aCo][(i * 6) + 2], aCt[aCo][(i * 6) + 3]);
                     break;
                 case 110:
@@ -8338,11 +8338,11 @@ public final class ci extends GLLib implements av {
                     m(strDt, aCt[aCo][(i * 6) + 1], aCt[aCo][(i * 6) + 2]);
                     break;
                 case 111:
-                    c(ch.aC(1, aCt[aCo][i * 6]), aCt[aCo][(i * 6) + 1], aCt[aCo][(i * 6) + 2]);
+                    c(FarmEntity.aC(1, aCt[aCo][i * 6]), aCt[aCo][(i * 6) + 1], aCt[aCo][(i * 6) + 2]);
                     break;
                 case 112:
                     String str5 = "set flag " + aCt[aCo][(i * 6) + 1] + " " + aCt[aCo][(i * 6) + 2];
-                    ch chVarAC3 = ch.aC(1, aCt[aCo][i * 6]);
+                    FarmEntity chVarAC3 = FarmEntity.aC(1, aCt[aCo][i * 6]);
                     if (aCt[aCo][(i * 6) + 2] == 0) {
                         chVarAC3.fy(1 << aCt[aCo][(i * 6) + 1]);
                     } else {
@@ -8350,10 +8350,10 @@ public final class ci extends GLLib implements av {
                     }
                     break;
                 case 113:
-                    ch.aC(1, aCt[aCo][i * 6]).oN();
+                    FarmEntity.aC(1, aCt[aCo][i * 6]).oN();
                     break;
                 case 114:
-                    ch chVarAC4 = ch.aC(1, aCt[aCo][i * 6]);
+                    FarmEntity chVarAC4 = FarmEntity.aC(1, aCt[aCo][i * 6]);
                     chVarAC4.aol = aZj.aol + aCt[aCo][(i * 6) + 1];
                     chVarAC4.aom = aZj.aom + aCt[aCo][(i * 6) + 2];
                     chVarAC4.aoE = chVarAC4.aol;
@@ -8363,7 +8363,7 @@ public final class ci extends GLLib implements av {
                     }
                     break;
                 case 115:
-                    d(ch.aC(1, aCt[aCo][i * 6]), aCt[aCo][(i * 6) + 1], aCt[aCo][(i * 6) + 2]);
+                    d(FarmEntity.aC(1, aCt[aCo][i * 6]), aCt[aCo][(i * 6) + 1], aCt[aCo][(i * 6) + 2]);
                     break;
             }
         }
@@ -8393,8 +8393,8 @@ public final class ci extends GLLib implements av {
                         break;
                     case 104:
                     case 109:
-                        ch[] chVarArr = new ch[2];
-                        ch.b(1, aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1], chVarArr, 1);
+                        FarmEntity[] chVarArr = new FarmEntity[2];
+                        FarmEntity.b(1, aCt[aCo][i * 6], aCt[aCo][(i * 6) + 1], chVarArr, 1);
                         switch (chVarArr[0].Kx) {
                             case 13:
                                 chVarArr[0].aL(chVarArr[0].aoE - (kH() >> 1), chVarArr[0].aoF - (kI() >> 1));
@@ -8407,12 +8407,12 @@ public final class ci extends GLLib implements av {
                         break;
                     case 111:
                     case 115:
-                        ch chVarAC = ch.aC(1, aCt[aCo][i * 6]);
+                        FarmEntity chVarAC = FarmEntity.aC(1, aCt[aCo][i * 6]);
                         chVarAC.aol = chVarAC.aoE;
                         chVarAC.aom = chVarAC.aoF;
                         break;
                     case 114:
-                        ch chVarAC2 = ch.aC(1, aCt[aCo][i * 6]);
+                        FarmEntity chVarAC2 = FarmEntity.aC(1, aCt[aCo][i * 6]);
                         chVarAC2.aol = aZj.aol + aCt[aCo][(i * 6) + 1];
                         chVarAC2.aom = aZj.aom + aCt[aCo][(i * 6) + 2];
                         break;
@@ -8494,7 +8494,7 @@ public final class ci extends GLLib implements av {
             aAK = -1;
         }
         if (aAH == iFh && Fb() < 50 && hy(aAH)) {
-            aAM += GLLib.Qy;
+            aAM += GameRuntime.Qy;
             if (aAM > 600 && aAM > 900) {
                 aAJ = aAH;
                 aAM -= 300;
@@ -8510,14 +8510,14 @@ public final class ci extends GLLib implements av {
             }
         }
         if (aAJ > -1) {
-            tutorialUiCallbackEpoch = TutorialFlowController.captureCallback(aYR, aYS, awV);
+            tutorialUiCallbackEpoch = TutorialFlowController.captureCallback(currentTutorialStepIndex, aYS, awV);
         }
     }
 
     private static boolean acceptTutorialUiCallback() {
         long token = tutorialUiCallbackEpoch;
         tutorialUiCallbackEpoch = 0;
-        return token == 0 || TutorialFlowController.callbackCurrent(token, aYR, aYS, awV);
+        return token == 0 || TutorialFlowController.callbackCurrent(token, currentTutorialStepIndex, aYS, awV);
     }
 
     static void Fj() {
@@ -8536,7 +8536,7 @@ public final class ci extends GLLib implements av {
         for (int i = 0; i < 15; i++) {
             aAS[i] = 0;
         }
-        for (ch chVar = ch.als[1]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = FarmEntity.als[1]; chVar != null; chVar = chVar.aoi) {
             switch (chVar.Kx) {
                 case 50:
                     if ((chVar.aoC == 20 || chVar.aoC == 21) && !chVar.fz(4096)) {
@@ -8565,16 +8565,16 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static ch Fl() {
-        ch chVar = ch.als[1];
+    static FarmEntity Fl() {
+        FarmEntity chVar = FarmEntity.als[1];
         int i = 0;
-        for (ch chVar2 = chVar; chVar2 != null; chVar2 = chVar2.aoi) {
+        for (FarmEntity chVar2 = chVar; chVar2 != null; chVar2 = chVar2.aoi) {
             if (chVar2.Kx == 54 && chVar2.anp == 0 && !chVar2.anj && !chVar2.ank && !chVar2.anw && u(chVar2) && !chVar2.fz(4096)) {
                 i++;
             }
         }
         if (i != 0) {
-            int iL = GLLib.L(1, i);
+            int iL = GameRuntime.L(1, i);
             int i2 = 0;
             while (chVar != null) {
                 if (chVar.Kx == 54 && chVar.anp == 0 && !chVar.anj && !chVar.ank && !chVar.anw && u(chVar) && !chVar.fz(4096) && (i2 = i2 + 1) == iL) {
@@ -8586,8 +8586,8 @@ public final class ci extends GLLib implements av {
         return null;
     }
 
-    static ch Fm() {
-        ch chVar = ch.als[1];
+    static FarmEntity Fm() {
+        FarmEntity chVar = FarmEntity.als[1];
         while (chVar != null) {
             if (chVar.Kx == 54 && chVar.anw && ((chVar.ant > -1 || aZB != 0) && (!chVar.fz(4096) || aZB != 0))) {
                 return chVar;
@@ -8597,8 +8597,8 @@ public final class ci extends GLLib implements av {
         return null;
     }
 
-    static ch Fn() {
-        for (ch chVar = ch.als[1]; chVar != null; chVar = chVar.aoi) {
+    static FarmEntity Fn() {
+        for (FarmEntity chVar = FarmEntity.als[1]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 54 && chVar.anw && ((chVar.ant > -1 || aZB != 0) && chVar.amQ && lN(GLURLConnection.HTTP_FOUND))) {
                 return chVar;
             }
@@ -8606,8 +8606,8 @@ public final class ci extends GLLib implements av {
         return null;
     }
 
-    static ch Fo() {
-        for (ch chVar = ch.als[1]; chVar != null; chVar = chVar.aoi) {
+    static FarmEntity Fo() {
+        for (FarmEntity chVar = FarmEntity.als[1]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 50 && u(chVar) && chVar.aoC >= 24 && chVar.aoC <= 26 && !chVar.fz(4096)) {
                 return chVar;
             }
@@ -8616,7 +8616,7 @@ public final class ci extends GLLib implements av {
     }
 
     static boolean Fp() {
-        for (ch chVar = ch.als[1]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = FarmEntity.als[1]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 54 && u(chVar) && !chVar.fz(4096) && (chVar.aoC == 4 || chVar.aoC == 5 || chVar.aoC == 6 || chVar.aoC == 7 || chVar.aoC == 8 || chVar.aoC == 9 || chVar.aoC == 10 || chVar.aoC == 11 || chVar.aoC == 12 || chVar.aoC == 13 || chVar.aoC == 14 || chVar.aoC == 15)) {
                 return true;
             }
@@ -8704,7 +8704,7 @@ public final class ci extends GLLib implements av {
     }
 
     static int Fv() {
-        aIK = (ch[][]) Array.newInstance((Class<?>) ch.class, 8, 4);
+        aIK = (FarmEntity[][]) Array.newInstance((Class<?>) FarmEntity.class, 8, 4);
         l(new int[]{3});
         int i = aIp - aIq >= 6 ? 6 : aIp - aIq;
         for (int i2 = 0; i2 < i; i2++) {
@@ -8716,7 +8716,7 @@ public final class ci extends GLLib implements av {
     }
 
     static int Fw() {
-        return aZB == 0 ? aIo * ch.ay(1, 1002) : aBq;
+        return aZB == 0 ? aIo * FarmEntity.ay(1, 1002) : aBq;
     }
 
     static void Fx() {
@@ -8725,10 +8725,10 @@ public final class ci extends GLLib implements av {
     }
 
     static void Fy() {
-        if (aAX > 0 && ch.fe(3) == 0 && aCg == 0) {
+        if (aAX > 0 && FarmEntity.fe(3) == 0 && aCg == 0) {
             aAX = 0;
         }
-        if (aAY && ch.fe(3) == 0 && aCg == 0) {
+        if (aAY && FarmEntity.fe(3) == 0 && aCg == 0) {
             aAY = false;
         }
     }
@@ -9324,7 +9324,7 @@ public final class ci extends GLLib implements av {
         int iGJ = GJ() - aGn >= 5 ? 5 : GJ() - aGn;
         for (int i = 0; i <= iGJ; i++) {
             if (aGn + i < (aFp ? aGk : aGm - aGk) && i < 5 && aGx[aGn + i]) {
-                aZf[138].a(GLLib.Qj, 11, (float) (atc[22][(27 * i) + 31][2] - 100), (float) (atc[22][(27 * i) + 31][3] - 50), 0);
+                aZf[138].a(GameRuntime.Qj, 11, (float) (atc[22][(27 * i) + 31][2] - 100), (float) (atc[22][(27 * i) + 31][3] - 50), 0);
             }
         }
     }
@@ -9568,7 +9568,7 @@ public final class ci extends GLLib implements av {
         }
         if (aGL != null) {
             if (!aGL.lQ()) {
-                aGL.dV(GLLib.Qy);
+                aGL.dV(GameRuntime.Qy);
                 return;
             }
             e(22, 151, true);
@@ -9590,27 +9590,27 @@ public final class ci extends GLLib implements av {
     }
 
     static void Gb() {
-        if (FC() < 3 || aYR != -1) {
+        if (FC() < 3 || currentTutorialStepIndex != -1) {
             return;
         }
         if (aYS == -1 || aYS == 0) {
-            if (GLLib.jr() == null) {
+            if (GameRuntime.jr() == null) {
                 s.f("NULLUDID", true);
             } else {
-                s.f(GLLib.jr(), true);
+                s.f(GameRuntime.jr(), true);
             }
             Ga();
             int iMy = bq.my();
             if (iMy == 1) {
                 if (bq.mv() == 0) {
-                    if (qD() != 43) {
+                    if (currentEngineState() != 43) {
                         aOH += "GLCLoud upload Success";
                         kp(13);
                     }
-                    baa = true;
+                    hasUnsavedGameChanges = true;
                 } else {
                     String str = "save cloud err + " + bq.mv() + " log: " + bq.nF();
-                    if (qD() != 43) {
+                    if (currentEngineState() != 43) {
                         aOH += "GLCLoud upload Error";
                         aOH += "\n" + bq.mv() + " log: " + bq.nF();
                         kp(13);
@@ -9618,7 +9618,7 @@ public final class ci extends GLLib implements av {
                 }
                 aCD = true;
             }
-            if (aCH && (qD() == 18 || qD() == 15)) {
+            if (aCH && (currentEngineState() == 18 || currentEngineState() == 15)) {
                 jD(14);
                 aCH = false;
                 int iFC = FC();
@@ -9644,10 +9644,10 @@ public final class ci extends GLLib implements av {
                     return;
                 }
                 String str2 = "save load err + " + bq.mv() + " log: " + bq.nF();
-                if (qD() != 18) {
+                if (currentEngineState() != 18) {
                     qB();
                 }
-                if (qD() != 43) {
+                if (currentEngineState() != 43) {
                     aOH += "GLCLoud start preview Error";
                     aOH += "\n" + bq.mv() + " log: " + bq.nF();
                     kp(13);
@@ -9981,7 +9981,7 @@ public final class ci extends GLLib implements av {
                                     aDo[i27] = jVarBY4.KW[i26][0];
                                     aDn[i27] = jVarBY4.KW[i26][2];
                                     if (jVarBY4.KW[i26][8] > 0) {
-                                        int iAy = ch.ay(1, jVarBY4.KW[i26][1]);
+                                        int iAy = FarmEntity.ay(1, jVarBY4.KW[i26][1]);
                                         aDt[i27] = w(jVarBY4.KW[i26][(iAy - 1 < 0 ? 0 : iAy + (-1) > 3 ? 3 : iAy - 1) + 7]);
                                     } else {
                                         aDt[i27] = w(jVarBY4.KW[i26][7]);
@@ -10038,7 +10038,7 @@ public final class ci extends GLLib implements av {
                                 aDo[i5] = jVarBY5.KW[i30][0];
                                 aDn[i5] = jVarBY5.KW[i30][2];
                                 if (jVarBY5.KW[i30][7] > 0) {
-                                    int iBL = ((jVarBY5.KW[i30][0] == 22 || jVarBY5.KW[i30][0] == 23) ? bL(4, jVarBY5.KW[i30][0] - 12) : 0) + ch.ay(1, jVarBY5.KW[i30][1]);
+                                    int iBL = ((jVarBY5.KW[i30][0] == 22 || jVarBY5.KW[i30][0] == 23) ? bL(4, jVarBY5.KW[i30][0] - 12) : 0) + FarmEntity.ay(1, jVarBY5.KW[i30][1]);
                                     long[] jArr = aDt;
                                     int[] iArr2 = jVarBY5.KW[i30];
                                     if (iBL < 0) {
@@ -10094,7 +10094,7 @@ public final class ci extends GLLib implements av {
         }
         DF();
         gM(2);
-        if (aYR == 13 || aYR == 14) {
+        if (currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14) {
             bl(0, 1);
         } else {
             gQ(0);
@@ -10175,7 +10175,7 @@ public final class ci extends GLLib implements av {
         }
         DF();
         gM(2);
-        if (aYR == 14) {
+        if (currentTutorialStepIndex == 14) {
             bl(0, 1);
         }
     }
@@ -10245,7 +10245,7 @@ public final class ci extends GLLib implements av {
         }
         DF();
         gM(2);
-        if (aYR == 14) {
+        if (currentTutorialStepIndex == 14) {
             bl(0, 1);
         }
     }
@@ -10360,7 +10360,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Go() {
-        if (aYR != 57) {
+        if (currentTutorialStepIndex != 57) {
             gX(60);
         }
         for (int i = 0; i < aEL && i < 15; i++) {
@@ -10717,7 +10717,7 @@ public final class ci extends GLLib implements av {
         if (aJn == 2) {
             return;
         }
-        for (ch chVar = ch.als[1]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = FarmEntity.als[1]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 50) {
                 int i = aZD + 1;
                 switch (chVar.aoC) {
@@ -10863,7 +10863,7 @@ public final class ci extends GLLib implements av {
         String str3 = sbAppend.append(str).toString() + "&f=" + com.gameloft.android.wrapper.au.Pw();
         String str4 = "#Tho1 url = " + str3;
         try {
-            GLLib.bd(str3);
+            GameRuntime.bd(str3);
         } catch (Exception e) {
         }
     }
@@ -11167,7 +11167,7 @@ public final class ci extends GLLib implements av {
                 aHh[i4] = "";
                 aHg[i4] = ij(0);
                 aHe[i4] = 4;
-                if (aYR == 28) {
+                if (currentTutorialStepIndex == 28) {
                     axW = true;
                 }
             } else if (jMD > aHa[i4] && jMD < aHa[i4] + ((long) ii(aGZ[i4]))) {
@@ -11520,12 +11520,12 @@ public final class ci extends GLLib implements av {
             aFR = 0;
             e(6, 32, true);
             Hn();
-            if (aYR == 26) {
+            if (currentTutorialStepIndex == 26) {
                 axW = true;
             }
             if (!awT) {
                 awT = true;
-                aYR = 27;
+                currentTutorialStepIndex = 27;
                 axV = false;
                 axW = false;
             }
@@ -11604,7 +11604,7 @@ public final class ci extends GLLib implements av {
         if (aIG == 0) {
             l(new int[]{0, 4});
         } else if (aIG == 1) {
-            aIK = (ch[][]) Array.newInstance((Class<?>) ch.class, 8, 4);
+            aIK = (FarmEntity[][]) Array.newInstance((Class<?>) FarmEntity.class, 8, 4);
             l(new int[]{3});
         } else if (aIG == 2) {
             l(new int[]{1, 2});
@@ -11759,8 +11759,8 @@ public final class ci extends GLLib implements av {
             return 0;
         }
         azy[i][(i2 * 3) + 0] = 1;
-        azy[i][(i2 * 3) + 1] = iArr[GLLib.L(0, i6)];
-        azy[i][(i2 * 3) + 2] = GLLib.L(1, i3 / jVarBY.KW[azy[i][(i2 * 3) + 1]][5] < 5 ? i3 / jVarBY.KW[azy[i][(i2 * 3) + 1]][5] : 5);
+        azy[i][(i2 * 3) + 1] = iArr[GameRuntime.L(0, i6)];
+        azy[i][(i2 * 3) + 2] = GameRuntime.L(1, i3 / jVarBY.KW[azy[i][(i2 * 3) + 1]][5] < 5 ? i3 / jVarBY.KW[azy[i][(i2 * 3) + 1]][5] : 5);
         return azy[i][(i2 * 3) + 2] * jVarBY.KW[azy[i][(i2 * 3) + 1]][5];
     }
 
@@ -11872,8 +11872,8 @@ public final class ci extends GLLib implements av {
 
     static void IC() {
         int iFI = FI();
-        ch[] chVarArr = new ch[iFI];
-        int iA = ch.a(1, 49, chVarArr, iFI);
+        FarmEntity[] chVarArr = new FarmEntity[iFI];
+        int iA = FarmEntity.a(1, 49, chVarArr, iFI);
         aCi |= 1;
         for (int i = 0; i < iA; i++) {
             if (chVarArr[i].pr() != 1) {
@@ -11881,8 +11881,8 @@ public final class ci extends GLLib implements av {
             }
         }
         int iFJ = FJ();
-        ch[] chVarArr2 = new ch[iFJ];
-        int iA2 = ch.a(1, 52, chVarArr2, iFJ);
+        FarmEntity[] chVarArr2 = new FarmEntity[iFJ];
+        int iA2 = FarmEntity.a(1, 52, chVarArr2, iFJ);
         for (int i2 = 0; i2 < iA2; i2++) {
             chVarArr2[i2].ql();
         }
@@ -12082,7 +12082,7 @@ public final class ci extends GLLib implements av {
             case 21:
                 aON = false;
                 try {
-                    GLLib.bd(a(qN() && bt.nY(), true, 0, com.gameloft.android.wrapper.au.OR()));
+                    GameRuntime.bd(a(qN() && bt.nY(), true, 0, com.gameloft.android.wrapper.au.OR()));
                 } catch (Exception e) {
                     return;
                 }
@@ -12113,9 +12113,9 @@ public final class ci extends GLLib implements av {
 
     public static void IV() {
         if (apl == 4 || apl == 5) {
-            GLLib.bx("openWifiSetting");
+            GameRuntime.bx("openWifiSetting");
         } else {
-            GLLib.bx("openSetting");
+            GameRuntime.bx("openSetting");
         }
     }
 
@@ -12170,16 +12170,16 @@ public final class ci extends GLLib implements av {
             atc[16][(6 * i) + 60][10] = 0;
         }
         if (aLr) {
-            ch[] chVarArr = new ch[2];
-            ch.b(1, 50, 18, chVarArr, 2);
+            FarmEntity[] chVarArr = new FarmEntity[2];
+            FarmEntity.b(1, 50, 18, chVarArr, 2);
             int[] iArr = {0, 0, 14};
             if (chVarArr[0] != null) {
                 aZj.y(chVarArr[0].aol, chVarArr[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                 if (aLn > 0) {
-                    ch.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, aLn);
+                    FarmEntity.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, aLn);
                 }
                 if (aLm > 0) {
-                    ch.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aLm);
+                    FarmEntity.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aLm);
                 }
             }
         }
@@ -12272,7 +12272,7 @@ public final class ci extends GLLib implements av {
         }
         int i4 = i2 * 4;
         if (i3 > 0) {
-            int iL = GLLib.L(0, i3);
+            int iL = GameRuntime.L(0, i3);
             String str = "randNum : " + iL;
             i = 0;
             int i5 = 0;
@@ -12292,7 +12292,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void If() {
-        GLLib.bk("/11");
+        GameRuntime.bk("/11");
         int i = 0;
         while (i < 15 && aLg[i] <= FC()) {
             int i2 = i + 109;
@@ -12303,7 +12303,7 @@ public final class ci extends GLLib implements av {
         if (i > 0) {
             fP(1);
         }
-        GLLib.ke();
+        GameRuntime.ke();
     }
 
     static int Ig() {
@@ -12362,19 +12362,19 @@ public final class ci extends GLLib implements av {
 
     static void Ij() {
         if (aLs) {
-            ch[] chVarArr = new ch[2];
-            ch.b(1, 50, 18, chVarArr, 2);
+            FarmEntity[] chVarArr = new FarmEntity[2];
+            FarmEntity.b(1, 50, 18, chVarArr, 2);
             int[] iArr = {0, 0, 14};
             if (chVarArr[0] != null) {
                 aZj.y(chVarArr[0].aol, chVarArr[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                 if (aLC > 0) {
-                    ch.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, (int) aLC);
+                    FarmEntity.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, (int) aLC);
                 }
                 if (aLD > 0) {
-                    ch.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aLD);
+                    FarmEntity.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aLD);
                 }
                 if (aLE > 0) {
-                    ch.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 6, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aLE);
+                    FarmEntity.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 6, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aLE);
                 }
             }
             aLs = false;
@@ -12447,7 +12447,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void In() {
-        aLF = ih(aBi * ch.ay(1, 1005));
+        aLF = ih(aBi * FarmEntity.ay(1, 1005));
         DF();
         gM(23);
         gX(59);
@@ -12592,9 +12592,9 @@ public final class ci extends GLLib implements av {
         if (atc[4][i2][5] > -1 && atf[atc[4][i2][5]] == null) {
             s(1, atc[4][i2][5], 1, 24);
             String str = "[DialogBox] load npc character. elem:" + i2 + ",spr:" + ((int) atc[4][i2][5]);
-            GLLib.bk("/11");
+            GameRuntime.bk("/11");
             fP(1);
-            GLLib.ke();
+            GameRuntime.ke();
         }
         switch (aML) {
             case 0:
@@ -12610,7 +12610,7 @@ public final class ci extends GLLib implements av {
                 gX(59);
                 break;
         }
-        int iQE = qE();
+        int iQE = previousEngineState();
         e(4, 0, (iQE == 18 || iQE == 19 || iQE == 36 || iQE == 37) ? false : true);
         e(1, 54, false);
         e(1, 55, false);
@@ -12819,9 +12819,9 @@ public final class ci extends GLLib implements av {
             return 0;
         }
         azy[i][(i2 * 3) + 0] = 2;
-        azy[i][(i2 * 3) + 1] = iArr[GLLib.L(0, i6)];
+        azy[i][(i2 * 3) + 1] = iArr[GameRuntime.L(0, i6)];
         int iBt = bt(jVarBY.KW[azy[i][(i2 * 3) + 1]][6], jVarBY.KW[azy[i][(i2 * 3) + 1]][7]);
-        azy[i][(i2 * 3) + 2] = GLLib.L(1, i3 / iBt < 5 ? i3 / iBt : 5);
+        azy[i][(i2 * 3) + 2] = GameRuntime.L(1, i3 / iBt < 5 ? i3 / iBt : 5);
         return azy[i][(i2 * 3) + 2] * iBt;
     }
 
@@ -12842,12 +12842,12 @@ public final class ci extends GLLib implements av {
         if (!z) {
             aVE[i2] = aUT[i];
         }
-        if (qD() == 18) {
+        if (currentEngineState() == 18) {
             aA(false);
         }
         if (aVf[i] == 1) {
-            ch[] chVarArr = new ch[30];
-            int iA = ch.a(1, 22, chVarArr, 30);
+            FarmEntity[] chVarArr = new FarmEntity[30];
+            int iA = FarmEntity.a(1, 22, chVarArr, 30);
             for (int i3 = 0; i3 < iA; i3++) {
                 chVarArr[i3].qg();
             }
@@ -13036,7 +13036,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void JM() {
-        int iQD = qD();
+        int iQD = currentEngineState();
         if (iQD == 56 && aWR) {
             fE(50);
         } else if (iQD == 56 && aQm) {
@@ -13351,12 +13351,12 @@ public final class ci extends GLLib implements av {
         aQr = true;
         aQz = MD();
         int iFC = FC();
-        int iL = GLLib.L(0, 2);
+        int iL = GameRuntime.L(0, 2);
         if (iFC > 11 && iFC <= 15) {
-            iL = GLLib.L(2, 4);
+            iL = GameRuntime.L(2, 4);
         }
         if (iFC > 15) {
-            iL = GLLib.L(4, 7);
+            iL = GameRuntime.L(4, 7);
         }
         if (iL >= 7) {
             iL = 6;
@@ -13510,7 +13510,7 @@ public final class ci extends GLLib implements av {
             avE.ans = aPq;
             aPn[aPp] = aPq;
         }
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void Jh() {
@@ -13869,8 +13869,8 @@ public final class ci extends GLLib implements av {
             return 0;
         }
         azy[i][(i2 * 3) + 0] = 3;
-        int i6 = iArr[GLLib.L(0, i4)];
-        azy[i][(i2 * 3) + 1] = GLLib.L(0, 3) + (i6 * 4);
+        int i6 = iArr[GameRuntime.L(0, i4)];
+        azy[i][(i2 * 3) + 1] = GameRuntime.L(0, 3) + (i6 * 4);
         int i7 = jVarBY.KW[i6][5];
         azy[i][(i2 * 3) + 2] = 1;
         return i7 * azy[i][(i2 * 3) + 2];
@@ -13889,7 +13889,7 @@ public final class ci extends GLLib implements av {
         int i2;
         String strDt;
         int i3 = 0;
-        switch (ch.fA(i)) {
+        switch (FarmEntity.fA(i)) {
             case 20:
                 i2 = j.bY(4).KW[i - 7000][2];
                 break;
@@ -13939,11 +13939,11 @@ public final class ci extends GLLib implements av {
     public static void KD() {
         aSg = 0;
         GloftGF2F gloftGF2F = GloftGF2F.acx;
-        ci ciVar = GloftGF2F.acw;
+        FarmGameEngine ciVar = GloftGF2F.acw;
         aSm = lq();
         try {
             GloftGF2F gloftGF2F2 = GloftGF2F.acx;
-            ci ciVar2 = GloftGF2F.acw;
+            FarmGameEngine ciVar2 = GloftGF2F.acw;
             String strA = a(0, "Cash", 5);
             if (strA != null) {
                 ate[8][340] = strA;
@@ -13977,7 +13977,7 @@ public final class ci extends GLLib implements av {
             aRL[i] = I(i, "Cash");
             float[] fArr = aRM;
             GloftGF2F gloftGF2F5 = GloftGF2F.acx;
-            ci ciVar3 = GloftGF2F.acw;
+            FarmGameEngine ciVar3 = GloftGF2F.acw;
             fArr[i] = w(i, "Cash");
             String strLp = lp(i);
             long jW = w(t(i, "Cash"));
@@ -14047,14 +14047,14 @@ public final class ci extends GLLib implements av {
             return;
         }
         GloftGF2F gloftGF2F2 = GloftGF2F.acx;
-        ci ciVar = GloftGF2F.acw;
+        FarmGameEngine ciVar = GloftGF2F.acw;
         ate[8][7] = Integer.toString(((int) lr()) + FB());
         wC();
         bu(false);
         wH();
         KP();
         aSj = false;
-        baa = true;
+        hasUnsavedGameChanges = true;
         bab = true;
     }
 
@@ -14085,7 +14085,7 @@ public final class ci extends GLLib implements av {
             if (aTJ == 7) {
                 aSd = aTJ;
                 aTJ = -1;
-                baa = true;
+                hasUnsavedGameChanges = true;
                 bab = true;
             }
             if (aSd != aSe) {
@@ -14112,7 +14112,7 @@ public final class ci extends GLLib implements av {
                         }
                         break;
                     case 7:
-                        String strLj = GLLib.lj();
+                        String strLj = GameRuntime.lj();
                         aTt = true;
                         if (strLj.equals("cash")) {
                             strLj = "Cash";
@@ -14125,7 +14125,7 @@ public final class ci extends GLLib implements av {
                         if ("Cash".equals(strLj)) {
                             aTs = 0;
                             GloftGF2F gloftGF2F2 = GloftGF2F.acx;
-                            ci ciVar = GloftGF2F.acw;
+                            FarmGameEngine ciVar = GloftGF2F.acw;
                             iDl = (int) lr();
                             try {
                                 String str4 = "Redeem...cash..." + iDl;
@@ -14134,7 +14134,7 @@ public final class ci extends GLLib implements av {
                             hT(iDl);
                             ate[8][4] = Integer.toString(FA());
                             ate[8][7] = Integer.toString(FB());
-                            baa = true;
+                            hasUnsavedGameChanges = true;
                             bab = true;
                             aCG = "IAP";
                             try {
@@ -14146,13 +14146,13 @@ public final class ci extends GLLib implements av {
                                 strRn = com.gameloft.android2d.iap.b.Rn();
                                 String str5 = "[T]iap_redeem__pack_name_" + strRn;
                             }
-                            baa = true;
+                            hasUnsavedGameChanges = true;
                             wH();
                             wD();
                         } else {
                             String strBY = GloftGF2F.acx.bY("GAME-SHOP");
                             if (!strBY.equals("shop") && strBY.equals("googleplay")) {
-                                strA = A(li(), GLLib.lj());
+                                strA = A(li(), GameRuntime.lj());
                                 if (strA == null || strA.equals("")) {
                                     strA = atH;
                                 }
@@ -14163,8 +14163,8 @@ public final class ci extends GLLib implements av {
                             iDl = dl(strLj);
                             ate[8][4] = Integer.toString(FA());
                             ate[8][7] = Integer.toString(FB());
-                            baa = true;
-                            baa = true;
+                            hasUnsavedGameChanges = true;
+                            hasUnsavedGameChanges = true;
                             bab = true;
                             aCG = "IAP";
                             strRn = strA;
@@ -14177,16 +14177,16 @@ public final class ci extends GLLib implements av {
                             }
                             String strBY2 = GloftGF2F.acx.bY("microedition.locale.usercountry");
                             GloftGF2F gloftGF2F3 = GloftGF2F.acx;
-                            ci ciVar2 = GloftGF2F.acw;
+                            FarmGameEngine ciVar2 = GloftGF2F.acw;
                             float fLu = lu();
                             GloftGF2F gloftGF2F4 = GloftGF2F.acx;
-                            ci ciVar3 = GloftGF2F.acw;
+                            FarmGameEngine ciVar3 = GloftGF2F.acw;
                             String strLw = lw();
                             if (strLw == null || strLw.equals("11111") || strLw.equals("")) {
                                 strLw = AppEventsConstants.EVENT_PARAM_VALUE_NO;
                             }
                             GloftGF2F gloftGF2F5 = GloftGF2F.acx;
-                            ci ciVar4 = GloftGF2F.acw;
+                            FarmGameEngine ciVar4 = GloftGF2F.acw;
                             String strLs = ls();
                             if (strLs == null || strLs.equals("")) {
                                 strLs = AppEventsConstants.EVENT_PARAM_VALUE_NO;
@@ -14198,12 +14198,12 @@ public final class ci extends GLLib implements av {
                             String strR = baf.R("" + com.gameloft.android2d.iap.b.Rm(), "" + GloftGF2F.acx.bY("GAME-GGI"));
                             String str6 = "[iap] item purchased purcase_count:" + aSK;
                             int i2 = 124735;
-                            int iLi = GLLib.li();
-                            String strLj2 = GLLib.lj();
-                            long jT = GLLib.t(iLi, strLj2);
-                            long jU = GLLib.u(iLi, strLj2);
-                            float fW = GLLib.w(iLi, strLj2);
-                            float fX = GLLib.x(iLi, strLj2);
+                            int iLi = GameRuntime.li();
+                            String strLj2 = GameRuntime.lj();
+                            long jT = GameRuntime.t(iLi, strLj2);
+                            long jU = GameRuntime.u(iLi, strLj2);
+                            float fW = GameRuntime.w(iLi, strLj2);
+                            float fX = GameRuntime.x(iLi, strLj2);
                             int iAbs = jU > 0 ? (int) Math.abs(((100 * jT) / jU) - 100) : 0;
                             int iAbs2 = fX > 0.0f ? (int) Math.abs(((100.0f * fW) / fX) - 100.0f) : 0;
                             String str7 = "TRACKING_EVENTS_IAP_PACK_PURCHASED: packID = " + iLi;
@@ -14280,14 +14280,14 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 4:
-                GLLib.lt();
+                GameRuntime.lt();
                 break;
             case 6:
             case R.styleable.CardView_contentPaddingRight /* 10 */:
                 if (atU) {
                     atU = false;
                     GloftGF2F gloftGF2F7 = GloftGF2F.acx;
-                    ci ciVar5 = GloftGF2F.acw;
+                    FarmGameEngine ciVar5 = GloftGF2F.acw;
                     lp();
                     GloftGF2F gloftGF2F8 = GloftGF2F.acx;
                     GloftGF2F.acw.lm();
@@ -14297,7 +14297,7 @@ public final class ci extends GLLib implements av {
                         bu(false);
                         aRH = true;
                         GloftGF2F gloftGF2F9 = GloftGF2F.acx;
-                        ci ciVar6 = GloftGF2F.acw;
+                        FarmGameEngine ciVar6 = GloftGF2F.acw;
                         aSm = lq();
                         if (!w.ZD) {
                             aTe = 1;
@@ -14320,7 +14320,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 7:
-                baa = true;
+                hasUnsavedGameChanges = true;
                 bab = true;
                 KP();
                 break;
@@ -14362,7 +14362,7 @@ public final class ci extends GLLib implements av {
                 strDt = "";
             }
             if (str.equals(strDt)) {
-                if (aQE && qE() == 58 && auB && !atP) {
+                if (aQE && previousEngineState() == 58 && auB && !atP) {
                     e(8, 53, true);
                     e(8, 52, true);
                     wu();
@@ -14445,7 +14445,7 @@ public final class ci extends GLLib implements av {
         if (azj) {
             azg[ayJ] = true;
         }
-        baa = true;
+        hasUnsavedGameChanges = true;
         azi = false;
         azj = false;
     }
@@ -14453,7 +14453,7 @@ public final class ci extends GLLib implements av {
     static void KU() {
         azg[ayJ] = true;
         azf[ayJ] = true;
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void KV() {
@@ -14548,7 +14548,7 @@ public final class ci extends GLLib implements av {
         String str = "s_D_IAP_State=========================" + aTI;
         if (aTI == 0 && qO()) {
             GloftGF2F gloftGF2F2 = GloftGF2F.acx;
-            ci ciVar = GloftGF2F.acw;
+            FarmGameEngine ciVar = GloftGF2F.acw;
             lp();
             GloftGF2F gloftGF2F3 = GloftGF2F.acx;
             GloftGF2F.acw.lm();
@@ -14556,12 +14556,12 @@ public final class ci extends GLLib implements av {
         if (atU && (aTI == 10 || aTI == 6)) {
             atU = false;
             GloftGF2F gloftGF2F4 = GloftGF2F.acx;
-            ci ciVar2 = GloftGF2F.acw;
+            FarmGameEngine ciVar2 = GloftGF2F.acw;
             lp();
             GloftGF2F gloftGF2F5 = GloftGF2F.acx;
             GloftGF2F.acw.lm();
             KS();
-            if (qD() == 8 && !awV) {
+            if (currentEngineState() == 8 && !awV) {
                 e(1, 80, false);
                 fG(8);
             }
@@ -14639,26 +14639,26 @@ public final class ci extends GLLib implements av {
                 float fCos = (float) Math.cos(j(((aQK[i3] / 2) + i2) - ((int) aQF)));
                 float fSin = (float) Math.sin(j(((aQK[i3] / 2) + i2) - ((int) aQF)));
                 if (i3 <= 1) {
-                    atf[aQP[i3]].b(GLLib.Qj, aQO[i3], (int) (((s3 + 140) - 10) + (95.0f * fCos)), (int) ((s4 + 140) - (95.0f * fSin)), 0, 90);
+                    atf[aQP[i3]].b(GameRuntime.Qj, aQO[i3], (int) (((s3 + 140) - 10) + (95.0f * fCos)), (int) ((s4 + 140) - (95.0f * fSin)), 0, 90);
                 } else if (aQO[i3] == 8 && aQP[i3] == 5) {
-                    atf[aQP[i3]].a(GLLib.Qj, aQO[i3], (float) ((int) (((s3 + 140) - 10) + (95.0f * fCos))), (float) ((int) ((s4 + 140) - (95.0f * fSin))), 0, 0);
+                    atf[aQP[i3]].a(GameRuntime.Qj, aQO[i3], (float) ((int) (((s3 + 140) - 10) + (95.0f * fCos))), (float) ((int) ((s4 + 140) - (95.0f * fSin))), 0, 0);
                 } else if (aQO[i3] == 0 && aQP[i3] == 57) {
-                    atf[aQP[i3]].b(GLLib.Qj, aQO[i3], (int) (s3 + 140 + (95.0f * fCos) + 12.0f), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 0, 35);
+                    atf[aQP[i3]].b(GameRuntime.Qj, aQO[i3], (int) (s3 + 140 + (95.0f * fCos) + 12.0f), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 0, 35);
                 } else if (aQO[i3] == 1 && aQP[i3] == 9) {
-                    atf[aQP[i3]].b(GLLib.Qj, aQO[i3], (int) (s3 + 140 + (95.0f * fCos) + 12.0f), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 0, 50);
+                    atf[aQP[i3]].b(GameRuntime.Qj, aQO[i3], (int) (s3 + 140 + (95.0f * fCos) + 12.0f), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 0, 50);
                 } else if (aQO[i3] == 4 && aQP[i3] == 9) {
-                    atf[aQP[i3]].b(GLLib.Qj, aQO[i3], (int) (s3 + 140 + (95.0f * fCos) + 12.0f), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 0, 60);
+                    atf[aQP[i3]].b(GameRuntime.Qj, aQO[i3], (int) (s3 + 140 + (95.0f * fCos) + 12.0f), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 0, 60);
                 } else if (aQO[i3] == 0 && aQP[i3] == 54) {
-                    atf[aQP[i3]].b(GLLib.Qj, aQO[i3], (int) (s3 + 140 + (95.0f * fCos) + 12.0f), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 0, 30);
+                    atf[aQP[i3]].b(GameRuntime.Qj, aQO[i3], (int) (s3 + 140 + (95.0f * fCos) + 12.0f), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 0, 30);
                 } else {
-                    atf[aQP[i3]].b(GLLib.Qj, aQO[i3], (int) (s3 + 140 + (95.0f * fCos) + 12.0f), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 0, 40);
+                    atf[aQP[i3]].b(GameRuntime.Qj, aQO[i3], (int) (s3 + 140 + (95.0f * fCos) + 12.0f), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 0, 40);
                 }
                 a(1, 0, aQQ[i3] + "", (int) ((fCos * 95.0f) + ((s3 + 140) - 18)), ((int) ((s4 + 140) - (95.0f * fSin))) - 10, 3);
                 i = aQK[i3] + i2;
             } else {
                 i = i2;
             }
-            atf[41].a(GLLib.Qj, 34, (float) (s), (float) (s2), 0);
+            atf[41].a(GameRuntime.Qj, 34, (float) (s), (float) (s2), 0);
             i3++;
             i2 = i;
         }
@@ -14764,7 +14764,7 @@ public final class ci extends GLLib implements av {
             strDt2 = "";
         }
         b(strDt2, 47, atc[47][3], 0, 0, -1);
-        atf[7].b(GLLib.Qj, 0, atc[47][46][2], atc[47][46][3] - 20, 0, 80);
+        atf[7].b(GameRuntime.Qj, 0, atc[47][46][2], atc[47][46][3] - 20, 0, 80);
         String strDt3 = dt(12528);
         if (strDt3 == null) {
             strDt3 = "";
@@ -14943,15 +14943,15 @@ public final class ci extends GLLib implements av {
             }
             if (aQW == 0 || aQW == 1) {
                 if (aQW == 0) {
-                    atf[20].a(GLLib.Qj, 120, (float) (s3), (float) (s4), 0);
+                    atf[20].a(GameRuntime.Qj, 120, (float) (s3), (float) (s4), 0);
                 } else {
-                    atf[20].a(GLLib.Qj, 121, (float) (s3), (float) (s4), 0);
+                    atf[20].a(GameRuntime.Qj, 121, (float) (s3), (float) (s4), 0);
                 }
             } else if (aQO[aQW] == 8 && aQP[aQW] == 5) {
                 atc[48][4][5] = 2;
                 atc[48][4][6] = 0;
             } else {
-                atf[aQP[aQW]].a(GLLib.Qj, aQO[aQW], (float) (s), (float) (s2), 0);
+                atf[aQP[aQW]].a(GameRuntime.Qj, aQO[aQW], (float) (s), (float) (s2), 0);
             }
             ate[48][3] = aQQ[aQW] + "";
         }
@@ -15493,7 +15493,7 @@ public final class ci extends GLLib implements av {
 
     private static boolean LS() {
         try {
-            return j(GLLib.bF("DYN"));
+            return j(GameRuntime.bF("DYN"));
         } catch (Exception e) {
             return false;
         }
@@ -15837,7 +15837,7 @@ public final class ci extends GLLib implements av {
 
     static void Ln() {
         Ll();
-        if (aYR == 11) {
+        if (currentTutorialStepIndex == 11) {
             axW = true;
         }
         String str = "======================================[Quest State] Init. index:" + aVF + ", status:" + aVD[aVF];
@@ -15847,9 +15847,9 @@ public final class ci extends GLLib implements av {
                 b(1, atc[5][56][5], 65535, 1, 0, 0, -1);
             }
             s(1, sLm, 1, 24);
-            GLLib.bk("/11");
+            GameRuntime.bk("/11");
             fP(1);
-            GLLib.ke();
+            GameRuntime.ke();
         }
         if (aVD[aVF] == 1) {
             String str2 = "==========================quest init. track obj1:" + aVi[aVF] + ", quest track:" + aVz[aVF];
@@ -16205,7 +16205,7 @@ public final class ci extends GLLib implements av {
     static boolean Lt() {
         int i;
         boolean z;
-        if (aYR != -1 && aYR != 10) {
+        if (currentTutorialStepIndex != -1 && currentTutorialStepIndex != 10) {
             return false;
         }
         j jVarBY = j.bY(6);
@@ -17064,7 +17064,7 @@ public final class ci extends GLLib implements av {
     }
 
     static boolean My() {
-        int iQD = qD();
+        int iQD = currentEngineState();
         if (iQD == 18) {
             return true;
         }
@@ -17082,7 +17082,7 @@ public final class ci extends GLLib implements av {
     static int N(int i, int i2, int i3) {
         int i4;
         boolean z;
-        if (aYR != -1) {
+        if (currentTutorialStepIndex != -1) {
             return 0;
         }
         String str = "[GAME Trophy] TrophyDataAction. target:" + i + ",n:" + i2 + ",actionType:" + i3;
@@ -17277,7 +17277,7 @@ public final class ci extends GLLib implements av {
             aa(i5, i3, 34);
         }
         aIm = iHF + i3;
-        baa = true;
+        hasUnsavedGameChanges = true;
         return true;
     }
 
@@ -17348,7 +17348,7 @@ public final class ci extends GLLib implements av {
             i6 = i4;
         }
         if (i6 > 0) {
-            return iArr[GLLib.L(0, i6)];
+            return iArr[GameRuntime.L(0, i6)];
         }
         return 1;
     }
@@ -17378,7 +17378,7 @@ public final class ci extends GLLib implements av {
                 aQu[i] = "" + i2;
                 break;
             case 4:
-                switch (ch.fA(i2)) {
+                switch (FarmEntity.fA(i2)) {
                     case 49:
                         int i6 = com.quanhoang.greenfarm3.S800x480.j.bY(2).KW[i2 - 3000][2];
                     case 20:
@@ -17482,7 +17482,7 @@ public final class ci extends GLLib implements av {
 
     /* JADX WARN: Code duplicated, block: B:81:0x02e6  */
     /* JADX WARN: Failed to find 'out' block for switch in B:3:0x0012. Please report as an issue. */
-    public static int a(ch chVar, ch chVar2, int i, ch chVar3, boolean z) {
+    public static int a(FarmEntity chVar, FarmEntity chVar2, int i, FarmEntity chVar3, boolean z) {
         int i2;
         int i3;
         int i4;
@@ -17544,7 +17544,7 @@ public final class ci extends GLLib implements av {
                     }
                 }
                 if (FC() >= aLg[0]) {
-                    ch.b(47, 3, new int[]{0, 0, 14}).b(chVar.aol - 60, chVar.aom, 60, 2000, false, false, 1);
+                    FarmEntity.b(47, 3, new int[]{0, 0, 14}).b(chVar.aol - 60, chVar.aom, 60, 2000, false, false, 1);
                     i2 = i8;
                     i3 = i9;
                     i4 = -1;
@@ -17688,7 +17688,7 @@ public final class ci extends GLLib implements av {
         return 2;
     }
 
-    static int a(byte[] bArr, int i, ch chVar) {
+    static int a(byte[] bArr, int i, FarmEntity chVar) {
         return d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, i, (byte) chVar.Kx), (byte) chVar.aoC), (short) bG(chVar.aol, chVar.aom)), (short) bH(chVar.aol, chVar.aom)), (short) chVar.aon), chVar.HL);
     }
 
@@ -17725,7 +17725,7 @@ public final class ci extends GLLib implements av {
     }
 
     static String a(boolean z, boolean z2, int i, int i2) {
-        return GLLib.a(z, z2, i, i2) + "&lg=" + GloftGF2F.acw.dr(aYU) + "&clientid=" + com.gameloft.android.wrapper.c.encodeString(s.gX().toString());
+        return GameRuntime.a(z, z2, i, i2) + "&lg=" + GloftGF2F.acw.dr(aYU) + "&clientid=" + com.gameloft.android.wrapper.c.encodeString(s.gX().toString());
     }
 
     static void a(int i, int i2, int i3, int i4, int i5, int i6, int i7, int i8, int i9, int i10, int i11) {
@@ -17953,7 +17953,7 @@ public final class ci extends GLLib implements av {
         } else if (str.equals("enter_section_video_daily_stamp")) {
             b.JW = false;
         }
-        if (qD() == 62) {
+        if (currentEngineState() == 62) {
             qB();
         }
     }
@@ -18022,7 +18022,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void a(int i, ch chVar) {
+    static void a(int i, FarmEntity chVar) {
         String str = "[action] push. type:" + i + ",target:" + chVar;
         String str2 = "action count:" + aCg + ",max:64,exist:" + b(i, chVar) + ",enable:" + ((aCi & (1 << i)) == (1 << i));
         if (aCg >= 64 || b(i, chVar)) {
@@ -18045,22 +18045,22 @@ public final class ci extends GLLib implements av {
         }
         hs(i);
         if (i < jVar.KW[FC() - 1][6]) {
-            if (i == 0 && aYR != -1) {
+            if (i == 0 && currentTutorialStepIndex != -1) {
                 azC[i][0] = 9;
                 azC[i][1] = 6;
                 azD[i][0] = ih(GLURLConnection.HTTP_OK);
                 azD[i][1] = ih(10);
-                azD[i][2] = GLLib.L(419, 448);
+                azD[i][2] = GameRuntime.L(419, 448);
                 return;
             }
-            int iL = GLLib.L(jVar.KW[FC() - 1][1], jVar.KW[FC() - 1][2]);
+            int iL = GameRuntime.L(jVar.KW[FC() - 1][1], jVar.KW[FC() - 1][2]);
             int iY = 0;
             for (int i2 = 0; i2 < 3 && iY < iL; i2++) {
                 iY += y(i, i2, iL - iY, jVar.KW[FC() - 1][4]);
             }
             azD[i][0] = ih(iY);
             azD[i][1] = ih(jVar.KW[FC() - 1][5]);
-            azD[i][2] = GLLib.L(419, 448);
+            azD[i][2] = GameRuntime.L(419, 448);
         }
     }
 
@@ -18146,8 +18146,8 @@ public final class ci extends GLLib implements av {
                 e(2, i2 + 57, false);
                 e(2, i2 + 48, true);
             }
-            String str6 = " cur tutorial.:" + aYR;
-            if (aYR != 14 || i == 0) {
+            String str6 = " cur tutorial.:" + currentTutorialStepIndex;
+            if (currentTutorialStepIndex != 14 || i == 0) {
                 f(2, i2 + 37, true);
             } else {
                 f(2, i2 + 37, false);
@@ -18298,19 +18298,19 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void a(ch chVar, int i, int i2, int i3, int i4, int i5, int i6, int i7, int i8) {
+    static void a(FarmEntity chVar, int i, int i2, int i3, int i4, int i5, int i6, int i7, int i8) {
         int[] iArr = {0, 0, 14};
         if (i != -1 && i != 0) {
-            ch.b(47, 3, iArr).b(GLLib.L(0, 50) + i7, GLLib.L(0, 50) + i8, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, i);
+            FarmEntity.b(47, 3, iArr).b(GameRuntime.L(0, 50) + i7, GameRuntime.L(0, 50) + i8, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, i);
         }
         if (i5 != -1 && i5 != 0) {
-            ch.b(47, 3, iArr).b((GLLib.L(0, 50) - 25) + i7, (GLLib.L(0, 50) - 25) + i8, 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, i5);
+            FarmEntity.b(47, 3, iArr).b((GameRuntime.L(0, 50) - 25) + i7, (GameRuntime.L(0, 50) - 25) + i8, 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, i5);
         }
         if (i6 != -1 && i6 != 0) {
-            ch.b(47, 3, iArr).b(i7 - 50, i8 - 20, 6, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, i6);
+            FarmEntity.b(47, 3, iArr).b(i7 - 50, i8 - 20, 6, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, i6);
         }
         if (i2 != 0 || i3 != -1) {
-            ch chVarB = ch.b(47, 3, iArr);
+            FarmEntity chVarB = FarmEntity.b(47, 3, iArr);
             if (i3 == -1) {
                 axK = true;
                 aV(true);
@@ -18321,7 +18321,7 @@ public final class ci extends GLLib implements av {
             }
         }
         if (i4 != -1 && chVar.pD() - i4 != 0) {
-            ch.b(47, 3, iArr).b(GLLib.L(0, 50) + 25 + i7, GLLib.L(0, 50) + 25 + i8, 66, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, chVar.pD() - i4);
+            FarmEntity.b(47, 3, iArr).b(GameRuntime.L(0, 50) + 25 + i7, GameRuntime.L(0, 50) + 25 + i8, 66, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, chVar.pD() - i4);
         }
         if (i <= 0) {
             i = i4 != -1 ? chVar.pD() - i4 : 0;
@@ -18373,7 +18373,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void a(String str, int i, int i2, ch chVar) {
+    static void a(String str, int i, int i2, FarmEntity chVar) {
         aMS = chVar;
         m(str, i, i2);
     }
@@ -18410,7 +18410,7 @@ public final class ci extends GLLib implements av {
         a(str, str2, i, i2, aME);
     }
 
-    static void a(String str, String str2, int i, int i2, ch chVar) {
+    static void a(String str, String str2, int i, int i2, FarmEntity chVar) {
         aML = 2;
         aMJ = chVar;
         e(4, 5, true);
@@ -18454,7 +18454,7 @@ public final class ci extends GLLib implements av {
             for (int i3 = 50; i3 <= 57; i3++) {
                 e(4, i3, true);
             }
-            aKd = ch.ft(4);
+            aKd = FarmEntity.ft(4);
         }
         fE(20);
     }
@@ -18718,13 +18718,13 @@ public final class ci extends GLLib implements av {
                 i6 += i7;
                 i4 = 0;
             }
-            int iL = GLLib.L(0, 50) - 25;
-            int iL2 = GLLib.L(0, 50) - 25;
-            ch chVarB = ch.b(47, 3, iArr);
-            if (aYR != -1) {
+            int iL = GameRuntime.L(0, 50) - 25;
+            int iL2 = GameRuntime.L(0, 50) - 25;
+            FarmEntity chVarB = FarmEntity.b(47, 3, iArr);
+            if (currentTutorialStepIndex != -1) {
                 chVarB.b(iL + i2, iL2 + i3, z ? 37 : 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, z, i6);
             } else {
-                int iQD = qD();
+                int iQD = currentEngineState();
                 if (iQD == 18 || iQD == 20) {
                     if (z2) {
                         if (z) {
@@ -18742,7 +18742,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void a(boolean z, ch chVar) {
+    static void a(boolean z, FarmEntity chVar) {
         if (aZB != 0) {
             return;
         }
@@ -18929,7 +18929,7 @@ public final class ci extends GLLib implements av {
         String str = "Popping : " + strArr[0] + " - " + iArr[0];
     }
 
-    static boolean a(int i, int i2, int i3, ch chVar) {
+    static boolean a(int i, int i2, int i3, FarmEntity chVar) {
         boolean zO = O(i, i2, i3);
         if (i == 3) {
             String str = "add inven. anmal:" + chVar;
@@ -18943,7 +18943,7 @@ public final class ci extends GLLib implements av {
         return zO;
     }
 
-    static boolean a(int i, int i2, ch chVar) {
+    static boolean a(int i, int i2, FarmEntity chVar) {
         int[] iArr = new int[2];
         int[] iArr2 = new int[2];
         if (!chVar.qs()) {
@@ -18970,14 +18970,14 @@ public final class ci extends GLLib implements av {
         return i3 == calendar.get(1) && i2 == calendar.get(2) && i == calendar.get(5);
     }
 
-    static boolean a(ch chVar, int i, int i2) {
+    static boolean a(FarmEntity chVar, int i, int i2) {
         int[] iArr = new int[2];
         if (chVar.Kx == 54) {
-            ch[] chVarArr = new ch[50];
+            FarmEntity[] chVarArr = new FarmEntity[50];
             int[] iArr2 = new int[2];
             g(new int[]{i, i2}, iArr2);
             awl = true;
-            int iA = ch.a(1, 54, chVarArr, 50, chVar);
+            int iA = FarmEntity.a(1, 54, chVarArr, 50, chVar);
             awl = false;
             for (int i3 = 0; i3 < iA; i3++) {
                 if (!chVarArr[i3].fz(4096) && chVarArr[i3].aoW != chVar.aoW) {
@@ -19001,7 +19001,7 @@ public final class ci extends GLLib implements av {
         return false;
     }
 
-    static boolean a(ch chVar, int i, int i2, ch chVar2, int i3) {
+    static boolean a(FarmEntity chVar, int i, int i2, FarmEntity chVar2, int i3) {
         int[] iArr = new int[2];
         f(new int[]{i, i2}, iArr);
         iArr[0] = iArr[0] - (chVar.aoy >> 1);
@@ -19021,11 +19021,11 @@ public final class ci extends GLLib implements av {
         return iArr[0] < iArr2[0] + (chVar2.aoy / i3) && iArr[0] + (chVar.aoy / i3) > iArr2[0] && iArr[1] < iArr2[1] + (chVar2.aoz / i3) && iArr[1] + (chVar.aoz / i3) > iArr2[1];
     }
 
-    public static boolean a(ch chVar, ch chVar2) {
+    public static boolean a(FarmEntity chVar, FarmEntity chVar2) {
         return true;
     }
 
-    static boolean a(ch chVar, int[] iArr) {
+    static boolean a(FarmEntity chVar, int[] iArr) {
         int[] iArr2 = new int[2];
         int[] iArr3 = {kH() >> 1, kI() >> 1};
         c(iArr3, iArr2);
@@ -19034,7 +19034,7 @@ public final class ci extends GLLib implements av {
         return a(chVar, iArr, iArr2[0], iArr2[1]);
     }
 
-    static boolean a(ch chVar, int[] iArr, int i, int i2) {
+    static boolean a(FarmEntity chVar, int[] iArr, int i, int i2) {
         int i3;
         int[] iArr2 = {i, i2};
         int i4 = 0;
@@ -19130,7 +19130,7 @@ public final class ci extends GLLib implements av {
         return zMg;
     }
 
-    static int[] a(ch[] chVarArr) {
+    static int[] a(FarmEntity[] chVarArr) {
         int i;
         int i2;
         int[] iArr;
@@ -19138,7 +19138,7 @@ public final class ci extends GLLib implements av {
         int i3 = 0;
         int i4 = 0;
         while (i4 < chVarArr.length && chVarArr[i4] != null) {
-            ch chVar = chVarArr[i4];
+            FarmEntity chVar = chVarArr[i4];
             int[] iArr3 = new int[2];
             f(new int[]{chVar.aol, chVar.aom}, iArr3);
             if (j(chVar)) {
@@ -19332,7 +19332,7 @@ public final class ci extends GLLib implements av {
             Kd();
             Mj();
         }
-        if (qD() == 13) {
+        if (currentEngineState() == 13) {
             if (lN(2) || lM(aZQ[2])) {
                 e(1, 79, z);
                 f(1, 79, z);
@@ -19384,7 +19384,7 @@ public final class ci extends GLLib implements av {
         }
         e(1, 83, z);
         f(1, 83, z);
-        if ((aYR != -1 || b.Ka) && avD == -1) {
+        if ((currentTutorialStepIndex != -1 || b.Ka) && avD == -1) {
             e(1, 84, false);
             f(1, 84, false);
         } else {
@@ -19436,7 +19436,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void aI(boolean z) {
-        String strA = A(li(), GLLib.lj());
+        String strA = A(li(), GameRuntime.lj());
         if (strA == null || strA.equals("")) {
             strA = atH;
         }
@@ -19824,9 +19824,9 @@ public final class ci extends GLLib implements av {
 
     static boolean aR(int i, int i2) {
         if ((i == 2 || i == 8) && LanguageRestartController.blocksGameplay()) return false;
-        if (i == 8 && TutorialFlowController.inputConsumed(aYR, aYS, awV)) return true;
+        if (i == 8 && TutorialFlowController.inputConsumed(currentTutorialStepIndex, aYS, awV)) return true;
         if (i == 0 && i2 >= 0 && (apC[i2] == 20 || apC[i2] == 27)) {
-            TutorialFlowController.modalActivated(apC[i2], aYR, aYS, awV);
+            TutorialFlowController.modalActivated(apC[i2], currentTutorialStepIndex, aYS, awV);
         }
         boolean zMl = false;
         if (i2 > -1) {
@@ -20081,7 +20081,7 @@ public final class ci extends GLLib implements av {
         }
         avI = false;
         if (!aTC) {
-            b(false, (ch) null);
+            b(false, (FarmEntity) null);
             b(true, false, false);
             Ff();
             gK(1);
@@ -20089,7 +20089,7 @@ public final class ci extends GLLib implements av {
         su();
         aBy = 0;
         aBz = 0;
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void aU(boolean z) {
@@ -20133,7 +20133,7 @@ public final class ci extends GLLib implements av {
             if (!atx) {
                 axo++;
             }
-            if ((axo > 100 && atc[1][118][2] > GLLib.kH()) || axo > 150) {
+            if ((axo > 100 && atc[1][118][2] > GameRuntime.kH()) || axo > 150) {
                 for (int i2 = 118; i2 <= 127; i2++) {
                     e(1, i2, false);
                 }
@@ -20167,7 +20167,7 @@ public final class ci extends GLLib implements av {
             byte b = (byte) (asz[i][i2] & 255);
             byte b2 = (byte) ((asz[i][i2] >> 8) & 255);
             if (i != 0) {
-                GLLib.ai(true);
+                GameRuntime.ai(true);
             }
             asA[i][i2] = a(i2, asy[i][i2], z, z2, z3, b, b2);
             if (z3) {
@@ -20210,7 +20210,7 @@ public final class ci extends GLLib implements av {
             return;
         }
         axo = 0;
-        short sKH = (short) GLLib.kH();
+        short sKH = (short) GameRuntime.kH();
         c(65654, 65663, atc[1][118][2], 0, 0, 0, 500);
         for (int i = 118; i <= 127; i++) {
             e(1, i, z);
@@ -20353,9 +20353,9 @@ public final class ci extends GLLib implements av {
             aa(ayJ, 1, 8);
             N(ayJ, 1, 8);
         }
-        ch[] chVarArr = new ch[100];
+        FarmEntity[] chVarArr = new FarmEntity[100];
         String str9 = " unlock area. x,x,y,y, :" + ayO + "," + ayQ + "," + ayP + "," + ayR;
-        int iA = ch.a(1, -1, ayO, ayQ, ayP, ayR, chVarArr, 100);
+        int iA = FarmEntity.a(1, -1, ayO, ayQ, ayP, ayR, chVarArr, 100);
         for (int i9 = 0; i9 < iA; i9++) {
             if (!chVarArr[i9].fz(4096)) {
                 chVarArr[i9].fx(AdRequest.MAX_CONTENT_URL_LENGTH);
@@ -20366,7 +20366,7 @@ public final class ci extends GLLib implements av {
                     chVarArr[i9].pM();
                     chVarArr[i9].fp(2);
                     if (axt != 0) {
-                        ch chVarHA = null;
+                        FarmEntity chVarHA = null;
                         if (axt == 1) {
                             chVarHA = hA(73);
                         } else if (axt == 2) {
@@ -20410,7 +20410,7 @@ public final class ci extends GLLib implements av {
         for (int i2 = 0; i2 < azZ; i2++) {
             if (azX[i2] == -1 && azY[i2] != 1 && !azR[i2] && azQ[i2] == 38) {
                 if (azN[i2] == aZK[29]) {
-                    int iAy = ch.ay(1, azN[i2]);
+                    int iAy = FarmEntity.ay(1, azN[i2]);
                     if (ii(azO[i2]) != iAy) {
                     }
                     azO[i2] = ih(iAy);
@@ -20421,7 +20421,7 @@ public final class ci extends GLLib implements av {
                         i = -1;
                     }
                 } else if (azN[i2] == 3999) {
-                    int iAz = ch.az(1, 52);
+                    int iAz = FarmEntity.az(1, 52);
                     if (ii(azO[i2]) != iAz) {
                     }
                     azO[i2] = ih(iAz);
@@ -20432,7 +20432,7 @@ public final class ci extends GLLib implements av {
                         i = -1;
                     }
                 } else if (azN[i2] == 2999) {
-                    int iP = ch.p(1, 54, 0, 75);
+                    int iP = FarmEntity.p(1, 54, 0, 75);
                     if (ii(azO[i2]) != iP) {
                     }
                     azO[i2] = ih(iP);
@@ -20618,13 +20618,13 @@ public final class ci extends GLLib implements av {
         int iL;
         int i6;
         int i7;
-        GLLib.B("greenfarm3", (!asM || asL >= 300) ? rv() : "");
+        GameRuntime.B("greenfarm3", (!asM || asL >= 300) ? rv() : "");
         if (aCw != null) {
             byte[] bArr = new byte[aCw.length];
             a(aCw, 0, bArr, 0, aCw.length);
             bArrB = bArr;
         } else {
-            bArrB = GLLib.B("save_gameplay", (!asM || asL >= 300) ? rv() : "");
+            bArrB = GameRuntime.B("save_gameplay", (!asM || asL >= 300) ? rv() : "");
         }
         if (bArrB == null) {
             asq = true;
@@ -20675,9 +20675,9 @@ public final class ci extends GLLib implements av {
         boolean z5 = z || j(bArrB, i11) != 0;
         aKr = z5;
         int i12 = i11 + 1;
-        aYR = z ? (byte) 0 : j(bArrB, i12);
+        currentTutorialStepIndex = z ? (byte) 0 : j(bArrB, i12);
         int i13 = i12 + 1;
-        String str6 = "Load cur tutorial:" + aYR;
+        String str6 = "Load cur tutorial:" + currentTutorialStepIndex;
         boolean z6 = (z || j(bArrB, i13) == 0) ? false : true;
         awM = z6;
         int i14 = i13 + 1;
@@ -21394,7 +21394,7 @@ public final class ci extends GLLib implements av {
     }
 
     static boolean ay(boolean z) {
-        byte[] bArrB = GLLib.B("online_gameplay", (!asM || asL >= 300) ? rv() : "");
+        byte[] bArrB = GameRuntime.B("online_gameplay", (!asM || asL >= 300) ? rv() : "");
         if (bArrB == null) {
             return false;
         }
@@ -21466,7 +21466,7 @@ public final class ci extends GLLib implements av {
         return d(i, i2, i3, i4, i5, i6, 0, 0);
     }
 
-    static int b(byte[] bArr, int i, ch chVar) {
+    static int b(byte[] bArr, int i, FarmEntity chVar) {
         return d(bArr, a(bArr, a(bArr, a(bArr, i, (byte) chVar.Kx), (short) bG(chVar.aol, chVar.aom)), (short) bH(chVar.aol, chVar.aom)), chVar.aon);
     }
 
@@ -21599,7 +21599,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    public static void b(ch chVar, int i) {
+    public static void b(FarmEntity chVar, int i) {
         switch (i) {
             case 0:
                 avE = chVar;
@@ -21707,7 +21707,7 @@ public final class ci extends GLLib implements av {
         chVar.pp();
     }
 
-    static void b(ch chVar, int i, int i2) {
+    static void b(FarmEntity chVar, int i, int i2) {
         axY = chVar;
         aya = i;
         ayb = i2;
@@ -21715,7 +21715,7 @@ public final class ci extends GLLib implements av {
         x(1, 15, 1, -1);
     }
 
-    static void b(ch chVar, boolean z) {
+    static void b(FarmEntity chVar, boolean z) {
         if (z) {
             chVar.fn(chVar.pD() + 3500);
             for (int length = axu.length - 1; length >= 0; length--) {
@@ -21762,7 +21762,7 @@ public final class ci extends GLLib implements av {
     public static void b(Hashtable hashtable) {
     }
 
-    static void b(boolean z, ch chVar) {
+    static void b(boolean z, FarmEntity chVar) {
         String str = "[MoveObj] show tool menu." + z + ",actor;" + chVar;
         short s = z ? (short) 1 : (short) 0;
         atc[1][95][10] = s;
@@ -21835,7 +21835,7 @@ public final class ci extends GLLib implements av {
         e(1, 28, false);
         e(1, 29, false);
         e(1, 30, false);
-        if ((lN(23) || lM(aZQ[23])) && qD() != 44) {
+        if ((lN(23) || lM(aZQ[23])) && currentEngineState() != 44) {
             e(1, 32, z2 ? false : z);
             if (z2) {
                 z = false;
@@ -21866,7 +21866,7 @@ public final class ci extends GLLib implements av {
         String str = "Popping : " + strArr[0] + " - " + iArr[0];
     }
 
-    static boolean b(int i, ch chVar) {
+    static boolean b(int i, FarmEntity chVar) {
         int i2 = aCf;
         int i3 = 0;
         boolean z = false;
@@ -21878,7 +21878,7 @@ public final class ci extends GLLib implements av {
         return z;
     }
 
-    public static boolean b(ch chVar, ch chVar2) {
+    public static boolean b(FarmEntity chVar, FarmEntity chVar2) {
         return chVar.pC() / 3 >= (chVar2.anj ? axF[0] : axF[1]);
     }
 
@@ -21979,7 +21979,7 @@ public final class ci extends GLLib implements av {
         if (i3 != -1 && bL(i3, i2 - i4) > 0) {
             return true;
         }
-        for (ch chVar = ch.als[1]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = FarmEntity.als[1]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == i && chVar.aoC == i2 && !chVar.fz(4096)) {
                 return true;
             }
@@ -22150,7 +22150,7 @@ public final class ci extends GLLib implements av {
         int i5 = 0;
         aTu = true;
         String str = "Inventory_AddItemWithUniqueID item : " + i + " quantity : " + i2;
-        switch (ch.fA(i)) {
+        switch (FarmEntity.fA(i)) {
             case 20:
                 int i6 = i - 7000;
                 aAZ = j.bY(4).KW[i6][20];
@@ -22216,13 +22216,13 @@ public final class ci extends GLLib implements av {
         if (baf != null && aOv[3] > 0) {
             a(115443, new String[]{"INT:" + Integer.toString(FB()), "INT:" + Integer.toString(0), "INT:" + Integer.toString(0), "INT:" + Integer.toString(116136), "INT:" + Integer.toString(115429), "N/A", "N/A", "INT:" + Integer.toString(aOv[3]), "INT:" + Integer.toString(FC())});
         }
-        baa = true;
+        hasUnsavedGameChanges = true;
         return true;
     }
 
     static boolean bN(int i, int i2) {
         boolean z = false;
-        if (FH() + i > aBi * ch.ay(1, 1005)) {
+        if (FH() + i > aBi * FarmEntity.ay(1, 1005)) {
             if (aYS != 1016) {
                 aLV = 1;
                 fH(18);
@@ -22235,7 +22235,7 @@ public final class ci extends GLLib implements av {
         if (z) {
             aBi--;
         }
-        baa = true;
+        hasUnsavedGameChanges = true;
         return true;
     }
 
@@ -22319,7 +22319,7 @@ public final class ci extends GLLib implements av {
         if (hZ(i) + i2 < 0) {
             iAy = 0;
         } else {
-            iAy = hZ(i) + i2 > aBi * ch.ay(1, 1005) ? aBi * ch.ay(1, 1005) : hZ(i) + i2;
+            iAy = hZ(i) + i2 > aBi * FarmEntity.ay(1, 1005) ? aBi * FarmEntity.ay(1, 1005) : hZ(i) + i2;
         }
         bP(i, iAy);
     }
@@ -22489,7 +22489,7 @@ public final class ci extends GLLib implements av {
                             aDo[i3] = jVarBY.KW[i8][0];
                             aDn[i3] = jVarBY.KW[i8][2];
                             if (jVarBY.KW[i8][7] > 0) {
-                                int iBL = ((jVarBY.KW[i8][0] == 22 || jVarBY.KW[i8][0] == 23) ? bL(4, jVarBY.KW[i8][0] - 12) : 0) + ch.ay(1, jVarBY.KW[i8][1]);
+                                int iBL = ((jVarBY.KW[i8][0] == 22 || jVarBY.KW[i8][0] == 23) ? bL(4, jVarBY.KW[i8][0] - 12) : 0) + FarmEntity.ay(1, jVarBY.KW[i8][1]);
                                 long[] jArr = aDt;
                                 int[] iArr = jVarBY.KW[i8];
                                 if (iBL < 0) {
@@ -22527,7 +22527,7 @@ public final class ci extends GLLib implements av {
                             aDo[i3] = jVarBY.KW[i8][0];
                             aDn[i3] = jVarBY.KW[i8][2];
                             if (jVarBY.KW[i8][8] > 0) {
-                                int iAy = ch.ay(1, jVarBY.KW[i8][1]);
+                                int iAy = FarmEntity.ay(1, jVarBY.KW[i8][1]);
                                 aDt[i3] = w(jVarBY.KW[i8][(iAy - 1 < 0 ? 0 : iAy + (-1) > 3 ? 3 : iAy - 1) + 7]);
                             } else {
                                 aDt[i3] = w(jVarBY.KW[i8][7]);
@@ -22611,8 +22611,8 @@ public final class ci extends GLLib implements av {
             a(i5, false, false);
             i5++;
         }
-        String str9 = "[MARKET] switch category. show tuto arrow. step:" + aYR + ",tap right:13,cat:" + i + ",animal:0";
-        if (aYR == 13 || aYR == 14) {
+        String str9 = "[MARKET] switch category. show tuto arrow. step:" + currentTutorialStepIndex + ",tap right:13,cat:" + i + ",animal:0";
+        if (currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14) {
             f(2, 196, false);
             e(2, 196, false);
             if (i != 0) {
@@ -22646,7 +22646,7 @@ public final class ci extends GLLib implements av {
         }
         DF();
         gM(2);
-        if (aYR == 13 || aYR == 14) {
+        if (currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14) {
             bl(0, 1);
         } else {
             gQ(0);
@@ -22733,7 +22733,7 @@ public final class ci extends GLLib implements av {
     }
 
     public static void bW(int i, int i2) {
-        ch chVarFm;
+        FarmEntity chVarFm;
         if ((i != 1 || bg(1, 118)) && (chVarFm = Fm()) != null) {
             int iPC = chVarFm.pC() / 3;
             int iPC2 = chVarFm.pC() % 3;
@@ -22819,7 +22819,7 @@ public final class ci extends GLLib implements av {
         if (asM && asL == 100) {
             aCL = rl();
         } else {
-            aCL = GLLib.jr();
+            aCL = GameRuntime.jr();
         }
         if (aCL == null) {
             s.f("NULLUDID", true);
@@ -22880,8 +22880,8 @@ public final class ci extends GLLib implements av {
             return;
         }
         if (i == 16 || i == 33 || i == 11) {
-            ch[] chVarArr = new ch[1];
-            ch.b(1, 50, 9, chVarArr, 1);
+            FarmEntity[] chVarArr = new FarmEntity[1];
+            FarmEntity.b(1, 50, 9, chVarArr, 1);
             if (chVarArr[0] != null) {
                 fG(9);
                 return;
@@ -22891,8 +22891,8 @@ public final class ci extends GLLib implements av {
         if (i == 6) {
             qB();
             if (i2 == aZI[14]) {
-                ch[] chVarArr2 = new ch[1];
-                ch.b(1, 50, 14, chVarArr2, 1);
+                FarmEntity[] chVarArr2 = new FarmEntity[1];
+                FarmEntity.b(1, 50, 14, chVarArr2, 1);
                 if (chVarArr2[0] != null) {
                     aZj.y(chVarArr2[0].aol, chVarArr2[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                     return;
@@ -22971,8 +22971,8 @@ public final class ci extends GLLib implements av {
                 }
                 return;
             } else {
-                ch[] chVarArr3 = new ch[1];
-                ch.b(1, 50, 14, chVarArr3, 1);
+                FarmEntity[] chVarArr3 = new FarmEntity[1];
+                FarmEntity.b(1, 50, 14, chVarArr3, 1);
                 if (chVarArr3[0] != null) {
                     fG(28);
                     return;
@@ -22981,8 +22981,8 @@ public final class ci extends GLLib implements av {
             }
         }
         if (i == 18) {
-            ch[] chVarArr4 = new ch[1];
-            ch.b(1, 50, 14, chVarArr4, 1);
+            FarmEntity[] chVarArr4 = new FarmEntity[1];
+            FarmEntity.b(1, 50, 14, chVarArr4, 1);
             if (chVarArr4[0] != null) {
                 fG(28);
                 return;
@@ -22999,8 +22999,8 @@ public final class ci extends GLLib implements av {
                 n(300, 301, 15, 0, 1);
                 return;
             }
-            ch[] chVarArr5 = new ch[1];
-            ch.b(1, 50, 18, chVarArr5, 1);
+            FarmEntity[] chVarArr5 = new FarmEntity[1];
+            FarmEntity.b(1, 50, 18, chVarArr5, 1);
             if (chVarArr5[0] != null) {
                 aZj.y(chVarArr5[0].aol, chVarArr5[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                 return;
@@ -23018,8 +23018,8 @@ public final class ci extends GLLib implements av {
                 i6 = 0;
             }
             if (i2 == i6) {
-                ch[] chVarArr6 = new ch[1];
-                ch.c(1, 48, 0, chVarArr6, 1);
+                FarmEntity[] chVarArr6 = new FarmEntity[1];
+                FarmEntity.c(1, 48, 0, chVarArr6, 1);
                 if (chVarArr6[0] != null) {
                     aZj.y(chVarArr6[0].aol, chVarArr6[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                     return;
@@ -23027,8 +23027,8 @@ public final class ci extends GLLib implements av {
                 return;
             }
             if (i2 == i5) {
-                ch[] chVarArr7 = new ch[1];
-                ch.c(1, 48, 1, chVarArr7, 1);
+                FarmEntity[] chVarArr7 = new FarmEntity[1];
+                FarmEntity.c(1, 48, 1, chVarArr7, 1);
                 if (chVarArr7[0] != null) {
                     aZj.y(chVarArr7[0].aol, chVarArr7[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                     return;
@@ -23042,8 +23042,8 @@ public final class ci extends GLLib implements av {
             String str3 = "quest target:" + i2;
             if (i2 != aZL[2]) {
                 if (i2 == aZL[1]) {
-                    ch[] chVarArr8 = new ch[1];
-                    ch.a(1, 54, 5, 15, chVarArr8, 1);
+                    FarmEntity[] chVarArr8 = new FarmEntity[1];
+                    FarmEntity.a(1, 54, 5, 15, chVarArr8, 1);
                     String str4 = "chicken:" + chVarArr8[0];
                     if (chVarArr8[0] != null) {
                         aZj.y(chVarArr8[0].aol, chVarArr8[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
@@ -23053,14 +23053,14 @@ public final class ci extends GLLib implements av {
                 }
                 return;
             }
-            ch[] chVarArr9 = new ch[1];
-            ch.a(1, 54, 17, 27, chVarArr9, 1);
+            FarmEntity[] chVarArr9 = new FarmEntity[1];
+            FarmEntity.a(1, 54, 17, 27, chVarArr9, 1);
             String str5 = " actor cow brown:" + chVarArr9[0];
             if (chVarArr9[0] != null) {
                 aZj.y(chVarArr9[0].aol, chVarArr9[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                 return;
             }
-            ch.a(1, 54, 41, 63, chVarArr9, 1);
+            FarmEntity.a(1, 54, 41, 63, chVarArr9, 1);
             String str6 = " actor goat, sheep group :" + chVarArr9[0];
             if (chVarArr9[0] != null) {
                 aZj.y(chVarArr9[0].aol, chVarArr9[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
@@ -23070,23 +23070,23 @@ public final class ci extends GLLib implements av {
         }
         if (i == 19 || i == 41 || i == 21) {
             qB();
-            ch[] chVarArr10 = new ch[1];
+            FarmEntity[] chVarArr10 = new FarmEntity[1];
             if (i2 >= aZG[1] && i2 <= aZG[75]) {
-                ch.d(1, 54, i2, chVarArr10, 1);
+                FarmEntity.d(1, 54, i2, chVarArr10, 1);
             } else if (i2 == 2999) {
-                ch.b(1, 54, aZG[1], aZG[75], chVarArr10, 1);
+                FarmEntity.b(1, 54, aZG[1], aZG[75], chVarArr10, 1);
             } else if (i2 == 2998) {
-                ch.b(1, 54, aZG[5], aZG[15], chVarArr10, 1);
+                FarmEntity.b(1, 54, aZG[5], aZG[15], chVarArr10, 1);
             } else if (i2 == 2992) {
-                ch.b(1, 54, aZG[69], aZG[72], chVarArr10, 1);
+                FarmEntity.b(1, 54, aZG[69], aZG[72], chVarArr10, 1);
             } else if (i2 == 2997) {
-                ch.b(1, 54, aZG[17], aZG[27], chVarArr10, 1);
+                FarmEntity.b(1, 54, aZG[17], aZG[27], chVarArr10, 1);
             } else if (i2 == 2996) {
-                ch.b(1, 54, aZG[29], aZG[39], chVarArr10, 1);
+                FarmEntity.b(1, 54, aZG[29], aZG[39], chVarArr10, 1);
             } else if (i2 == 2995) {
-                ch.b(1, 54, aZG[41], aZG[51], chVarArr10, 1);
+                FarmEntity.b(1, 54, aZG[41], aZG[51], chVarArr10, 1);
             } else if (i2 == 2994) {
-                ch.b(1, 54, aZG[53], aZG[63], chVarArr10, 1);
+                FarmEntity.b(1, 54, aZG[53], aZG[63], chVarArr10, 1);
             }
             if (chVarArr10[0] == null || chVarArr10[0].anj || chVarArr10[0].ank) {
                 return;
@@ -23114,8 +23114,8 @@ public final class ci extends GLLib implements av {
         }
         if (i == 23 || i == 24 || i == 28 || i == 29 || i == 30 || i == 26) {
             qB();
-            ch[] chVarArr11 = new ch[1];
-            ch.b(1, 50, 15, chVarArr11, 1);
+            FarmEntity[] chVarArr11 = new FarmEntity[1];
+            FarmEntity.b(1, 50, 15, chVarArr11, 1);
             if (chVarArr11[0] != null) {
                 aZj.y(chVarArr11[0].aol, chVarArr11[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                 return;
@@ -23125,8 +23125,8 @@ public final class ci extends GLLib implements av {
         if (i == 7) {
             if (i2 == aZI[12]) {
                 qB();
-                ch[] chVarArr12 = new ch[1];
-                ch.b(1, 50, 12, chVarArr12, 1);
+                FarmEntity[] chVarArr12 = new FarmEntity[1];
+                FarmEntity.b(1, 50, 12, chVarArr12, 1);
                 if (chVarArr12[0] != null) {
                     aZj.y(chVarArr12[0].aol, chVarArr12[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                     return;
@@ -23137,8 +23137,8 @@ public final class ci extends GLLib implements av {
                 return;
             }
             qB();
-            ch[] chVarArr13 = new ch[1];
-            ch.b(1, 50, 18, chVarArr13, 1);
+            FarmEntity[] chVarArr13 = new FarmEntity[1];
+            FarmEntity.b(1, 50, 18, chVarArr13, 1);
             if (chVarArr13[0] != null) {
                 aZj.y(chVarArr13[0].aol, chVarArr13[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                 return;
@@ -23147,8 +23147,8 @@ public final class ci extends GLLib implements av {
         }
         if (i == 3) {
             qB();
-            ch[] chVarArr14 = new ch[1];
-            ch.b(1, 50, 17, chVarArr14, 1);
+            FarmEntity[] chVarArr14 = new FarmEntity[1];
+            FarmEntity.b(1, 50, 17, chVarArr14, 1);
             if (chVarArr14[0] != null) {
                 aZj.y(chVarArr14[0].aol, chVarArr14[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                 return;
@@ -23210,13 +23210,13 @@ public final class ci extends GLLib implements av {
             return;
         }
         gX(60);
-        if (aYR == 29) {
+        if (currentTutorialStepIndex == 29) {
             axW = true;
         }
         int i3 = aGW + i;
-        boolean z = FH() == (aBi * ch.ay(1, 1005)) + (-1);
+        boolean z = FH() == (aBi * FarmEntity.ay(1, 1005)) + (-1);
         iW(i3);
-        if (FH() < aBi * ch.ay(1, 1005) || z || aYS == 1016) {
+        if (FH() < aBi * FarmEntity.ay(1, 1005) || z || aYS == 1016) {
             iX(i3);
             aHD = true;
             aHC = i3;
@@ -23452,7 +23452,7 @@ public final class ci extends GLLib implements av {
             i = i2;
         }
         String str2 = "[CraftList] show list:" + z;
-        if (z && aYR == 24) {
+        if (z && currentTutorialStepIndex == 24) {
             axW = true;
         }
         aHw = z;
@@ -23691,19 +23691,19 @@ public final class ci extends GLLib implements av {
         int i8 = jVarBY.KW[FC() - 1][8];
         int i9 = jVarBY.KW[FC() - 1][9];
         int i10 = jVarBY.KW[FC() - 1][10];
-        int iU = U(GLLib.L(i, i2), FC(), -1);
-        int iU2 = U(GLLib.L(i, i2), FC(), iU);
+        int iU = U(GameRuntime.L(i, i2), FC(), -1);
+        int iU2 = U(GameRuntime.L(i, i2), FC(), iU);
         String str = "[Party] Generate Reward item. output resources. :" + iU + "," + iU2;
         j jVarBY2 = j.bY(1);
         aOs[0] = (short) jVarBY2.KW[iU][3];
         aOt[0] = (short) jVarBY2.KW[iU][4];
         aOu[0] = jVarBY2.KW[iU][2];
-        aOv[0] = (short) GLLib.L(i3, i4);
+        aOv[0] = (short) GameRuntime.L(i3, i4);
         aOw[0] = iU;
         aOs[1] = (short) jVarBY2.KW[iU2][3];
         aOt[1] = (short) jVarBY2.KW[iU2][4];
         aOu[1] = jVarBY2.KW[iU2][2];
-        aOv[1] = (short) GLLib.L(i5, i6);
+        aOv[1] = (short) GameRuntime.L(i5, i6);
         aOw[1] = iU2;
         aOs[2] = 20;
         aOt[2] = 164;
@@ -23925,7 +23925,7 @@ public final class ci extends GLLib implements av {
             }
         }
         if (i3 > 0) {
-            azx[i][3] = iArr[GLLib.L(0, i3)];
+            azx[i][3] = iArr[GameRuntime.L(0, i3)];
             String str = "Neighbor prepare presend. get gift from neighbor" + i;
             aa(aZJ[0] + i, 1, 31);
             N(aZJ[0] + i, 1, 31);
@@ -23939,7 +23939,7 @@ public final class ci extends GLLib implements av {
         if (qO() || !atU || aRH) {
             aTn = z;
             aTo = false;
-            if ((aTI == 9 || aTI == 1) && qD() != 35) {
+            if ((aTI == 9 || aTI == 1) && currentEngineState() != 35) {
                 return;
             }
             GloftGF2F gloftGF2F = GloftGF2F.acx;
@@ -23950,8 +23950,8 @@ public final class ci extends GLLib implements av {
                 GloftGF2F gloftGF2F2 = GloftGF2F.acx;
                 GloftGF2F.acw.q(0, lx(aTr));
             }
-            if (qE() == 35) {
-                if (qD() == 35 && qE() == 18) {
+            if (previousEngineState() == 35) {
+                if (currentEngineState() == 35 && previousEngineState() == 18) {
                     return;
                 }
                 fE(35);
@@ -23972,7 +23972,7 @@ public final class ci extends GLLib implements av {
                 }
             }
             auB = z2;
-            if (qD() == 35 && qE() == 18) {
+            if (currentEngineState() == 35 && previousEngineState() == 18) {
                 return;
             }
             fE(35);
@@ -24085,7 +24085,7 @@ public final class ci extends GLLib implements av {
             int i12 = i10 + iLB;
             String str12 = "RMS unlocked amount quest comp.:" + i12;
             int iHD = hD(-1);
-            int iAw = ch.aw(1, -1);
+            int iAw = FarmEntity.aw(1, -1);
             aqc = i12;
             aqd = iHD + iAw;
             aqe = iLB;
@@ -24245,7 +24245,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static int c(byte[] bArr, int i, ch chVar) {
+    static int c(byte[] bArr, int i, FarmEntity chVar) {
         int iA = a(bArr, d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, i, (byte) chVar.Kx), (byte) chVar.aoC), (short) bG(chVar.aol, chVar.aom)), (short) bH(chVar.aol, chVar.aom)), (short) chVar.aon), chVar.HL), (byte) chVar.Bj);
         return (chVar.aoC == 12 || chVar.aoC == 11) ? a(bArr, iA, chVar.alV) : iA;
     }
@@ -24274,10 +24274,10 @@ public final class ci extends GLLib implements av {
     }
 
     static void c(int i, int i2, int i3, int i4, int i5, int i6) {
-        GLLib.a((float) (i), (float) (i2), (float) (i3), (float) (i4), i5, i6);
+        GameRuntime.a((float) (i), (float) (i2), (float) (i3), (float) (i4), i5, i6);
     }
 
-    static void c(ch chVar, int i, int i2) {
+    static void c(FarmEntity chVar, int i, int i2) {
         switch (chVar.Kx) {
             case 13:
                 chVar.y(i, i2, 1500);
@@ -24300,7 +24300,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void c(ch chVar, boolean z) {
+    static void c(FarmEntity chVar, boolean z) {
         int iPC;
         int i;
         int i2;
@@ -24600,7 +24600,7 @@ public final class ci extends GLLib implements av {
         return i >= iArr[0] && i <= iArr[0] + iArr[2] && i2 >= iArr[1] && i2 <= iArr[1] + iArr[3];
     }
 
-    static boolean c(ch chVar, ch chVar2) {
+    static boolean c(FarmEntity chVar, FarmEntity chVar2) {
         int i;
         int i2;
         int[] iArr = new int[2];
@@ -25091,7 +25091,7 @@ public final class ci extends GLLib implements av {
         } else {
             i3 = i2 == 1 ? 17 : 0;
         }
-        switch (ch.fA(i2)) {
+        switch (FarmEntity.fA(i2)) {
             case 20:
                 int i8 = i2 - 7000;
                 j jVarBY = j.bY(4);
@@ -25239,7 +25239,7 @@ public final class ci extends GLLib implements av {
         return i9;
     }
 
-    static int d(byte[] bArr, int i, ch chVar) {
+    static int d(byte[] bArr, int i, FarmEntity chVar) {
         return a(bArr, d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, i, (byte) chVar.Kx), (byte) chVar.aoC), (short) bG(chVar.aol, chVar.aom)), (short) bH(chVar.aol, chVar.aom)), (short) chVar.aon), chVar.HL), (byte) chVar.Bj);
     }
 
@@ -25274,17 +25274,17 @@ public final class ci extends GLLib implements av {
         return i13;
     }
 
-    static ch d(int i, int i2, int i3, int i4, boolean z) {
+    static FarmEntity d(int i, int i2, int i3, int i4, boolean z) {
         int[] iArr = {i3, i4, 11};
         if (i == 50 || i == 54 || i == 48 || i == 22) {
             iArr[2] = 12;
         }
-        ch chVarB = ch.b(i, i2, iArr);
+        FarmEntity chVarB = FarmEntity.b(i, i2, iArr);
         int[] iArr2 = {i3, i4};
         a(chVarB, iArr2, i3, i4);
         chVarB.aol = iArr2[0];
         chVarB.aom = iArr2[1];
-        if (z && aYR == -1) {
+        if (z && currentTutorialStepIndex == -1) {
             aZj.y(iArr2[0], iArr2[1], Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
         }
         return chVarB;
@@ -25298,7 +25298,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void d(ch chVar, int i, int i2) {
+    static void d(FarmEntity chVar, int i, int i2) {
         switch (chVar.Kx) {
             case 13:
                 chVar.y(aZj.aol + i, aZj.aom + i2, 1500);
@@ -25316,7 +25316,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void d(ch chVar, boolean z) {
+    static void d(FarmEntity chVar, boolean z) {
         if (chVar == null) {
             return;
         }
@@ -25469,7 +25469,7 @@ public final class ci extends GLLib implements av {
             a(aCx, 0, bArr, 0, aCx.length);
             bArrB = bArr;
         } else {
-            bArrB = GLLib.B("save_farm" + (z2 ? 0 : aZB), (!asM || asL >= 300) ? rv() : "");
+            bArrB = GameRuntime.B("save_farm" + (z2 ? 0 : aZB), (!asM || asL >= 300) ? rv() : "");
         }
         if (bArrB == null) {
             return false;
@@ -26297,7 +26297,7 @@ public final class ci extends GLLib implements av {
         return 1;
     }
 
-    static int e(byte[] bArr, int i, ch chVar) {
+    static int e(byte[] bArr, int i, FarmEntity chVar) {
         return a(bArr, d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, i, (byte) chVar.Kx), (byte) chVar.aoC), (short) bG(chVar.aol, chVar.aom)), (short) bH(chVar.aol, chVar.aom)), (short) chVar.aon), chVar.HL), (byte) chVar.Bj);
     }
 
@@ -26367,7 +26367,7 @@ public final class ci extends GLLib implements av {
                 i6 = 1;
                 break;
             case 4:
-                switch (ch.fA(i3)) {
+                switch (FarmEntity.fA(i3)) {
                     case 20:
                         int i7 = i3 - 7000;
                         j jVarBY = j.bY(4);
@@ -26467,7 +26467,7 @@ public final class ci extends GLLib implements av {
     static void e(String str, String str2, int i, int i2) {
         avk = false;
         gX(59);
-        if (aYR == -1) {
+        if (currentTutorialStepIndex == -1) {
             if (!awV || aYS == 0 || aYS == -1) {
                 e(true, true);
                 bw(true);
@@ -26488,7 +26488,7 @@ public final class ci extends GLLib implements av {
             }
         } else {
             GloftGF2F gloftGF2F = GloftGF2F.acx;
-            ci ciVar = GloftGF2F.acw;
+            FarmGameEngine ciVar = GloftGF2F.acw;
             atH = A(aSs[bar], "Cash");
         }
         atG = z;
@@ -26527,7 +26527,7 @@ public final class ci extends GLLib implements av {
         return iArr[1] + iArr[3] >= iArr2[1] && i5 <= iArr2[1] + iArr2[3] && i3 >= i2 && i <= i4;
     }
 
-    static int f(byte[] bArr, int i, ch chVar) {
+    static int f(byte[] bArr, int i, FarmEntity chVar) {
         return a(bArr, d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, i, (byte) chVar.Kx), (byte) chVar.aoC), (short) chVar.aoh), (short) bG(chVar.aol, chVar.aom)), (short) bH(chVar.aol, chVar.aom)), (short) chVar.aon), chVar.HL), (byte) chVar.Bj);
     }
 
@@ -26701,12 +26701,12 @@ public final class ci extends GLLib implements av {
         iArr2[1] = (i2 - i) >> 8;
     }
 
-    static boolean f(ch chVar) {
+    static boolean f(FarmEntity chVar) {
         if (chVar.Kx == 54) {
             return false;
         }
-        ch[] chVarArr = new ch[100];
-        int iA = ch.a(1, 54, chVarArr, 100, chVar);
+        FarmEntity[] chVarArr = new FarmEntity[100];
+        int iA = FarmEntity.a(1, 54, chVarArr, 100, chVar);
         for (int i = 0; i < iA; i++) {
             if (!chVarArr[i].fz(4096) && chVarArr[i].aoW != chVar.aoW) {
                 return true;
@@ -26797,7 +26797,7 @@ public final class ci extends GLLib implements av {
 
     static void fI(int i) {
         if ((i == 20 || i == 27)
-                && !TutorialFlowController.openModal(i, aYR, aYS, awV)) return;
+                && !TutorialFlowController.openModal(i, currentTutorialStepIndex, aYS, awV)) return;
         apz = i;
         apA = 6;
         Ff();
@@ -26826,9 +26826,9 @@ public final class ci extends GLLib implements av {
                 s(0, 99, 1, 24);
                 break;
         }
-        GLLib.bk("/9");
+        GameRuntime.bk("/9");
         fP(0);
-        GLLib.ke();
+        GameRuntime.ke();
     }
 
     static void fL(int i) {
@@ -27058,7 +27058,7 @@ public final class ci extends GLLib implements av {
         return UY[c - 1569][0];
     }
 
-    static int g(byte[] bArr, int i, ch chVar) {
+    static int g(byte[] bArr, int i, FarmEntity chVar) {
         return d(bArr, a(bArr, a(bArr, d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, i, (byte) chVar.Kx), (byte) chVar.aoC), (short) bG(chVar.aol, chVar.aom)), (short) bH(chVar.aol, chVar.aom)), (short) chVar.aon), chVar.HL), (byte) chVar.Bj), chVar.amd), ii(chVar.ame));
     }
 
@@ -27089,8 +27089,8 @@ public final class ci extends GLLib implements av {
         return i11;
     }
 
-    static void g(ch chVar) {
-        if (hF(5) + ch.fe(3) >= Fw()) {
+    static void g(FarmEntity chVar) {
+        if (hF(5) + FarmEntity.fe(3) >= Fw()) {
             H(481, 487, 7, 0);
             return;
         }
@@ -27161,7 +27161,7 @@ public final class ci extends GLLib implements av {
 
     static boolean g(boolean z, int i) {
         int i2 = (i * 27) + 29;
-        if (aYR == 28) {
+        if (currentTutorialStepIndex == 28) {
             if (!bg(22, i2) && !bh(22, i2)) {
                 return false;
             }
@@ -27370,7 +27370,7 @@ public final class ci extends GLLib implements av {
 
     static void gF(int i) {
         int iJ;
-        byte[] bArrDb = GLLib.db(i);
+        byte[] bArrDb = GameRuntime.db(i);
         int i2 = 0;
         for (int iDC = 0; iDC < bArrDb.length; iDC = iDC + DC() + gH(j(bArrDb, iDC) & 255)) {
             i2++;
@@ -27651,7 +27651,7 @@ public final class ci extends GLLib implements av {
         aAL = i;
         if (i == 22) {
             iR(i);
-            if (!aFp || qD() != 12) {
+            if (!aFp || currentEngineState() != 12) {
                 gK(i);
             }
         } else {
@@ -29235,7 +29235,7 @@ public final class ci extends GLLib implements av {
                         break;
                     case 1703981:
                         if (aYU != -1) {
-                            String str2 = " prev state:--" + qE() + ",gamelang:" + aYU + ",prevlang:" + aOD + ",next state:" + apz;
+                            String str2 = " prev state:--" + previousEngineState() + ",gamelang:" + aYU + ",prevlang:" + aOD + ",next state:" + apz;
                             if (!aux) {
                                 gX(60);
                                 ash = asa;
@@ -29264,12 +29264,12 @@ public final class ci extends GLLib implements av {
                                         strDt2 = "";
                                     }
                                     aOE = strDt2;
-                                    if (qE() == 15) {
+                                    if (previousEngineState() == 15) {
                                         fG(4);
                                     } else {
                                         qB();
                                     }
-                                    if (qE() == -1) {
+                                    if (previousEngineState() == -1) {
                                         if (!aTK) {
                                             asi = 18;
                                         } else {
@@ -29786,7 +29786,7 @@ public final class ci extends GLLib implements av {
                         String str6 = "#ThoA Touch k_GACHA_ADS_WATCH_BUTTON : " + bh(45, 5);
                         if (bh(45, 5)) {
                             if (!qO()) {
-                                E(qD(), true);
+                                E(currentEngineState(), true);
                             } else if (b.JQ == 3 && !Ki()) {
                                 gX(60);
                                 AdsManager.ShowIncentivized("enter_section_video_lucky_wheel");
@@ -29879,7 +29879,7 @@ public final class ci extends GLLib implements av {
 
     static void gP(int i) {
         short s;
-        if ((aYS == 1011 && aHw) || aYR == 14 || aYS == 1016) {
+        if ((aYS == 1011 && aHw) || currentTutorialStepIndex == 14 || aYS == 1016) {
             return;
         }
         int i2 = i & 65535;
@@ -29966,7 +29966,7 @@ public final class ci extends GLLib implements av {
         for (int i5 = i3 + 1; i5 <= i4; i5++) {
             atc[i2][i5][2] = (short) (atd[i2][i5][2] + atm[i][8]);
             int i6 = atc[i2][i5][2] - s;
-            atc[i2][i5][3] = (short) (s2 - GLLib.cR((atm[i][4] * atm[i][4]) - (i6 * i6)));
+            atc[i2][i5][3] = (short) (s2 - GameRuntime.cR((atm[i][4] * atm[i][4]) - (i6 * i6)));
             if (atc[i2][i5][0] == 205 && atc[i2][i5][18] == 1 && atc[i2][i5][5] > -1) {
                 short s3 = atc[i2][i5][5];
                 short s4 = atc[i2][i5][6];
@@ -30035,7 +30035,7 @@ public final class ci extends GLLib implements av {
     static void gU(int i) {
         int i2;
         int[] iArr = atn[i];
-        iArr[7] = iArr[7] + GLLib.Qy;
+        iArr[7] = iArr[7] + GameRuntime.Qy;
         int i3 = (atn[i][0] >> 16) & 65535;
         int i4 = atn[i][0] & 65535;
         int i5 = atn[i][1] & 65535;
@@ -30424,7 +30424,7 @@ public final class ci extends GLLib implements av {
                 }
             }
             for (int i6 = 0; i6 < iIi; i6++) {
-                iArr[iIi + i6] = GLLib.L(8420, 8519);
+                iArr[iIi + i6] = GameRuntime.L(8420, 8519);
                 iArr2[iIi + i6] = -1;
                 iArr3[iIi + i6] = -1;
             }
@@ -30441,7 +30441,7 @@ public final class ci extends GLLib implements av {
             }
             int i10 = (iIi * 2) + iIi2;
             for (int i11 = 0; i11 < iIi2; i11++) {
-                iArr[i10 + i11] = GLLib.L(8420, 8519);
+                iArr[i10 + i11] = GameRuntime.L(8420, 8519);
                 iArr2[i10 + i11] = -1;
                 iArr3[i10 + i11] = -1;
             }
@@ -30458,7 +30458,7 @@ public final class ci extends GLLib implements av {
             }
             int i15 = (iIi * 2) + (iIi2 * 2) + iIi3;
             for (int i16 = 0; i16 < iIi3; i16++) {
-                iArr[i15 + i16] = GLLib.L(8420, 8519);
+                iArr[i15 + i16] = GameRuntime.L(8420, 8519);
                 iArr2[i15 + i16] = -1;
                 iArr3[i15 + i16] = -1;
             }
@@ -30467,7 +30467,7 @@ public final class ci extends GLLib implements av {
             int[] iArr6 = new int[4];
             int i17 = 0;
             int i18 = 0;
-            int iA = ch.a(1, 22, new ch[10], 10);
+            int iA = FarmEntity.a(1, 22, new FarmEntity[10], 10);
             while (i17 < i3 * 2 && iA < 1) {
                 String str3 = "indexSparke:" + i17 + ",total:" + i18;
                 String str4 = "expansion till;" + ayJ;
@@ -30477,7 +30477,7 @@ public final class ci extends GLLib implements av {
                     String str5 = "i : " + i19 + ",random ps. grid:u:" + iArr5[0] + ",v:" + iArr5[1];
                     i18++;
                     g(iArr5, iArr4);
-                    ch chVarD = d(22, 1, iArr4[0], iArr4[1], false);
+                    FarmEntity chVarD = d(22, 1, iArr4[0], iArr4[1], false);
                     String str6 = "CRATE SPARKLE actor. ps:" + iArr4[0] + "," + iArr4[1];
                     if (chVarD != null) {
                         chVarD.qh();
@@ -30532,7 +30532,7 @@ public final class ci extends GLLib implements av {
 
     static void gt(int i) {
         String str = "toggle list. " + i;
-        if (qD() != 28) {
+        if (currentEngineState() != 28) {
             if (aYS == 1077 || aYS == 1078 || aYS == 1079 || aGL != null) {
                 return;
             }
@@ -30552,8 +30552,8 @@ public final class ci extends GLLib implements av {
         if ((aYS == 1011 && aHw) || aYS == 1016 || aYS == 1017) {
             return;
         }
-        if (aYR < 28 || aYR > 30 || aHw) {
-            if (aYR == 25) {
+        if (currentTutorialStepIndex < 28 || currentTutorialStepIndex > 30 || aHw) {
+            if (currentTutorialStepIndex == 25) {
                 if (!aHw) {
                     gX(60);
                     bi(true);
@@ -30629,7 +30629,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static byte h(ch chVar) {
+    static byte h(FarmEntity chVar) {
         for (int i = 1; i < 15; i++) {
             if (aAR[i] == 0) {
                 byte b = (byte) i;
@@ -30699,7 +30699,7 @@ public final class ci extends GLLib implements av {
         return i;
     }
 
-    static int h(byte[] bArr, int i, ch chVar) {
+    static int h(byte[] bArr, int i, FarmEntity chVar) {
         return d(bArr, a(bArr, a(bArr, a(bArr, d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, i, (byte) chVar.Kx), (byte) chVar.aoC), (short) bG(chVar.aol, chVar.aom)), (short) bH(chVar.aol, chVar.aom)), (short) chVar.aon), chVar.HL), (byte) chVar.Bj), (byte) chVar.amt), chVar.amq), ii(chVar.amr));
     }
 
@@ -30736,7 +30736,7 @@ public final class ci extends GLLib implements av {
         return i14;
     }
 
-    static ch h(int i, int i2, boolean z) {
+    static FarmEntity h(int i, int i2, boolean z) {
         int[] iArr = new int[2];
         int[] iArr2 = {kH() >> 1, kI() >> 1};
         c(iArr2, iArr);
@@ -30780,7 +30780,7 @@ public final class ci extends GLLib implements av {
         DF();
         gK(1);
         c(65636, 65644, atc[1][100][2], 0, 0, 0, 500);
-        short sKH = (short) GLLib.kH();
+        short sKH = (short) GameRuntime.kH();
         atc[1][100][2] = sKH;
         atc[1][102][2] = sKH;
         atc[1][104][2] = sKH;
@@ -30858,8 +30858,8 @@ public final class ci extends GLLib implements av {
     }
 
     static void h(int[] iArr, int[] iArr2) {
-        int iL = GLLib.L(iArr[0], iArr[1]);
-        int iL2 = GLLib.L(iArr[2], iArr[3]);
+        int iL = GameRuntime.L(iArr[0], iArr[1]);
+        int iL2 = GameRuntime.L(iArr[2], iArr[3]);
         iArr2[0] = iL;
         iArr2[1] = iL2;
     }
@@ -30873,8 +30873,8 @@ public final class ci extends GLLib implements av {
         return zMg;
     }
 
-    static ch hA(int i) {
-        for (ch chVar = ch.als[1]; chVar != null; chVar = chVar.aoi) {
+    static FarmEntity hA(int i) {
+        for (FarmEntity chVar = FarmEntity.als[1]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 54 && chVar.aoC == i) {
                 return chVar;
             }
@@ -30968,7 +30968,7 @@ public final class ci extends GLLib implements av {
 
     static int hE(int i) {
         if (i == 2) {
-            return ch.x(1, 54, 2048);
+            return FarmEntity.x(1, 54, 2048);
         }
         j jVarBY = j.bY(0);
         int iBL = 0;
@@ -31038,8 +31038,8 @@ public final class ci extends GLLib implements av {
             hH(s);
             if (i3 >= 68) {
             }
-            ch[] chVarArr = new ch[1];
-            ch.e(1, 54, s, chVarArr, 1);
+            FarmEntity[] chVarArr = new FarmEntity[1];
+            FarmEntity.e(1, 54, s, chVarArr, 1);
             if (chVarArr[0] != null) {
                 d(chVarArr[0], false);
                 avD = 4;
@@ -31131,7 +31131,7 @@ public final class ci extends GLLib implements av {
             return false;
         }
         hS(-i);
-        baa = true;
+        hasUnsavedGameChanges = true;
         return true;
     }
 
@@ -31155,7 +31155,7 @@ public final class ci extends GLLib implements av {
             return false;
         }
         hT(-i);
-        baa = true;
+        hasUnsavedGameChanges = true;
         return true;
     }
 
@@ -31164,7 +31164,7 @@ public final class ci extends GLLib implements av {
             return false;
         }
         aBt = ih(ii(aBt) - i);
-        baa = true;
+        hasUnsavedGameChanges = true;
         return true;
     }
 
@@ -31180,7 +31180,7 @@ public final class ci extends GLLib implements av {
             aBI = false;
         }
         hJ(iFA);
-        baa = true;
+        hasUnsavedGameChanges = true;
         String str = "[player add money]. quest check. :" + i;
         if (i > 0) {
             aa(0, i, 11);
@@ -31201,7 +31201,7 @@ public final class ci extends GLLib implements av {
             aBH = false;
         }
         hK(iFB);
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void hU(int i) {
@@ -31212,7 +31212,7 @@ public final class ci extends GLLib implements av {
             i2 = aBj + i > aZw[5] ? aZw[5] : aBj + i;
         }
         aBj = i2;
-        baa = true;
+        hasUnsavedGameChanges = true;
         if (aBj >= aZw[5] && !br(1, 33) && bg(1, 33)) {
             atc[1][33][7] = 0;
             x(1, 33, 0, -1);
@@ -31230,7 +31230,7 @@ public final class ci extends GLLib implements av {
             iIi = ii(aBt) + i > aBu ? aBu : ii(aBt) + i;
         }
         aBt = ih(iIi);
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void hW(int i) {
@@ -31267,13 +31267,13 @@ public final class ci extends GLLib implements av {
             String str = "addMoney : " + i4;
             String str2 = "addCash : " + ((int) s);
             int[] iArr = new int[2];
-            c(new int[]{GLLib.kH() >> 1, GLLib.kI() >> 1}, iArr);
+            c(new int[]{GameRuntime.kH() >> 1, GameRuntime.kI() >> 1}, iArr);
             int[] iArr2 = {0, 0, 14};
             if (i4 > 0) {
-                ch.b(47, 3, iArr2).b(iArr[0], iArr[1], 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, i4);
+                FarmEntity.b(47, 3, iArr2).b(iArr[0], iArr[1], 36, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, i4);
             }
             if (s > 0) {
-                ch.b(47, 3, iArr2).b(iArr[0], iArr[1], 6, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, s);
+                FarmEntity.b(47, 3, iArr2).b(iArr[0], iArr[1], 6, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, s);
             }
         }
         String str3 = "[Player] Level Up" + i2;
@@ -31284,24 +31284,24 @@ public final class ci extends GLLib implements av {
             fE(14);
         }
         EP();
-        baa = true;
+        hasUnsavedGameChanges = true;
         if (baf != null) {
-            String string = Integer.toString(hE(1) + ch.ax(1, 1));
-            String string2 = Integer.toString(hE(0) + ch.ax(1, 0));
-            String string3 = Integer.toString(hE(2) + ch.ax(1, 2));
-            String string4 = Integer.toString(hD(50) + ch.aw(1, 50));
+            String string = Integer.toString(hE(1) + FarmEntity.ax(1, 1));
+            String string2 = Integer.toString(hE(0) + FarmEntity.ax(1, 0));
+            String string3 = Integer.toString(hE(2) + FarmEntity.ax(1, 2));
+            String string4 = Integer.toString(hD(50) + FarmEntity.aw(1, 50));
             String string5 = Integer.toString(Ig());
             String string6 = Integer.toString(ii(aBt));
             String string7 = Integer.toString(aGm);
-            String string8 = Integer.toString(ch.fb(1));
-            String string9 = Integer.toString((aZB == 0 ? ch.aw(1, 20) : 0) + hD(20));
+            String string8 = Integer.toString(FarmEntity.fb(1));
+            String string9 = Integer.toString((aZB == 0 ? FarmEntity.aw(1, 20) : 0) + hD(20));
             String string10 = Integer.toString(EK());
             if (aZB != 0) {
                 string10 = AppEventsConstants.EVENT_PARAM_VALUE_NO;
             }
             String string11 = Integer.toString(FH());
             String string12 = Integer.toString(aZD);
-            String string13 = Integer.toString(ch.aw(1, 48));
+            String string13 = Integer.toString(FarmEntity.aw(1, 48));
             if (aZB != 0) {
                 string13 = AppEventsConstants.EVENT_PARAM_VALUE_NO;
             }
@@ -31309,7 +31309,7 @@ public final class ci extends GLLib implements av {
             String string15 = Integer.toString(Fu());
             String string16 = Integer.toString(hD(49));
             String string17 = Integer.toString(hD(52));
-            String string18 = Integer.toString((aZB == 0 ? ch.aw(1, 52) : 0) + hF(4));
+            String string18 = Integer.toString((aZB == 0 ? FarmEntity.aw(1, 52) : 0) + hF(4));
             String string19 = Integer.toString(i2);
             if (aZC != 0) {
                 a(116249, new String[]{"INT:" + aBJ, "INT:" + aBK, "INT:" + aBL, "INT:" + aBM, "INT:" + aBN, "INT:" + aBO, "INT:" + aBP, "INT:" + aBQ, "INT:" + aBR, "INT:" + aBS, "INT:" + aBT, "INT:" + aBU, "INT:" + aBV, "INT:" + aBW, "INT:" + aBX, "INT:" + aBY, "INT:" + aBZ, "INT:" + aCa, "INT:" + string19});
@@ -31351,7 +31351,7 @@ public final class ci extends GLLib implements av {
             aCc = true;
             hW(i2);
         }
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static int hY(int i) {
@@ -31418,7 +31418,7 @@ public final class ci extends GLLib implements av {
 
     static void hd(int i) {
         String str = "[GUI] ChangeCrop loaded to " + i;
-        if (aYR == 46) {
+        if (currentTutorialStepIndex == 46) {
             String str2 = "[crop] over. plant tomato. set croptype tomato.:" + i + ", tomat:1";
             i = 1;
         }
@@ -31478,7 +31478,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void hf(int i) {
-        if (aYR != 46) {
+        if (currentTutorialStepIndex != 46) {
             awq += i;
             awq %= awv;
         }
@@ -31489,7 +31489,7 @@ public final class ci extends GLLib implements av {
     }
 
     public static void hg(int i) {
-        ch chVarFm = Fm();
+        FarmEntity chVarFm = Fm();
         if (chVarFm != null) {
             chVarFm.fm(chVarFm.pC() + i);
             axK = false;
@@ -31750,7 +31750,7 @@ public final class ci extends GLLib implements av {
                 azy[i][(i2 * 3) + 1] = -1;
                 azy[i][(i2 * 3) + 2] = 0;
             }
-            int iL = GLLib.L(0, 100);
+            int iL = GameRuntime.L(0, 100);
             int i3 = 0;
             int i4 = 0;
             while (i3 < 2 && i4 < jVarBY.KW[FC() - 1][11]) {
@@ -31863,7 +31863,7 @@ public final class ci extends GLLib implements av {
             }
         }
         aLA = i2;
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void hw(int i) {
@@ -31897,7 +31897,7 @@ public final class ci extends GLLib implements av {
         if (i == 2 && bL(3, 68) > 0) {
             return true;
         }
-        for (ch chVar = ch.als[1]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = FarmEntity.als[1]; chVar != null; chVar = chVar.aoi) {
             if (chVar.Kx == 54 && chVar.anw && chVar.ant == i) {
                 return true;
             }
@@ -31905,7 +31905,7 @@ public final class ci extends GLLib implements av {
         return false;
     }
 
-    static int i(byte[] bArr, int i, ch chVar) {
+    static int i(byte[] bArr, int i, FarmEntity chVar) {
         int iA = a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, d(bArr, a(bArr, d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, i, (byte) chVar.Kx), (byte) chVar.aoC), (short) bG(chVar.aol, chVar.aom)), (short) bH(chVar.aol, chVar.aom)), (short) chVar.aon), chVar.HL), (byte) chVar.Bj), chVar.amF), (byte) chVar.amR), (byte) chVar.amG), chVar.amB), chVar.amJ), chVar.amC), chVar.amD), (byte) chVar.anp), (byte) (!chVar.anq ? 0 : 1)), (byte) (!chVar.ani ? 0 : 1)), (byte) (!chVar.anl ? 0 : 1)), (byte) (!chVar.anm ? 0 : 1)), (byte) (!chVar.ann ? 0 : 1));
         if (!chVar.anw) {
             return iA;
@@ -31987,7 +31987,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void i(ch chVar) {
+    static void i(FarmEntity chVar) {
         if (chVar.amb <= 0 || chVar.amb >= 15 || aAR[chVar.amb] <= 0) {
             return;
         }
@@ -32360,7 +32360,7 @@ public final class ci extends GLLib implements av {
                 a(sb.append(strDt7).append(" ").append(aFA ? aGk : aGm - aGk).append("/").append((aFA || !aFp) ? GJ() : ii(aGd)).toString(), 7, 69, 0, 0);
             }
             if (aFO && bq(7, 63)) {
-                aZf[138].a(GLLib.Qj, 11, (float) (atc[7][64][2]), (float) (atc[7][64][3]), 0);
+                aZf[138].a(GameRuntime.Qj, 11, (float) (atc[7][64][2]), (float) (atc[7][64][3]), 0);
             }
             KX();
         }
@@ -32444,7 +32444,7 @@ public final class ci extends GLLib implements av {
         }
         int i4 = jVarBY.KW[i3][17];
         String str3 = "[crop] recipe craft. res gen.:" + i4;
-        if (hF(5) + ch.fe(3) + 1 > Fw()) {
+        if (hF(5) + FarmEntity.fe(3) + 1 > Fw()) {
             if (aFp) {
                 iH(GJ());
                 iG(ii(aGd));
@@ -32536,7 +32536,7 @@ public final class ci extends GLLib implements av {
         } else {
             i2 = 0;
         }
-        if (qD() != 57) {
+        if (currentEngineState() != 57) {
             GS();
             DF();
             gK(22);
@@ -32578,7 +32578,7 @@ public final class ci extends GLLib implements av {
         int i5 = jVarBY.KW[i2][9];
         int i6 = jVarBY.KW[i2][10];
         String str3 = "[CraftQueue] increase ingredient:" + i3 + ",:" + i4;
-        if (hF(5) + ch.fe(3) + i4 + i6 <= Fw()) {
+        if (hF(5) + FarmEntity.fe(3) + i4 + i6 <= Fw()) {
             O(0, i3, i4);
             O(0, i5, i6);
             if (aGx[i]) {
@@ -32615,7 +32615,7 @@ public final class ci extends GLLib implements av {
 
     static void iR(int i) {
         if (i == 22) {
-            if (!aFp || qD() != 12) {
+            if (!aFp || currentEngineState() != 12) {
                 for (int i2 = 11; i2 <= 146; i2++) {
                     atc[i][i2][2] = atd[i][i2][2];
                 }
@@ -32825,7 +32825,7 @@ public final class ci extends GLLib implements av {
         int i5 = jVarBY.KW[i2][8];
         int i6 = jVarBY.KW[i2][9];
         String str3 = "[MillQueue] increase ingredient:" + i3 + ",:" + i4;
-        if (hF(5) + ch.fe(3) + i4 + i6 >= Fw()) {
+        if (hF(5) + FarmEntity.fe(3) + i4 + i6 >= Fw()) {
             aLV = 2;
             fH(18);
         } else {
@@ -32982,9 +32982,9 @@ public final class ci extends GLLib implements av {
             a(i4, false, true);
             i4++;
         }
-        String str2 = "[Market] load sub cat.:" + aYR + ",tap right:13";
-        if (aYR == 13 || aYR == 14) {
-            aYR = 14;
+        String str2 = "[Market] load sub cat.:" + currentTutorialStepIndex + ",tap right:13";
+        if (currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14) {
+            currentTutorialStepIndex = 14;
             f(2, 196, false);
             e(2, 196, false);
             if (i == 0 && aEa != 5) {
@@ -33018,7 +33018,7 @@ public final class ci extends GLLib implements av {
         }
         DF();
         gM(2);
-        if (aYR == 14) {
+        if (currentTutorialStepIndex == 14) {
             bl(0, 1);
         }
     }
@@ -33038,7 +33038,7 @@ public final class ci extends GLLib implements av {
         if (aDY == 4 && gj(aDo[i2]) && i2 - aDX == aDW) {
             return;
         }
-        if (aDY == 2 && aDo[i2] == 0 && ch.aw(1, 49) >= FI()) {
+        if (aDY == 2 && aDo[i2] == 0 && FarmEntity.aw(1, 49) >= FI()) {
             gX(55);
             F(497, 498, 7, 0);
             return;
@@ -33072,7 +33072,7 @@ public final class ci extends GLLib implements av {
             return;
         }
         if (!aDR[i2] && aDQ[i2] && !aDB[i2] && !aEo) {
-            if (!(aDY == 0 && aDo[i2] == 68) && ch.aD(1, 54) + 2 > FK()) {
+            if (!(aDY == 0 && aDo[i2] == 68) && FarmEntity.aD(1, 54) + 2 > FK()) {
                 aLV = 3;
                 fH(18);
                 gX(60);
@@ -33162,8 +33162,8 @@ public final class ci extends GLLib implements av {
             switch (aDY) {
                 case 2:
                     if (aDo[i2] == 0) {
-                        ch[] chVarArr = new ch[50];
-                        int iB = ch.b(1, 49, -1, chVarArr, 50);
+                        FarmEntity[] chVarArr = new FarmEntity[50];
+                        int iB = FarmEntity.b(1, 49, -1, chVarArr, 50);
                         int i5 = -1;
                         int i6 = Integer.MAX_VALUE;
                         int i7 = 0;
@@ -33180,7 +33180,7 @@ public final class ci extends GLLib implements av {
                             i6 = i10;
                         }
                         avD = 1;
-                        ch chVarD = i5 != -1 ? d(49, 1, chVarArr[i5].aol, chVarArr[i5].aom, true) : h(49, 1, true);
+                        FarmEntity chVarD = i5 != -1 ? d(49, 1, chVarArr[i5].aol, chVarArr[i5].aom, true) : h(49, 1, true);
                         chVarD.aoU = aZE[0];
                         avF = chVarD;
                         z = false;
@@ -33195,7 +33195,7 @@ public final class ci extends GLLib implements av {
                         break;
                     } else if (aDo[i2] <= 21) {
                         bag = 116010;
-                        if (ch.aw(1, 52) >= FJ()) {
+                        if (FarmEntity.aw(1, 52) >= FJ()) {
                             aBz = 0;
                             aBy = 0;
                             gX(55);
@@ -33207,7 +33207,7 @@ public final class ci extends GLLib implements av {
                         avF = bs(aDY, aDo[i2]);
                         break;
                     } else {
-                        if (bL(4, 10) + bL(4, 11) + ch.aw(1, 69) >= FL()) {
+                        if (bL(4, 10) + bL(4, 11) + FarmEntity.aw(1, 69) >= FL()) {
                             aBz = 0;
                             aBy = 0;
                             gX(55);
@@ -33234,12 +33234,12 @@ public final class ci extends GLLib implements av {
                             F(940, 941, 7, 0);
                             return;
                         }
-                        int iAx = ch.ax(1, 54);
+                        int iAx = FarmEntity.ax(1, 54);
                         int iFK = FK();
                         String str10 = "animals=" + iAx + " max1=" + iFK + " max2=100";
                         if (iAx >= 100 || iAx >= iFK) {
                             if (aDo[i2] == 75 || (aDo[i2] >= 68 && aDo[i2] <= 72 && aYS != -1 && awV && lN(297))) {
-                                ch chVarFl = Fl();
+                                FarmEntity chVarFl = Fl();
                                 if (chVarFl != null) {
                                     chVarFl.pT();
                                     int i11 = chVarFl.aoU;
@@ -33306,7 +33306,7 @@ public final class ci extends GLLib implements av {
                             bO(20, aDo[i2]);
                             gX(60);
                             is(i2 - aDX);
-                            baa = true;
+                            hasUnsavedGameChanges = true;
                             return;
                         }
                         if (Fm() == null) {
@@ -33356,12 +33356,12 @@ public final class ci extends GLLib implements av {
         } else {
             if (aDY == 2) {
                 if (aDo[i2] <= 21) {
-                    if (ch.aw(1, 52) >= FJ()) {
+                    if (FarmEntity.aw(1, 52) >= FJ()) {
                         gX(55);
                         F(501, 502, 7, 0);
                         return;
                     }
-                } else if (bL(4, 10) + bL(4, 11) + ch.aw(1, 69) >= FL()) {
+                } else if (bL(4, 10) + bL(4, 11) + FarmEntity.aw(1, 69) >= FL()) {
                     gX(55);
                     if (FL() < 20) {
                         F(12384, 12383, 7, 0);
@@ -33371,7 +33371,7 @@ public final class ci extends GLLib implements av {
                         return;
                     }
                 }
-            } else if (aDY == 0 && ch.ax(1, 54) >= FK()) {
+            } else if (aDY == 0 && FarmEntity.ax(1, 54) >= FK()) {
                 gX(55);
                 F(499, 500, 7, 0);
                 return;
@@ -33417,7 +33417,7 @@ public final class ci extends GLLib implements av {
         if (aEa == 5) {
             aDY = i3;
         }
-        if (aYR == 14) {
+        if (currentTutorialStepIndex == 14) {
             axW = true;
         }
         if (x(aDt[i2]) > 0) {
@@ -33448,7 +33448,7 @@ public final class ci extends GLLib implements av {
         if (aDY == 4 && gj(aDo[i2]) && i2 - aDX == aDW) {
             return;
         }
-        if (aDY == 2 && aDo[i2] == 0 && ch.aw(1, 49) >= FI()) {
+        if (aDY == 2 && aDo[i2] == 0 && FarmEntity.aw(1, 49) >= FI()) {
             gX(55);
             F(497, 498, 7, 0);
             return;
@@ -33482,7 +33482,7 @@ public final class ci extends GLLib implements av {
             return;
         }
         if (!aDR[i2] && aDQ[i2] && !aDB[i2] && !aEo) {
-            if (!(aDY == 0 && aDo[i2] == 68) && ch.aD(1, 54) + 2 > FK()) {
+            if (!(aDY == 0 && aDo[i2] == 68) && FarmEntity.aD(1, 54) + 2 > FK()) {
                 aLV = 3;
                 fH(18);
                 gX(60);
@@ -33524,12 +33524,12 @@ public final class ci extends GLLib implements av {
             }
             if (aDY == 2) {
                 if (aDo[i2] <= 21) {
-                    if (ch.aw(1, 52) >= FJ()) {
+                    if (FarmEntity.aw(1, 52) >= FJ()) {
                         gX(55);
                         F(501, 502, 7, 0);
                         return;
                     }
-                } else if (bL(4, 10) + bL(4, 11) + ch.aw(1, 69) >= FL()) {
+                } else if (bL(4, 10) + bL(4, 11) + FarmEntity.aw(1, 69) >= FL()) {
                     gX(55);
                     if (FL() < 20) {
                         F(12384, 12383, 7, 0);
@@ -33539,7 +33539,7 @@ public final class ci extends GLLib implements av {
                         return;
                     }
                 }
-            } else if (aDY == 0 && ch.ax(1, 54) >= FK()) {
+            } else if (aDY == 0 && FarmEntity.ax(1, 54) >= FK()) {
                 gX(55);
                 F(499, 500, 7, 0);
                 return;
@@ -33575,7 +33575,7 @@ public final class ci extends GLLib implements av {
             if (aEa == 5) {
                 aDY = i3;
             }
-            if (aYR == 14) {
+            if (currentTutorialStepIndex == 14) {
                 axW = true;
             }
             if (x(aDt[i2]) > 0) {
@@ -33605,8 +33605,8 @@ public final class ci extends GLLib implements av {
         switch (aDY) {
             case 2:
                 if (aDo[i2] == 0) {
-                    ch[] chVarArr = new ch[50];
-                    int iB = ch.b(1, 49, -1, chVarArr, 50);
+                    FarmEntity[] chVarArr = new FarmEntity[50];
+                    int iB = FarmEntity.b(1, 49, -1, chVarArr, 50);
                     int i5 = -1;
                     int i6 = Integer.MAX_VALUE;
                     int i7 = 0;
@@ -33623,7 +33623,7 @@ public final class ci extends GLLib implements av {
                         i6 = i10;
                     }
                     avD = 1;
-                    ch chVarD = i5 != -1 ? d(49, 1, chVarArr[i5].aol, chVarArr[i5].aom, true) : h(49, 1, true);
+                    FarmEntity chVarD = i5 != -1 ? d(49, 1, chVarArr[i5].aol, chVarArr[i5].aom, true) : h(49, 1, true);
                     chVarD.aoU = aZE[0];
                     avF = chVarD;
                     z = false;
@@ -33637,7 +33637,7 @@ public final class ci extends GLLib implements av {
                     z = false;
                     break;
                 } else if (aDo[i2] <= 21) {
-                    if (ch.aw(1, 52) >= FJ()) {
+                    if (FarmEntity.aw(1, 52) >= FJ()) {
                         aBz = 0;
                         aBy = 0;
                         gX(55);
@@ -33649,7 +33649,7 @@ public final class ci extends GLLib implements av {
                     avF = bs(aDY, aDo[i2]);
                     break;
                 } else {
-                    if (bL(4, 10) + bL(4, 11) + ch.aw(1, 69) >= FL()) {
+                    if (bL(4, 10) + bL(4, 11) + FarmEntity.aw(1, 69) >= FL()) {
                         aBz = 0;
                         aBy = 0;
                         gX(55);
@@ -33676,12 +33676,12 @@ public final class ci extends GLLib implements av {
                         F(940, 941, 7, 0);
                         return;
                     }
-                    int iAx = ch.ax(1, 54);
+                    int iAx = FarmEntity.ax(1, 54);
                     int iFK = FK();
                     String str9 = "animals=" + iAx + " max1=" + iFK + " max2=100";
                     if (iAx >= 100 || iAx >= iFK) {
                         if (aDo[i2] == 75 || (aDo[i2] >= 68 && aDo[i2] <= 72 && aYS != -1 && awV && lN(297))) {
-                            ch chVarFl = Fl();
+                            FarmEntity chVarFl = Fl();
                             if (chVarFl != null) {
                                 chVarFl.pT();
                                 int i11 = chVarFl.aoU;
@@ -33743,7 +33743,7 @@ public final class ci extends GLLib implements av {
                         bO(20, aDo[i2]);
                         gX(60);
                         is(i2 - aDX);
-                        baa = true;
+                        hasUnsavedGameChanges = true;
                         return;
                     }
                     if (Fm() == null) {
@@ -33880,8 +33880,8 @@ public final class ci extends GLLib implements av {
         if (i == 5) {
             if (aEJ > 0) {
                 int i2 = aEJ;
-                ch[] chVarArr = new ch[2];
-                ch.b(1, 50, 9, chVarArr, 2);
+                FarmEntity[] chVarArr = new FarmEntity[2];
+                FarmEntity.b(1, 50, 9, chVarArr, 2);
                 if (chVarArr[0] != null) {
                     a(false, aEJ, chVarArr[0].aol, chVarArr[0].aom, false);
                     if (aEK > 0) {
@@ -33898,7 +33898,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 2) {
             if (jO() == 19) {
-                if (aYR > 0 || (awV && aYS != -1)) {
+                if (currentTutorialStepIndex > 0 || (awV && aYS != -1)) {
                     StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
                     String strDt2 = dt(513);
                     if (strDt2 == null) {
@@ -33916,7 +33916,7 @@ public final class ci extends GLLib implements av {
                     ix(-1);
                 }
             }
-            if (aYR != -1) {
+            if (currentTutorialStepIndex != -1) {
                 Es();
             }
             fT(1);
@@ -33968,7 +33968,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void iw(int i) {
-        if (aYR != 57 || i == 0) {
+        if (currentTutorialStepIndex != 57 || i == 0) {
             aEN = aEM + i;
             if (aEU) {
                 if (!azG[aEN] || azH[aEN] <= 0) {
@@ -34237,14 +34237,14 @@ public final class ci extends GLLib implements av {
 
     static void j(int[] iArr) {
         for (int length = iArr.length - 1; length >= 0; length--) {
-            int iL = GLLib.L(0, iArr.length);
+            int iL = GameRuntime.L(0, iArr.length);
             int i = iArr[iL];
             iArr[iL] = iArr[length];
             iArr[length] = i;
         }
     }
 
-    static boolean j(ch chVar) {
+    static boolean j(FarmEntity chVar) {
         return chVar.Kx == 50 && (chVar.aoC == 20 || chVar.aoC == 21);
     }
 
@@ -34392,7 +34392,7 @@ public final class ci extends GLLib implements av {
 
     static void jD(int i) {
         aKs = i;
-        if (qD() == 18) {
+        if (currentEngineState() == 18) {
             fE(15);
         } else {
             fH(15);
@@ -34471,7 +34471,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 1) {
             In();
-            aBo = ch.aD(1, 54);
+            aBo = FarmEntity.aD(1, 54);
             e(23, 31, true);
             f(23, 31, true);
             e(23, 2, true);
@@ -34497,7 +34497,7 @@ public final class ci extends GLLib implements av {
         if (i == 2) {
             int iJO = jO();
             if (iJO == 19 || iJO == 11) {
-                if (aYR > 0 || (awV && aYS != -1)) {
+                if (currentTutorialStepIndex > 0 || (awV && aYS != -1)) {
                     StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
                     String strDt = dt(513);
                     if (strDt == null) {
@@ -34646,7 +34646,7 @@ public final class ci extends GLLib implements av {
 
     static void jU(int i) {
         int i2;
-        if (hF(5) + ch.fe(3) + 1 > Fw()) {
+        if (hF(5) + FarmEntity.fe(3) + 1 > Fw()) {
             H(481, 487, 7, 0);
             return;
         }
@@ -34677,7 +34677,7 @@ public final class ci extends GLLib implements av {
 
     static void jV(int i) {
         int i2;
-        if (hF(5) + ch.fe(3) + 1 > Fw()) {
+        if (hF(5) + FarmEntity.fe(3) + 1 > Fw()) {
             H(481, 487, 7, 0);
             return;
         }
@@ -34737,9 +34737,9 @@ public final class ci extends GLLib implements av {
             bax = true;
             hc(-1);
             sv();
-            a(false, (ch) null);
+            a(false, (FarmEntity) null);
             DN();
-            b(false, (ch) null);
+            b(false, (FarmEntity) null);
             aZj.fh(100);
             Fx();
             Il();
@@ -34938,7 +34938,7 @@ public final class ci extends GLLib implements av {
                 }
             }
             fT(1);
-            if (aYR != -1) {
+            if (currentTutorialStepIndex != -1) {
                 Es();
             }
             if (awV) {
@@ -35104,7 +35104,7 @@ public final class ci extends GLLib implements av {
         switch (i) {
             case 2:
             case 3:
-                if (hF(5) + ch.fe(3) >= Fw()) {
+                if (hF(5) + FarmEntity.fe(3) >= Fw()) {
                     gX(55);
                     aLV = 2;
                     fH(18);
@@ -35112,7 +35112,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 4:
-                if (FH() >= aBi * ch.ay(1, 1005)) {
+                if (FH() >= aBi * FarmEntity.ay(1, 1005)) {
                     gX(55);
                     aLV = 1;
                     fH(18);
@@ -35163,18 +35163,18 @@ public final class ci extends GLLib implements av {
                         i8++;
                     }
                 }
-                int iL = GLLib.L(0, i8 - 1);
+                int iL = GameRuntime.L(0, i8 - 1);
                 int i10 = jVarBY2.KW[iArr2[iL]][3];
                 int i11 = jVarBY2.KW[iArr2[iL]][1] - 4000;
                 String str4 = "extraInfo : " + i11;
                 i5 = i11 | (jVarBY2.KW[iArr2[iL]][15] << 16);
                 s(1, i10, 1, 24);
-                GLLib.bk("/11");
+                GameRuntime.bk("/11");
                 fP(1);
-                GLLib.ke();
+                GameRuntime.ke();
                 break;
         }
-        aIP[i] = ch.b(47, 3, iArr);
+        aIP[i] = FarmEntity.b(47, 3, iArr);
         aIP[i].b(aZj.aol + s, aZj.aom + i4, iJj, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, i5);
         if (i == 1) {
             aa(aZI[4], 1, 7);
@@ -35595,7 +35595,7 @@ public final class ci extends GLLib implements av {
         return bE(iArr[0], iArr[1]);
     }
 
-    static void k(ch chVar) {
+    static void k(FarmEntity chVar) {
         int i;
         int i2;
         int i3;
@@ -35627,7 +35627,7 @@ public final class ci extends GLLib implements av {
                         iArr3[4] = i3;
                         iArr3[1] = iArr3[1] - 3;
                     }
-                    ch chVarB = ch.b(50, 1, iArr3);
+                    FarmEntity chVarB = FarmEntity.b(50, 1, iArr3);
                     chVarB.aoU = chVar.aoU;
                     chVarB.aoW = chVar.aoW;
                     n(chVarB);
@@ -35637,7 +35637,7 @@ public final class ci extends GLLib implements av {
                 iArr2[1] = i6 + 12;
                 for (int i8 = 0; i8 < 6; i8++) {
                     g(iArr2, iArr);
-                    ch chVarB2 = ch.b(50, 1, new int[]{iArr[0], iArr[1], 12, i4, i, 0, 2, 1, 0, 0, 0});
+                    FarmEntity chVarB2 = FarmEntity.b(50, 1, new int[]{iArr[0], iArr[1], 12, i4, i, 0, 2, 1, 0, 0, 0});
                     chVarB2.aoU = chVar.aoU;
                     chVarB2.aoW = chVar.aoW;
                     n(chVarB2);
@@ -35647,7 +35647,7 @@ public final class ci extends GLLib implements av {
                 iArr2[1] = i6 + 1;
                 for (int i9 = 0; i9 < 6; i9++) {
                     g(iArr2, iArr);
-                    ch chVarB3 = ch.b(50, 1, new int[]{iArr[0], iArr[1], 12, i4, i2, 0, 1, 2, 0, 0, 0});
+                    FarmEntity chVarB3 = FarmEntity.b(50, 1, new int[]{iArr[0], iArr[1], 12, i4, i2, 0, 1, 2, 0, 0, 0});
                     chVarB3.aoU = chVar.aoU;
                     chVarB3.aoW = chVar.aoW;
                     n(chVarB3);
@@ -35657,7 +35657,7 @@ public final class ci extends GLLib implements av {
                 iArr2[1] = i6 + 1;
                 for (int i10 = 0; i10 < 6; i10++) {
                     g(iArr2, iArr);
-                    ch chVarB4 = ch.b(50, 1, new int[]{iArr[0], iArr[1], 12, i4, i2, 0, 1, 2, 0, 0, 0});
+                    FarmEntity chVarB4 = FarmEntity.b(50, 1, new int[]{iArr[0], iArr[1], 12, i4, i2, 0, 1, 2, 0, 0, 0});
                     chVarB4.aoU = chVar.aoU;
                     chVarB4.aoW = chVar.aoW;
                     n(chVarB4);
@@ -35668,7 +35668,7 @@ public final class ci extends GLLib implements av {
                     iArr2[1] = i6;
                     for (int i11 = 0; i11 < 6; i11 += 2) {
                         g(iArr2, iArr);
-                        ch chVarB5 = ch.b(50, 1, new int[]{iArr[0], iArr[1] + 1, 12, i4, 168, 2, 0, 0, 0, 0, 0});
+                        FarmEntity chVarB5 = FarmEntity.b(50, 1, new int[]{iArr[0], iArr[1] + 1, 12, i4, 168, 2, 0, 0, 0, 0, 0});
                         chVarB5.aoU = chVar.aoU;
                         chVarB5.aoW = chVar.aoW;
                         iArr2[0] = iArr2[0] + 4;
@@ -35677,7 +35677,7 @@ public final class ci extends GLLib implements av {
                     iArr2[1] = i6 + 3;
                     for (int i12 = 0; i12 < 6; i12 += 2) {
                         g(iArr2, iArr);
-                        ch chVarB6 = ch.b(50, 1, new int[]{iArr[0], iArr[1] + 1, 12, i4, 168, 3, 0, 0, 0, 0, 0});
+                        FarmEntity chVarB6 = FarmEntity.b(50, 1, new int[]{iArr[0], iArr[1] + 1, 12, i4, 168, 3, 0, 0, 0, 0, 0});
                         chVarB6.aoU = chVar.aoU;
                         chVarB6.aoW = chVar.aoW;
                         iArr2[1] = iArr2[1] + 4;
@@ -35686,7 +35686,7 @@ public final class ci extends GLLib implements av {
                     iArr2[1] = i6 + 12;
                     for (int i13 = 0; i13 < 6; i13 += 2) {
                         g(iArr2, iArr);
-                        ch chVarB7 = ch.b(50, 1, new int[]{iArr[0], iArr[1] + 1, 12, i4, 168, 2, 0, 0, 0, 0, 0});
+                        FarmEntity chVarB7 = FarmEntity.b(50, 1, new int[]{iArr[0], iArr[1] + 1, 12, i4, 168, 2, 0, 0, 0, 0, 0});
                         chVarB7.aoU = chVar.aoU;
                         chVarB7.aoW = chVar.aoW;
                         iArr2[0] = iArr2[0] + 4;
@@ -35695,7 +35695,7 @@ public final class ci extends GLLib implements av {
                     iArr2[1] = i6 + 3;
                     for (int i14 = 0; i14 < 6; i14 += 2) {
                         g(iArr2, iArr);
-                        ch chVarB8 = ch.b(50, 1, new int[]{iArr[0], iArr[1] + 1, 12, i4, 168, 3, 0, 0, 0, 0, 0});
+                        FarmEntity chVarB8 = FarmEntity.b(50, 1, new int[]{iArr[0], iArr[1] + 1, 12, i4, 168, 3, 0, 0, 0, 0, 0});
                         chVarB8.aoU = chVar.aoU;
                         chVarB8.aoW = chVar.aoW;
                         iArr2[1] = iArr2[1] + 4;
@@ -35705,7 +35705,7 @@ public final class ci extends GLLib implements av {
                         iArr2[0] = iArr4[i15 * 2] + i5;
                         iArr2[1] = iArr4[(i15 * 2) + 1] + i6;
                         g(iArr2, iArr);
-                        ch chVarB9 = ch.b(50, 1, new int[]{iArr[0], iArr[1] + 13, 12, i4, 168, (i15 % 2) + 0, 0, 0, 0, 0, 0});
+                        FarmEntity chVarB9 = FarmEntity.b(50, 1, new int[]{iArr[0], iArr[1] + 13, 12, i4, 168, (i15 % 2) + 0, 0, 0, 0, 0, 0});
                         chVarB9.aoU = chVar.aoU;
                         chVarB9.aoW = chVar.aoW;
                     }
@@ -35718,7 +35718,7 @@ public final class ci extends GLLib implements av {
 
     private static void k(byte[] bArr) {
         try {
-            GLLib.a("DYN", bArr, aXw);
+            GameRuntime.a("DYN", bArr, aXw);
         } catch (Exception e) {
         }
     }
@@ -36157,7 +36157,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 3) {
             gJ(45);
-            atf[7].b(GLLib.Qj, 1, atc[45][11][2], atc[45][11][3], 0, 85);
+            atf[7].b(GameRuntime.Qj, 1, atc[45][11][2], atc[45][11][3], 0, 85);
             Ke();
             if (aRc) {
                 bt(true);
@@ -36296,15 +36296,15 @@ public final class ci extends GLLib implements av {
             return;
         }
         if (i == 2) {
-            aQR = GLLib.L(0, aQI.length);
+            aQR = GameRuntime.L(0, aQI.length);
             return;
         }
         if (i == 3) {
             do {
-                aQS = GLLib.L(0, aQI.length);
+                aQS = GameRuntime.L(0, aQI.length);
             } while (aQS == aQR);
         } else if (i == 4) {
-            aQT = GLLib.L(0, aQJ.length);
+            aQT = GameRuntime.L(0, aQJ.length);
         }
     }
 
@@ -36517,7 +36517,7 @@ public final class ci extends GLLib implements av {
                 atc[46][6][5] = 41;
                 atc[46][6][6] = 21;
             }
-            if (b.JT && qE() == 35) {
+            if (b.JT && previousEngineState() == 35) {
                 String strDt3 = dt(12520);
                 if (strDt3 == null) {
                     strDt3 = "";
@@ -36531,7 +36531,7 @@ public final class ci extends GLLib implements av {
                 ate[46][11] = "";
                 atc[46][9][5] = 20;
                 atc[46][9][6] = 286;
-            } else if (b.JU && qE() == 18) {
+            } else if (b.JU && previousEngineState() == 18) {
                 String strDt5 = dt(12513);
                 if (strDt5 == null) {
                     strDt5 = "";
@@ -36541,8 +36541,8 @@ public final class ci extends GLLib implements av {
                 e(46, 11, false);
                 atc[46][9][5] = 20;
                 atc[46][9][6] = 286;
-            } else if (!b.JV || qE() != 61) {
-                if (b.JW && qE() == 63) {
+            } else if (!b.JV || previousEngineState() != 61) {
+                if (b.JW && previousEngineState() == 63) {
                     String strDt6 = dt(Kj());
                     if (strDt6 == null) {
                         strDt6 = "";
@@ -36703,7 +36703,7 @@ public final class ci extends GLLib implements av {
             aNV--;
         }
         String str2 = "--- Invite display : " + aNV;
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void ke(int i) {
@@ -36713,7 +36713,7 @@ public final class ci extends GLLib implements av {
             aNV--;
         }
         String str2 = "--- Invite display : " + aNV;
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void kf(int i) {
@@ -36723,7 +36723,7 @@ public final class ci extends GLLib implements av {
             aNZ--;
         }
         String str2 = "--- Help Request display : " + aNZ;
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void kg(int i) {
@@ -36733,7 +36733,7 @@ public final class ci extends GLLib implements av {
             aNZ--;
         }
         String str2 = "--- Help Request display : " + aNZ;
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static boolean kh(int i) {
@@ -36916,7 +36916,7 @@ public final class ci extends GLLib implements av {
             String str2 = "[Language] enter. gamelang:" + aYU;
             if (aYU == -1) {
                 aYU = 0;
-                if (qE() != 15) {
+                if (previousEngineState() != 15) {
                     Cf();
                 }
                 String str3 = "lang is -1. set lang en.:" + aYU;
@@ -37001,11 +37001,11 @@ public final class ci extends GLLib implements av {
             strArr12[11] = strDt12;
             if (aYU == 20) {
                 GloftGF2F gloftGF2F = GloftGF2F.acx;
-                ci ciVar = GloftGF2F.acw;
+                FarmGameEngine ciVar = GloftGF2F.acw;
                 bK("le");
             } else {
                 GloftGF2F gloftGF2F2 = GloftGF2F.acx;
-                ci ciVar2 = GloftGF2F.acw;
+                FarmGameEngine ciVar2 = GloftGF2F.acw;
                 bK(GloftGF2F.acw.dr(aYU));
             }
             String str5 = "set iap lang;" + aYU;
@@ -37018,8 +37018,8 @@ public final class ci extends GLLib implements av {
             aOC = null;
             String str6 = "[Language] exit: -- lang:" + aYU + ",prev.:" + aOD;
             if (aOD == aYU) {
-                String str7 = " prev state: --" + qE();
-                if (qE() != -1 && qE() == 2) {
+                String str7 = " prev state: --" + previousEngineState();
+                if (previousEngineState() != -1 && previousEngineState() == 2) {
                 }
             }
             switch (aYU) {
@@ -37077,10 +37077,10 @@ public final class ci extends GLLib implements av {
             com.gameloft.android.wrapper.au.setGameLanguage(str);
         }
         if (i == 2 && ((iJO = jO()) == 19 || iJO == 11)) {
-            if (qE() != 15) {
+            if (previousEngineState() != 15) {
                 dC("Show_Toast_You cannot go back at this stage.");
             } else {
-                String str8 = " prev state:--" + qE() + ",gamelang:" + aYU + ",prevlang:" + aOD + ",next state:" + apz;
+                String str8 = " prev state:--" + previousEngineState() + ",gamelang:" + aYU + ",prevlang:" + aOD + ",next state:" + apz;
                 if (aux) {
                     aYU = auy;
                     Cf();
@@ -37095,12 +37095,12 @@ public final class ci extends GLLib implements av {
                         GloftGF2F.acw.lm();
                         aRH = false;
                         atU = true;
-                        if (qE() == 15) {
+                        if (previousEngineState() == 15) {
                             fG(4);
                         } else {
                             qB();
                         }
-                        if (qE() == -1) {
+                        if (previousEngineState() == -1) {
                             if (aTK) {
                                 asi = 47;
                             } else {
@@ -37117,7 +37117,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 3) {
             gJ(26);
-            if (aYU == -1 || qE() != 15) {
+            if (aYU == -1 || previousEngineState() != 15) {
                 a("OK", 26, 46, 0, 0);
             } else {
                 String strDt13 = dt(45);
@@ -37206,7 +37206,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 1) {
             aOK = false;
-            if (qE() == 43) {
+            if (previousEngineState() == 43) {
                 qB();
             } else {
                 bo(false);
@@ -37345,7 +37345,7 @@ public final class ci extends GLLib implements av {
                         z6 = true;
                         break;
                     case 13:
-                        if (qE() != 4) {
+                        if (previousEngineState() != 4) {
                             z = false;
                             z2 = true;
                             z3 = false;
@@ -37860,7 +37860,7 @@ public final class ci extends GLLib implements av {
                     if (arF) {
                         aON = false;
                         try {
-                            GLLib.bd(a(qN() && bt.nY(), true, 0, com.gameloft.android.wrapper.au.OR()));
+                            GameRuntime.bd(a(qN() && bt.nY(), true, 0, com.gameloft.android.wrapper.au.OR()));
                         } catch (Exception e) {
                         }
                     } else {
@@ -37933,7 +37933,7 @@ public final class ci extends GLLib implements av {
 
     static void kp(int i) {
         aOG = i;
-        if (aOG != 13 || qD() == 4) {
+        if (aOG != 13 || currentEngineState() == 4) {
             fE(43);
         }
     }
@@ -37952,7 +37952,7 @@ public final class ci extends GLLib implements av {
             e(1, 20, false);
             f(1, 20, false);
             aC(false);
-            a(false, (ch) null);
+            a(false, (FarmEntity) null);
             aD(false);
             aF(false);
             aG(false);
@@ -37998,7 +37998,7 @@ public final class ci extends GLLib implements av {
             FN();
             aCi |= 1;
             aZj.fh(100);
-            ch.oL();
+            FarmEntity.oL();
             bp(false);
         }
         return false;
@@ -38110,7 +38110,7 @@ public final class ci extends GLLib implements av {
                     String strBY = GloftGF2F.acx.bY("conectivity");
                     if (!qN() || strBY == null || strBY.equals("off")) {
                         aPi = true;
-                        E(qD(), true);
+                        E(currentEngineState(), true);
                     } else if (!bt.nY()) {
                         try {
                             B(1, -1, -1);
@@ -38217,12 +38217,12 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void l(ch chVar) {
+    static void l(FarmEntity chVar) {
         if (chVar.aoC == 20 || chVar.aoC == 21) {
             q(chVar);
             i(chVar);
-            ch chVar2 = null;
-            ch chVar3 = ch.als[1];
+            FarmEntity chVar2 = null;
+            FarmEntity chVar3 = FarmEntity.als[1];
             while (chVar3 != null) {
                 boolean z = false;
                 switch (chVar3.Kx) {
@@ -38327,7 +38327,7 @@ public final class ci extends GLLib implements av {
                         aIw[i2] = iArr[i7];
                         aIx[i2] = (short) jVarBY.KW[i8 + i6][c];
                         if (aIw[i2] == 3 && aIx[i2] >= 68) {
-                            ch.e(1, 54, aZG[aIx[i2]], aIK[aIx[i2] - 68], 4);
+                            FarmEntity.e(1, 54, aZG[aIx[i2]], aIK[aIx[i2] - 68], 4);
                         }
                         aIy[i2] = i3;
                         aIz[i2] = (short) bL(iArr[i7], i8);
@@ -38376,7 +38376,7 @@ public final class ci extends GLLib implements av {
     }
 
     static boolean lD(int i) {
-        if (hF(5) + ch.fe(3) > Fw() - 15) {
+        if (hF(5) + FarmEntity.fe(3) > Fw() - 15) {
             if (i == 1) {
                 hT(aUF);
             } else if (i == 2) {
@@ -38410,7 +38410,7 @@ public final class ci extends GLLib implements av {
             }
             return false;
         }
-        if (ch.az(1, 54) + hF(3) > 95) {
+        if (FarmEntity.az(1, 54) + hF(3) > 95) {
             if (i == 1) {
                 hT(aUF);
             } else if (i == 2) {
@@ -38525,7 +38525,7 @@ public final class ci extends GLLib implements av {
         String str = "";
         String str2 = "s_pondFishingType : " + aUh;
         String str3 = "s_pondCountReward : " + aUk;
-        int iL = GLLib.L(0, aUs);
+        int iL = GameRuntime.L(0, aUs);
         String str4 = "index : " + iL;
         int i6 = 0;
         int i7 = 0;
@@ -38668,7 +38668,7 @@ public final class ci extends GLLib implements av {
                     str = strDt5;
                     break;
                 case 6:
-                    if (ch.av(1, 54) >= 100) {
+                    if (FarmEntity.av(1, 54) >= 100) {
                         gX(45);
                         ati[i].Y(2, 1);
                         i3 = 0;
@@ -38767,7 +38767,7 @@ public final class ci extends GLLib implements av {
             gW(5);
         }
         if (i == 2 && ((iJO = jO()) == 19 || iJO == 11)) {
-            if ((awV && aYS != -1) || aYR == 12) {
+            if ((awV && aYS != -1) || currentTutorialStepIndex == 12) {
                 StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
                 String strDt = dt(513);
                 if (strDt == null) {
@@ -39049,7 +39049,7 @@ public final class ci extends GLLib implements av {
             if (aVD[i3] == 2) {
                 if (!aVh[i3] && aVf[i3] == 38) {
                     if (aVe[i3] == 2998) {
-                        aVc[i3] = ih(ch.p(1, 54, 4, 15));
+                        aVc[i3] = ih(FarmEntity.p(1, 54, 4, 15));
                         if (ii(aVc[i3]) >= ii(aVd[i3])) {
                             aVc[i3] = aVd[i3];
                             i2 = i3;
@@ -39057,7 +39057,7 @@ public final class ci extends GLLib implements av {
                             i2 = -1;
                         }
                     } else if (aVe[i3] == 2992) {
-                        aVc[i3] = ih(ch.q(1, 54, 68, 72));
+                        aVc[i3] = ih(FarmEntity.q(1, 54, 68, 72));
                         if (ii(aVc[i3]) >= ii(aVd[i3])) {
                             aVc[i3] = aVd[i3];
                             i2 = i3;
@@ -39065,7 +39065,7 @@ public final class ci extends GLLib implements av {
                             i2 = -1;
                         }
                     } else if (aVe[i3] == 2997) {
-                        aVc[i3] = ih(ch.p(1, 54, 16, 27));
+                        aVc[i3] = ih(FarmEntity.p(1, 54, 16, 27));
                         if (ii(aVc[i3]) >= ii(aVd[i3])) {
                             aVc[i3] = aVd[i3];
                             i2 = i3;
@@ -39073,7 +39073,7 @@ public final class ci extends GLLib implements av {
                             i2 = -1;
                         }
                     } else if (aVe[i3] == 2996) {
-                        aVc[i3] = ih(ch.p(1, 54, 28, 39) + ch.p(1, 54, 66, 67));
+                        aVc[i3] = ih(FarmEntity.p(1, 54, 28, 39) + FarmEntity.p(1, 54, 66, 67));
                         if (ii(aVc[i3]) >= ii(aVd[i3])) {
                             aVc[i3] = aVd[i3];
                             i2 = i3;
@@ -39081,7 +39081,7 @@ public final class ci extends GLLib implements av {
                             i2 = -1;
                         }
                     } else if (aVe[i3] == 2995) {
-                        aVc[i3] = ih(ch.p(1, 54, 40, 51));
+                        aVc[i3] = ih(FarmEntity.p(1, 54, 40, 51));
                         if (ii(aVc[i3]) >= ii(aVd[i3])) {
                             aVc[i3] = aVd[i3];
                             i2 = i3;
@@ -39089,7 +39089,7 @@ public final class ci extends GLLib implements av {
                             i2 = -1;
                         }
                     } else if (aVe[i3] == 2994) {
-                        aVc[i3] = ih(ch.p(1, 54, 52, 63));
+                        aVc[i3] = ih(FarmEntity.p(1, 54, 52, 63));
                         if (ii(aVc[i3]) >= ii(aVd[i3])) {
                             aVc[i3] = aVd[i3];
                             i2 = i3;
@@ -39097,7 +39097,7 @@ public final class ci extends GLLib implements av {
                             i2 = -1;
                         }
                     } else if (aVe[i3] == 2999) {
-                        aVc[i3] = ih(ch.p(1, 54, 0, 75));
+                        aVc[i3] = ih(FarmEntity.p(1, 54, 0, 75));
                         if (ii(aVc[i3]) >= ii(aVd[i3])) {
                             aVc[i3] = aVd[i3];
                             i2 = i3;
@@ -39105,7 +39105,7 @@ public final class ci extends GLLib implements av {
                             i2 = -1;
                         }
                     } else if (i == aVe[i3]) {
-                        aVc[i3] = ih(ch.ay(1, i));
+                        aVc[i3] = ih(FarmEntity.ay(1, i));
                         if (ii(aVc[i3]) >= ii(aVd[i3])) {
                             aVc[i3] = aVd[i3];
                             i2 = i3;
@@ -39123,7 +39123,7 @@ public final class ci extends GLLib implements av {
                         a(true, i2, (char) 2);
                     }
                 } else if (!aVh[i3] && aVf[i3] == 32) {
-                    aVc[i3] = ih(ch.aA(1, 54));
+                    aVc[i3] = ih(FarmEntity.aA(1, 54));
                     if (ii(aVc[i3]) >= ii(aVd[i3])) {
                         aVc[i3] = aVd[i3];
                         aVh[i3] = true;
@@ -39240,7 +39240,7 @@ public final class ci extends GLLib implements av {
 
     static int lW(int i) {
         int i2 = 0;
-        switch (ch.fA(i)) {
+        switch (FarmEntity.fA(i)) {
             case 20:
                 return j.bY(4).KW[i - 7000][20];
             case 49:
@@ -39263,7 +39263,7 @@ public final class ci extends GLLib implements av {
 
     static int lX(int i) {
         int i2 = 0;
-        switch (ch.fA(i)) {
+        switch (FarmEntity.fA(i)) {
             case 20:
                 return j.bY(4).KW[i - 7000][8];
             case 49:
@@ -39307,11 +39307,11 @@ public final class ci extends GLLib implements av {
         }
         strArr3[i] = b(strDt3, 1, strK);
         aWy[i] = b(aWy[i], 2, A(aWs[i]));
-        if (ch.fA(aWa[i]) == 49) {
+        if (FarmEntity.fA(aWa[i]) == 49) {
             aWy[i] = b(aWy[i], 3, K(aWa[i], false));
             return;
         }
-        if (ch.fA(aWa[i]) == 55) {
+        if (FarmEntity.fA(aWa[i]) == 55) {
             int i2 = j.bY(1).KW[aWa[i] - 4000][17];
             if (i2 == 5) {
                 String[] strArr4 = aWy;
@@ -39398,7 +39398,7 @@ public final class ci extends GLLib implements av {
 
     public static void lb(int i) {
         if (!qO()) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         if (b.JR != 3) {
@@ -39592,7 +39592,7 @@ public final class ci extends GLLib implements av {
             gX(59);
             gG(48);
             gX(44);
-            String str = "#Tho GetPreviousStateType() : " + qE();
+            String str = "#Tho GetPreviousStateType() : " + previousEngineState();
             if (b.JX) {
                 hT(aRo);
                 ca(aRo, 0);
@@ -40009,7 +40009,7 @@ public final class ci extends GLLib implements av {
             return;
         }
         String strLu = lu(i);
-        int iBL = GLLib.bL(strLu);
+        int iBL = GameRuntime.bL(strLu);
         String str = " numberMax: " + iBL;
         if (iBL > 0) {
             StringBuilder sbAppend = new StringBuilder().append(" itemType:");
@@ -40146,7 +40146,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static int m(ch chVar) {
+    static int m(FarmEntity chVar) {
         return j.bY(0).KW[chVar.aoC][89];
     }
 
@@ -40505,7 +40505,7 @@ public final class ci extends GLLib implements av {
         e(8, 51, z);
     }
 
-    static void n(ch chVar) {
+    static void n(FarmEntity chVar) {
         if (j(chVar)) {
             p(chVar);
             return;
@@ -40620,7 +40620,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void o(ch chVar) {
+    static void o(FarmEntity chVar) {
         if (j(chVar)) {
             q(chVar);
             return;
@@ -40642,7 +40642,7 @@ public final class ci extends GLLib implements av {
 
     static int p(byte[] bArr, int i) {
         int i2 = i;
-        for (ch chVar = ch.als[1]; chVar != null; chVar = chVar.aoi) {
+        for (FarmEntity chVar = FarmEntity.als[1]; chVar != null; chVar = chVar.aoi) {
             switch (chVar.Kx) {
                 case 13:
                     i2 = b(bArr, i2, chVar);
@@ -40701,11 +40701,11 @@ public final class ci extends GLLib implements av {
             return;
         }
         if (z) {
-            GLLib.bk("/10");
+            GameRuntime.bk("/10");
         }
         gF(i);
         if (z) {
-            GLLib.ke();
+            GameRuntime.ke();
         }
         mk(i);
         if (i == 2) {
@@ -40716,7 +40716,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void p(ch chVar) {
+    static void p(FarmEntity chVar) {
         if (j(chVar)) {
             int[] iArr = new int[2];
             f(new int[]{chVar.aol, chVar.aom}, iArr);
@@ -40780,11 +40780,11 @@ public final class ci extends GLLib implements av {
     }
 
     static int q(byte[] bArr, int i) {
-        ch chVarBs;
+        FarmEntity chVarBs;
         byte bJ = j(bArr, i);
         int i2 = i + 1;
         if (bJ == -1) {
-            chVarBs = ch.e(42, new int[]{0, 0, 12, 2});
+            chVarBs = FarmEntity.e(42, new int[]{0, 0, 12, 2});
             aZi = chVarBs;
         } else {
             chVarBs = bs(8, bJ);
@@ -40807,7 +40807,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static void q(ch chVar) {
+    static void q(FarmEntity chVar) {
         if (j(chVar)) {
             int[] iArr = new int[2];
             f(new int[]{chVar.aol, chVar.aom}, iArr);
@@ -40880,7 +40880,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void qB() {
-        if (TutorialFlowController.closeModal(qD())) consumeTutorialGesture();
+        if (TutorialFlowController.closeModal(currentEngineState())) consumeTutorialGesture();
         apA = 1;
         Ff();
     }
@@ -40888,17 +40888,17 @@ public final class ci extends GLLib implements av {
     private static void consumeTutorialGesture() {
         // GLLib stores press, drag and release separately. Consume the gesture
         // owned by this modal before exposing the underlying farm again.
-        GLLib.lb();
-        GLLib.lb();
-        GLLib.lb();
-        GLLib.la();
+        GameRuntime.lb();
+        GameRuntime.lb();
+        GameRuntime.lb();
+        GameRuntime.la();
         aAG = aAH = aAI = aAJ = aAK = -1;
         aZn = null;
     }
 
     private static boolean acceptTutorialModal(int state) {
         boolean owned = TutorialFlowController.ownsModal(state);
-        if (!TutorialFlowController.acceptModal(state, aYR, aYS, awV)) return false;
+        if (!TutorialFlowController.acceptModal(state, currentTutorialStepIndex, aYS, awV)) return false;
         if (owned) consumeTutorialGesture();
         return true;
     }
@@ -40908,14 +40908,14 @@ public final class ci extends GLLib implements av {
         Ff();
     }
 
-    static int qD() {
+    static int currentEngineState() {
         if (apB > -1) {
             return apC[apB];
         }
         return -1;
     }
 
-    static int qE() {
+    static int previousEngineState() {
         if (apB > 0) {
             return apC[apB - 1];
         }
@@ -41444,7 +41444,7 @@ public final class ci extends GLLib implements av {
             }
             hJ(i5);
             jD(17);
-            baa = true;
+            hasUnsavedGameChanges = true;
             c = 3;
         } else if ("cash_reset".equals(str2)) {
             int i6 = Integer.parseInt(str3);
@@ -41459,7 +41459,7 @@ public final class ci extends GLLib implements av {
             }
             hK(i6);
             jD(18);
-            baa = true;
+            hasUnsavedGameChanges = true;
             c = 4;
         } else if ("age_selection_screen".equals(str2) && aUb) {
             jD(444);
@@ -41677,11 +41677,11 @@ public final class ci extends GLLib implements av {
             aZh[1] = aZh[0];
         }
         if (aYU == 15) {
-            iArr = (int[]) GLLib.de(5);
+            iArr = (int[]) GameRuntime.de(5);
         } else if (aYU == 16) {
-            iArr = (int[]) GLLib.de(7);
+            iArr = (int[]) GameRuntime.de(7);
         } else {
-            iArr = (aYU == 9 || aYU == 7) ? (int[]) GLLib.de(3) : (int[]) GLLib.de(7);
+            iArr = (aYU == 9 || aYU == 7) ? (int[]) GameRuntime.de(3) : (int[]) GameRuntime.de(7);
         }
         aZh[0].e(iArr);
         aZh[1].e(iArr);
@@ -41741,7 +41741,7 @@ public final class ci extends GLLib implements av {
     }
 
     public static void qZ() {
-        ch.oL();
+        FarmEntity.oL();
         aZi = null;
         aZj = null;
         aa.eg(0);
@@ -41889,7 +41889,7 @@ public final class ci extends GLLib implements av {
     }
 
     public static boolean qy() {
-        return GLLib.bx("isConnectedWifi");
+        return GameRuntime.bx("isConnectedWifi");
     }
 
     public static void qz() {
@@ -41917,14 +41917,14 @@ public final class ci extends GLLib implements av {
         return 0;
     }
 
-    static int r(ch chVar) {
+    static int r(FarmEntity chVar) {
         int[] iArr = new int[2];
         f(new int[]{chVar.aol, chVar.aom}, iArr);
         return aAP[(iArr[1] * 96) + iArr[0]] >> 1;
     }
 
     static int r(byte[] bArr, int i) {
-        aZj = ch.e(13, new int[]{0, 0, 255});
+        aZj = FarmEntity.e(13, new int[]{0, 0, 255});
         short sK = k(bArr, i);
         int i2 = i + 2;
         short sK2 = k(bArr, i2);
@@ -42020,16 +42020,16 @@ public final class ci extends GLLib implements av {
     }
 
     static void rG() {
-        if (aYR == 13) {
+        if (currentTutorialStepIndex == 13) {
             return;
         }
         if (aYS == 1000) {
             axW = true;
         }
-        if (aYR == 10) {
+        if (currentTutorialStepIndex == 10) {
             axW = true;
         }
-        if (aYR == 11 && bg(1, 47)) {
+        if (currentTutorialStepIndex == 11 && bg(1, 47)) {
             return;
         }
         if (bg(1, 47)) {
@@ -42055,7 +42055,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void rH() {
-        ch chVarFm = Fm();
+        FarmEntity chVarFm = Fm();
         if (chVarFm != null && chVarFm.Bj == 8) {
             String strDt = dt(12334);
             if (strDt == null) {
@@ -42084,7 +42084,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void rI() {
-        ch chVarFm = Fm();
+        FarmEntity chVarFm = Fm();
         if (chVarFm != null && chVarFm.Bj == 8) {
             String strDt = dt(12334);
             if (strDt == null) {
@@ -42105,7 +42105,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void rJ() {
-        ch chVarFm = Fm();
+        FarmEntity chVarFm = Fm();
         if (chVarFm != null && chVarFm.Bj == 8) {
             String strDt = dt(12334);
             if (strDt == null) {
@@ -42126,7 +42126,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void rK() {
-        ch chVarFm = Fm();
+        FarmEntity chVarFm = Fm();
         if (chVarFm != null && chVarFm.Bj == 8) {
             String strDt = dt(12334);
             if (strDt == null) {
@@ -42155,7 +42155,7 @@ public final class ci extends GLLib implements av {
         }
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (!qN() || strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
         } else if (bt.nY() || !aTK) {
             fE(50);
         } else {
@@ -42186,7 +42186,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void rN() {
-        ch chVarFm = Fm();
+        FarmEntity chVarFm = Fm();
         if (chVarFm != null && chVarFm.Bj == 8) {
             String strDt = dt(12334);
             if (strDt == null) {
@@ -42198,18 +42198,18 @@ public final class ci extends GLLib implements av {
         }
         gX(59);
         b(2, -1, 0, true);
-        if (aYR == 40) {
+        if (currentTutorialStepIndex == 40) {
             axW = true;
-        } else if (aYR == -1 && awW == 13) {
+        } else if (currentTutorialStepIndex == -1 && awW == 13) {
             axW = true;
         }
     }
 
     static void rO() {
         b.Kg = true;
-        ch chVarFm = Fm();
+        FarmEntity chVarFm = Fm();
         boolean z = auj && chVarFm != null && chVarFm.Bj == 8;
-        if (ch.ff(3) != 0 || z) {
+        if (FarmEntity.ff(3) != 0 || z) {
             gX(55);
             return;
         }
@@ -42226,7 +42226,7 @@ public final class ci extends GLLib implements av {
 
     static void rP() {
         if (aYS != 1067) {
-            a(false, (ch) null);
+            a(false, (FarmEntity) null);
         }
         fE(15);
         if (getDeviceName() == null || !(getDeviceName().equals("GT-B5330B") || getDeviceName().equals("GT-B5330"))) {
@@ -42286,7 +42286,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void rU() {
-        ch chVarFm;
+        FarmEntity chVarFm;
         aTD = (short) 0;
         if (avE == null || t(avE)) {
             return;
@@ -42299,7 +42299,7 @@ public final class ci extends GLLib implements av {
             m(strDt, 7, 0);
             return;
         }
-        String str = "finish act button. done button.tuto state:" + aYR + ",moveState:" + avD;
+        String str = "finish act button. done button.tuto state:" + currentTutorialStepIndex + ",moveState:" + avD;
         if (avD == 0) {
             confirmMovePlacement();
             aT(false);
@@ -42369,7 +42369,7 @@ public final class ci extends GLLib implements av {
             aT(false);
             aD(false);
         } else {
-            if (aYR == 53) {
+            if (currentTutorialStepIndex == 53) {
                 axW = true;
             }
             confirmMovePlacement();
@@ -42396,8 +42396,8 @@ public final class ci extends GLLib implements av {
     }
 
     static void rW() {
-        if (aYR == -1) {
-            a(false, (ch) null);
+        if (currentTutorialStepIndex == -1) {
+            a(false, (FarmEntity) null);
         }
     }
 
@@ -42634,7 +42634,7 @@ public final class ci extends GLLib implements av {
             d(bArr, 29, aTR);
             bArr[33] = (byte) (aTT ? 1 : 0);
             try {
-                GLLib.e("RMSHeader", bArr);
+                GameRuntime.e("RMSHeader", bArr);
             } catch (Exception e) {
                 baI = System.getProperty("getAvailableSpace");
                 if (baI != null && Long.parseLong(baI) < 5) {
@@ -42660,7 +42660,7 @@ public final class ci extends GLLib implements av {
             Mi();
         } catch (Exception e) {
         }
-        byte[] bArrBF = GLLib.bF("RMSHeader");
+        byte[] bArrBF = GameRuntime.bF("RMSHeader");
         int iRm = rm();
         if (bArrBF != null) {
             iRm = l(bArrBF, 0);
@@ -42853,7 +42853,7 @@ public final class ci extends GLLib implements av {
             }
             b(bArr, iD8, aqW);
             try {
-                GLLib.a("online_gameplay", bArr, rv());
+                GameRuntime.a("online_gameplay", bArr, rv());
             } catch (Exception e) {
                 String str13 = "exception e : " + e;
                 baI = System.getProperty("getAvailableSpace");
@@ -42900,7 +42900,7 @@ public final class ci extends GLLib implements av {
             try {
                 aCz = iP;
                 String str3 = "save_farm" + aZB;
-                GLLib.a("save_farm" + aZB, bArr, rv());
+                GameRuntime.a("save_farm" + aZB, bArr, rv());
                 a(bArr, 0, aCx, 0, bArr.length);
             } catch (Exception e) {
                 String str4 = "exception e : " + e;
@@ -42915,12 +42915,12 @@ public final class ci extends GLLib implements av {
 
     static void rz() {
         if (axP) {
-            baa = false;
+            hasUnsavedGameChanges = false;
             bab = false;
             return;
         }
         bac = true;
-        baa = false;
+        hasUnsavedGameChanges = false;
         if (aZB == 0) {
             try {
                 rr();
@@ -42953,7 +42953,7 @@ public final class ci extends GLLib implements av {
         if (bJ >= 24 && bJ <= 26) {
             aYh = 1;
         }
-        ch chVarBs = bs(3, bJ);
+        FarmEntity chVarBs = bs(3, bJ);
         short sK = k(bArr, i2);
         int i3 = i2 + 2;
         short sK2 = k(bArr, i3);
@@ -42976,7 +42976,7 @@ public final class ci extends GLLib implements av {
         k(chVarBs);
         String str2 = "THO VERSION :: s_oldVersionLV == " + asL;
         if (asL == 421) {
-            ch chVarBs2 = bs(3, 29);
+            FarmEntity chVarBs2 = bs(3, 29);
             chVarBs2.aol = 2241;
             chVarBs2.aom = 667;
             n(chVarBs2);
@@ -42989,7 +42989,7 @@ public final class ci extends GLLib implements av {
         b(i, i2, i3, 0, i4, 0, -1);
     }
 
-    static boolean s(ch chVar) {
+    static boolean s(FarmEntity chVar) {
         int i;
         int i2;
         int[] iArr = new int[2];
@@ -43129,7 +43129,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void sL() {
-        if (aYR == 42 || aYR == 41 || aYR == 13 || aYR == 14) {
+        if (currentTutorialStepIndex == 42 || currentTutorialStepIndex == 41 || currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14) {
             return;
         }
         gX(60);
@@ -43138,7 +43138,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void sM() {
-        if (aYR == 42 || aYR == 41) {
+        if (currentTutorialStepIndex == 42 || currentTutorialStepIndex == 41) {
             return;
         }
         gX(60);
@@ -43147,7 +43147,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void sN() {
-        if (aYR == 42 || aYR == 41 || aYR == 13 || aYR == 14) {
+        if (currentTutorialStepIndex == 42 || currentTutorialStepIndex == 41 || currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14) {
             return;
         }
         gX(60);
@@ -43156,7 +43156,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void sO() {
-        if (aYR == 42 || aYR == 41 || aYR == 13 || aYR == 14) {
+        if (currentTutorialStepIndex == 42 || currentTutorialStepIndex == 41 || currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14) {
             return;
         }
         gX(60);
@@ -43165,7 +43165,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void sP() {
-        if (aYR == 42 || aYR == 41 || aYR == 13 || aYR == 14) {
+        if (currentTutorialStepIndex == 42 || currentTutorialStepIndex == 41 || currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14) {
             return;
         }
         if (aEl && (lN(298) || lN(297))) {
@@ -43177,7 +43177,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void sQ() {
-        if (aYR == 42 || aYR == 41 || aYR == 13 || aYR == 14) {
+        if (currentTutorialStepIndex == 42 || currentTutorialStepIndex == 41 || currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14) {
             return;
         }
         gX(60);
@@ -43191,7 +43191,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void sS() {
-        if (aYR != 57) {
+        if (currentTutorialStepIndex != 57) {
             gX(60);
         }
         if (bg(3, 222)) {
@@ -43236,11 +43236,11 @@ public final class ci extends GLLib implements av {
     }
 
     static void sa() {
-        int iAw = ch.aw(1, 49);
+        int iAw = FarmEntity.aw(1, 49);
         String str = "cntPlot : " + iAw;
         if (avE.aoC == 0 && iAw <= aZw[22]) {
             F(495, 496, 7, 0);
-        } else if (avE.Kx == 69 && ((avE.aoC == 22 || avE.aoC == 23) && ch.aw(1, 69) <= 1)) {
+        } else if (avE.Kx == 69 && ((avE.aoC == 22 || avE.aoC == 23) && FarmEntity.aw(1, 69) <= 1)) {
             String strDt = dt(12445);
             if (strDt == null) {
                 strDt = "";
@@ -43278,7 +43278,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void sb() {
-        if (avE.Kx == 69 && ((avE.aoC == 22 || avE.aoC == 23) && ch.aw(1, 69) <= 1)) {
+        if (avE.Kx == 69 && ((avE.aoC == 22 || avE.aoC == 23) && FarmEntity.aw(1, 69) <= 1)) {
             String strDt = dt(12445);
             if (strDt == null) {
                 strDt = "";
@@ -43304,7 +43304,7 @@ public final class ci extends GLLib implements av {
             sv();
             return;
         }
-        if (hF(5) + ch.fe(3) >= Fw() && !awV) {
+        if (hF(5) + FarmEntity.fe(3) >= Fw() && !awV) {
             H(481, 487, 7, 0);
             return;
         }
@@ -43372,7 +43372,7 @@ public final class ci extends GLLib implements av {
             awk = avP;
             return;
         }
-        if (aYR == 46) {
+        if (currentTutorialStepIndex == 46) {
             avR = 1;
         } else {
             avR = ((awq + 0) + awv) % awv;
@@ -43392,7 +43392,7 @@ public final class ci extends GLLib implements av {
             awk = avP;
             return;
         }
-        if (aYR == 46) {
+        if (currentTutorialStepIndex == 46) {
             avR = 1;
         } else {
             avR = ((awq + 1) + awv) % awv;
@@ -43412,7 +43412,7 @@ public final class ci extends GLLib implements av {
             awk = avP;
             return;
         }
-        if (aYR == 46) {
+        if (currentTutorialStepIndex == 46) {
             avR = 1;
         } else {
             avR = ((awq + 2) + awv) % awv;
@@ -43432,7 +43432,7 @@ public final class ci extends GLLib implements av {
             awk = avP;
             return;
         }
-        if (aYR == 46) {
+        if (currentTutorialStepIndex == 46) {
             avR = 1;
         } else {
             avR = ((awq + 3) + awv) % awv;
@@ -43452,7 +43452,7 @@ public final class ci extends GLLib implements av {
             awk = avP;
             return;
         }
-        if (aYR == 46) {
+        if (currentTutorialStepIndex == 46) {
             avR = 1;
         } else {
             avR = ((awq + 4) + awv) % awv;
@@ -43472,7 +43472,7 @@ public final class ci extends GLLib implements av {
             awk = avP;
             return;
         }
-        if (aYR == 46) {
+        if (currentTutorialStepIndex == 46) {
             avR = 1;
         } else {
             avR = ((awq + 5) + awv) % awv;
@@ -43649,7 +43649,7 @@ public final class ci extends GLLib implements av {
         if (avD == -1 || avE == null) {
             return;
         }
-        int tutorial = aYR;
+        int tutorial = currentTutorialStepIndex;
         boolean z = false;
         if (avD == 4) {
             int iQp = avE.qp();
@@ -43659,7 +43659,7 @@ public final class ci extends GLLib implements av {
                 z = true;
             }
             if (avE.anw) {
-                ch chVarFm = Fm();
+                FarmEntity chVarFm = Fm();
                 if (aMg == null || (chVarFm != null && aMg != null && chVarFm.ant != aMg.ant)) {
                     aMg = chVarFm;
                 }
@@ -43677,11 +43677,11 @@ public final class ci extends GLLib implements av {
         // The next step originally inferred success merely from avE becoming
         // null. Cancel must return to selection, rather than finish the move.
         if (tutorial == 15) {
-            aYR = 13;
+            currentTutorialStepIndex = 13;
             axV = false;
             axW = false;
         } else if (tutorial == 53) {
-            aYR = 51;
+            currentTutorialStepIndex = 51;
             axV = false;
             axW = false;
             aCi &= -2;
@@ -43698,7 +43698,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void sx() {
-        if (aYR == -1 && awW == 160) {
+        if (currentTutorialStepIndex == -1 && awW == 160) {
             bax = true;
             Kz();
             fE(35);
@@ -43706,7 +43706,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void sy() {
-        if (aYR == -1 && awW == 160) {
+        if (currentTutorialStepIndex == -1 && awW == 160) {
             bax = true;
             Ky();
             fE(35);
@@ -43725,19 +43725,19 @@ public final class ci extends GLLib implements av {
             return;
         }
         if (aEa == 0 && aDZ == -1) {
-            if (aYR == 41) {
+            if (currentTutorialStepIndex == 41) {
                 axW = true;
             }
             gX(60);
             bT(2, 9);
             return;
         }
-        if (aDY == 2 && aDZ == 9 && aDX == 0 && ch.aw(1, 49) >= FI()) {
+        if (aDY == 2 && aDZ == 9 && aDX == 0 && FarmEntity.aw(1, 49) >= FI()) {
             gX(55);
             F(497, 498, 7, 0);
         } else {
             iq(0);
-            if (aYR == 42) {
+            if (currentTutorialStepIndex == 42) {
                 axW = true;
             }
         }
@@ -43745,7 +43745,7 @@ public final class ci extends GLLib implements av {
 
     static int t(byte[] bArr, int i) {
         int i2 = i + 1;
-        ch chVarBs = bs(4, j(bArr, i));
+        FarmEntity chVarBs = bs(4, j(bArr, i));
         short sK = k(bArr, i2);
         int i3 = i2 + 2;
         short sK2 = k(bArr, i3);
@@ -43776,7 +43776,7 @@ public final class ci extends GLLib implements av {
         e(2, i + 60, z);
     }
 
-    static boolean t(ch chVar) {
+    static boolean t(FarmEntity chVar) {
         boolean z = s(chVar);
         if (!z && chVar.Kx == 54) {
             int iR = r(chVar);
@@ -43877,7 +43877,7 @@ public final class ci extends GLLib implements av {
         String property = System.getProperty("microedition.locale");
         System.getProperty("IMEI");
         String str = "" + System.getProperty("microedition.platform");
-        String str2 = "" + GLLib.jr();
+        String str2 = "" + GameRuntime.jr();
         String str3 = "" + System.getProperty("microedition.locale.country");
         String str4 = "" + Build.VERSION.RELEASE;
         String str5 = "" + Build.MANUFACTURER + "_" + Build.MODEL;
@@ -43904,10 +43904,10 @@ public final class ci extends GLLib implements av {
     }
 
     static void tJ() {
-        if (qD() == 27 && !acceptTutorialModal(27)) return;
+        if (currentEngineState() == 27 && !acceptTutorialModal(27)) return;
         qB();
-        String str = "EXIT QUEST>cur totu:" + aYR + ",none tuto:-1";
-        if (aYR == -1) {
+        String str = "EXIT QUEST>cur totu:" + currentTutorialStepIndex + ",none tuto:-1";
+        if (currentTutorialStepIndex == -1) {
             tR();
         }
         lP(aVF);
@@ -43990,7 +43990,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void tN() {
-        if (qD() == 27 && !acceptTutorialModal(27)) return;
+        if (currentEngineState() == 27 && !acceptTutorialModal(27)) return;
         int iIi;
         int iIi2;
         axU = true;
@@ -44131,7 +44131,7 @@ public final class ci extends GLLib implements av {
         } else if (i == aZQ[1] && !awN) {
             awN = true;
             awU = true;
-            aYR = 13;
+            currentTutorialStepIndex = 13;
             axW = false;
             axV = false;
             awS = true;
@@ -44195,7 +44195,7 @@ public final class ci extends GLLib implements av {
             gX(56);
             aHi = true;
             qB();
-            if (aYR == 27 || aYS == 1015) {
+            if (currentTutorialStepIndex == 27 || aYS == 1015) {
                 axW = true;
                 aHi = false;
             }
@@ -44222,7 +44222,7 @@ public final class ci extends GLLib implements av {
                 bak = aIb - FB();
                 return;
             }
-            if (((hF(5) + ch.fe(3)) + a(aHZ)) - aId > Fw() && aYS != 1012) {
+            if (((hF(5) + FarmEntity.fe(3)) + a(aHZ)) - aId > Fw() && aYS != 1012) {
                 gX(55);
                 hT(aIb);
                 aLV = 2;
@@ -44257,7 +44257,7 @@ public final class ci extends GLLib implements av {
                 bak = aIc - FB();
                 return;
             }
-            if (((hF(5) + ch.fe(3)) + a(aIa)) - aIe > Fw() && aYS != 1013) {
+            if (((hF(5) + FarmEntity.fe(3)) + a(aIa)) - aIe > Fw() && aYS != 1013) {
                 gX(55);
                 hT(aIc);
                 aLV = 2;
@@ -44279,10 +44279,10 @@ public final class ci extends GLLib implements av {
     }
 
     static void tW() {
-        if (aYR == 27) {
+        if (currentTutorialStepIndex == 27) {
             axW = false;
             axV = false;
-            aYR = 28;
+            currentTutorialStepIndex = 28;
         }
         if (aYS == 1015) {
             axW = true;
@@ -44378,7 +44378,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void tl() {
-        if (aYR == 57) {
+        if (currentTutorialStepIndex == 57) {
             axW = true;
         }
         Gm();
@@ -44467,7 +44467,7 @@ public final class ci extends GLLib implements av {
         String str3 = "REVIEW rating url:" + str2;
         try {
             String str4 = "RATING : Opening URL " + str2;
-            GLLib.bd(str2);
+            GameRuntime.bd(str2);
             aMW = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -44503,7 +44503,7 @@ public final class ci extends GLLib implements av {
             return;
         }
         gX(60);
-        if (qE() != 8) {
+        if (previousEngineState() != 8) {
             b(3, -1, 2, false);
             return;
         }
@@ -44531,7 +44531,7 @@ public final class ci extends GLLib implements av {
             f(4, 11, false);
             if (avD == -1) {
                 bO(20, 68);
-                baa = true;
+                hasUnsavedGameChanges = true;
             }
             fH(18);
             return;
@@ -44552,7 +44552,7 @@ public final class ci extends GLLib implements av {
                     tH();
                     return;
                 }
-                if (aNC != -1 && qE() != 37) {
+                if (aNC != -1 && previousEngineState() != 37) {
                     if (aNC == 18) {
                         qB();
                         return;
@@ -44588,7 +44588,7 @@ public final class ci extends GLLib implements av {
 
     static int u(byte[] bArr, int i) {
         int i2 = i + 1;
-        ch chVarBs = bs(11, j(bArr, i));
+        FarmEntity chVarBs = bs(11, j(bArr, i));
         short sK = k(bArr, i2);
         int i3 = i2 + 2;
         short sK2 = k(bArr, i3);
@@ -44665,7 +44665,7 @@ public final class ci extends GLLib implements av {
             }
         } catch (Exception e) {
         }
-        if (aYR == -1) {
+        if (currentTutorialStepIndex == -1) {
             e(3, 240, true);
             f(3, 240, true);
         }
@@ -44681,7 +44681,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static boolean u(ch chVar) {
+    static boolean u(FarmEntity chVar) {
         int i;
         int i2;
         int[] iArr = new int[4];
@@ -44727,10 +44727,10 @@ public final class ci extends GLLib implements av {
     }
 
     static void uA() {
-        if (aYR == 171 || aYR == 28) {
+        if (currentTutorialStepIndex == 171 || currentTutorialStepIndex == 28) {
             axW = true;
         }
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             gr(aGW + 0);
         } else {
             gs(aGn + 0);
@@ -44741,7 +44741,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uB() {
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             gr(aGW + 1);
         } else {
             gs(aGn + 1);
@@ -44752,7 +44752,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uC() {
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             gr(aGW + 2);
         } else {
             gs(aGn + 2);
@@ -44763,7 +44763,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uD() {
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             gr(aGW + 3);
         } else {
             gs(aGn + 3);
@@ -44774,7 +44774,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uE() {
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             gr(aGW + 4);
         } else {
             gs(aGn + 4);
@@ -44785,7 +44785,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uF() {
-        if (aYR == -1) {
+        if (currentTutorialStepIndex == -1) {
             if ((lN(297) && aYS != 1017) || ((lN(GLURLConnection.HTTP_FOUND) && aYS != 1079) || aGL != null || aGM)) {
                 if (aGL != null || aGM) {
                     gX(55);
@@ -44800,22 +44800,22 @@ public final class ci extends GLLib implements av {
                 axW = true;
             }
             if (aGB) {
-                if (qD() == 12) {
+                if (currentEngineState() == 12) {
                     iN(aGD);
                 }
                 aGB = false;
                 aGC = 0;
                 aGD = 0;
             }
-            if (aYR == 24 || aYR == 25) {
+            if (currentTutorialStepIndex == 24 || currentTutorialStepIndex == 25) {
                 return;
             }
-            if (qD() != 28) {
+            if (currentEngineState() != 28) {
                 gX(56);
             }
             qB();
-            String str = "craft queue exit:" + aYR;
-            if (aYR == 30 || aYR == 173) {
+            String str = "craft queue exit:" + currentTutorialStepIndex;
+            if (currentTutorialStepIndex == 30 || currentTutorialStepIndex == 173) {
                 axW = true;
             }
             if (!aFp) {
@@ -44832,7 +44832,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uG() {
-        if (aYR == -1) {
+        if (currentTutorialStepIndex == -1) {
             if ((lN(297) && aYS != 1017) || ((lN(GLURLConnection.HTTP_FOUND) && aYS != 1079) || aGL != null || aGM)) {
                 if (aGL != null || aGM) {
                     gX(55);
@@ -44847,22 +44847,22 @@ public final class ci extends GLLib implements av {
                 axW = true;
             }
             if (aGB) {
-                if (qD() == 12) {
+                if (currentEngineState() == 12) {
                     iN(aGD);
                 }
                 aGB = false;
                 aGC = 0;
                 aGD = 0;
             }
-            if (aYR == 24 || aYR == 25) {
+            if (currentTutorialStepIndex == 24 || currentTutorialStepIndex == 25) {
                 return;
             }
-            if (qD() != 28) {
+            if (currentEngineState() != 28) {
                 gX(56);
             }
             qB();
-            String str = "craft queue exit:" + aYR;
-            if (aYR == 30 || aYR == 173) {
+            String str = "craft queue exit:" + currentTutorialStepIndex;
+            if (currentTutorialStepIndex == 30 || currentTutorialStepIndex == 173) {
                 axW = true;
             }
             if (!aFp) {
@@ -44879,7 +44879,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uH() {
-        if (aYR == -1) {
+        if (currentTutorialStepIndex == -1) {
             if ((lN(297) && aYS != 1017) || ((lN(GLURLConnection.HTTP_FOUND) && aYS != 1079) || aGL != null || aGM)) {
                 if (aGL != null || aGM) {
                     gX(55);
@@ -44894,22 +44894,22 @@ public final class ci extends GLLib implements av {
                 axW = true;
             }
             if (aGB) {
-                if (qD() == 12) {
+                if (currentEngineState() == 12) {
                     iN(aGD);
                 }
                 aGB = false;
                 aGC = 0;
                 aGD = 0;
             }
-            if (aYR == 24 || aYR == 25) {
+            if (currentTutorialStepIndex == 24 || currentTutorialStepIndex == 25) {
                 return;
             }
-            if (qD() != 28) {
+            if (currentEngineState() != 28) {
                 gX(56);
             }
             qB();
-            String str = "craft queue exit:" + aYR;
-            if (aYR == 30 || aYR == 173) {
+            String str = "craft queue exit:" + currentTutorialStepIndex;
+            if (currentTutorialStepIndex == 30 || currentTutorialStepIndex == 173) {
                 axW = true;
             }
             if (!aFp) {
@@ -44926,7 +44926,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uI() {
-        if (aYR == -1) {
+        if (currentTutorialStepIndex == -1) {
             if ((lN(297) && aYS != 1017) || ((lN(GLURLConnection.HTTP_FOUND) && aYS != 1079) || aGL != null || aGM)) {
                 if (aGL != null || aGM) {
                     gX(55);
@@ -44941,22 +44941,22 @@ public final class ci extends GLLib implements av {
                 axW = true;
             }
             if (aGB) {
-                if (qD() == 12) {
+                if (currentEngineState() == 12) {
                     iN(aGD);
                 }
                 aGB = false;
                 aGC = 0;
                 aGD = 0;
             }
-            if (aYR == 24 || aYR == 25) {
+            if (currentTutorialStepIndex == 24 || currentTutorialStepIndex == 25) {
                 return;
             }
-            if (qD() != 28) {
+            if (currentEngineState() != 28) {
                 gX(56);
             }
             qB();
-            String str = "craft queue exit:" + aYR;
-            if (aYR == 30 || aYR == 173) {
+            String str = "craft queue exit:" + currentTutorialStepIndex;
+            if (currentTutorialStepIndex == 30 || currentTutorialStepIndex == 173) {
                 axW = true;
             }
             if (!aFp) {
@@ -44973,7 +44973,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uJ() {
-        if (aYR == -1) {
+        if (currentTutorialStepIndex == -1) {
             if ((lN(297) && aYS != 1017) || ((lN(GLURLConnection.HTTP_FOUND) && aYS != 1079) || aGL != null || aGM)) {
                 if (aGL != null || aGM) {
                     gX(55);
@@ -44988,22 +44988,22 @@ public final class ci extends GLLib implements av {
                 axW = true;
             }
             if (aGB) {
-                if (qD() == 12) {
+                if (currentEngineState() == 12) {
                     iN(aGD);
                 }
                 aGB = false;
                 aGC = 0;
                 aGD = 0;
             }
-            if (aYR == 24 || aYR == 25) {
+            if (currentTutorialStepIndex == 24 || currentTutorialStepIndex == 25) {
                 return;
             }
-            if (qD() != 28) {
+            if (currentEngineState() != 28) {
                 gX(56);
             }
             qB();
-            String str = "craft queue exit:" + aYR;
-            if (aYR == 30 || aYR == 173) {
+            String str = "craft queue exit:" + currentTutorialStepIndex;
+            if (currentTutorialStepIndex == 30 || currentTutorialStepIndex == 173) {
                 axW = true;
             }
             if (!aFp) {
@@ -45021,7 +45021,7 @@ public final class ci extends GLLib implements av {
 
     static void uK() {
         gX(56);
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             iZ(aGW + 0);
         } else {
             iP(aGn + 0);
@@ -45030,7 +45030,7 @@ public final class ci extends GLLib implements av {
 
     static void uL() {
         gX(56);
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             iZ(aGW + 1);
         } else {
             iP(aGn + 1);
@@ -45039,7 +45039,7 @@ public final class ci extends GLLib implements av {
 
     static void uM() {
         gX(56);
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             iZ(aGW + 2);
         } else {
             iP(aGn + 2);
@@ -45048,7 +45048,7 @@ public final class ci extends GLLib implements av {
 
     static void uN() {
         gX(56);
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             iZ(aGW + 3);
         } else {
             iP(aGn + 3);
@@ -45057,7 +45057,7 @@ public final class ci extends GLLib implements av {
 
     static void uO() {
         gX(56);
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             iZ(aGW + 4);
         } else {
             iP(aGn + 4);
@@ -45088,7 +45088,7 @@ public final class ci extends GLLib implements av {
         if (aGL != null) {
             return;
         }
-        if (qD() == 12) {
+        if (currentEngineState() == 12) {
             aTB = aFp;
         }
         e("PUCHASE", " ITEM", 7, 0);
@@ -45098,7 +45098,7 @@ public final class ci extends GLLib implements av {
         if (aGL != null) {
             return;
         }
-        if (qD() == 12) {
+        if (currentEngineState() == 12) {
             aTB = aFp;
         }
         e("PUCHASE", " ITEM", 7, 0);
@@ -45108,7 +45108,7 @@ public final class ci extends GLLib implements av {
         if (aGL != null) {
             return;
         }
-        if (qD() == 12) {
+        if (currentEngineState() == 12) {
             aTB = aFp;
         }
         e("PUCHASE", " ITEM", 7, 0);
@@ -45118,7 +45118,7 @@ public final class ci extends GLLib implements av {
         if (aGL != null) {
             return;
         }
-        if (qD() == 12) {
+        if (currentEngineState() == 12) {
             aTB = aFp;
         }
         e("PUCHASE", " ITEM", 7, 0);
@@ -45128,7 +45128,7 @@ public final class ci extends GLLib implements av {
         if (aGL != null) {
             return;
         }
-        if (qD() == 12) {
+        if (currentEngineState() == 12) {
             aTB = aFp;
         }
         e("PUCHASE", " ITEM", 7, 0);
@@ -45139,7 +45139,7 @@ public final class ci extends GLLib implements av {
             return;
         }
         gX(48);
-        if (qD() != 28) {
+        if (currentEngineState() != 28) {
             if (!atE) {
                 va();
                 return;
@@ -45196,7 +45196,7 @@ public final class ci extends GLLib implements av {
             bak = aFI - FB();
             return;
         }
-        if (((hF(5) + ch.fe(3)) + aFG) - aFK <= Fw()) {
+        if (((hF(5) + FarmEntity.fe(3)) + aFG) - aFK <= Fw()) {
             int i = aFG - aFK;
             O(0, aFE, aFG - aFK);
             GD();
@@ -45237,7 +45237,7 @@ public final class ci extends GLLib implements av {
             bak = aFJ - FB();
             return;
         }
-        if (((hF(5) + ch.fe(3)) + aFH) - aFL <= Fw()) {
+        if (((hF(5) + FarmEntity.fe(3)) + aFH) - aFL <= Fw()) {
             int i = aFH - aFL;
             O(0, aFF, aFH - aFL);
             GD();
@@ -45266,7 +45266,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void ue() {
-        if (((hF(5) + ch.fe(3)) + aFG) - aFK <= Fw()) {
+        if (((hF(5) + FarmEntity.fe(3)) + aFG) - aFK <= Fw()) {
             e("PUCHASE", " ITEM", 7, 0);
             aFz = false;
             return;
@@ -45288,7 +45288,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uf() {
-        if (((hF(5) + ch.fe(3)) + aFH) - aFL <= Fw()) {
+        if (((hF(5) + FarmEntity.fe(3)) + aFH) - aFL <= Fw()) {
             e("PUCHASE", " ITEM", 7, 0);
             aFz = false;
             return;
@@ -45310,7 +45310,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void ug() {
-        if (((((hF(5) + ch.fe(3)) + aFG) - aFK) + aFH) - aFL <= Fw()) {
+        if (((((hF(5) + FarmEntity.fe(3)) + aFG) - aFK) + aFH) - aFL <= Fw()) {
             e("PUCHASE", " ITEM", 7, 0);
             aFz = false;
             return;
@@ -45369,22 +45369,22 @@ public final class ci extends GLLib implements av {
             axW = true;
         }
         if (aGB) {
-            if (qD() == 12) {
+            if (currentEngineState() == 12) {
                 iN(aGD);
             }
             aGB = false;
             aGC = 0;
             aGD = 0;
         }
-        if (aYR == 24 || aYR == 25) {
+        if (currentTutorialStepIndex == 24 || currentTutorialStepIndex == 25) {
             return;
         }
-        if (qD() != 28) {
+        if (currentEngineState() != 28) {
             gX(56);
         }
         qB();
-        String str = "craft queue exit:" + aYR;
-        if (aYR == 30 || aYR == 173) {
+        String str = "craft queue exit:" + currentTutorialStepIndex;
+        if (currentTutorialStepIndex == 30 || currentTutorialStepIndex == 173) {
             axW = true;
         }
         if (!aFp) {
@@ -45404,7 +45404,7 @@ public final class ci extends GLLib implements av {
         if ((aYS == 1016 || aYS == 1017) && aGX[aGW + 0] != jVarBY.KW[6][1]) {
             return;
         }
-        int iQD = qD();
+        int iQD = currentEngineState();
         if ((iQD == 28 && aHe[aGW + 0] == 4) || (iQD == 12 && aGw[aGn + 0] == 4)) {
             bc(0, iQD);
         }
@@ -45415,7 +45415,7 @@ public final class ci extends GLLib implements av {
         if ((aYS == 1016 || aYS == 1017) && aGX[aGW + 1] != jVarBY.KW[6][1]) {
             return;
         }
-        int iQD = qD();
+        int iQD = currentEngineState();
         if ((iQD == 28 && aHe[aGW + 1] == 4) || (iQD == 12 && aGw[aGn + 1] == 4)) {
             bc(1, iQD);
         }
@@ -45426,7 +45426,7 @@ public final class ci extends GLLib implements av {
         if ((aYS == 1016 || aYS == 1017) && aGX[aGW + 2] != jVarBY.KW[6][1]) {
             return;
         }
-        int iQD = qD();
+        int iQD = currentEngineState();
         if ((iQD == 28 && aHe[aGW + 2] == 4) || (iQD == 12 && aGw[aGn + 2] == 4)) {
             bc(2, iQD);
         }
@@ -45437,7 +45437,7 @@ public final class ci extends GLLib implements av {
         if ((aYS == 1016 || aYS == 1017) && aGX[aGW + 3] != jVarBY.KW[6][1]) {
             return;
         }
-        int iQD = qD();
+        int iQD = currentEngineState();
         if ((iQD == 28 && aHe[aGW + 3] == 4) || (iQD == 12 && aGw[aGn + 3] == 4)) {
             bc(3, iQD);
         }
@@ -45448,14 +45448,14 @@ public final class ci extends GLLib implements av {
         if ((aYS == 1016 || aYS == 1017) && aGX[aGW + 4] != jVarBY.KW[6][1]) {
             return;
         }
-        int iQD = qD();
+        int iQD = currentEngineState();
         if ((iQD == 28 && aHe[aGW + 4] == 4) || (iQD == 12 && aGw[aGn + 4] == 4)) {
             bc(4, iQD);
         }
     }
 
     static void uq() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case R.styleable.CardView_contentPaddingBottom /* 12 */:
                 if (aGn + 0 >= GJ()) {
                     gX(55);
@@ -45473,7 +45473,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void ur() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case R.styleable.CardView_contentPaddingBottom /* 12 */:
                 if (aGn + 1 >= GJ()) {
                     gX(55);
@@ -45491,7 +45491,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void us() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case R.styleable.CardView_contentPaddingBottom /* 12 */:
                 if (aGn + 2 >= GJ()) {
                     gX(55);
@@ -45509,7 +45509,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void ut() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case R.styleable.CardView_contentPaddingBottom /* 12 */:
                 if (aGn + 3 >= GJ()) {
                     gX(55);
@@ -45530,7 +45530,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uu() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case R.styleable.CardView_contentPaddingBottom /* 12 */:
                 if (aGn + 4 >= GJ()) {
                     gX(55);
@@ -45551,10 +45551,10 @@ public final class ci extends GLLib implements av {
     }
 
     static void uv() {
-        if (aYR == 171 || aYR == 28) {
+        if (currentTutorialStepIndex == 171 || currentTutorialStepIndex == 28) {
             axW = true;
         }
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             gr(aGW + 0);
         } else {
             gs(aGn + 0);
@@ -45565,7 +45565,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uw() {
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             gr(aGW + 1);
         } else {
             gs(aGn + 1);
@@ -45576,7 +45576,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void ux() {
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             gr(aGW + 2);
         } else {
             gs(aGn + 2);
@@ -45587,7 +45587,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uy() {
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             gr(aGW + 3);
         } else {
             gs(aGn + 3);
@@ -45598,7 +45598,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void uz() {
-        if (qD() == 28) {
+        if (currentEngineState() == 28) {
             gr(aGW + 4);
         } else {
             gs(aGn + 4);
@@ -45610,7 +45610,7 @@ public final class ci extends GLLib implements av {
 
     static int v(byte[] bArr, int i) {
         int i2 = i + 1;
-        ch chVarBs = bs(11, j(bArr, i));
+        FarmEntity chVarBs = bs(11, j(bArr, i));
         chVarBs.aoh = k(bArr, i2);
         int i3 = i2 + 2;
         short sK = k(bArr, i3);
@@ -45700,18 +45700,18 @@ public final class ci extends GLLib implements av {
         b.hL().e(str, i);
     }
 
-    static ch[] v(ch chVar) {
-        ch[] chVarArrA = ch.a(1, 50, chVar, 1);
+    static FarmEntity[] v(FarmEntity chVar) {
+        FarmEntity[] chVarArrA = FarmEntity.a(1, 50, chVar, 1);
         if (chVarArrA[0] == null) {
-            chVarArrA = ch.a(1, 52, chVar, 1);
+            chVarArrA = FarmEntity.a(1, 52, chVar, 1);
         }
         if (chVarArrA[0] == null) {
-            chVarArrA = ch.a(1, 54, chVar, 1);
+            chVarArrA = FarmEntity.a(1, 54, chVar, 1);
         }
         if (chVarArrA[0] == null) {
-            chVarArrA = ch.a(1, 20, chVar, 1);
+            chVarArrA = FarmEntity.a(1, 20, chVar, 1);
         }
-        return chVarArrA[0] == null ? ch.a(1, -1, chVar, 10) : chVarArrA;
+        return chVarArrA[0] == null ? FarmEntity.a(1, -1, chVar, 10) : chVarArrA;
     }
 
     static void vA() {
@@ -46000,7 +46000,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void vc() {
-        if (qD() != 28) {
+        if (currentEngineState() != 28) {
             aFq = aEZ[aFa] + 0;
             if (FC() < aFl[aFa][aFq]) {
                 gX(55);
@@ -46032,13 +46032,13 @@ public final class ci extends GLLib implements av {
             gX(60);
             fE(10);
         }
-        if (aYR == 25) {
+        if (currentTutorialStepIndex == 25) {
             axW = true;
         }
     }
 
     static void vd() {
-        if (qD() != 28) {
+        if (currentEngineState() != 28) {
             aFq = aEZ[aFa] + 1;
             if (FC() < aFl[aFa][aFq]) {
                 gX(55);
@@ -46075,7 +46075,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void ve() {
-        if (qD() != 28) {
+        if (currentEngineState() != 28) {
             aFq = aEZ[aFa] + 2;
             if (FC() < aFl[aFa][aFq]) {
                 gX(55);
@@ -46112,7 +46112,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void vf() {
-        if (qD() != 28) {
+        if (currentEngineState() != 28) {
             aFq = aEZ[aFa] + 3;
             if (FC() < aFl[aFa][aFq]) {
                 gX(55);
@@ -46149,7 +46149,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void vg() {
-        if (qD() != 28) {
+        if (currentEngineState() != 28) {
             aFq = aEZ[aFa] + 4;
             if (FC() < aFl[aFa][aFq]) {
                 gX(55);
@@ -46186,7 +46186,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void vh() {
-        if (qD() != 28) {
+        if (currentEngineState() != 28) {
             aFq = aEZ[aFa] + 5;
             if (FC() < aFl[aFa][aFq]) {
                 gX(55);
@@ -46277,7 +46277,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void vn() {
-        if (lN(297) || lN(GLURLConnection.HTTP_FOUND) || aYR != -1 || awW != 160) {
+        if (lN(297) || lN(GLURLConnection.HTTP_FOUND) || currentTutorialStepIndex != -1 || awW != 160) {
             return;
         }
         fE(35);
@@ -46291,7 +46291,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void vp() {
-        if (lN(297) || lN(GLURLConnection.HTTP_FOUND) || aYR != -1 || awW != 160) {
+        if (lN(297) || lN(GLURLConnection.HTTP_FOUND) || currentTutorialStepIndex != -1 || awW != 160) {
             return;
         }
         bax = true;
@@ -46385,7 +46385,7 @@ public final class ci extends GLLib implements av {
         }
         gX(56);
         if (aua == 3 && atZ) {
-            aOL = qE();
+            aOL = previousEngineState();
             aOG = 11;
             fE(43);
             return;
@@ -46417,7 +46417,7 @@ public final class ci extends GLLib implements av {
         }
         gX(56);
         if (aua == 3 && atZ) {
-            aOL = qE();
+            aOL = previousEngineState();
             aOG = 11;
             fE(43);
             return;
@@ -46541,7 +46541,7 @@ public final class ci extends GLLib implements av {
     static int w(byte[] bArr, int i) {
         byte bJ = j(bArr, i);
         int i2 = i + 1;
-        ch chVarH = h(49, 1, false);
+        FarmEntity chVarH = h(49, 1, false);
         chVarH.aoC = bJ;
         short sK = k(bArr, i2);
         int i3 = i2 + 2;
@@ -46619,7 +46619,7 @@ public final class ci extends GLLib implements av {
         e(3, i2 + 11, true);
     }
 
-    static void w(ch chVar) {
+    static void w(FarmEntity chVar) {
         if (chVar != null) {
             int i = 0;
             int i2 = chVar.aoC;
@@ -46950,7 +46950,7 @@ public final class ci extends GLLib implements av {
 
     static void wQ() {
         gX(56);
-        if (aNx != 4 || qE() == 42) {
+        if (aNx != 4 || previousEngineState() == 42) {
             qB();
         } else {
             fG(42);
@@ -47032,7 +47032,7 @@ public final class ci extends GLLib implements av {
     static void wc() {
         gX(60);
         GloftGF2F gloftGF2F = GloftGF2F.acx;
-        ci ciVar = GloftGF2F.acw;
+        FarmGameEngine ciVar = GloftGF2F.acw;
         aSm = lq();
         if (aSm == 7) {
             aOG = 2;
@@ -47158,7 +47158,7 @@ public final class ci extends GLLib implements av {
 
     static void wg() {
         if (!qO()) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         if (b.JO == 3) {
@@ -47750,7 +47750,7 @@ public final class ci extends GLLib implements av {
         int i2;
         byte bJ = j(bArr, i);
         int i3 = i + 1;
-        ch chVarBs = bs(2, bJ);
+        FarmEntity chVarBs = bs(2, bJ);
         chVarBs.aoC = bJ;
         short sK = k(bArr, i3);
         int i4 = i3 + 2;
@@ -47839,7 +47839,7 @@ public final class ci extends GLLib implements av {
     static void xA() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         hb(23);
@@ -47854,7 +47854,7 @@ public final class ci extends GLLib implements av {
     static void xB() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         hb(23);
@@ -47869,7 +47869,7 @@ public final class ci extends GLLib implements av {
     static void xC() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         hb(23);
@@ -47884,7 +47884,7 @@ public final class ci extends GLLib implements av {
     static void xD() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         hb(23);
@@ -47939,10 +47939,10 @@ public final class ci extends GLLib implements av {
         aBF = true;
         hc(-1);
         sv();
-        a(false, (ch) null);
+        a(false, (FarmEntity) null);
         FG();
         DN();
-        b(false, (ch) null);
+        b(false, (FarmEntity) null);
         aZj.fh(100);
         Fx();
         aZC = aNI + 1;
@@ -47952,7 +47952,7 @@ public final class ci extends GLLib implements av {
         Il();
         h(false, -1);
         gX(52);
-        baa = true;
+        hasUnsavedGameChanges = true;
         fF(37);
         bax = true;
         if (baf != null) {
@@ -48091,16 +48091,16 @@ public final class ci extends GLLib implements av {
         aBF = true;
         hc(-1);
         sv();
-        a(false, (ch) null);
+        a(false, (FarmEntity) null);
         DN();
-        b(false, (ch) null);
+        b(false, (FarmEntity) null);
         aZj.fh(100);
         Fx();
         aZC = aNI + 1;
         Il();
         h(false, -1);
         gX(52);
-        baa = true;
+        hasUnsavedGameChanges = true;
         fF(37);
         bax = true;
         auj = true;
@@ -48128,7 +48128,7 @@ public final class ci extends GLLib implements av {
     static void xT() {
         if (aYS == 1071) {
         }
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 29:
                 gX(60);
                 aIH = true;
@@ -48140,7 +48140,7 @@ public final class ci extends GLLib implements av {
     static void xU() {
         if (aYS == 1071) {
         }
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 29:
                 l(new int[]{0, 4});
                 gX(60);
@@ -48152,9 +48152,9 @@ public final class ci extends GLLib implements av {
     static void xV() {
         if (aYS == 1071) {
         }
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 29:
-                aIK = (ch[][]) Array.newInstance((Class<?>) ch.class, 8, 4);
+                aIK = (FarmEntity[][]) Array.newInstance((Class<?>) FarmEntity.class, 8, 4);
                 l(new int[]{3});
                 gX(60);
                 gx(1);
@@ -48165,12 +48165,12 @@ public final class ci extends GLLib implements av {
     static void xW() {
         if (aYS == 1071) {
         }
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 29:
                 l(new int[]{1, 2});
                 gX(60);
                 gx(2);
-                if (aYR == 51) {
+                if (currentTutorialStepIndex == 51) {
                     axW = true;
                 }
                 break;
@@ -48229,7 +48229,7 @@ public final class ci extends GLLib implements av {
     static void xj() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         if (aNm == 0) {
@@ -48250,7 +48250,7 @@ public final class ci extends GLLib implements av {
     static void xk() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         hb(23);
@@ -48266,7 +48266,7 @@ public final class ci extends GLLib implements av {
     static void xl() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         hb(23);
@@ -48282,7 +48282,7 @@ public final class ci extends GLLib implements av {
     static void xm() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         String str = "Inviting " + aNn[aNm + 2].getName();
@@ -48299,7 +48299,7 @@ public final class ci extends GLLib implements av {
     static void xn() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         hb(23);
@@ -48315,7 +48315,7 @@ public final class ci extends GLLib implements av {
     static void xo() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         if (aNo[aNm - 1] > 2) {
@@ -48341,7 +48341,7 @@ public final class ci extends GLLib implements av {
     static void xp() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         if (aNo[aNm + 0] > 2) {
@@ -48367,7 +48367,7 @@ public final class ci extends GLLib implements av {
     static void xq() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         if (aNo[aNm + 1] > 2) {
@@ -48393,7 +48393,7 @@ public final class ci extends GLLib implements av {
     static void xr() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         if (aNo[aNm + 2] > 2) {
@@ -48419,7 +48419,7 @@ public final class ci extends GLLib implements av {
     static void xs() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         if (aNo[aNm + 3] > 2) {
@@ -48451,7 +48451,7 @@ public final class ci extends GLLib implements av {
     static void xu() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         cZ(aNn[aNm - 1].getId());
@@ -48465,7 +48465,7 @@ public final class ci extends GLLib implements av {
     static void xv() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         cZ(aNn[aNm + 0].getId());
@@ -48479,7 +48479,7 @@ public final class ci extends GLLib implements av {
     static void xw() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         cZ(aNn[aNm + 1].getId());
@@ -48493,7 +48493,7 @@ public final class ci extends GLLib implements av {
     static void xx() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         cZ(aNn[aNm + 2].getId());
@@ -48507,7 +48507,7 @@ public final class ci extends GLLib implements av {
     static void xy() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         cZ(aNn[aNm + 3].getId());
@@ -48521,7 +48521,7 @@ public final class ci extends GLLib implements av {
     static void xz() {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         hb(23);
@@ -48547,7 +48547,7 @@ public final class ci extends GLLib implements av {
         if (i6 <= 0) {
             return 0;
         }
-        azC[i][(i2 * 2) + 0] = iArr[GLLib.L(0, i6)];
+        azC[i][(i2 * 2) + 0] = iArr[GameRuntime.L(0, i6)];
         try {
             i5 = i3 / jVarBY.KW[azC[i][(i2 * 2) + 0]][5];
         } catch (Exception e) {
@@ -48559,7 +48559,7 @@ public final class ci extends GLLib implements av {
         if (i5 >= i4) {
             i5 = i4;
         }
-        iArr2[i8] = GLLib.L(1, i5);
+        iArr2[i8] = GameRuntime.L(1, i5);
         int i9 = jVarBY.KW[azC[i][(i2 * 2) + 0]][5] * azC[i][(i2 * 2) + 1];
         String str2 = "GENERATE ORDER" + i + "\nItem " + i2 + "\ndbID " + azC[i][(i2 * 2) + 0] + "\nQTY " + azC[i][(i2 * 2) + 1] + "\nPrice " + i9 + "\n ";
         return i9;
@@ -49045,7 +49045,7 @@ public final class ci extends GLLib implements av {
         if (aYS == 1071) {
             return;
         }
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jy(0);
                 break;
@@ -49056,7 +49056,7 @@ public final class ci extends GLLib implements av {
                 gX(60);
                 aIt = aIq + 0;
                 qB();
-                if (aYR == 52) {
+                if (currentTutorialStepIndex == 52) {
                     axW = true;
                 }
                 break;
@@ -49068,7 +49068,7 @@ public final class ci extends GLLib implements av {
         if (aYS == 1071) {
             return;
         }
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jy(1);
                 break;
@@ -49087,7 +49087,7 @@ public final class ci extends GLLib implements av {
         if (aYS == 1071) {
             return;
         }
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jy(2);
                 break;
@@ -49106,7 +49106,7 @@ public final class ci extends GLLib implements av {
         if (aYS == 1071) {
             return;
         }
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jy(3);
                 break;
@@ -49125,7 +49125,7 @@ public final class ci extends GLLib implements av {
         if (aYS == 1071) {
             return;
         }
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jy(4);
                 break;
@@ -49144,7 +49144,7 @@ public final class ci extends GLLib implements av {
         if (aYS == 1071) {
             return;
         }
-        switch (qD()) {
+        switch (currentEngineState()) {
             case 16:
                 jy(5);
                 break;
@@ -49225,7 +49225,7 @@ public final class ci extends GLLib implements av {
         }
         gX(48);
         azf[ayJ] = true;
-        baa = true;
+        hasUnsavedGameChanges = true;
         Ev();
         DF();
         gM(11);
@@ -49248,7 +49248,7 @@ public final class ci extends GLLib implements av {
         }
         gX(48);
         azg[ayJ] = true;
-        baa = true;
+        hasUnsavedGameChanges = true;
         Ev();
         DF();
         gM(11);
@@ -49287,7 +49287,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void yy() {
-        if (aYR == 36) {
+        if (currentTutorialStepIndex == 36) {
             axW = true;
         }
         aA(false);
@@ -49310,7 +49310,7 @@ public final class ci extends GLLib implements av {
                 j(301, 0, true);
             }
         }
-        switch (qE()) {
+        switch (previousEngineState()) {
             case 9:
             case 13:
                 fH(18);
@@ -49322,8 +49322,8 @@ public final class ci extends GLLib implements av {
         if (auq) {
             auq = false;
             awT = true;
-            ch[] chVarArr = new ch[1];
-            ch.b(1, 50, 10, chVarArr, 1);
+            FarmEntity[] chVarArr = new FarmEntity[1];
+            FarmEntity.b(1, 50, 10, chVarArr, 1);
             if (chVarArr[0] != null) {
                 chVarArr[0].fx(AdRequest.MAX_CONTENT_URL_LENGTH);
             }
@@ -49332,7 +49332,7 @@ public final class ci extends GLLib implements av {
             f(1, 53, true);
             aH(true);
             axW = false;
-            aYR = -1;
+            currentTutorialStepIndex = -1;
             awW = 160;
             Ls();
             avB = true;
@@ -49344,7 +49344,7 @@ public final class ci extends GLLib implements av {
             if (aRi != 10) {
                 aG(true);
             }
-            a(false, (ch) null);
+            a(false, (FarmEntity) null);
             fH(18);
             aLV = 13;
         }
@@ -49495,7 +49495,7 @@ public final class ci extends GLLib implements av {
     }
 
     static boolean z(int i, int i2, int i3, int i4) {
-        ch chVar = ch.als[1];
+        FarmEntity chVar = FarmEntity.als[1];
         int[] iArr = new int[2];
         int[] iArr2 = new int[2];
         int i5 = 0;
@@ -49810,7 +49810,7 @@ public final class ci extends GLLib implements av {
     static void zi() {
         gX(60);
         aKr = !aKr;
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void zj() {
@@ -49928,7 +49928,7 @@ public final class ci extends GLLib implements av {
             auU = true;
             q(11, false);
         }
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void zy() {
@@ -49938,7 +49938,7 @@ public final class ci extends GLLib implements av {
             auT = true;
             gX(60);
         }
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void zz() {
@@ -49957,7 +49957,7 @@ public final class ci extends GLLib implements av {
     }
 
     /* JADX WARN: Code duplicated, block: B:32:0x005d  */
-    public ch a(ch[] chVarArr, int i, boolean z) {
+    public FarmEntity a(FarmEntity[] chVarArr, int i, boolean z) {
         boolean z2;
         if (i < 2) {
             return chVarArr[0];
@@ -49969,7 +49969,7 @@ public final class ci extends GLLib implements av {
         while (i2 >= 0) {
             boolean z4 = chVarArr[i2].Kx == 49 && chVarArr[i2].Bj == 5;
             boolean z5 = (chVarArr[i2].Kx == 52 || chVarArr[i2].Kx == 69) && chVarArr[i2].Bj == 3;
-            if ((!z4 || ch.fe(3) + iHF < iFw) && (!z5 || ch.fe(3) + iHF < iFw)) {
+            if ((!z4 || FarmEntity.fe(3) + iHF < iFw) && (!z5 || FarmEntity.fe(3) + iHF < iFw)) {
                 if (z4) {
                     if (!((aCi & 2) == 2)) {
                         z2 = true;
@@ -50108,7 +50108,7 @@ public final class ci extends GLLib implements av {
         Qs = null;
         QD = null;
         kU();
-        GLLib.ke();
+        GameRuntime.ke();
         a.c((int[]) null);
         for (int i = 0; i < 99; i++) {
             try {
@@ -50133,7 +50133,7 @@ public final class ci extends GLLib implements av {
             axt = aNc;
         }
         String str = "[Game] showNotify. state index:" + apB;
-        if (qD() == 39 && !qO()) {
+        if (currentEngineState() == 39 && !qO()) {
             qB();
         }
         if (apB != -1) {
@@ -50153,7 +50153,7 @@ public final class ci extends GLLib implements av {
         }
         if (arI) {
             arI = false;
-            if (qD() == 14) {
+            if (currentEngineState() == 14) {
                 e(12, 32, true);
                 e(12, 33, true);
                 f(12, 32, true);
@@ -50164,7 +50164,7 @@ public final class ci extends GLLib implements av {
                 gM(12);
                 aKl = false;
             }
-            if (qD() == 20) {
+            if (currentEngineState() == 20) {
                 e(4, 34, true);
                 e(4, 33, true);
                 f(4, 33, true);
@@ -50173,7 +50173,7 @@ public final class ci extends GLLib implements av {
                 gM(4);
                 aMF = false;
             }
-            if (qD() == 26) {
+            if (currentEngineState() == 26) {
                 e(20, 18, true);
                 e(20, 17, true);
                 e(20, 16, true);
@@ -50419,7 +50419,7 @@ public final class ci extends GLLib implements av {
                 int i11 = 3;
                 while (true) {
                     if (i11 >= (aZD < 9 ? aZD : 9)) {
-                        aIP = new ch[6];
+                        aIP = new FarmEntity[6];
                         return;
                     }
                     String str6 = "set visible manor butn:" + i11;
@@ -50451,8 +50451,8 @@ public final class ci extends GLLib implements av {
     static void Lg() {
         aUf = 0;
         while (aUf < 7) {
-            aUi[aUf] = GLLib.L(bh.ajm, bh.ajn);
-            aUj[aUf] = GLLib.L(bh.ajo, bh.ajp);
+            aUi[aUf] = GameRuntime.L(bh.ajm, bh.ajn);
+            aUj[aUf] = GameRuntime.L(bh.ajo, bh.ajp);
             aa aaVar = ati[aUf];
             aaVar.Y(-1, 1);
             aaVar.Y(0, -1);
@@ -50520,9 +50520,9 @@ public final class ci extends GLLib implements av {
             }
             bao = 116029;
         }
-        if (i == 8 && aZY == 1 && GLLib.dA(0)) {
-            int iDG = GLLib.dG(0);
-            int iDH = GLLib.dH(0);
+        if (i == 8 && aZY == 1 && GameRuntime.dA(0)) {
+            int iDG = GameRuntime.dG(0);
+            int iDH = GameRuntime.dH(0);
             for (int i5 = 0; i5 < aUf; i5++) {
                 if (ati[i5].aaP == 0 && aUg < 5 && iDG > aUi[i5] - 65 && iDG < aUi[i5] + 65 && iDH > aUj[i5] - 30 && iDH < aUj[i5] + 30 && !aUJ && aUI == -1) {
                     String str5 = "clicked i : " + i5;
@@ -50570,11 +50570,11 @@ public final class ci extends GLLib implements av {
                     BG();
                 }
                 for (int i7 = 0; i7 < 3; i7++) {
-                    ati[i7].dV(GLLib.Qy);
+                    ati[i7].dV(GameRuntime.Qy);
                 }
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 aUl = jCurrentTimeMillis;
                 if (aUl > aUm) {
@@ -50646,18 +50646,18 @@ public final class ci extends GLLib implements av {
                 String str7 = "s_pondCountReward : " + aUk;
                 for (int i12 = 0; i12 < 7; i12++) {
                     if (ati[i12].aaP == 0 || ati[i12].aaP == 2) {
-                        ati[i12].dV(GLLib.Qy);
+                        ati[i12].dV(GameRuntime.Qy);
                     }
                     if (ati[i12].aaP == 2 || ati[i12].aaP == 1) {
                         if (aUg >= 5 && i8 == aUk && ati[i12].lQ()) {
-                            baa = true;
+                            hasUnsavedGameChanges = true;
                             if (aUP && aZY == 2) {
                                 gX(37);
                                 aUP = false;
                             }
                             Lk();
                         } else {
-                            ati[i12].dV(GLLib.Qy);
+                            ati[i12].dV(GameRuntime.Qy);
                         }
                     }
                 }
@@ -50749,7 +50749,7 @@ public final class ci extends GLLib implements av {
             Fi();
         }
         if (aAO != null) {
-            aAO.dV(GLLib.Qy);
+            aAO.dV(GameRuntime.Qy);
         }
         if (aAJ > -1 && aAO != null && aAO.aaP < 0) {
             for (int i2 = 0; i2 < aAN.length; i2++) {
@@ -50763,7 +50763,7 @@ public final class ci extends GLLib implements av {
             if (ato > 1.0f) {
                 D(ats, (int) (atq * ato), (int) (atr * ato));
                 gQ(ats);
-                ato -= (ato * atp) * (GLLib.Qy / 100.0f);
+                ato -= (ato * atp) * (GameRuntime.Qy / 100.0f);
             } else {
                 ats = -1;
             }
@@ -50792,7 +50792,7 @@ public final class ci extends GLLib implements av {
             int iBy = (s3 < 1000 ? atf[s3] : aZf[s3 - 1000]).by(s4);
             int iBz = (s3 < 1000 ? atf[s3] : aZf[s3 - 1000]).bz(s4);
             int i5 = atc[1][85][2] - (iBy / 2);
-            int iKI = GLLib.kI() - iBz;
+            int iKI = GameRuntime.kI() - iBz;
             if ((awK <= i5 || awK >= i5 + iBy || awL <= iKI || awL >= iBz + iKI) && awk != -1) {
                 he(awk);
             }
@@ -50825,41 +50825,41 @@ public final class ci extends GLLib implements av {
             gP(aAK);
             int i2 = aAK & 65535;
             int i3 = (aAK >> 16) & 65535;
-            if (GLLib.dC(0) && i3 == 1 && i2 == 92) {
-                ch[] chVarArr = new ch[20];
-                ch chVarA = a(chVarArr, ch.a(chVarArr, 1), true);
+            if (GameRuntime.dC(0) && i3 == 1 && i2 == 92) {
+                FarmEntity[] chVarArr = new FarmEntity[20];
+                FarmEntity chVarA = a(chVarArr, FarmEntity.a(chVarArr, 1), true);
                 if (chVarA != null) {
                     aZl = chVarA;
                     qF();
                 }
             }
-        } else if (aAH == -1 && aAI == -1 && (GLLib.dB(0) || GLLib.dC(0) || GLLib.dA(0) || GLLib.dE(0))) {
-            ch chVarOP = ch.oP();
+        } else if (aAH == -1 && aAI == -1 && (GameRuntime.dB(0) || GameRuntime.dC(0) || GameRuntime.dA(0) || GameRuntime.dE(0))) {
+            FarmEntity chVarOP = FarmEntity.oP();
             if (chVarOP != null) {
-                if (GLLib.dB(0)) {
+                if (GameRuntime.dB(0)) {
                     aZk = chVarOP;
                     aZn = aZk;
                     aZp = 0;
-                } else if (GLLib.dC(0) && Fb() > 20) {
+                } else if (GameRuntime.dC(0) && Fb() > 20) {
                     aZl = chVarOP;
                     aZp = 0;
-                } else if (GLLib.dA(0)) {
+                } else if (GameRuntime.dA(0)) {
                     if (chVarOP == aZn) {
                         aZm = chVarOP;
                         if (chVarOP.ano != 0) {
                             chVarOP.fo(0);
                         }
                     }
-                } else if (aYR == -1 && chVarOP == aZn && chVarOP.fz(1)) {
+                } else if (currentTutorialStepIndex == -1 && chVarOP == aZn && chVarOP.fz(1)) {
                     aZp++;
                 }
             }
             qF();
         }
-        if (GLLib.dA(0) || Fb() > 50) {
+        if (GameRuntime.dA(0) || Fb() > 50) {
             aZn = null;
         }
-        if (GLLib.dA(0)) {
+        if (GameRuntime.dA(0)) {
             if (aZj != null) {
                 aZj.alA = false;
             }
@@ -50899,14 +50899,14 @@ public final class ci extends GLLib implements av {
                             }
                             break;
                         case 22:
-                            if (ch.aC(1, aCt[aCo][i3 * 6]).aoO.aaT <= 0) {
+                            if (FarmEntity.aC(1, aCt[aCo][i3 * 6]).aoO.aaT <= 0) {
                                 i2++;
                             }
                             break;
                         case 104:
                         case 109:
-                            ch[] chVarArr = new ch[2];
-                            ch.b(1, aCt[aCo][i3 * 6], aCt[aCo][(i3 * 6) + 1], chVarArr, 1);
+                            FarmEntity[] chVarArr = new FarmEntity[2];
+                            FarmEntity.b(1, aCt[aCo][i3 * 6], aCt[aCo][(i3 * 6) + 1], chVarArr, 1);
                             switch (chVarArr[0].Kx) {
                                 case 13:
                                     if (chVarArr[0].aol + (kH() >> 1) == chVarArr[0].aoE && chVarArr[0].aom + (kI() >> 1) == chVarArr[0].aoF) {
@@ -50921,21 +50921,21 @@ public final class ci extends GLLib implements av {
                             }
                             break;
                         case 105:
-                            ch[] chVarArr2 = new ch[2];
-                            ch.b(1, aCt[aCo][i3 * 6], aCt[aCo][(i3 * 6) + 1], chVarArr2, 1);
+                            FarmEntity[] chVarArr2 = new FarmEntity[2];
+                            FarmEntity.b(1, aCt[aCo][i3 * 6], aCt[aCo][(i3 * 6) + 1], chVarArr2, 1);
                             if (chVarArr2[0].aoO.aaT <= 0) {
                                 i2++;
                             }
                             break;
                         case 111:
                         case 115:
-                            ch chVarAC = ch.aC(1, aCt[aCo][i3 * 6]);
+                            FarmEntity chVarAC = FarmEntity.aC(1, aCt[aCo][i3 * 6]);
                             if (chVarAC.aol == chVarAC.aoE && chVarAC.aom == chVarAC.aoF) {
                                 i2++;
                             }
                             break;
                         case 116:
-                            ch chVarAC2 = ch.aC(1, aCt[aCo][i3 * 6]);
+                            FarmEntity chVarAC2 = FarmEntity.aC(1, aCt[aCo][i3 * 6]);
                             if (chVarAC2.aoO.lQ()) {
                                 chVarAC2.fy(8);
                                 i2++;
@@ -50985,17 +50985,17 @@ public final class ci extends GLLib implements av {
                 aEe[4] = ih(0);
             }
             aZg = new a[1];
-            GLLib.bk("/11");
+            GameRuntime.bk("/11");
             aZg[0] = b(19, 1, true, false);
-            GLLib.ke();
+            GameRuntime.ke();
         }
         if (i == 2) {
             int iJO = jO();
             if (iJO == 19 || iJO == 11) {
                 Ms();
                 bbE = false;
-                GLLib.be("GLLib.quit");
-                GLLib.Qn = -1;
+                GameRuntime.be("GLLib.quit");
+                GameRuntime.Qn = -1;
             }
             fE(2);
         }
@@ -51034,7 +51034,7 @@ public final class ci extends GLLib implements av {
                 if (aZB > 0 && aZB <= 10) {
                     axt = aMZ;
                 }
-                ch.oM();
+                FarmEntity.oM();
                 rz();
                 aOO = true;
                 bbE = false;
@@ -51043,8 +51043,8 @@ public final class ci extends GLLib implements av {
                     break;
                 } catch (InterruptedException e) {
                 }
-                GLLib.be("GLLib.quit");
-                GLLib.Qn = -1;
+                GameRuntime.be("GLLib.quit");
+                GameRuntime.Qn = -1;
                 break;
             case 2:
                 qB();
@@ -51176,11 +51176,11 @@ public final class ci extends GLLib implements av {
                 CN();
                 break;
             case 24:
-                ch.oM();
+                FarmEntity.oM();
                 rz();
                 bbE = false;
-                GLLib.be("GLLib.quit");
-                GLLib.Qn = -1;
+                GameRuntime.be("GLLib.quit");
+                GameRuntime.Qn = -1;
                 break;
             case 55:
                 String str11 = "#-------- Confirm_CB - Status: " + apl;
@@ -51280,9 +51280,9 @@ public final class ci extends GLLib implements av {
         ash = asd;
         qR();
         if (w.Vp) {
-            GLLib.Qx = 1;
+            GameRuntime.Qx = 1;
         } else {
-            GLLib.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
+            GameRuntime.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
         }
         aDb = true;
         fF(i);
@@ -51309,9 +51309,9 @@ public final class ci extends GLLib implements av {
             ash = asd;
             qR();
             if (w.Vp) {
-                GLLib.Qx = 1;
+                GameRuntime.Qx = 1;
             } else {
-                GLLib.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
+                GameRuntime.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
             }
             avg = 100;
             avh = 100;
@@ -51398,9 +51398,9 @@ public final class ci extends GLLib implements av {
                         aDh = 0L;
                         asr = false;
                         if (w.Vp) {
-                            GLLib.Qx = -1;
+                            GameRuntime.Qx = -1;
                         } else {
-                            GLLib.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
+                            GameRuntime.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
                         }
                         ash = asa;
                         if (asi != -1) {
@@ -51471,7 +51471,7 @@ public final class ci extends GLLib implements av {
                 }
                 dk(26856);
                 if (!aDc) {
-                    GLLib.b(GLLib.Qj, atc[0][3][2], atc[0][3][3], i2, 20.0f, true);
+                    GameRuntime.b(GameRuntime.Qj, atc[0][3][2], atc[0][3][3], i2, 20.0f, true);
                 }
                 j(12509, 0, 6, 0, 0);
             } else {
@@ -51483,13 +51483,13 @@ public final class ci extends GLLib implements av {
         }
         if (i == 5) {
             if (w.Vp) {
-                GLLib.Qx = -1;
+                GameRuntime.Qx = -1;
             } else {
-                GLLib.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
+                GameRuntime.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
             }
-            aDd = GLLib.RI;
+            aDd = GameRuntime.RI;
             if (aDd != "") {
-                GLLib.ke();
+                GameRuntime.ke();
             }
             aZg[0].hs();
         }
@@ -51513,7 +51513,7 @@ public final class ci extends GLLib implements av {
             return;
         }
         if (!qO() || !com.gameloft.a.b.a.fZ()) {
-            E(qD(), true);
+            E(currentEngineState(), true);
             return;
         }
         com.gameloft.a.b.i iVarWv = com.gameloft.a.b.i.Wv();
@@ -51625,9 +51625,9 @@ public final class ci extends GLLib implements av {
                 aDh = 0L;
                 asr = false;
                 if (w.Vp) {
-                    GLLib.Qx = -1;
+                    GameRuntime.Qx = -1;
                 } else {
-                    GLLib.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
+                    GameRuntime.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
                 }
                 ash = asa;
                 if (asi != -1) {
@@ -51725,9 +51725,9 @@ public final class ci extends GLLib implements av {
                 aDh = 0L;
                 asr = false;
                 if (w.Vp) {
-                    GLLib.Qx = -1;
+                    GameRuntime.Qx = -1;
                 } else {
-                    GLLib.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
+                    GameRuntime.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
                 }
                 ash = asa;
                 if (asi != -1) {
@@ -51899,9 +51899,9 @@ public final class ci extends GLLib implements av {
                     ash = asd;
                     qR();
                     if (w.Vp) {
-                        GLLib.Qx = 1;
+                        GameRuntime.Qx = 1;
                     } else {
-                        GLLib.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
+                        GameRuntime.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
                     }
                     aYc = false;
                     aYd = false;
@@ -51926,11 +51926,11 @@ public final class ci extends GLLib implements av {
                 if (strDt5 == null) {
                     strDt5 = "";
                 }
-                if (str6 == strDt5 && (aYR == 13 || aYR == 14)) {
+                if (str6 == strDt5 && (currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14)) {
                     if (aDZ == -1) {
-                        aYR = 13;
+                        currentTutorialStepIndex = 13;
                     } else {
-                        aYR = 14;
+                        currentTutorialStepIndex = 14;
                     }
                     qB();
                     return;
@@ -52005,8 +52005,8 @@ public final class ci extends GLLib implements av {
                 int iAa = aa(aMS.aoU, 1, 1);
                 aMS.qg();
                 if (iAa == 1) {
-                    ch[] chVarArr = new ch[30];
-                    int iA = ch.a(1, 22, chVarArr, 30);
+                    FarmEntity[] chVarArr = new FarmEntity[30];
+                    int iA = FarmEntity.a(1, 22, chVarArr, 30);
                     for (int i = 0; i < iA; i++) {
                         chVarArr[i].qg();
                     }
@@ -52025,22 +52025,22 @@ public final class ci extends GLLib implements av {
             if (w.Zo) {
                 aaVar.aaW = i;
             } else {
-                GLLib.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
+                GameRuntime.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
             }
-            GLLib.l(18, 5, 1);
+            GameRuntime.l(18, 5, 1);
             ayM.lR();
-            GLLib.l(18, 5, 0);
+            GameRuntime.l(18, 5, 0);
         }
         if (aze && azd[ayJ] != null) {
             int i2 = azd[ayJ].aot;
             int i3 = azd[ayJ].aou;
             String str = "x : " + i2 + " y : " + i3;
             if (aYP == 100) {
-                aZf[143].a(GLLib.Qj, 0, (float) (i2), (float) (i3), 0);
+                aZf[143].a(GameRuntime.Qj, 0, (float) (i2), (float) (i3), 0);
             } else {
-                GLLib.l(18, 5, 1);
-                aZf[143].b(GLLib.Qj, 0, i2, i3, 0, aYP);
-                GLLib.l(18, 5, 0);
+                GameRuntime.l(18, 5, 1);
+                aZf[143].b(GameRuntime.Qj, 0, i2, i3, 0, aYP);
+                GameRuntime.l(18, 5, 0);
             }
         }
         aze = false;
@@ -52100,10 +52100,10 @@ public final class ci extends GLLib implements av {
             i13 = 4;
         }
         if (i4 != 100) {
-            GLLib.h(18, false);
-            GLLib.l(18, 1, i4);
-            GLLib.l(18, 3, i4);
-            GLLib.l(18, 4, i4);
+            GameRuntime.h(18, false);
+            GameRuntime.l(18, 1, i4);
+            GameRuntime.l(18, 3, i4);
+            GameRuntime.l(18, 4, i4);
         }
         int i14 = 0;
         while (i14 < i13) {
@@ -52121,15 +52121,15 @@ public final class ci extends GLLib implements av {
                 f3 = fBx;
                 f4 = fBw;
             }
-            if (qD() == 28 || qD() == 12 || qD() == 33 || qD() == 32) {
-                GLLib.a(GLLib.Qj, 0, 0, bh.ajq, bh.ajr, true);
+            if (currentEngineState() == 28 || currentEngineState() == 12 || currentEngineState() == 33 || currentEngineState() == 32) {
+                GameRuntime.a(GameRuntime.Qj, 0, 0, bh.ajq, bh.ajr, true);
             }
             aVar.a(Qj, aVar.t(s2, i14), i2 + f4, i3 + f3, iU, i15, i16);
             i14++;
             i8 = i16;
             i7 = i15;
         }
-        GLLib.h(18, false);
+        GameRuntime.h(18, false);
         for (int i17 = i13; i17 < iBr; i17++) {
             int iBw2 = aVar.bw(iV + i17);
             int iBx2 = aVar.bx(iV + i17);
@@ -52152,22 +52152,22 @@ public final class ci extends GLLib implements av {
                 f = f6;
                 f2 = f5;
             }
-            GLLib.l(18, 1, 100);
-            GLLib.l(18, 3, i20);
-            GLLib.l(18, 1, 100);
-            GLLib.l(18, 4, i21);
-            if (qD() == 28 || qD() == 12 || qD() == 33) {
-                GLLib.a(GLLib.Qj, 0, 0, bh.ajq, bh.ajr, true);
+            GameRuntime.l(18, 1, 100);
+            GameRuntime.l(18, 3, i20);
+            GameRuntime.l(18, 1, 100);
+            GameRuntime.l(18, 4, i21);
+            if (currentEngineState() == 28 || currentEngineState() == 12 || currentEngineState() == 33) {
+                GameRuntime.a(GameRuntime.Qj, 0, 0, bh.ajq, bh.ajr, true);
             }
             aVar.a(Qj, aVar.t(s2, i17), i2 + f2, i3 + f, iU2, i18, i19);
         }
-        GLLib.i(18, false);
+        GameRuntime.i(18, false);
     }
 
     static void qW() {
         int i;
         int i2;
-        GLLib.bk("/14");
+        GameRuntime.bk("/14");
         a aVar = aZf[0];
         if (w.WY) {
             i = aVar.GE[0] & 65535;
@@ -52181,8 +52181,8 @@ public final class ci extends GLLib implements av {
             i2 = aVar2.GH[0] & 255;
         }
         aa.l(kH(), kI(), i, i2);
-        aa.a(0, GLLib.db(2), GLLib.db(0), GLLib.db(1), aZf[0], -1, 16, 2, 2);
-        GLLib.ke();
+        aa.a(0, GameRuntime.db(2), GameRuntime.db(0), GameRuntime.db(1), aZf[0], -1, 16, 2, 2);
+        GameRuntime.ke();
     }
 
     static void v(int i, int i2, int i3, int i4) {
@@ -52269,7 +52269,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void Ez() {
-        ayM.dV(GLLib.Qy);
+        ayM.dV(GameRuntime.Qy);
         int[] iArr = new int[2];
         g(new int[]{(ayO + ayQ) >> 1, (ayP + ayR) >> 1}, iArr);
         int[] iArr2 = {iArr[0] - aa.abT[0][11], iArr[1] - aa.eh(0)};
@@ -52280,13 +52280,13 @@ public final class ci extends GLLib implements av {
         aaVar.aaM = i2;
     }
 
-    static void a(ch chVar, boolean z) {
+    static void a(FarmEntity chVar, boolean z) {
         String str = "[MoveObj] Start Moving. :" + chVar + ",grid:" + z;
         avF = null;
         atw = false;
         if (chVar != null && aZB == 0 && chVar.fz(1)) {
             hc(-1);
-            a(false, (ch) null);
+            a(false, (FarmEntity) null);
             if (chVar.Kx == 50 && chVar.aoC < 9) {
                 String str2 = "[MoveObj] start move. manor build:" + chVar.aoC;
                 aC(true);
@@ -52320,10 +52320,10 @@ public final class ci extends GLLib implements av {
                         avE.ane = MD();
                     }
                 }
-                aBo = ch.aD(1, 54);
+                aBo = FarmEntity.aD(1, 54);
                 if ((avD == 4 || avD == 0) && aBo > FK()) {
                     if (chVar.anw && aYS != -1 && awV && lN(297)) {
-                        ch chVarFl = Fl();
+                        FarmEntity chVarFl = Fl();
                         if (chVarFl != null) {
                             chVarFl.pT();
                             if (chVarFl.fz(2)) {
@@ -52341,7 +52341,7 @@ public final class ci extends GLLib implements av {
                 }
             } else if (avE.Kx == 52) {
                 if (avD == 4 || avD == 0) {
-                    int iAw = ch.aw(1, 52);
+                    int iAw = FarmEntity.aw(1, 52);
                     int iFJ = FJ();
                     String str4 = "[start moving] cur tree:" + iAw + ",max :" + iFJ;
                     if (iAw > iFJ) {
@@ -52353,7 +52353,7 @@ public final class ci extends GLLib implements av {
                 }
             } else if (avE.Kx == 69) {
                 if (avD == 4 || avD == 0) {
-                    int iBL = bL(4, 10) + bL(4, 11) + ch.aw(1, 69);
+                    int iBL = bL(4, 10) + bL(4, 11) + FarmEntity.aw(1, 69);
                     int iFL = FL();
                     String str5 = "[start moving] cur Beehive:" + iBL + ",max :" + iFL;
                     if (iBL > iFL) {
@@ -52474,25 +52474,25 @@ public final class ci extends GLLib implements av {
         int[] iArr = {0, 648, 1, 79, 0, 2};
         for (int i = 0; i < aa.abT[0][5]; i += 800) {
             iArr[0] = i;
-            ch.b(11, 0, iArr);
+            FarmEntity.b(11, 0, iArr);
         }
         iArr[2] = 2;
         iArr[3] = 78;
         iArr[5] = 1;
         for (int i2 = 0; i2 < aa.abT[0][5]; i2 += 240) {
             iArr[0] = i2;
-            ch.b(11, 0, iArr);
+            FarmEntity.b(11, 0, iArr);
         }
         iArr[2] = 3;
         iArr[3] = 77;
         iArr[5] = 0;
         for (int i3 = 0; i3 < aa.abT[0][5]; i3 += 400) {
             iArr[0] = i3;
-            ch.b(11, 0, iArr);
+            FarmEntity.b(11, 0, iArr);
         }
     }
 
-    public ci(Object obj, Object obj2) {
+    public FarmGameEngine(Object obj, Object obj2) {
         super(obj, obj2);
         int i;
         int i2;
@@ -52561,11 +52561,11 @@ public final class ci extends GLLib implements av {
         aZm = null;
         aZn = null;
         aZp = 0;
-        long j = GLLib.Qo * ((long) GLLib.QA);
-        if (GLLib.Rm == null) {
-            GLLib.Rm = new Random(j);
+        long j = GameRuntime.Qo * ((long) GameRuntime.QA);
+        if (GameRuntime.Rm == null) {
+            GameRuntime.Rm = new Random(j);
         } else {
-            GLLib.Rm.setSeed(j);
+            GameRuntime.Rm.setSeed(j);
         }
         jn();
         s.aK("eveListDataCenters");
@@ -52678,7 +52678,7 @@ public final class ci extends GLLib implements av {
         short s4 = sArrA[0];
         aKS = ((s4 - 1) * aVar.hA()) + (aVar.hG() * s4);
         aKX = aKS / 2;
-        aKY = (aKS / 2) + (GLLib.kI() >> 1);
+        aKY = (aKS / 2) + (GameRuntime.kI() >> 1);
         aKR = aKX;
         String str = "Autoset pos : " + aKR;
     }
@@ -52863,17 +52863,17 @@ public final class ci extends GLLib implements av {
                 e(2, 199, false);
                 e(2, 201, false);
             }
-            if (aYR == 41) {
+            if (currentTutorialStepIndex == 41) {
                 axV = false;
             }
             aDX = 0;
-            if (aYU == 7 && aYR == -1) {
+            if (aYU == 7 && currentTutorialStepIndex == -1) {
                 for (int i3 = 0; i3 < 7; i3++) {
                     atc[2][(26 * i3) + 44][17] = 0;
                     atc[2][(26 * i3) + 46][17] = 0;
                 }
             }
-            if (aYR == 13 || aYR == 14) {
+            if (currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14) {
                 atc[2][35][18] = 0;
             } else {
                 atc[2][35][18] = 1;
@@ -52914,7 +52914,7 @@ public final class ci extends GLLib implements av {
             } else {
                 e(2, 33, false);
             }
-            if ((aqD == 0 && KR() == 0) || aYR == 13 || aYR == 14 || aYR == 41 || aYR == 42 || MI()) {
+            if ((aqD == 0 && KR() == 0) || currentTutorialStepIndex == 13 || currentTutorialStepIndex == 14 || currentTutorialStepIndex == 41 || currentTutorialStepIndex == 42 || MI()) {
                 e(2, 199, false);
                 e(2, 201, false);
             }
@@ -52941,20 +52941,20 @@ public final class ci extends GLLib implements av {
             }
             gn(aEa);
             aDW = -1;
-            aBk = ch.aw(1, 49);
-            aBr = bL(4, 10) + bL(4, 11) + ch.aw(1, 69);
-            if (aYR == -1 && awW == 160 && (aYS == -1 || aYS == 0)) {
+            aBk = FarmEntity.aw(1, 49);
+            aBr = bL(4, 10) + bL(4, 11) + FarmEntity.aw(1, 69);
+            if (currentTutorialStepIndex == -1 && awW == 160 && (aYS == -1 || aYS == 0)) {
                 e(2, 4, true);
                 f(2, 4, true);
                 e(2, 8, true);
                 f(2, 8, true);
-                String str = "SetActive true money cash add. tuto:" + aYR + ",step:" + awW;
+                String str = "SetActive true money cash add. tuto:" + currentTutorialStepIndex + ",step:" + awW;
             } else {
                 e(2, 4, false);
                 f(2, 4, false);
                 e(2, 8, false);
                 f(2, 8, false);
-                String str2 = "SetActive false money cash add. tuto:" + aYR + ",step:" + awW;
+                String str2 = "SetActive false money cash add. tuto:" + currentTutorialStepIndex + ",step:" + awW;
             }
             String str3 = "m_objectCount : " + ((int) aDm);
             String str4 = "m_indexSelectedItem : " + aEd;
@@ -53048,7 +53048,7 @@ public final class ci extends GLLib implements av {
             }
             int iJO = jO();
             if (iJO == 19 || iJO == 11) {
-                if (aYR > 0 || (awV && aYS != -1)) {
+                if (currentTutorialStepIndex > 0 || (awV && aYS != -1)) {
                     StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
                     String strDt2 = dt(513);
                     if (strDt2 == null) {
@@ -53059,7 +53059,7 @@ public final class ci extends GLLib implements av {
                     sw();
                 }
             }
-            if (aYR > 0) {
+            if (currentTutorialStepIndex > 0) {
                 Es();
             }
             if (awV) {
@@ -53073,7 +53073,7 @@ public final class ci extends GLLib implements av {
                 }
             }
             it(aEw);
-            if (aYR == -1) {
+            if (currentTutorialStepIndex == -1) {
                 KY();
             }
         }
@@ -53285,9 +53285,9 @@ public final class ci extends GLLib implements av {
                 }
                 if (aDY == 3) {
                     if (aDL[aDW + aDX] == 1) {
-                        a(a(((0 + ch.p(1, 54, 5, 15)) / 3) + 1, aYU, " "), 2, (aDW * 26) + 50, 0, 0);
+                        a(a(((0 + FarmEntity.p(1, 54, 5, 15)) / 3) + 1, aYU, " "), 2, (aDW * 26) + 50, 0, 0);
                     } else if (aDL[aDW + aDX] == 2) {
-                        a(a(((((0 + ch.p(1, 54, 17, 27)) + ch.p(1, 54, 41, 51)) + ch.p(1, 54, 53, 63)) / 3) + 1, aYU, " "), 2, (aDW * 26) + 50, 0, 0);
+                        a(a(((((0 + FarmEntity.p(1, 54, 17, 27)) + FarmEntity.p(1, 54, 41, 51)) + FarmEntity.p(1, 54, 53, 63)) / 3) + 1, aYU, " "), 2, (aDW * 26) + 50, 0, 0);
                     }
                     if (aDN[aDW + aDX] != null && !aDN[aDW + aDX].equals("")) {
                         a(aDN[aDW + aDX], 2, (aDW * 26) + 50, 0, 0);
@@ -53358,7 +53358,7 @@ public final class ci extends GLLib implements av {
                     }
                 }
                 String str6 = "posX : " + i2 + " posY : " + ((int) s4) + " width : " + ((int) s5) + " height : " + ((int) s6) + "Max:" + aDU + "CurY:" + aDV;
-                GLLib.a(GLLib.Qj, i2, (int) s4, (int) s5, (int) s6, true);
+                GameRuntime.a(GameRuntime.Qj, i2, (int) s4, (int) s5, (int) s6, true);
                 String strDt12 = dt(aDK[aDW + aDX]);
                 if (strDt12 == null) {
                     strDt12 = "";
@@ -53368,7 +53368,7 @@ public final class ci extends GLLib implements av {
             if (aEa == 5) {
                 aDY = i17;
             }
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             if (aYS == -1 || aYS == 0) {
                 be(2, 195);
                 be(2, 196);
@@ -53691,8 +53691,8 @@ public final class ci extends GLLib implements av {
                 e(2, i16 + 59, false);
             }
         }
-        String str9 = "[Market] show item info :" + aYR + ",tap right:13";
-        if (aYR == 14 && !bg(2, 209)) {
+        String str9 = "[Market] show item info :" + currentTutorialStepIndex + ",tap right:13";
+        if (currentTutorialStepIndex == 14 && !bg(2, 209)) {
             e(2, 205, false);
             e(2, 209, true);
             bl(0, 1);
@@ -53818,7 +53818,7 @@ public final class ci extends GLLib implements av {
     static void a(short[] sArr, int i, int i2, boolean z) {
         short s = sArr[5];
         short s2 = sArr[6];
-        short s3 = ((s == 1167 || s == 1169) && qD() == 8) ? (short) 100 : sArr[22];
+        short s3 = ((s == 1167 || s == 1169) && currentEngineState() == 8) ? (short) 100 : sArr[22];
         a aVar = s < 1000 ? atf[s] : aZf[s - 1000];
         int iMax = Math.max(aVar.by(s2), aVar.bz(s2));
         if (iMax < s3) {
@@ -53835,11 +53835,11 @@ public final class ci extends GLLib implements av {
             aVar.b(Qj, s2, i, i2, 0, (i3 * 94) / 100);
             return;
         }
-        if (qD() == 28 || qD() == 12) {
-            GLLib.a(GLLib.Qj, 0, 0, bh.ajq, bh.ajr, true);
+        if (currentEngineState() == 28 || currentEngineState() == 12) {
+            GameRuntime.a(GameRuntime.Qj, 0, 0, bh.ajq, bh.ajr, true);
         }
-        int i4 = (s == 1167 && qD() == 8) ? i2 - ((aTg * 10) / 480) : i2;
-        if (s == 1169 && qD() == 8) {
+        int i4 = (s == 1167 && currentEngineState() == 8) ? i2 - ((aTg * 10) / 480) : i2;
+        if (s == 1169 && currentEngineState() == 8) {
             i4 -= (aTg * 13) / 480;
         }
         aVar.b(Qj, s2, i, i4, 0, i3);
@@ -53900,7 +53900,7 @@ public final class ci extends GLLib implements av {
         if (z) {
             i3 = 64;
             GloftGF2F gloftGF2F = GloftGF2F.acx;
-            ci ciVar = GloftGF2F.acw;
+            FarmGameEngine ciVar = GloftGF2F.acw;
             aSm = lq();
             String str = "specialFlow:" + aSm;
             aRW = 0;
@@ -54111,11 +54111,11 @@ public final class ci extends GLLib implements av {
         int iFR = fR(i);
         if (iFR > 0) {
             if (i == 0) {
-                if (GLLib.RI != "/9") {
-                    GLLib.bk("/9");
+                if (GameRuntime.RI != "/9") {
+                    GameRuntime.bk("/9");
                 }
-            } else if (GLLib.RI != "/11") {
-                GLLib.bk("/11");
+            } else if (GameRuntime.RI != "/11") {
+                GameRuntime.bk("/11");
             }
             if (asC <= 0) {
                 if (w.Vf) {
@@ -54123,10 +54123,10 @@ public final class ci extends GLLib implements av {
                 fO(i);
                 asC = Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS;
             } else {
-                asC -= GLLib.Qy;
+                asC -= GameRuntime.Qy;
             }
             if (iFR <= 1) {
-                GLLib.ke();
+                GameRuntime.ke();
             }
         }
     }
@@ -54181,11 +54181,11 @@ public final class ci extends GLLib implements av {
             }
             if (z2) {
                 if (aYU == 9) {
-                    GLLib.Qk = javax.microedition.lcdui.u.ag(64, 1, 16);
+                    GameRuntime.Qk = javax.microedition.lcdui.u.ag(64, 1, 16);
                 } else {
-                    GLLib.Qk = javax.microedition.lcdui.u.aki();
+                    GameRuntime.Qk = javax.microedition.lcdui.u.aki();
                 }
-                GLLib.a(str, i10, i11, i9);
+                GameRuntime.a(str, i10, i11, i9);
             } else {
                 fU(iGV).a(Qj, str, i10, i11, i9);
             }
@@ -54194,39 +54194,39 @@ public final class ci extends GLLib implements av {
     }
 
     static void f(int i, int i2, int i3, int i4, int i5, int i6, int i7, int i8) {
-        aj ajVar = GLLib.Qj;
-        int i9 = GLLib.SE;
-        aj ajVar2 = GLLib.Qj;
-        int i10 = GLLib.SF;
-        aj ajVar3 = GLLib.Qj;
-        int i11 = GLLib.SG;
-        aj ajVar4 = GLLib.Qj;
-        int i12 = GLLib.SH;
-        GLLib.a(GLLib.Qj, i3, i4, i5, i6, true);
+        aj ajVar = GameRuntime.Qj;
+        int i9 = GameRuntime.SE;
+        aj ajVar2 = GameRuntime.Qj;
+        int i10 = GameRuntime.SF;
+        aj ajVar3 = GameRuntime.Qj;
+        int i11 = GameRuntime.SG;
+        aj ajVar4 = GameRuntime.Qj;
+        int i12 = GameRuntime.SH;
+        GameRuntime.a(GameRuntime.Qj, i3, i4, i5, i6, true);
         dk(i);
-        GLLib.b(GLLib.Qj, i3, i4, i5, i6, true);
+        GameRuntime.b(GameRuntime.Qj, i3, i4, i5, i6, true);
         dk(i2);
         int iKx = (((i8 * i6) / Kx()) + 1) - 2;
-        GLLib.b(GLLib.Qj, i3, (((-aRr) * (i6 - iKx)) / (Kx() - i6)) + i4 + 1, i5, iKx, true);
-        GLLib.a(GLLib.Qj, i9, i10, i11, i12, true);
+        GameRuntime.b(GameRuntime.Qj, i3, (((-aRr) * (i6 - iKx)) / (Kx() - i6)) + i4 + 1, i5, iKx, true);
+        GameRuntime.a(GameRuntime.Qj, i9, i10, i11, i12, true);
     }
 
     static void g(int i, int i2, int i3, int i4, int i5, int i6, int i7, int i8) {
-        aj ajVar = GLLib.Qj;
-        int i9 = GLLib.SE;
-        aj ajVar2 = GLLib.Qj;
-        int i10 = GLLib.SF;
-        aj ajVar3 = GLLib.Qj;
-        int i11 = GLLib.SG;
-        aj ajVar4 = GLLib.Qj;
-        int i12 = GLLib.SH;
-        GLLib.a(GLLib.Qj, i3, i4, i5, i6, true);
+        aj ajVar = GameRuntime.Qj;
+        int i9 = GameRuntime.SE;
+        aj ajVar2 = GameRuntime.Qj;
+        int i10 = GameRuntime.SF;
+        aj ajVar3 = GameRuntime.Qj;
+        int i11 = GameRuntime.SG;
+        aj ajVar4 = GameRuntime.Qj;
+        int i12 = GameRuntime.SH;
+        GameRuntime.a(GameRuntime.Qj, i3, i4, i5, i6, true);
         dk(i);
-        GLLib.b(GLLib.Qj, i3, i4, i5, i6, true);
+        GameRuntime.b(GameRuntime.Qj, i3, i4, i5, i6, true);
         dk(i2);
         int iKQ = (((i8 * i6) / KQ()) + 1) - 2;
-        GLLib.b(GLLib.Qj, i3 + 1, (((-aSE) * (i6 - iKQ)) / (KQ() - i6)) + i4 + 1, i5 - 2, iKQ, true);
-        GLLib.a(GLLib.Qj, i9, i10, i11, i12, true);
+        GameRuntime.b(GameRuntime.Qj, i3 + 1, (((-aSE) * (i6 - iKQ)) / (KQ() - i6)) + i4 + 1, i5 - 2, iKQ, true);
+        GameRuntime.a(GameRuntime.Qj, i9, i10, i11, i12, true);
     }
 
     public static void HV() {
@@ -54314,7 +54314,7 @@ public final class ci extends GLLib implements av {
                 strDt14 = "";
             }
             e(strDt14, 15, 60, 0, 0);
-            GLLib.a(GLLib.Qj, (int) atc[15][61][2], (int) atc[15][61][3], atc[15][61][5] + 50, (int) atc[15][61][6], true);
+            GameRuntime.a(GameRuntime.Qj, (int) atc[15][61][2], (int) atc[15][61][3], atc[15][61][5] + 50, (int) atc[15][61][6], true);
             if (i3 == aLa[2] + 1) {
                 e(aLc, 15, 61, 0, aKU);
             } else {
@@ -54324,7 +54324,7 @@ public final class ci extends GLLib implements av {
                 }
                 e(strDt15, 15, 61, 0, aKU);
             }
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         }
         if (aus) {
             String strDt16 = dt(76);
@@ -54332,9 +54332,9 @@ public final class ci extends GLLib implements av {
                 strDt16 = "";
             }
             e(strDt16, 15, 21, 0, 0);
-            GLLib.a(GLLib.Qj, (int) atc[15][22][2], atc[15][22][3] + 0, atc[15][23][5] + 50, (int) atc[15][23][6], true);
+            GameRuntime.a(GameRuntime.Qj, (int) atc[15][22][2], atc[15][22][3] + 0, atc[15][23][5] + 50, (int) atc[15][23][6], true);
             e(aKW, 15, 23, 0, aKR);
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         }
         if (auv) {
             String strDt17 = dt(66);
@@ -54581,9 +54581,9 @@ public final class ci extends GLLib implements av {
                     e(8, 55, false);
                     e(8, 56, false);
                 }
-                GLLib.a(GLLib.Qj, (int) atc[8][64][2], (int) atc[8][64][3], (int) atc[8][64][5], (int) atc[8][64][6], true);
+                GameRuntime.a(GameRuntime.Qj, (int) atc[8][64][2], (int) atc[8][64][3], (int) atc[8][64][5], (int) atc[8][64][6], true);
                 a(aRK[0], 8, 64, -aRS[0], !bg(8, 66) ? -7 : 0);
-                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             }
             if (1 >= aSg || (aSS && (!aSS || t(1, "Cash") < aSR))) {
                 e(8, 71, false);
@@ -54690,9 +54690,9 @@ public final class ci extends GLLib implements av {
                         e(8, 73, false);
                     }
                 }
-                GLLib.a(GLLib.Qj, (int) atc[8][81][2], (int) atc[8][81][3], (int) atc[8][81][5], (int) atc[8][81][6], true);
+                GameRuntime.a(GameRuntime.Qj, (int) atc[8][81][2], (int) atc[8][81][3], (int) atc[8][81][5], (int) atc[8][81][6], true);
                 a(aRK[1], 8, 81, -aRS[1], !bg(8, 83) ? -7 : 0);
-                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             }
             if (2 >= aSg || (aSS && (!aSS || t(2, "Cash") < aSR))) {
                 e(8, 88, false);
@@ -54798,9 +54798,9 @@ public final class ci extends GLLib implements av {
                         e(8, 90, false);
                     }
                 }
-                GLLib.a(GLLib.Qj, (int) atc[8][98][2], (int) atc[8][98][3], (int) atc[8][98][5], (int) atc[8][98][6], true);
+                GameRuntime.a(GameRuntime.Qj, (int) atc[8][98][2], (int) atc[8][98][3], (int) atc[8][98][5], (int) atc[8][98][6], true);
                 a(aRK[2], 8, 98, -aRS[2], !bg(8, 100) ? -7 : 0);
-                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             }
             if (3 >= aSg || (aSS && (!aSS || t(3, "Cash") < aSR))) {
                 e(8, 105, false);
@@ -54906,9 +54906,9 @@ public final class ci extends GLLib implements av {
                         e(8, 107, false);
                     }
                 }
-                GLLib.a(GLLib.Qj, (int) atc[8][115][2], (int) atc[8][115][3], (int) atc[8][115][5], (int) atc[8][115][6], true);
+                GameRuntime.a(GameRuntime.Qj, (int) atc[8][115][2], (int) atc[8][115][3], (int) atc[8][115][5], (int) atc[8][115][6], true);
                 a(aRK[3], 8, 115, -aRS[3], !bg(8, 117) ? -7 : 0);
-                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             }
             if (4 >= aSg || (aSS && (!aSS || t(4, "Cash") < aSR))) {
                 e(8, 122, false);
@@ -55014,9 +55014,9 @@ public final class ci extends GLLib implements av {
                         e(8, 124, false);
                     }
                 }
-                GLLib.a(GLLib.Qj, (int) atc[8][132][2], (int) atc[8][132][3], (int) atc[8][132][5], (int) atc[8][132][6], true);
+                GameRuntime.a(GameRuntime.Qj, (int) atc[8][132][2], (int) atc[8][132][3], (int) atc[8][132][5], (int) atc[8][132][6], true);
                 a(aRK[4], 8, 132, -aRS[4], !bg(8, 134) ? -7 : 0);
-                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             }
             if (5 >= aSg || (aSS && (!aSS || t(5, "Cash") < aSR))) {
                 e(8, 139, false);
@@ -55122,9 +55122,9 @@ public final class ci extends GLLib implements av {
                         e(8, 141, false);
                     }
                 }
-                GLLib.a(GLLib.Qj, (int) atc[8][149][2], (int) atc[8][149][3], (int) atc[8][149][5], (int) atc[8][149][6], true);
+                GameRuntime.a(GameRuntime.Qj, (int) atc[8][149][2], (int) atc[8][149][3], (int) atc[8][149][5], (int) atc[8][149][6], true);
                 a(aRK[5], 8, 149, -aRS[5], !bg(8, 152) ? -7 : 0);
-                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             }
         }
         for (int i = 58; i <= 143; i += 17) {
@@ -55152,9 +55152,9 @@ public final class ci extends GLLib implements av {
                 for (int i = 0; i < 6; i++) {
                     int i2 = i * 17;
                     a(a(x(aSr[i]), aYU, " "), 8, i2 + 165, 0, 0);
-                    GLLib.a(GLLib.Qj, (int) atc[8][i2 + 172][2], (int) atc[8][i2 + 172][3], (int) atc[8][i2 + 172][5], (int) atc[8][i2 + 172][6], true);
+                    GameRuntime.a(GameRuntime.Qj, (int) atc[8][i2 + 172][2], (int) atc[8][i2 + 172][3], (int) atc[8][i2 + 172][5], (int) atc[8][i2 + 172][6], true);
                     a(a(ii(aRQ[i]), aYU, " "), 8, i2 + 172, 0, 0);
-                    GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                    GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                 }
             }
             for (int i3 = 0; i3 < aqM; i3++) {
@@ -55165,9 +55165,9 @@ public final class ci extends GLLib implements av {
                     a("+" + a(ii(aqV[i3]) > 0 ? (int) (100.0f - ((ii(aqU[i3]) / ii(aqV[i3])) * 100.0f)) : 0, aYU, " ") + "%", 8, i4 + 177, 0, 0);
                     a("", 8, i4 + 165, 0, 0);
                     String str = "KKKKKKK price promo " + aqM + " price " + ii(aqU[i3]) + " new " + ii(aqV[i3]);
-                    GLLib.a(GLLib.Qj, (int) atc[8][i4 + 172][2], (int) atc[8][i4 + 172][3], (int) atc[8][i4 + 172][5], (int) atc[8][i4 + 172][6], true);
+                    GameRuntime.a(GameRuntime.Qj, (int) atc[8][i4 + 172][2], (int) atc[8][i4 + 172][3], (int) atc[8][i4 + 172][5], (int) atc[8][i4 + 172][6], true);
                     a(a(ii(aRQ[i3]), aYU, " "), 8, i4 + 172, 0, 0);
-                    GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                    GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                 } else if (aqO[i3]) {
                     a(a(ii(aqS[i3]), aYU, " "), 8, i4 + 175, 0, 0);
                     a(a(ii(aqT[i3]), aYU, " "), 8, i4 + 174, 0, 0);
@@ -55177,9 +55177,9 @@ public final class ci extends GLLib implements av {
                     a(a(x(aSr[i3]), aYU, " "), 8, i4 + 165, 0, 0);
                 } else {
                     a(a(x(aSr[i3]), aYU, " "), 8, i4 + 165, 0, 0);
-                    GLLib.a(GLLib.Qj, (int) atc[8][i4 + 172][2], (int) atc[8][i4 + 172][3], (int) atc[8][i4 + 172][5], (int) atc[8][i4 + 172][6], true);
+                    GameRuntime.a(GameRuntime.Qj, (int) atc[8][i4 + 172][2], (int) atc[8][i4 + 172][3], (int) atc[8][i4 + 172][5], (int) atc[8][i4 + 172][6], true);
                     a(a(ii(aRQ[i3]), aYU, " "), 8, i4 + 172, 0, 0);
-                    GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                    GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                 }
             }
         }
@@ -55205,9 +55205,9 @@ public final class ci extends GLLib implements av {
             }
             baF = false;
         }
-        GLLib.a(GLLib.Qj, (int) atc[8][334][2], (int) atc[8][334][3], (int) atc[8][334][5], (int) atc[8][334][6], true);
+        GameRuntime.a(GameRuntime.Qj, (int) atc[8][334][2], (int) atc[8][334][3], (int) atc[8][334][5], (int) atc[8][334][6], true);
         a(ga((int) (j / 1000)), 8, 334, 0, 0);
-        GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+        GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         if (MI()) {
             a("", 8, 329, 0, 0);
             e(8, 328, false);
@@ -55304,7 +55304,7 @@ public final class ci extends GLLib implements av {
             e(22, 8, true);
             e(22, 7, true);
             e(22, 6, true);
-            if (aYR == -1 && awW == 160) {
+            if (currentTutorialStepIndex == -1 && awW == 160) {
                 f(22, 8, true);
             } else {
                 f(22, 8, false);
@@ -55333,7 +55333,7 @@ public final class ci extends GLLib implements av {
             bao = 116027;
         }
         if (i == 5) {
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             gW(22);
             if (aFp) {
                 aFp = false;
@@ -55342,7 +55342,7 @@ public final class ci extends GLLib implements av {
         if (i == 2) {
             int iJO = jO();
             if (iJO == 19 || iJO == 11) {
-                if (aYR > 0 || ((awV && aYS != -1) || aGL != null || aGM)) {
+                if (currentTutorialStepIndex > 0 || ((awV && aYS != -1) || aGL != null || aGM)) {
                     StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
                     String strDt = dt(513);
                     if (strDt == null) {
@@ -55459,7 +55459,7 @@ public final class ci extends GLLib implements av {
             }
         }
         if (i == 3) {
-            GLLib.a(GLLib.Qj, 0, 0, bh.ajq, bh.ajr, true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, bh.ajq, bh.ajr, true);
             GV();
             gJ(22);
             if (aFp) {
@@ -55479,16 +55479,16 @@ public final class ci extends GLLib implements av {
             a("+" + Integer.toString(aGG), atc[22][171][2] + 40, atc[22][171][3] + 20, 0, 0, 0, 0, 2, 0, false, false);
             int[] iArr = new int[4];
             atf[atc[22][11][5]].a(atc[22][11][6], 0, iArr, 0);
-            GLLib.a(GLLib.Qj, iArr[0] + atc[22][11][2], iArr[1] + atc[22][11][3], iArr[2], iArr[3], true);
+            GameRuntime.a(GameRuntime.Qj, iArr[0] + atc[22][11][2], iArr[1] + atc[22][11][3], iArr[2], iArr[3], true);
             GM();
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             String strDt4 = dt(208);
             if (strDt4 == null) {
                 strDt4 = "";
             }
             a(strDt4, 22, 173, 0, 0);
             atf[atc[22][174][5]].a(atc[22][174][6], 0, iArr, 0);
-            GLLib.a(GLLib.Qj, iArr[0] + atc[22][174][2], iArr[1] + atc[22][174][3], iArr[2], iArr[3], true);
+            GameRuntime.a(GameRuntime.Qj, iArr[0] + atc[22][174][2], iArr[1] + atc[22][174][3], iArr[2], iArr[3], true);
             int i6 = aEY[aFa] - aEZ[aFa] >= 6 ? 6 : aEY[aFa] - aEZ[aFa];
             if (aFm) {
                 for (int i7 = 0; i7 < i6; i7++) {
@@ -55511,7 +55511,7 @@ public final class ci extends GLLib implements av {
                 }
             }
             KX();
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             be(22, 163);
             be(22, 164);
             be(22, 249);
@@ -55578,7 +55578,7 @@ public final class ci extends GLLib implements av {
             aHA = b(22, 0, 1, 9, 184, 228) + 10;
             aHi = false;
             rb();
-            if (aYR == 23) {
+            if (currentTutorialStepIndex == 23) {
                 axW = true;
             }
         }
@@ -55601,7 +55601,7 @@ public final class ci extends GLLib implements av {
                 aHi = true;
                 aHw = false;
             }
-            if (aYR == -1 && awW == 160) {
+            if (currentTutorialStepIndex == -1 && awW == 160) {
                 f(22, 8, true);
             } else {
                 f(22, 8, false);
@@ -55654,14 +55654,14 @@ public final class ci extends GLLib implements av {
             bao = 116031;
         }
         if (i == 5) {
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             gX(56);
             gW(22);
         }
         if (i == 2) {
             int iJO = jO();
             if (iJO == 19 || iJO == 11) {
-                if ((awW == 0 || awW == 160 || awW == 163 || awW == 168) && aYR == -1 && (!awV || aYS == -1)) {
+                if ((awW == 0 || awW == 160 || awW == 163 || awW == 168) && currentTutorialStepIndex == -1 && (!awV || aYS == -1)) {
                     uk();
                 } else {
                     StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
@@ -55672,7 +55672,7 @@ public final class ci extends GLLib implements av {
                     dC(sbAppend.append(strDt).toString());
                 }
             }
-            if (aYR != -1) {
+            if (currentTutorialStepIndex != -1) {
                 Es();
             }
             if (awV) {
@@ -55742,7 +55742,7 @@ public final class ci extends GLLib implements av {
             KY();
         }
         if (i == 3) {
-            GLLib.a(GLLib.Qj, 0, 0, bh.ajq, bh.ajr, true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, bh.ajq, bh.ajr, true);
             for (int i2 = 0; i2 < 6; i2++) {
                 e(22, (i2 * 9) + 181, false);
             }
@@ -55756,16 +55756,16 @@ public final class ci extends GLLib implements av {
             a("+" + Integer.toString(aHB), atc[22][171][2] + 40, atc[22][171][3] + 20, 0, 0, 0, 0, 2, 0, false, false);
             int[] iArr = new int[4];
             atf[atc[22][11][5]].a(atc[22][11][6], 0, iArr, 0);
-            GLLib.a(GLLib.Qj, iArr[0] + atc[22][11][2], iArr[1] + atc[22][11][3], iArr[2], iArr[3], true);
+            GameRuntime.a(GameRuntime.Qj, iArr[0] + atc[22][11][2], iArr[1] + atc[22][11][3], iArr[2], iArr[3], true);
             Hb();
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             String strDt3 = dt(478);
             if (strDt3 == null) {
                 strDt3 = "";
             }
             a(strDt3, 22, 173, 0, 0);
             atf[atc[22][174][5]].a(atc[22][174][6], 0, iArr, 0);
-            GLLib.a(GLLib.Qj, iArr[0] + atc[22][174][2], iArr[1] + atc[22][174][3], iArr[2], iArr[3], true);
+            GameRuntime.a(GameRuntime.Qj, iArr[0] + atc[22][174][2], iArr[1] + atc[22][174][3], iArr[2], iArr[3], true);
             int i3 = aHk - aHl >= 6 ? 6 : aHk - aHl;
             if (aHw) {
                 for (int i4 = 0; i4 < i3; i4++) {
@@ -55787,11 +55787,11 @@ public final class ci extends GLLib implements av {
                 }
             }
             KX();
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             if (aYS != 1079) {
-                GLLib.a(GLLib.Qj, 0, (int) atc[22][172][3], kH(), kI(), true);
+                GameRuntime.a(GameRuntime.Qj, 0, (int) atc[22][172][3], kH(), kI(), true);
                 be(22, 163);
-                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                 be(22, 164);
             }
             be(22, 249);
@@ -55885,7 +55885,7 @@ public final class ci extends GLLib implements av {
             a(strDt, 16, 90, 0, 0);
             int[] iArr = new int[4];
             atf[atc[16][1][5]].a(atc[16][1][6], 0, iArr, 0);
-            GLLib.a(GLLib.Qj, atc[16][1][2] + iArr[0], atc[16][1][3] + iArr[1], iArr[2], iArr[3], true);
+            GameRuntime.a(GameRuntime.Qj, atc[16][1][2] + iArr[0], atc[16][1][3] + iArr[1], iArr[2], iArr[3], true);
             for (int i2 = 0; i2 < 5; i2++) {
                 String strDt2 = dt(atc[16][(6 * i2) + 57][6] == 54 ? 228 : 235);
                 if (strDt2 == null) {
@@ -55903,7 +55903,7 @@ public final class ci extends GLLib implements av {
             for (int i3 = 0; i3 < 20; i3++) {
                 a("" + ii(aLe[(aLl * 4) + i3]), 16, (2 * i3) + 18, 0, 0);
             }
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         }
         if (i == 6) {
             aYW = false;
@@ -55990,8 +55990,8 @@ public final class ci extends GLLib implements av {
             gJ(19);
             int[] iArr = new int[4];
             atf[atc[19][1][5]].a(atc[19][1][6], 0, iArr, 0);
-            GLLib.a(GLLib.Qj, atc[19][1][2] + iArr[0], iArr[1] + atc[19][1][3], iArr[2], iArr[3], true);
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, atc[19][1][2] + iArr[0], iArr[1] + atc[19][1][3], iArr[2], iArr[3], true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         }
         if (i == 6) {
             aYW = false;
@@ -56031,7 +56031,7 @@ public final class ci extends GLLib implements av {
         if (i == 2) {
             int iJO = jO();
             if (iJO == 19 || iJO == 11) {
-                if (aYR > 0 || (awV && aYS != -1)) {
+                if (currentTutorialStepIndex > 0 || (awV && aYS != -1)) {
                     StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
                     String strDt = dt(513);
                     if (strDt == null) {
@@ -56042,7 +56042,7 @@ public final class ci extends GLLib implements av {
                     xS();
                 }
             }
-            if (aYR > 0) {
+            if (currentTutorialStepIndex > 0) {
                 Es();
             }
             if (awV) {
@@ -56083,7 +56083,7 @@ public final class ci extends GLLib implements av {
             a("" + aIm + " / " + ii(aIn), 10, 2, 0, 0);
             int[] iArr = new int[4];
             atf[atc[10][12][5]].a(atc[10][12][6], 0, iArr, 0);
-            GLLib.a(GLLib.Qj, atc[10][12][2] + iArr[0], atc[10][12][3] + iArr[1], iArr[2], iArr[3], true);
+            GameRuntime.a(GameRuntime.Qj, atc[10][12][2] + iArr[0], atc[10][12][3] + iArr[1], iArr[2], iArr[3], true);
             int i2 = aIp - aIq >= 6 ? 6 : aIp - aIq;
             int i3 = 0;
             while (i3 < i2) {
@@ -56112,7 +56112,7 @@ public final class ci extends GLLib implements av {
                 }
                 a(strDt7, 10, i6, 0, 0);
             }
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         }
         if (i == 6) {
             aYW = false;
@@ -56220,7 +56220,7 @@ public final class ci extends GLLib implements av {
             a(strDt2, 10, 1, 0, 0);
             int[] iArr = new int[4];
             atf[atc[10][12][5]].a(atc[10][12][6], 0, iArr, 0);
-            GLLib.a(GLLib.Qj, atc[10][12][2] + iArr[0], atc[10][12][3] + iArr[1], iArr[2], iArr[3], true);
+            GameRuntime.a(GameRuntime.Qj, atc[10][12][2] + iArr[0], atc[10][12][3] + iArr[1], iArr[2], iArr[3], true);
             int i2 = aJS - aJH >= 6 ? 6 : aJS - aJH;
             for (int i3 = 0; i3 < i2; i3++) {
                 String strDt3 = dt(aJI[aJH + i3]);
@@ -56230,7 +56230,7 @@ public final class ci extends GLLib implements av {
                 e(strDt3, 10, (i3 * 9) + 14, 0, 0);
                 a("x" + ((int) aJO[aJH + i3]), 10, (i3 * 9) + 16, 0, 0);
             }
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         }
         if (i == 6) {
             aYW = false;
@@ -56334,7 +56334,7 @@ public final class ci extends GLLib implements av {
             a(strDt, 10, 1, 0, 0);
             int[] iArr = new int[4];
             atf[atc[10][12][5]].a(atc[10][12][6], 0, iArr, 0);
-            GLLib.a(GLLib.Qj, atc[10][12][2] + iArr[0], atc[10][12][3] + iArr[1], iArr[2], iArr[3], true);
+            GameRuntime.a(GameRuntime.Qj, atc[10][12][2] + iArr[0], atc[10][12][3] + iArr[1], iArr[2], iArr[3], true);
             int i2 = aKb - aJT >= 6 ? 6 : aKb - aJT;
             for (int i3 = 0; i3 < i2; i3++) {
                 String strDt2 = dt(aJU[aJT + i3]);
@@ -56343,7 +56343,7 @@ public final class ci extends GLLib implements av {
                 }
                 e(strDt2, 10, (i3 * 9) + 14, 0, 0);
             }
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         }
         if (i == 6) {
             aYW = false;
@@ -56359,7 +56359,7 @@ public final class ci extends GLLib implements av {
         if (i == 0) {
             aKl = false;
             JV();
-            if (qN() && !aKl && aYR == -1 && aTK && baf != null) {
+            if (qN() && !aKl && currentTutorialStepIndex == -1 && aTK && baf != null) {
                 baf.b(51816, new String[]{"INT:" + Integer.toString(0), "INT:" + Integer.toString(114733), "INT:" + Integer.toString(105554), "INT:0", "INT:0", "INT:" + Integer.toString(FC())});
             }
         }
@@ -56421,21 +56421,21 @@ public final class ci extends GLLib implements av {
                 atc[12][(i3 * 2) + 11][10] = 0;
                 i3++;
             }
-            if (qN() && !aKl && aYR == -1) {
+            if (qN() && !aKl && currentTutorialStepIndex == -1) {
                 e(12, 33, true);
                 e(12, 31, true);
                 e(12, 32, true);
                 f(12, 32, true);
             }
             HD();
-            if (aYR == -1) {
+            if (currentTutorialStepIndex == -1) {
                 e(12, 34, false);
             } else {
                 e(12, 34, true);
             }
             DF();
             gM(12);
-            aKd = ch.ft(4);
+            aKd = FarmEntity.ft(4);
             If();
         }
         if (i == 5) {
@@ -56446,7 +56446,7 @@ public final class ci extends GLLib implements av {
             aKd = null;
             aKk = 0;
             aKg = 0;
-            ch.ft(2);
+            FarmEntity.ft(2);
             gW(12);
             String str7 = "[FB opengraph] ready " + FC();
             if (Fz()) {
@@ -56468,7 +56468,7 @@ public final class ci extends GLLib implements av {
         if (i == 2) {
             int iJO = jO();
             if (iJO == 19 || iJO == 11) {
-                if (aYR == -1 && bg(12, 5)) {
+                if (currentTutorialStepIndex == -1 && bg(12, 5)) {
                     yy();
                 } else {
                     StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
@@ -56482,7 +56482,7 @@ public final class ci extends GLLib implements av {
             fT(1);
             aKd.qb();
             if (aKd.aoO != null) {
-                aKd.aoO.dV(GLLib.Qy);
+                aKd.aoO.dV(GameRuntime.Qy);
             }
             aKe += Qy;
             if (atm[0] != null && !bn(0, 1)) {
@@ -56549,7 +56549,7 @@ public final class ci extends GLLib implements av {
             if (aKg == 0 && (aKm > 0 || aKn > 0)) {
                 int[] iArr = new int[4];
                 atf[atc[12][8][5]].a(atc[12][8][6], 0, iArr, 0);
-                GLLib.a(GLLib.Qj, atc[12][8][2] + iArr[0], atc[12][8][3] + iArr[1], iArr[2], iArr[3], true);
+                GameRuntime.a(GameRuntime.Qj, atc[12][8][2] + iArr[0], atc[12][8][3] + iArr[1], iArr[2], iArr[3], true);
                 if (aKm > 0) {
                     a("+" + aKm, 12, 9, 0, 0);
                     if (aKn > 0) {
@@ -56558,7 +56558,7 @@ public final class ci extends GLLib implements av {
                 } else {
                     a("+" + aKn, 12, 9, 0, 0);
                 }
-                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             }
             if (qN() && !aKl && bg(12, 32)) {
                 if (bt.nY()) {
@@ -56684,7 +56684,7 @@ public final class ci extends GLLib implements av {
             gM(30);
         }
         if (i == 5) {
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         }
         if (i == 2) {
             int iJO = jO();
@@ -56780,9 +56780,9 @@ public final class ci extends GLLib implements av {
                 }
                 baF = false;
             }
-            GLLib.a(GLLib.Qj, (int) atc[8][334][2], (int) atc[8][334][3], (int) atc[8][334][5], (int) atc[8][334][6], true);
+            GameRuntime.a(GameRuntime.Qj, (int) atc[8][334][2], (int) atc[8][334][3], (int) atc[8][334][5], (int) atc[8][334][6], true);
             a(ga((int) (j / 1000)), 8, 334, 0, 0);
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             if (MI()) {
                 a("", 8, 329, 0, 0);
                 e(8, 328, false);
@@ -57033,9 +57033,9 @@ public final class ci extends GLLib implements av {
                                     s = atc[34][288][2];
                                     s2 = atc[34][288][3];
                                 }
-                                GLLib.a(GLLib.Qj, (int) s, (int) s2, iArr[2] - iArr[0], iArr[3] - iArr[1], true);
-                                a(GLLib.Qj, ctVar.bbU, s3, s4, 20, 80);
-                                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                                GameRuntime.a(GameRuntime.Qj, (int) s, (int) s2, iArr[2] - iArr[0], iArr[3] - iArr[1], true);
+                                a(GameRuntime.Qj, ctVar.bbU, s3, s4, 20, 80);
+                                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                             } else {
                                 if (!bg(34, i6 + 25)) {
                                     e(34, i6 + 25, true);
@@ -57163,10 +57163,10 @@ public final class ci extends GLLib implements av {
                 wz();
                 if (atN) {
                     if (aSb != null) {
-                        GLLib.a(GLLib.Qj, (int) atc[8][271][2], (int) atc[8][271][3], (int) atc[8][271][5], (int) atc[8][271][6], true);
+                        GameRuntime.a(GameRuntime.Qj, (int) atc[8][271][2], (int) atc[8][271][3], (int) atc[8][271][5], (int) atc[8][271][6], true);
                         e(aSb, 8, 271, 0, aSE);
                         g(284050, -1121583, aRv[0], aRv[1], aRv[2], aRv[3], aRv[2], aRv[3]);
-                        GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                        GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                     }
                 } else if (!atT) {
                     KO();
@@ -57187,7 +57187,7 @@ public final class ci extends GLLib implements av {
                 wz();
                 wH();
                 wD();
-                baa = true;
+                hasUnsavedGameChanges = true;
                 bab = true;
                 KP();
                 break;
@@ -57232,7 +57232,7 @@ public final class ci extends GLLib implements av {
     }
 
     public static void KX() {
-        switch (qD()) {
+        switch (currentEngineState()) {
             case R.styleable.CardView_contentPaddingTop /* 11 */:
                 aFK = bL(0, aFE);
                 aFL = bL(0, aFF);
@@ -57346,13 +57346,13 @@ public final class ci extends GLLib implements av {
                                 e(22, i, false);
                             }
                             e(22, 157, true);
-                            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                             a(aTl[23], 22, 157, 0, -10);
                         } else {
                             for (int i2 = 159; i2 <= 162; i2++) {
                                 e(22, i2, true);
                             }
-                            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                             e(22, 157, true);
                             a("" + strJ3, 22, 159, 0, 0);
                             a(K("" + strJ3, "" + aTl[23]), 22, 162, 0, 0);
@@ -57373,7 +57373,7 @@ public final class ci extends GLLib implements av {
                             e(22, i3, false);
                         }
                         e(22, 157, true);
-                        GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                        GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                         a(aTl[23], 22, 157, 0, -10);
                     }
                 }
@@ -57493,7 +57493,7 @@ public final class ci extends GLLib implements av {
                         atf[atd[i8][i9][5]].a(atd[i8][i9][6], 0, iArr, 0);
                     }
                     if (!(i == 1 && (sArr[19] == 3 || i4 >= 118))) {
-                        GLLib.a(GLLib.Qj, iArr[0] + atd[i8][i9][2], iArr[1] + atd[i8][i9][3], iArr[2], iArr[3], true);
+                        GameRuntime.a(GameRuntime.Qj, iArr[0] + atd[i8][i9][2], iArr[1] + atd[i8][i9][3], iArr[2], iArr[3], true);
                     }
                     z2 = true;
                 } else {
@@ -57503,7 +57503,7 @@ public final class ci extends GLLib implements av {
             if (s4 < 0) {
                 if (s2 > -1) {
                     if (i == 1 && i4 >= 86 && i4 <= 91) {
-                        int iKH = (GLLib.kH() >> 1) - sArr[2];
+                        int iKH = (GameRuntime.kH() >> 1) - sArr[2];
                         int i10 = iKH < 0 ? 100 + iKH : 100 - iKH;
                         if (i10 < 50) {
                             i10 = 50;
@@ -57513,7 +57513,7 @@ public final class ci extends GLLib implements av {
                         aVar.a(Qj, (int) s2, (float) (sArr[2]), (float) (sArr[3]), 0);
                         if (aBj > 0) {
                             dk(-1201919);
-                            GLLib.a(Qj, sArr[2] - 38, sArr[3] - 38, 76.0f, 76.0f, 90, (aBj * 360) / aZw[5], true);
+                            GameRuntime.a(Qj, sArr[2] - 38, sArr[3] - 38, 76.0f, 76.0f, 90, (aBj * 360) / aZw[5], true);
                         }
                     } else {
                         boolean z3 = false;
@@ -57536,8 +57536,8 @@ public final class ci extends GLLib implements av {
                         } else if (sArr[22] != 0) {
                             a(sArr, sArr[2] + i2, sArr[3] + i3, z3);
                         } else {
-                            if (qD() == 28 || qD() == 10 || qD() == 12 || qD() == 11 || qD() == 33 || qD() == 32) {
-                                GLLib.a(GLLib.Qj, 0, 0, bh.ajq, bh.ajr, true);
+                            if (currentEngineState() == 28 || currentEngineState() == 10 || currentEngineState() == 12 || currentEngineState() == 11 || currentEngineState() == 33 || currentEngineState() == 32) {
+                                GameRuntime.a(GameRuntime.Qj, 0, 0, bh.ajq, bh.ajr, true);
                             }
                             aVar.a(Qj, (int) s2, (float) (sArr[2] + i2), (float) (sArr[3] + i3), 0);
                         }
@@ -57575,9 +57575,9 @@ public final class ci extends GLLib implements av {
                 aVar.bQ(i5);
             }
             if (z2) {
-                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                 if (i == 19 || i == 16) {
-                    GLLib.a(GLLib.Qj, 0, 0, bh.ajq, bh.ajr, true);
+                    GameRuntime.a(GameRuntime.Qj, 0, 0, bh.ajq, bh.ajr, true);
                 }
             }
         }
@@ -57606,10 +57606,10 @@ public final class ci extends GLLib implements av {
                 }
                 i3 = i6 + sArr[5];
             }
-            GLLib.a(GLLib.Qj, (int) sArr[2], (int) sArr[3], (int) sArr[5], (int) sArr[6], true);
+            GameRuntime.a(GameRuntime.Qj, (int) sArr[2], (int) sArr[3], (int) sArr[5], (int) sArr[6], true);
         }
         a(str, sArr[2] + i3 + s2, sArr[3] + i4 + s3, (int) sArr[5], (int) sArr[6], (int) sArr[10], (int) s4, (int) sArr[7], i5 < 0 ? sArr[8] : i5, false, z);
-        GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+        GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
     }
 
     /* JADX WARN: Code duplicated, block: B:55:0x01bd  */
@@ -57629,14 +57629,14 @@ public final class ci extends GLLib implements av {
         }
         short s4 = sArr[9];
         if (sArr[17] == 1) {
-            aj ajVar = GLLib.Qj;
-            int i10 = GLLib.SE;
-            aj ajVar2 = GLLib.Qj;
-            int i11 = GLLib.SF;
-            aj ajVar3 = GLLib.Qj;
-            int i12 = GLLib.SG;
-            aj ajVar4 = GLLib.Qj;
-            i5 = GLLib.SH;
+            aj ajVar = GameRuntime.Qj;
+            int i10 = GameRuntime.SE;
+            aj ajVar2 = GameRuntime.Qj;
+            int i11 = GameRuntime.SF;
+            aj ajVar3 = GameRuntime.Qj;
+            int i12 = GameRuntime.SG;
+            aj ajVar4 = GameRuntime.Qj;
+            i5 = GameRuntime.SH;
             i6 = i12;
             i7 = i11;
             i8 = i10;
@@ -57673,7 +57673,7 @@ public final class ci extends GLLib implements av {
                 }
                 i2 = i9 + sArr[5];
             }
-            GLLib.a(GLLib.Qj, (int) sArr[2], (int) sArr[3], (int) sArr[5], (int) sArr[6], true);
+            GameRuntime.a(GameRuntime.Qj, (int) sArr[2], (int) sArr[3], (int) sArr[5], (int) sArr[6], true);
         }
         short s5 = sArr[16];
         if (s5 < 0 || s5 >= 10 || atm[s5] == null || (atm[s5][12] & 8) == 0) {
@@ -57684,7 +57684,7 @@ public final class ci extends GLLib implements av {
             if (atf[atc[i14][i15][5]].bG(atc[i14][i15][6]) > 0) {
                 int[] iArr = new int[4];
                 atf[atc[i14][i15][5]].a(atc[i14][i15][6], 0, iArr, 0);
-                GLLib.a(GLLib.Qj, atc[i14][i15][2] + iArr[0], atc[i14][i15][3] + iArr[1], iArr[2], iArr[3], true);
+                GameRuntime.a(GameRuntime.Qj, atc[i14][i15][2] + iArr[0], atc[i14][i15][3] + iArr[1], iArr[2], iArr[3], true);
                 z2 = true;
             } else {
                 z2 = false;
@@ -57692,10 +57692,10 @@ public final class ci extends GLLib implements av {
         }
         a(str, sArr[2] + i2 + s2, sArr[3] + i3 + s3, (int) sArr[5], (int) sArr[6], (int) sArr[10], (int) s4, (int) sArr[7], i4 < 0 ? sArr[8] : i4, false, z);
         if (sArr[17] == 1) {
-            GLLib.a(GLLib.Qj, i8, i7, i6, i5, true);
+            GameRuntime.a(GameRuntime.Qj, i8, i7, i6, i5, true);
         }
         if (z2) {
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         }
     }
 
@@ -57718,14 +57718,14 @@ public final class ci extends GLLib implements av {
         }
         short s4 = sArr[9];
         if (sArr[17] == 2) {
-            aj ajVar = GLLib.Qj;
-            int i9 = GLLib.SE;
-            aj ajVar2 = GLLib.Qj;
-            int i10 = GLLib.SF;
-            aj ajVar3 = GLLib.Qj;
-            int i11 = GLLib.SG;
-            aj ajVar4 = GLLib.Qj;
-            i5 = GLLib.SH;
+            aj ajVar = GameRuntime.Qj;
+            int i9 = GameRuntime.SE;
+            aj ajVar2 = GameRuntime.Qj;
+            int i10 = GameRuntime.SF;
+            aj ajVar3 = GameRuntime.Qj;
+            int i11 = GameRuntime.SG;
+            aj ajVar4 = GameRuntime.Qj;
+            i5 = GameRuntime.SH;
             i6 = i11;
             i7 = i10;
             i8 = i9;
@@ -57751,10 +57751,10 @@ public final class ci extends GLLib implements av {
                 }
                 i3 -= i13;
             }
-            GLLib.a(GLLib.Qj, (int) sArr[2], (int) sArr[3], (int) sArr[5], (int) sArr[6], true);
+            GameRuntime.a(GameRuntime.Qj, (int) sArr[2], (int) sArr[3], (int) sArr[5], (int) sArr[6], true);
         }
-        if (qD() == 28 || qD() == 12) {
-            GLLib.a(GLLib.Qj, bh.ajs, bh.ajt, 729, 430, true);
+        if (currentEngineState() == 28 || currentEngineState() == 12) {
+            GameRuntime.a(GameRuntime.Qj, bh.ajs, bh.ajt, 729, 430, true);
         }
         short s6 = sArr[16];
         if (s6 < 0 || s6 >= 10 || atm[s6] == null || (atm[s6][12] & 8) == 0) {
@@ -57765,14 +57765,14 @@ public final class ci extends GLLib implements av {
             if (atf[atc[i14][i15][5]].bG(atc[i14][i15][6]) > 0) {
                 int[] iArr = new int[4];
                 atf[atc[i14][i15][5]].a(atc[i14][i15][6], 0, iArr, 0);
-                GLLib.a(GLLib.Qj, atc[i14][i15][2] + iArr[0], atc[i14][i15][3] + iArr[1], iArr[2], iArr[3], true);
+                GameRuntime.a(GameRuntime.Qj, atc[i14][i15][2] + iArr[0], atc[i14][i15][3] + iArr[1], iArr[2], iArr[3], true);
                 z = true;
             } else {
                 z = false;
             }
         }
-        if (qD() == 28 || qD() == 12) {
-            GLLib.a(GLLib.Qj, 0, 0, bh.ajq, bh.ajr, true);
+        if (currentEngineState() == 28 || currentEngineState() == 12) {
+            GameRuntime.a(GameRuntime.Qj, 0, 0, bh.ajq, bh.ajr, true);
         }
         a(str, sArr[2] + i2, sArr[3] + i3, (int) sArr[5], (int) sArr[6], (int) sArr[10], (int) s4, (int) sArr[7], i4 < 0 ? sArr[8] : i4, true, false);
         if (i == 44 && (sArr[1] == 51 || sArr[1] == 50 || sArr[1] == 49 || sArr[1] == 12 || sArr[1] == 8 || sArr[1] == 76 || sArr[1] == 73)) {
@@ -57784,14 +57784,14 @@ public final class ci extends GLLib implements av {
             float f2 = f + i16;
             float f3 = ((sArr[6] - iHA) >> 1) + sArr[3] + iHA;
             dk(4861523);
-            GLLib.a(GLLib.Qj, f, f3 + 2, f2, f3 + 2, true);
-            GLLib.a(GLLib.Qj, f, 1.0f + 2 + f3, f2, 1.0f + 2 + f3, true);
+            GameRuntime.a(GameRuntime.Qj, f, f3 + 2, f2, f3 + 2, true);
+            GameRuntime.a(GameRuntime.Qj, f, 1.0f + 2 + f3, f2, 1.0f + 2 + f3, true);
         }
         if (sArr[17] == 2) {
-            GLLib.a(GLLib.Qj, i8, i7, i6, i5, true);
+            GameRuntime.a(GameRuntime.Qj, i8, i7, i6, i5, true);
         }
         if (z) {
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         }
     }
 
@@ -58205,19 +58205,19 @@ public final class ci extends GLLib implements av {
                                     int[] iArr = new int[4];
                                     atf[atc[14][22][5]].a(atc[14][22][6], 0, iArr, 0);
                                     atf[atc[14][22][5]].bG(atc[14][22][6]);
-                                    GLLib.a(GLLib.Qj, atc[14][22][2] + iArr[0], atc[14][22][3] + iArr[1], iArr[2], iArr[3], true);
+                                    GameRuntime.a(GameRuntime.Qj, atc[14][22][2] + iArr[0], atc[14][22][3] + iArr[1], iArr[2], iArr[3], true);
                                     if (aJd[i3] != null) {
                                         short s = atc[14][i13 + 24][2];
                                         short s2 = atc[14][i13 + 24][3];
                                         e(14, i13 + 23, true);
-                                        GLLib.a(GLLib.Qj, aJd[i3], s + 18, s2 + 18, 20, true);
+                                        GameRuntime.a(GameRuntime.Qj, aJd[i3], s + 18, s2 + 18, 20, true);
                                     }
                                     if (aJc[i3] != null) {
                                         String strDp = dp(aJc[i3]);
                                         e(14, i13 + 26, true);
                                         d(strDp, 14, (i12 * 4) + 26, 0, 0);
                                     }
-                                    GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                                    GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                                     if (!awU) {
                                         be(14, 54);
                                         be(14, 55);
@@ -58318,7 +58318,7 @@ public final class ci extends GLLib implements av {
                 String str4 = "[party] not started.set party start invite reward.state:" + ((int) aOn);
             }
             kk(aOn);
-            baa = true;
+            hasUnsavedGameChanges = true;
             ban = bao;
             bao = 0;
         }
@@ -58333,10 +58333,10 @@ public final class ci extends GLLib implements av {
             }
             if (aOf) {
                 aOn = (byte) 3;
-                ch[] chVarArr = new ch[1];
-                ch.a(1, 42, chVarArr, 1);
-                ch[] chVarArr2 = new ch[1];
-                ch.b(1, 50, 18, chVarArr2, 1);
+                FarmEntity[] chVarArr = new FarmEntity[1];
+                FarmEntity.a(1, 42, chVarArr, 1);
+                FarmEntity[] chVarArr2 = new FarmEntity[1];
+                FarmEntity.b(1, 50, 18, chVarArr2, 1);
                 chVarArr2[0].pi();
                 aZj.y(chVarArr2[0].aol, chVarArr2[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                 if (chVarArr != null) {
@@ -58369,7 +58369,7 @@ public final class ci extends GLLib implements av {
                         aOB[i4] = new aa(aZf[148], atc[25][i4 + 83][2] + 104, atc[25][i4 + 83][3]);
                         aOB[i4].Y(0, -1);
                     } else {
-                        aOB[i4].dV(GLLib.Qy);
+                        aOB[i4].dV(GameRuntime.Qy);
                     }
                 }
             } else {
@@ -58465,12 +58465,12 @@ public final class ci extends GLLib implements av {
                                 }
                                 int[] iArr = new int[4];
                                 atf[atc[25][24][5]].a(atc[25][24][6], 0, iArr, 0);
-                                GLLib.a(GLLib.Qj, atc[25][24][2] + iArr[0], atc[25][24][3] + iArr[1], iArr[2], iArr[3], true);
+                                GameRuntime.a(GameRuntime.Qj, atc[25][24][2] + iArr[0], atc[25][24][3] + iArr[1], iArr[2], iArr[3], true);
                                 if (aOi[i3] != null) {
                                     short s = atc[25][i12 + 27][2];
                                     short s2 = atc[25][i12 + 27][3];
                                     e(25, i12 + 26, false);
-                                    GLLib.a(GLLib.Qj, aOi[i3], s + 10 + 18, s2 + 3 + 18, 20, true);
+                                    GameRuntime.a(GameRuntime.Qj, aOi[i3], s + 10 + 18, s2 + 3 + 18, 20, true);
                                 }
                                 if (aOh[i3] != "") {
                                     if (aOh[i3].indexOf(" ") == -1) {
@@ -58489,7 +58489,7 @@ public final class ci extends GLLib implements av {
                                         b(strDp, 25, i12 + 29, 0, 0);
                                     }
                                 }
-                                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                                 if (aOi[i3] == null && aOh[i3] == null) {
                                     e(25, i12 + 31, true);
                                 }
@@ -58569,13 +58569,13 @@ public final class ci extends GLLib implements av {
 
     public static void Y(int i, int i2, int i3) {
         dk(4861523);
-        GLLib.a(GLLib.Qj, (float) (i), (float) (i3), (float) (i2), (float) (i3), true);
-        GLLib.a(GLLib.Qj, (float) (i), (float) (i3 + 1), (float) (i2), (float) (i3 + 1), true);
+        GameRuntime.a(GameRuntime.Qj, (float) (i), (float) (i3), (float) (i2), (float) (i3), true);
+        GameRuntime.a(GameRuntime.Qj, (float) (i), (float) (i3 + 1), (float) (i2), (float) (i3 + 1), true);
     }
 
     static void Ep() {
         try {
-            if (aYR == 0 && apz == 36) {
+            if (currentTutorialStepIndex == 0 && apz == 36) {
                 if (atf[124] != null) {
                     atf[124].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
                 }
@@ -58584,7 +58584,7 @@ public final class ci extends GLLib implements av {
         } catch (Exception e) {
         }
         dk(26856);
-        GLLib.b(GLLib.Qj, atc[0][3][2], atc[0][3][3], 416.0f, 20.0f, true);
+        GameRuntime.b(GameRuntime.Qj, atc[0][3][2], atc[0][3][3], 416.0f, 20.0f, true);
         e(1, 18, false);
         e(1, 25, false);
         e(1, 21, false);
@@ -58617,13 +58617,13 @@ public final class ci extends GLLib implements av {
 
     static void JD() {
         dl(Integer.MIN_VALUE);
-        GLLib.b(GLLib.Qj, 0.0f, 0.0f, kH(), kI(), true);
+        GameRuntime.b(GameRuntime.Qj, 0.0f, 0.0f, kH(), kI(), true);
         gJ(37);
     }
 
     static void JL() {
         dl(Integer.MIN_VALUE);
-        GLLib.b(GLLib.Qj, 0.0f, 0.0f, kH(), kI(), true);
+        GameRuntime.b(GameRuntime.Qj, 0.0f, 0.0f, kH(), kI(), true);
         gJ(39);
         if (bg(39, 10)) {
             String strDt = dt(935);
@@ -58648,13 +58648,13 @@ public final class ci extends GLLib implements av {
 
     static void JQ() {
         dl(Integer.MIN_VALUE);
-        GLLib.b(GLLib.Qj, 0.0f, 0.0f, kH(), kI(), true);
+        GameRuntime.b(GameRuntime.Qj, 0.0f, 0.0f, kH(), kI(), true);
         gJ(40);
     }
 
     static void Jz() {
         dl(Integer.MIN_VALUE);
-        GLLib.b(GLLib.Qj, 0.0f, 0.0f, kH(), kI(), true);
+        GameRuntime.b(GameRuntime.Qj, 0.0f, 0.0f, kH(), kI(), true);
         e(36, 9, false);
         e(36, 11, false);
         e(36, 10, false);
@@ -58696,7 +58696,7 @@ public final class ci extends GLLib implements av {
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
     static boolean jM(int i) {
         int i2;
-        ch chVarAB;
+        FarmEntity chVarAB;
         String strDt;
         String strBY;
         int i3;
@@ -58719,7 +58719,7 @@ public final class ci extends GLLib implements av {
                 aPh = false;
             }
             aDi = 1;
-            if (aYR == -1) {
+            if (currentTutorialStepIndex == -1) {
                 avc = true;
             }
             if (aOF == 5) {
@@ -58728,7 +58728,7 @@ public final class ci extends GLLib implements av {
             if (aOF == 4) {
                 gJ(0);
                 dk(26856);
-                GLLib.b(GLLib.Qj, atc[0][3][2], atc[0][3][3], 416.0f, 20.0f, true);
+                GameRuntime.b(GameRuntime.Qj, atc[0][3][2], atc[0][3][3], 416.0f, 20.0f, true);
             }
             if (aOF == 35) {
                 gJ(8);
@@ -58748,7 +58748,7 @@ public final class ci extends GLLib implements av {
                 B(1, -1, -1);
             }
             aLR = true;
-            GLLib.jU();
+            GameRuntime.jU();
             aLS = new int[28];
             for (int i5 = 0; i5 <= 13; i5++) {
                 aLS[i5 << 1] = (atc[1][i5 + 0][2] - atc[1][0][2]) - 150;
@@ -58762,23 +58762,23 @@ public final class ci extends GLLib implements av {
                     StringBuilder sbAppend = new StringBuilder().append("INT:");
                     long jCurrentTimeMillis = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                     if ((jCurrentTimeMillis - bap) / 1000.0f > 0.0f) {
                         long jCurrentTimeMillis2 = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         i4 = (int) (((jCurrentTimeMillis2 - bap) / 1000.0f) + 0.5f);
                     } else {
                         long jCurrentTimeMillis3 = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         if ((jCurrentTimeMillis3 - bap) / 1000.0f < 0.0f) {
                             long jCurrentTimeMillis4 = System.currentTimeMillis();
                             if (w.Vl) {
-                                jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                                jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                             }
                             i4 = (int) (((jCurrentTimeMillis4 - bap) / 1000.0f) - 0.5f);
                         } else {
@@ -58800,23 +58800,23 @@ public final class ci extends GLLib implements av {
                     StringBuilder sbAppend2 = new StringBuilder().append("INT:");
                     long jCurrentTimeMillis5 = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis5 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis5 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                     if ((jCurrentTimeMillis5 - bap) / 1000.0f > 0.0f) {
                         long jCurrentTimeMillis6 = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis6 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis6 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         i3 = (int) (((jCurrentTimeMillis6 - bap) / 1000.0f) + 0.5f);
                     } else {
                         long jCurrentTimeMillis7 = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis7 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis7 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         if ((jCurrentTimeMillis7 - bap) / 1000.0f < 0.0f) {
                             long jCurrentTimeMillis8 = System.currentTimeMillis();
                             if (w.Vl) {
-                                jCurrentTimeMillis8 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                                jCurrentTimeMillis8 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                             }
                             i3 = (int) (((jCurrentTimeMillis8 - bap) / 1000.0f) - 0.5f);
                         } else {
@@ -58833,7 +58833,7 @@ public final class ci extends GLLib implements av {
             b(true, false, false);
             c(false, 0, avR);
             aC(true);
-            a(false, (ch) null);
+            a(false, (FarmEntity) null);
             Ex();
             ED();
             hX(0);
@@ -58889,7 +58889,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 1) {
             aMh = false;
-            ch chVarFm = Fm();
+            FarmEntity chVarFm = Fm();
             if (aMg == null || (chVarFm != null && chVarFm.ant != aMg.ant)) {
                 aMg = chVarFm;
             }
@@ -58906,7 +58906,7 @@ public final class ci extends GLLib implements av {
                 gJ(0);
             }
             dk(26856);
-            GLLib.b(GLLib.Qj, atc[0][3][2], atc[0][3][3], 416.0f, 20.0f, true);
+            GameRuntime.b(GameRuntime.Qj, atc[0][3][2], atc[0][3][3], 416.0f, 20.0f, true);
             avk = false;
             if (aMl && aMk) {
                 aMk = false;
@@ -58962,17 +58962,17 @@ public final class ci extends GLLib implements av {
             }
             DF();
             gM(1);
-            if (aYR == -1 && (aYS == -1 || aYS == 0)) {
+            if (currentTutorialStepIndex == -1 && (aYS == -1 || aYS == 0)) {
                 StringBuilder sbAppend3 = new StringBuilder().append("RATING POPUP DISPLAY : ").append(aMq ? " YES " : " NO ").append(" s_bNVSShow ").append(aMN).append(" launch times ").append(aMs).append(" timeUpdatePopup ");
                 long jCurrentTimeMillis9 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis9 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis9 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 sbAppend3.append(jCurrentTimeMillis9 - aMP).toString();
                 if (FC() > 3 && aMq && !aMN) {
                     long jCurrentTimeMillis10 = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis10 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis10 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                     if (jCurrentTimeMillis10 - aMP > 2000 && aMs == 0 && aTK && !axQ && !awV && axU && aLV != 13) {
                         String str2 = aMw;
@@ -58983,7 +58983,7 @@ public final class ci extends GLLib implements av {
                         if (!str2.equals(strDt2) && (strBY = GloftGF2F.acx.bY("conectivity")) != null && !strBY.equals("off")) {
                             long jCurrentTimeMillis11 = System.currentTimeMillis();
                             if (w.Vl) {
-                                jCurrentTimeMillis11 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                                jCurrentTimeMillis11 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                             }
                             aMO = jCurrentTimeMillis11;
                             String strDt3 = dt(476);
@@ -59103,18 +59103,18 @@ public final class ci extends GLLib implements av {
             if (avQ != -1) {
                 hc(avQ);
             }
-            baa = true;
-            if (aYR == 0) {
+            hasUnsavedGameChanges = true;
+            if (currentTutorialStepIndex == 0) {
                 ie(15);
                 Ep();
-                aYR = 1;
-            } else if (aYR != -1) {
+                currentTutorialStepIndex = 1;
+            } else if (currentTutorialStepIndex != -1) {
                 fE(19);
                 Ep();
             }
             TutorialFlowController.restoreWorldUi();
             FE();
-            ch.fa(1);
+            FarmEntity.fa(1);
             if (bao != 116011) {
                 ban = bao;
             }
@@ -59137,7 +59137,7 @@ public final class ci extends GLLib implements av {
             }
             if (lM(aZQ[298]) || lN(297)) {
                 if (axt != 0) {
-                    ch chVarHA = null;
+                    FarmEntity chVarHA = null;
                     if (axt == 1) {
                         chVarHA = hA(73);
                     } else if (axt == 2) {
@@ -59149,9 +59149,9 @@ public final class ci extends GLLib implements av {
                         f(true, axt == 1);
                     }
                 } else {
-                    ch chVarHA2 = hA(73);
+                    FarmEntity chVarHA2 = hA(73);
                     if (chVarHA2 == null || !(chVarHA2.Bj == 1 || u(chVarHA2))) {
-                        ch chVarHA3 = hA(74);
+                        FarmEntity chVarHA3 = hA(74);
                         if (chVarHA3 != null && (chVarHA3.Bj == 1 || u(chVarHA3))) {
                             axt = 2;
                             f(true, false);
@@ -59162,7 +59162,7 @@ public final class ci extends GLLib implements av {
                     }
                 }
                 if (axt == 0) {
-                    ch.au(false);
+                    FarmEntity.au(false);
                     f(false, false);
                 }
             }
@@ -59172,34 +59172,34 @@ public final class ci extends GLLib implements av {
                 return false;
             }
             if (!hh(aYS)) {
-                if (GLLib.dB(0)) {
+                if (GameRuntime.dB(0)) {
                     awj = false;
                 }
-                if (GLLib.dA(0)) {
+                if (GameRuntime.dA(0)) {
                     if (aZi.oY()) {
                         Ek();
                         return true;
                     }
-                    if (aZo != null && aYR != 35 && aYR != 18) {
-                        a(false, (ch) null);
+                    if (aZo != null && currentTutorialStepIndex != 35 && currentTutorialStepIndex != 18) {
+                        a(false, (FarmEntity) null);
                     }
                     if (avD != 3) {
                         aA(false);
                     }
                     if (avD == 0 || avD == 1 || avD == 4) {
                         int[] iArr = new int[2];
-                        int[] iArr2 = {GLLib.dG(0), GLLib.dH(0)};
+                        int[] iArr2 = {GameRuntime.dG(0), GameRuntime.dH(0)};
                         c(iArr2, iArr);
                         f(iArr, iArr2);
                         if (avE != null && bE(iArr2[0], iArr2[1]) > -1
                                 && (avD == 1 || (aAI == -1 && aAH == -1 && aAK == -1
-                                && !isMoveControlTouch(GLLib.dG(0), GLLib.dH(0))))) {
+                                && !isMoveControlTouch(GameRuntime.dG(0), GameRuntime.dH(0))))) {
                             g(iArr2, iArr);
                             avE.aol = iArr[0];
                             avE.aom = iArr[1];
                         }
                     }
-                } else if (aZp > 15 && avE != aZn && aYR != 15 && aYR != 53 && aYR != 52 && aYR != 43 && aYS != 1031) {
+                } else if (aZp > 15 && avE != aZn && currentTutorialStepIndex != 15 && currentTutorialStepIndex != 53 && currentTutorialStepIndex != 52 && currentTutorialStepIndex != 43 && aYS != 1031) {
                     String str5 = "move state;" + avD;
                     if (avD == 0 || avD == 1 || avD == 4) {
                         sv();
@@ -59236,7 +59236,7 @@ public final class ci extends GLLib implements av {
                         }
                     }
                 }
-                if (aAH == -1 && aAI == -1 && avD == -1 && ((GLLib.dB(0) || GLLib.dC(0) || GLLib.dA(0) || GLLib.dE(0)) && (chVarAB = ch.aB(1, 22)) != null)) {
+                if (aAH == -1 && aAI == -1 && avD == -1 && ((GameRuntime.dB(0) || GameRuntime.dC(0) || GameRuntime.dA(0) || GameRuntime.dE(0)) && (chVarAB = FarmEntity.aB(1, 22)) != null)) {
                     if (chVarAB.Bj == 1) {
                         if (chVarAB.aoh == -1) {
                             strDt = "%RETRIEVE ITEM NAME ERROR%" + chVarAB.aoh;
@@ -59255,7 +59255,7 @@ public final class ci extends GLLib implements av {
                     }
                     return true;
                 }
-                if ((avP > -1 || (aww == 2 && (ch.oP() == null || !ch.oP().anw))) && GLLib.dA(0) && aAI == -1 && ((aZm == null || (aZm.Kx != 49 && aZm.Kx != 52 && aZm.Kx != 69)) && Fb() < 50)) {
+                if ((avP > -1 || (aww == 2 && (FarmEntity.oP() == null || !FarmEntity.oP().anw))) && GameRuntime.dA(0) && aAI == -1 && ((aZm == null || (aZm.Kx != 49 && aZm.Kx != 52 && aZm.Kx != 69)) && Fb() < 50)) {
                     hc(-1);
                 }
                 if (avD != -1) {
@@ -59294,7 +59294,7 @@ public final class ci extends GLLib implements av {
                                     if (awS) {
                                         return true;
                                     }
-                                    if ((aYR != 23 || aZm.aoC == 14) && awX != 1 && awX != 2) {
+                                    if ((currentTutorialStepIndex != 23 || aZm.aoC == 14) && awX != 1 && awX != 2) {
                                         if (aZm.aoC == 9) {
                                             fE(9);
                                             return true;
@@ -59362,17 +59362,17 @@ public final class ci extends GLLib implements av {
                                                 int iP = 0;
                                                 if (aZm.aoC == 11) {
                                                     gX(15);
-                                                    iP = 0 + ch.p(1, 54, 5, 15);
+                                                    iP = 0 + FarmEntity.p(1, 54, 5, 15);
                                                     i2 = 1;
                                                 } else if (aZm.aoC == 12) {
                                                     gX(16);
-                                                    iP = 0 + ch.p(1, 54, 17, 27) + ch.p(1, 54, 41, 51) + ch.p(1, 54, 53, 63);
+                                                    iP = 0 + FarmEntity.p(1, 54, 17, 27) + FarmEntity.p(1, 54, 41, 51) + FarmEntity.p(1, 54, 53, 63);
                                                     i2 = 2;
                                                 } else {
                                                     i2 = 0;
                                                 }
                                                 int i7 = (iP / 3) + 1;
-                                                if (hF(5) + ch.fe(3) + i7 > Fw()) {
+                                                if (hF(5) + FarmEntity.fe(3) + i7 > Fw()) {
                                                     if (hF(5) < Fw()) {
                                                         String strDt6 = dt(486);
                                                         if (strDt6 == null) {
@@ -59390,18 +59390,18 @@ public final class ci extends GLLib implements av {
                                                     return true;
                                                 }
                                                 int[] iArr3 = {0, 0, 14};
-                                                ch.b(47, 3, iArr3);
-                                                ch chVarB = ch.b(47, 3, iArr3);
+                                                FarmEntity.b(47, 3, iArr3);
+                                                FarmEntity chVarB = FarmEntity.b(47, 3, iArr3);
                                                 aa(aZI[aZm.aoC], 1, 7);
                                                 String str11 = "animal count : " + iP;
-                                                int iL = ((iP / 3) * GLLib.L(0, 2)) + 1;
+                                                int iL = ((iP / 3) * GameRuntime.L(0, 2)) + 1;
                                                 String str12 = "itemQty1 : " + iL;
                                                 chVarB.b(aZm.aol, aZm.aom, 59, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, i2 | (iL << 16));
                                                 aZm.alW = false;
-                                                ch chVar = aZm;
+                                                FarmEntity chVar = aZm;
                                                 long jCurrentTimeMillis12 = System.currentTimeMillis();
                                                 if (w.Vl) {
-                                                    jCurrentTimeMillis12 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                                                    jCurrentTimeMillis12 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                                                 }
                                                 chVar.alV = jCurrentTimeMillis12 / 1000;
                                                 aZm.qq();
@@ -59417,7 +59417,7 @@ public final class ci extends GLLib implements av {
                                                 return true;
                                             }
                                         } else if (aZm.aoC == 29) {
-                                            if (ch.pk()) {
+                                            if (FarmEntity.pk()) {
                                                 fE(61);
                                             }
                                         } else if (aZm.aoC == 17 && aZm.fz(AdRequest.MAX_CONTENT_URL_LENGTH)) {
@@ -59521,14 +59521,14 @@ public final class ci extends GLLib implements av {
                     c(iArr5, iArr4);
                     f(iArr4, iArr5);
                     g(iArr5, iArr4);
-                    ch.b(47, 3, new int[]{0, 0, 14}).b(iArr4[0], iArr4[1], 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, aTD);
+                    FarmEntity.b(47, 3, new int[]{0, 0, 14}).b(iArr4[0], iArr4[1], 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, aTD);
                     aTD = (short) 0;
                 }
             }
             if (aMi) {
                 return false;
             }
-            if (aYR == 1 && apz == 36) {
+            if (currentTutorialStepIndex == 1 && apz == 36) {
                 return false;
             }
             if (qN() && bt.nY() && !aLR) {
@@ -59606,7 +59606,7 @@ public final class ci extends GLLib implements av {
             if (qN() && bt.nY() && arg && !aLG) {
                 long jCurrentTimeMillis13 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis13 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis13 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 if (jCurrentTimeMillis13 - aLI > aLH && !aLJ.equals("")) {
                     s.e(s.js(), "Farm", aLJ, "public");
@@ -59625,21 +59625,21 @@ public final class ci extends GLLib implements av {
             if (aMi) {
                 return false;
             }
-            if (aYR == 1 && apz == 36) {
+            if (currentTutorialStepIndex == 1 && apz == 36) {
                 return false;
             }
             dk(0);
-            GLLib.b(GLLib.Qj, 0.0f, 0.0f, kH(), kI(), true);
+            GameRuntime.b(GameRuntime.Qj, 0.0f, 0.0f, kH(), kI(), true);
             if (!aPk && atf[0] != null) {
                 atf[0].a(Qj, 0, 0.0f, 0.0f, 0);
             }
-            if (aYR == 1 && apz == 36) {
+            if (currentTutorialStepIndex == 1 && apz == 36) {
                 return false;
             }
             DV();
             aU(false);
             Ea();
-            if (!Ee() || qD() == 44) {
+            if (!Ee() || currentEngineState() == 44) {
                 br(false);
             } else {
                 br(true);
@@ -59665,7 +59665,7 @@ public final class ci extends GLLib implements av {
                 return false;
             }
             aYW = true;
-            ch chVarFm2 = Fm();
+            FarmEntity chVarFm2 = Fm();
             if (chVarFm2 == null || chVarFm2.Bj != 8) {
                 rz();
             }
@@ -59688,9 +59688,9 @@ public final class ci extends GLLib implements av {
                 }
             }
             FN();
-            ch.oM();
+            FarmEntity.oM();
             aZj = null;
-            ch.oL();
+            FarmEntity.oL();
             bo(1, 33);
         }
         return false;
@@ -59712,10 +59712,10 @@ public final class ci extends GLLib implements av {
         if (i9 != 0) {
             if (i9 == 255) {
                 dk(i10);
-                GLLib.b(GLLib.Qj, i4, i5, s, s2, true);
+                GameRuntime.b(GameRuntime.Qj, i4, i5, s, s2, true);
             } else {
                 dl(i10);
-                GLLib.b(GLLib.Qj, i4, i5, s, s2, true);
+                GameRuntime.b(GameRuntime.Qj, i4, i5, s, s2, true);
             }
         }
     }
@@ -59729,7 +59729,7 @@ public final class ci extends GLLib implements av {
             return;
         }
         dk(((sArr[7] & 255) << 16) | ((sArr[8] & 255) << 8) | (sArr[9] & 255));
-        GLLib.c(GLLib.Qj, i4, i5, s, s2, true);
+        GameRuntime.c(GameRuntime.Qj, i4, i5, s, s2, true);
     }
 
     public static void II() {
@@ -59760,7 +59760,7 @@ public final class ci extends GLLib implements av {
             b(strDp, 18, 10, 0, 0);
             short s = atc[18][11][2];
             short s2 = atc[18][11][3];
-            GLLib.a(GLLib.Qj, aOb, s + 18, s2 + 18, 20, true);
+            GameRuntime.a(GameRuntime.Qj, aOb, s + 18, s2 + 18, 20, true);
             return;
         }
         if (aNZ > -1) {
@@ -59789,13 +59789,13 @@ public final class ci extends GLLib implements av {
             b(strDp2, 18, 10, 0, 0);
             short s3 = atc[18][11][2];
             short s4 = atc[18][11][3];
-            GLLib.a(GLLib.Qj, aOb, s3 + 18, s4 + 18, 20, true);
+            GameRuntime.a(GameRuntime.Qj, aOb, s3 + 18, s4 + 18, 20, true);
         }
     }
 
     static boolean Ld() {
         try {
-            String strBY = GLLib.Qu == null ? null : GLLib.Qu.bY("connectivity");
+            String strBY = GameRuntime.Qu == null ? null : GameRuntime.Qu.bY("connectivity");
             return strBY != null && strBY.equals("on");
         } catch (Exception e) {
             return false;
@@ -59805,7 +59805,7 @@ public final class ci extends GLLib implements av {
     static {
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         avC = jCurrentTimeMillis;
         avD = -1;
@@ -60187,7 +60187,7 @@ public final class ci extends GLLib implements av {
         aIl = false;
         aIt = -1;
         aIG = 0;
-        aIK = (ch[][]) Array.newInstance((Class<?>) ch.class, 8, 4);
+        aIK = (FarmEntity[][]) Array.newInstance((Class<?>) FarmEntity.class, 8, 4);
         aIL = new int[8];
         aIM = 0L;
         aIN = false;
@@ -60753,7 +60753,7 @@ public final class ci extends GLLib implements av {
         aZd = false;
         aZe = false;
         aZY = -1;
-        baa = false;
+        hasUnsavedGameChanges = false;
         bab = false;
         bac = false;
         bad = false;
@@ -60800,7 +60800,7 @@ public final class ci extends GLLib implements av {
         bbd = 0L;
         long jCurrentTimeMillis2 = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         bbe = jCurrentTimeMillis2;
         bbf = 0L;
@@ -60842,23 +60842,23 @@ public final class ci extends GLLib implements av {
         String str = "party ok. state:" + ((int) aOn);
         gX(60);
         if (aOn == 3) {
-            ch[] chVarArr = new ch[1];
-            ch.b(1, 50, 18, chVarArr, 1);
+            FarmEntity[] chVarArr = new FarmEntity[1];
+            FarmEntity.b(1, 50, 18, chVarArr, 1);
             String str2 = "manor building:" + chVarArr[0];
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             aIX = jCurrentTimeMillis / 1000;
             int[] iArr = {0, 0, 14};
-            ch chVarB = ch.b(47, 3, iArr);
+            FarmEntity chVarB = FarmEntity.b(47, 3, iArr);
             if (chVarArr[0] != null) {
                 if (aOv[0] > 0) {
                     chVarB.b(chVarArr[0].aol, chVarArr[0].aom, 59, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, true, true, aOw[0] | (aOv[0] << 16));
                     String str3 = "make res1. reward." + aOw[0];
                 }
                 if (aOv[1] > 0) {
-                    ch.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 59, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aOw[1] | (aOv[1] << 16));
+                    FarmEntity.b(47, 3, iArr).b(chVarArr[0].aol, chVarArr[0].aom, 59, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, true, aOw[1] | (aOv[1] << 16));
                     String str4 = "make res2. reward." + aOw[1];
                 }
                 String str5 = "reward coin:" + ((int) aOv[2]) + ",xp:" + ((int) aOv[3]);
@@ -60880,7 +60880,7 @@ public final class ci extends GLLib implements av {
         aWI = j;
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         aWJ = jCurrentTimeMillis;
         aWK = aWI - aWJ;
@@ -60911,7 +60911,7 @@ public final class ci extends GLLib implements av {
         }
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         axp = jCurrentTimeMillis + 86400000;
         Mf();
@@ -60927,15 +60927,15 @@ public final class ci extends GLLib implements av {
         if (awx && bg(1, 54)) {
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (awz < jCurrentTimeMillis) {
                 awx = false;
                 a(false, aVF, (char) 0);
             }
             int i = (int) (((awz - jCurrentTimeMillis) / 5) % 255);
-            GLLib.c(GLLib.Rp != null, "!!ERROR!! Math_Sin.s_math_cosTable is null, call Math_Init first");
-            awA = (short) ((((GLLib.cQ(GLLib.Rs - i) / 20) + 1) + atc[1][53][3]) - 80);
+            GameRuntime.c(GameRuntime.Rp != null, "!!ERROR!! Math_Sin.s_math_cosTable is null, call Math_Init first");
+            awA = (short) ((((GameRuntime.cQ(GameRuntime.Rs - i) / 20) + 1) + atc[1][53][3]) - 80);
             awB = (short) (awA + 3);
             atc[1][54][3] = awA;
             atc[1][55][3] = awB;
@@ -60943,11 +60943,11 @@ public final class ci extends GLLib implements av {
         if (awE) {
             long jCurrentTimeMillis2 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             int i2 = (int) ((jCurrentTimeMillis2 / 5) % 255);
-            GLLib.c(GLLib.Rp != null, "!!ERROR!! Math_Sin.s_math_cosTable is null, call Math_Init first");
-            awA = (short) ((GLLib.cQ(GLLib.Rs - i2) / 20) + 10 + atc[1][53][2] + 80);
+            GameRuntime.c(GameRuntime.Rp != null, "!!ERROR!! Math_Sin.s_math_cosTable is null, call Math_Init first");
+            awA = (short) ((GameRuntime.cQ(GameRuntime.Rs - i2) / 20) + 10 + atc[1][53][2] + 80);
             awB = (short) (awA + 15);
             atc[1][56][2] = awA;
             atc[1][57][2] = awA;
@@ -60971,7 +60971,7 @@ public final class ci extends GLLib implements av {
     static void Eo() {
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         if (ayD == 0) {
             ayD = jCurrentTimeMillis;
@@ -60989,12 +60989,12 @@ public final class ci extends GLLib implements av {
                 ayB += 8;
                 ayE = 0;
             }
-            int iCQ = GLLib.cQ(ayB);
+            int iCQ = GameRuntime.cQ(ayB);
             ayz = (((((i + i3) / 2) - ((((i3 - i) / 2) * iCQ) / 256)) - aZj.aol) * aYP) / 100;
             ayA = (((((i2 + i4) / 2) - ((((i4 - i2) / 2) * iCQ) / 256)) - aZj.aom) * aYP) / 100;
             int i7 = ayB;
-            GLLib.c(GLLib.Rp != null, "!!ERROR!! Math_Sin.s_math_cosTable is null, call Math_Init first");
-            if (GLLib.cQ(GLLib.Rs - i7) < 0) {
+            GameRuntime.c(GameRuntime.Rp != null, "!!ERROR!! Math_Sin.s_math_cosTable is null, call Math_Init first");
+            if (GameRuntime.cQ(GameRuntime.Rs - i7) < 0) {
                 ayq = false;
             } else {
                 ayq = true;
@@ -61025,18 +61025,18 @@ public final class ci extends GLLib implements av {
     static void Ga() {
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         if (jCurrentTimeMillis - aCC > 86400000 || aCM) {
             aCM = false;
             if (!aOP) {
-                baa = true;
+                hasUnsavedGameChanges = true;
                 bab = true;
             }
             aCG = "auto";
             long jCurrentTimeMillis2 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             aCC = jCurrentTimeMillis2;
         }
@@ -61053,7 +61053,7 @@ public final class ci extends GLLib implements av {
         long[] jArr = azH;
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         jArr[i] = jCurrentTimeMillis;
     }
@@ -61070,7 +61070,7 @@ public final class ci extends GLLib implements av {
         String str2 = "restore helpers:" + aJv + ",buildid:" + iGc;
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         aJa = jCurrentTimeMillis / 1000;
         String str3 = "restore starting at : " + aJa;
@@ -61093,7 +61093,7 @@ public final class ci extends GLLib implements av {
         aNR = 0;
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         long j = (((long) ((axk || axl) ? 60 : 86400)) + azz[aNI][6]) - (jCurrentTimeMillis / 1000);
         if (azy[aNI][0] != 0) {
@@ -61244,7 +61244,7 @@ public final class ci extends GLLib implements av {
         if (aWL) {
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (jCurrentTimeMillis - aWM >= 360000) {
                 aWM = jCurrentTimeMillis;
@@ -61352,7 +61352,7 @@ public final class ci extends GLLib implements av {
         ati[2].Y(5, -1);
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         aUl = jCurrentTimeMillis;
         atc[24][21][7] = 2;
@@ -61394,31 +61394,31 @@ public final class ci extends GLLib implements av {
             }
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             aUm = j + jCurrentTimeMillis;
             String str = "time:" + aUm;
-            baa = true;
+            hasUnsavedGameChanges = true;
         }
     }
 
     static a a(int i, int i2, int i3, int i4, boolean z, boolean z2, boolean z3, int i5, int i6) {
         System.currentTimeMillis();
         if (w.Vl) {
-            long jElapsedRealtime = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            long jElapsedRealtime = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         System.currentTimeMillis();
         if (w.Vl) {
-            long jElapsedRealtime2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            long jElapsedRealtime2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
-        String str = GLLib.RI;
+        String str = GameRuntime.RI;
         if ((str.equals("/2") && i == 0) || ((str.equals("/3") && i == 0) || (str.equals("/4") && i == 0))) {
             bf bfVar = new bf(5);
             bfVar.f(0, 17, 122, 233, 255);
             bfVar.f(1, 255, 255, 255, 255);
             bfVar.f(2, 74, 46, 83, 255);
             bfVar.bQ(0);
-            bfVar.d(GLLib.db(i), 0);
+            bfVar.d(GameRuntime.db(i), 0);
             return bfVar;
         }
         if ((str.equals("/2") && i == 1) || ((str.equals("/4") && i == 1) || ((str.equals("/3") && i == 1) || ((str.equals("/5") && i == 0) || (str.equals("/6") && i == 0))))) {
@@ -61430,7 +61430,7 @@ public final class ci extends GLLib implements av {
             bfVar2.f(4, 184, 137, 50, 255);
             bfVar2.f(5, 255, 0, 0, 255);
             bfVar2.bQ(0);
-            bfVar2.d(GLLib.db(i), 0);
+            bfVar2.d(GameRuntime.db(i), 0);
             return bfVar2;
         }
         if ((str.equals("/2") && i == 2) || ((str.equals("/4") && (i == 2 || i == 6)) || ((str.equals("/3") && i == 2) || ((str.equals("/5") && i == 1) || (str.equals("/6") && i == 1))))) {
@@ -61477,33 +61477,33 @@ public final class ci extends GLLib implements av {
                 bfVar3.f(10, 7, 172, 34, 255);
             }
             bfVar3.bQ(0);
-            bfVar3.d(GLLib.db(i), 0);
+            bfVar3.d(GameRuntime.db(i), 0);
             if (str.equals("/4") && (i == 2 || i == 6)) {
                 a aVar = new a();
-                aVar.d(GLLib.db(3), 0);
+                aVar.d(GameRuntime.db(3), 0);
                 bfVar3.b(aVar);
                 return bfVar3;
             }
             if (str.equals("/3") && i == 2) {
                 a aVar2 = new a();
-                aVar2.d(GLLib.db(3), 0);
+                aVar2.d(GameRuntime.db(3), 0);
                 bfVar3.b(aVar2);
                 return bfVar3;
             }
             if (str.equals("/5") && i == 1) {
                 a aVar3 = new a();
-                aVar3.d(GLLib.db(2), 0);
+                aVar3.d(GameRuntime.db(2), 0);
                 bfVar3.b(aVar3);
                 return bfVar3;
             }
             if (str.equals("/6") && i == 1) {
                 a aVar4 = new a();
-                aVar4.d(GLLib.db(2), 0);
+                aVar4.d(GameRuntime.db(2), 0);
                 bfVar3.b(aVar4);
                 return bfVar3;
             }
             a aVar5 = new a();
-            aVar5.d(GLLib.db(3), 0);
+            aVar5.d(GameRuntime.db(3), 0);
             bfVar3.b(aVar5);
             return bfVar3;
         }
@@ -61537,10 +61537,10 @@ public final class ci extends GLLib implements av {
                 bfVar4.h(2, 12, 75, 137, 255);
             }
             bfVar4.bQ(0);
-            bfVar4.d(GLLib.db(i), 0);
+            bfVar4.d(GameRuntime.db(i), 0);
             a aVar6 = new a();
             if (str.equals("/4") || str.equals("/2")) {
-                aVar6.d(GLLib.db(5), 0);
+                aVar6.d(GameRuntime.db(5), 0);
                 bfVar4.b(aVar6);
             }
             bfVar4.ap(0, 3);
@@ -61549,18 +61549,18 @@ public final class ci extends GLLib implements av {
         a aVar7 = new a();
         if (Mt() || !Mu()) {
             if (getDeviceName() == null || !(getDeviceName().equals("SO-02C") || getDeviceName().equals("KM-S200") || getDeviceName().equals("DROID X2") || getDeviceName().equals("DROIDX") || getDeviceName().equals("DROID3") || getDeviceName().equals("R800i") || getDeviceName().equals("XT860") || getDeviceName().equals("LG-P700") || getDeviceName().equals("LG-P705") || getDeviceName().equals("LG-MS910") || getDeviceName().equals("GT-I9000") || getDeviceName().equals("LG-P500") || getDeviceName().equals("Kindle Fire") || getDeviceName().equals("HUAWEI Y210-0151") || getDeviceName().equals("GT-S6810P") || getDeviceName().equals("GT-S5660") || getDeviceName().equals("GT-S5830i") || getDeviceName().equals("GT-S5839i") || getDeviceName().equals("SCH-R680") || getDeviceName().equals("XT303") || getDeviceName().equals("HTC Wildfire S A510e") || getDeviceName().equals("PC36100") || getDeviceName().equals("GT-S5560") || getDeviceName().equals("MB860"))) {
-                if ((GLLib.RI.equals("/9") && i == 0) || ((GLLib.RI.equals("/9") && i == 77) || ((GLLib.RI.equals("/9") && i == 78) || ((GLLib.RI.equals("/9") && i == 79) || ((GLLib.RI.equals("/9") && i == 81) || ((GLLib.RI.equals("/9") && i == 158) || ((GLLib.RI.equals("/9") && i == 101) || ((GLLib.RI.equals("/9") && i == 100) || ((GLLib.RI.equals("/9") && i == 97) || ((GLLib.RI.equals("/9") && i == 97) || ((GLLib.RI.equals("/11") && i == 19) || ((GLLib.RI.equals("/11") && i == 0) || ((GLLib.RI.equals("/11") && i == 47) || (GLLib.RI.equals("/11") && i == 33)))))))))))))) {
-                    GLLib.dp(2);
+                if ((GameRuntime.RI.equals("/9") && i == 0) || ((GameRuntime.RI.equals("/9") && i == 77) || ((GameRuntime.RI.equals("/9") && i == 78) || ((GameRuntime.RI.equals("/9") && i == 79) || ((GameRuntime.RI.equals("/9") && i == 81) || ((GameRuntime.RI.equals("/9") && i == 158) || ((GameRuntime.RI.equals("/9") && i == 101) || ((GameRuntime.RI.equals("/9") && i == 100) || ((GameRuntime.RI.equals("/9") && i == 97) || ((GameRuntime.RI.equals("/9") && i == 97) || ((GameRuntime.RI.equals("/11") && i == 19) || ((GameRuntime.RI.equals("/11") && i == 0) || ((GameRuntime.RI.equals("/11") && i == 47) || (GameRuntime.RI.equals("/11") && i == 33)))))))))))))) {
+                    GameRuntime.dp(2);
                 } else {
-                    GLLib.dp(0);
+                    GameRuntime.dp(0);
                 }
-            } else if ((GLLib.RI.equals("/11") && i == 19) || ((GLLib.RI.equals("/11") && i == 47) || ((GLLib.RI.equals("/9") && i == 0) || ((GLLib.RI.equals("/9") && i == 77) || ((GLLib.RI.equals("/9") && i == 78) || (GLLib.RI.equals("/9") && i == 79)))))) {
-                GLLib.dp(2);
+            } else if ((GameRuntime.RI.equals("/11") && i == 19) || ((GameRuntime.RI.equals("/11") && i == 47) || ((GameRuntime.RI.equals("/9") && i == 0) || ((GameRuntime.RI.equals("/9") && i == 77) || ((GameRuntime.RI.equals("/9") && i == 78) || (GameRuntime.RI.equals("/9") && i == 79)))))) {
+                GameRuntime.dp(2);
             } else {
-                GLLib.dp(0);
+                GameRuntime.dp(0);
             }
         }
-        aVar7.d(GLLib.db(i), 0);
+        aVar7.d(GameRuntime.db(i), 0);
         if (!z) {
             return aVar7;
         }
@@ -61573,13 +61573,13 @@ public final class ci extends GLLib implements av {
     static void a(a aVar, int i, int i2, int i3) {
         System.currentTimeMillis();
         if (w.Vl) {
-            long jElapsedRealtime = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            long jElapsedRealtime = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         int iHw = aVar.hw();
         for (int i4 = 0; i4 < iHw; i4++) {
             System.currentTimeMillis();
             if (w.Vl) {
-                long jElapsedRealtime2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                long jElapsedRealtime2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (((i >> i4) & 1) != 0) {
             }
@@ -61591,13 +61591,13 @@ public final class ci extends GLLib implements av {
         StringBuilder sbAppend = new StringBuilder().append("== NOW : ");
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         sbAppend.append(jCurrentTimeMillis / 1000).toString();
         long jX = x(aJo) + aJa;
         long jCurrentTimeMillis2 = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         if (jX > jCurrentTimeMillis2 / 1000) {
             String str3 = "== Restore still valid. Checking invite list for " + str;
@@ -61631,7 +61631,7 @@ public final class ci extends GLLib implements av {
                             String str6 = "=== Party end : " + j2;
                             long jCurrentTimeMillis = System.currentTimeMillis();
                             if (w.Vl) {
-                                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                             }
                             String str7 = "=== current : " + jCurrentTimeMillis;
                             if (z(j) < jCurrentTimeMillis && jCurrentTimeMillis < z(j2)) {
@@ -61655,7 +61655,7 @@ public final class ci extends GLLib implements av {
                             String str13 = "=== serverEnd : " + jZ2;
                             long jCurrentTimeMillis2 = System.currentTimeMillis();
                             if (w.Vl) {
-                                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                             }
                             String str14 = "=== current : " + jCurrentTimeMillis2;
                             if (jZ < jCurrentTimeMillis2 && jCurrentTimeMillis2 < jZ2) {
@@ -61677,14 +61677,14 @@ public final class ci extends GLLib implements av {
         String str2 = "Show_Toast ---------------------------------------------------------------- " + str;
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         long j = jCurrentTimeMillis / 1000;
         boolean z = false;
         if (baw == 0) {
             long jCurrentTimeMillis2 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             baw = jCurrentTimeMillis2 / 1000;
             z = true;
@@ -61708,12 +61708,12 @@ public final class ci extends GLLib implements av {
         }
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         if (jCurrentTimeMillis - aMX > 86400000) {
             long jCurrentTimeMillis2 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             aMX = jCurrentTimeMillis2;
             aML = 5;
@@ -62023,17 +62023,17 @@ public final class ci extends GLLib implements av {
         }
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         if (z) {
-            GLLib.bk("/11");
+            GameRuntime.bk("/11");
             aT(1, 1);
-            GLLib.ke();
+            GameRuntime.ke();
         }
         StringBuilder sbAppend = new StringBuilder().append("!!!!!!!!!!!!!![GUI] LOADING");
         long jCurrentTimeMillis2 = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         sbAppend.append(jCurrentTimeMillis2 - jCurrentTimeMillis).append(" ms").toString();
         switch (i) {
@@ -62063,7 +62063,7 @@ public final class ci extends GLLib implements av {
             aDj = bt.nY();
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             aDh = jCurrentTimeMillis;
             if (bbr) {
@@ -62072,7 +62072,7 @@ public final class ci extends GLLib implements av {
                     li(193996);
                     baY = false;
                 }
-                if (baY && aYR == -1) {
+                if (baY && currentTutorialStepIndex == -1) {
                     if (!aDk) {
                         li(193994);
                         aDk = true;
@@ -62081,7 +62081,7 @@ public final class ci extends GLLib implements av {
                         li(223739);
                     }
                     baY = false;
-                } else if (baY && aYR != -1) {
+                } else if (baY && currentTutorialStepIndex != -1) {
                     baY = false;
                     if (!aDl) {
                         li(193996);
@@ -62097,7 +62097,7 @@ public final class ci extends GLLib implements av {
                     li(193996);
                     aDg = true;
                 }
-                if (aTL != -1 && !aDg && aYR == -1) {
+                if (aTL != -1 && !aDg && currentTutorialStepIndex == -1) {
                     if (!aDk) {
                         li(193994);
                         aDk = true;
@@ -62106,7 +62106,7 @@ public final class ci extends GLLib implements av {
                         li(223739);
                     }
                     aDg = true;
-                } else if (aTL != -1 && !aDg && aYR != -1 && !aDl) {
+                } else if (aTL != -1 && !aDg && currentTutorialStepIndex != -1 && !aDl) {
                     if (aPg && FB() == aZw[1]) {
                         hT(5);
                     }
@@ -62128,9 +62128,9 @@ public final class ci extends GLLib implements av {
                 atc[0][1][5] = 49;
             }
             if (w.Vp) {
-                GLLib.Qx = 1;
+                GameRuntime.Qx = 1;
             } else {
-                GLLib.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
+                GameRuntime.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
             }
             if (ash == asa) {
                 switch (asi) {
@@ -62163,7 +62163,7 @@ public final class ci extends GLLib implements av {
             } else if (ash == ase) {
                 qR();
             } else if (aDd != "") {
-                GLLib.bk(aDd);
+                GameRuntime.bk(aDd);
                 aDd = "";
             }
             e(0, 4, true);
@@ -62176,19 +62176,19 @@ public final class ci extends GLLib implements av {
         }
         if (i == 5) {
             aDh = 0L;
-            aOF = qD();
+            aOF = currentEngineState();
             String str2 = "s_stateRepaint=====================" + aOF;
             if (w.screenWidth > 854 || w.screenHeight > 480) {
                 atf[124].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
             }
             gJ(0);
             dk(26856);
-            GLLib.b(GLLib.Qj, atc[0][3][2], atc[0][3][3], 416.0f, 20.0f, true);
+            GameRuntime.b(GameRuntime.Qj, atc[0][3][2], atc[0][3][3], 416.0f, 20.0f, true);
             asr = false;
             if (w.Vp) {
-                GLLib.Qx = -1;
+                GameRuntime.Qx = -1;
             } else {
-                GLLib.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
+                GameRuntime.be("SetCustomSleepTime: Feature is not enabled! Please set allowCustomSleepTime to TRUE.");
             }
             ash = asa;
             if (asi != -1) {
@@ -62204,7 +62204,7 @@ public final class ci extends GLLib implements av {
         if (i == 2) {
             long jCurrentTimeMillis2 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (((jCurrentTimeMillis2 - aDh) / 1000 > 40 || !qO()) && asi == 37 && ash == asg && !aDf) {
                 bbo = true;
@@ -62286,7 +62286,7 @@ public final class ci extends GLLib implements av {
                 }
             }
             dk(26856);
-            GLLib.b(GLLib.Qj, atc[0][3][2], atc[0][3][3], i2, 20.0f, true);
+            GameRuntime.b(GameRuntime.Qj, atc[0][3][2], atc[0][3][3], i2, 20.0f, true);
         }
         return false;
     }
@@ -62300,12 +62300,12 @@ public final class ci extends GLLib implements av {
             aNw = b(9, 0, 1, 15, 85, 138) + 10;
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             bap = jCurrentTimeMillis;
             aNB = 0L;
-            if (qE() != 46) {
-                aNC = qE();
+            if (previousEngineState() != 46) {
+                aNC = previousEngineState();
             }
         }
         if (i == 1) {
@@ -62352,17 +62352,17 @@ public final class ci extends GLLib implements av {
                 StringBuilder sbAppend = new StringBuilder().append("loadint_times. resume.: ");
                 long jCurrentTimeMillis2 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 sbAppend.append(jCurrentTimeMillis2 / 1000).append(",start:").append(bap / 1000).toString();
                 long jCurrentTimeMillis3 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 long j = (jCurrentTimeMillis3 - bap) / 1000;
                 long jCurrentTimeMillis4 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 baf.b(51903, new String[]{"INT:" + Integer.toString(124906), "INT:" + Integer.toString((int) ((jCurrentTimeMillis4 - bap) % 1000 > 0 ? 1 + j : j)), "INT:" + Integer.toString(FC())});
                 bap = 0L;
@@ -62553,7 +62553,7 @@ public final class ci extends GLLib implements av {
                 a(strDt2, 9, 1, 0, 0);
                 int[] iArr = new int[4];
                 atf[atc[9][11][5]].a(atc[9][11][6], 0, iArr, 0);
-                GLLib.a(GLLib.Qj, atc[9][11][2] + iArr[0], atc[9][11][3] + iArr[1], iArr[2], iArr[3], true);
+                GameRuntime.a(GameRuntime.Qj, atc[9][11][2] + iArr[0], atc[9][11][3] + iArr[1], iArr[2], iArr[3], true);
                 for (int i8 = 0; i8 < aNk && i8 < 5; i8++) {
                     int i9 = i8 * 11;
                     String strDt3 = dt(aNf[aNd + i8]);
@@ -62570,7 +62570,7 @@ public final class ci extends GLLib implements av {
                         a(sb.append(strDt4).append(Integer.toString(aNg[aNd + i8])).toString(), 9, i9 + 22, 0, 0);
                     }
                 }
-                GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
             } else if (auh) {
                 if (!qN() || bt.nY()) {
                 }
@@ -62643,9 +62643,9 @@ public final class ci extends GLLib implements av {
                         int i16 = iArr2[2];
                         short s = atc[9][72][5];
                         short s2 = atc[9][72][6];
-                        GLLib.a(GLLib.Qj, i15, atc[9][69][3] + iArr2[1], i16, iArr2[3], true);
+                        GameRuntime.a(GameRuntime.Qj, i15, atc[9][69][3] + iArr2[1], i16, iArr2[3], true);
                         if (i11 == 0 && aNm == 0) {
-                            atf[20].a(GLLib.Qj, 192, (float) (atc[9][72][2] + (s >> 1)), (float) (atc[9][72][3] + (s2 >> 1)), 0);
+                            atf[20].a(GameRuntime.Qj, 192, (float) (atc[9][72][2] + (s >> 1)), (float) (atc[9][72][3] + (s2 >> 1)), 0);
                         }
                         int i17 = ((i11 + 1) * 15) + 72;
                         short s3 = atc[9][i17][2];
@@ -62654,13 +62654,13 @@ public final class ci extends GLLib implements av {
                             try {
                                 ay ayVarMl = aNn[aNm + i11].ml();
                                 if (ayVarMl != null) {
-                                    GLLib.a(GLLib.Qj, ayVarMl, s3 + 18, i18 + 18, 20, true);
+                                    GameRuntime.a(GameRuntime.Qj, ayVarMl, s3 + 18, i18 + 18, 20, true);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
-                        GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                        GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                         i11++;
                         i10 = i12;
                     }
@@ -62672,9 +62672,9 @@ public final class ci extends GLLib implements av {
                         int i20 = iArr3[2];
                         short s4 = atc[9][72][5];
                         short s5 = atc[9][72][6];
-                        GLLib.a(GLLib.Qj, i19, atc[9][69][3] + iArr3[1], i20, iArr3[3], true);
-                        atf[20].a(GLLib.Qj, 192, (float) (atc[9][72][2] + (s4 >> 1)), (float) (atc[9][72][3] + (s5 >> 1)), 0);
-                        GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                        GameRuntime.a(GameRuntime.Qj, i19, atc[9][69][3] + iArr3[1], i20, iArr3[3], true);
+                        atf[20].a(GameRuntime.Qj, 192, (float) (atc[9][72][2] + (s4 >> 1)), (float) (atc[9][72][3] + (s5 >> 1)), 0);
+                        GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                     }
                 }
             }
@@ -62699,7 +62699,7 @@ public final class ci extends GLLib implements av {
         int i2;
         gX(47);
         String str = "[reqitem] send.:" + i + ",generousity:" + aNj[aNI] + ",affi:" + azx[aNI][1] + ",max:" + aZw[24] + ",rand:100";
-        if ((aNj[aNI] * azx[aNI][1]) / aZw[24] >= GLLib.L(0, 100)) {
+        if ((aNj[aNI] * azx[aNI][1]) / aZw[24] >= GameRuntime.L(0, 100)) {
             switch (aJW[aJT + i]) {
                 case 0:
                     azx[aNI][4] = aJV[aJT + i];
@@ -62714,7 +62714,7 @@ public final class ci extends GLLib implements av {
         long[] jArr = azz[aNI];
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         jArr[1] = jCurrentTimeMillis / 1000;
         j jVarBY = j.bY(1);
@@ -62745,12 +62745,12 @@ public final class ci extends GLLib implements av {
         if (i == 1) {
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (jCurrentTimeMillis - aQd > 30000.0f || aPX == null) {
                 long jCurrentTimeMillis2 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 aQd = jCurrentTimeMillis2;
                 Ff();
@@ -62806,7 +62806,7 @@ public final class ci extends GLLib implements av {
                 aOZ = true;
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 aPb = jCurrentTimeMillis;
                 aPc = false;
@@ -62857,7 +62857,7 @@ public final class ci extends GLLib implements av {
                 } else if (!aPc && iOa == 0) {
                     long jCurrentTimeMillis2 = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                     if (jCurrentTimeMillis2 - aPb > 2000) {
                         aPa = true;
@@ -62909,9 +62909,9 @@ public final class ci extends GLLib implements av {
                                     if (bg(28, (i8 * 24) + 19 + (6 * i10))) {
                                         e(28, (6 * i10) + (i8 * 24) + 19, false);
                                     }
-                                    GLLib.a(GLLib.Qj, i5, iArr[1] + atc[28][17][3], i6, iArr[3], true);
-                                    a(GLLib.Qj, ayVarMl, s3, s4, 20, 80);
-                                    GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+                                    GameRuntime.a(GameRuntime.Qj, i5, iArr[1] + atc[28][17][3], i6, iArr[3], true);
+                                    a(GameRuntime.Qj, ayVarMl, s3, s4, 20, 80);
+                                    GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
                                 } else if (!bg(28, (i8 * 24) + 19 + (6 * i10))) {
                                     e(28, (6 * i10) + (i8 * 24) + 19, true);
                                 }
@@ -62997,7 +62997,7 @@ public final class ci extends GLLib implements av {
             gJ(31);
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             aPx = jCurrentTimeMillis;
             if (aPx - aPw > aPv) {
@@ -63005,7 +63005,7 @@ public final class ci extends GLLib implements av {
                 if (aPx - aPw > aPv * 2) {
                     long jCurrentTimeMillis2 = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                     aPw = jCurrentTimeMillis2;
                 }
@@ -63021,12 +63021,12 @@ public final class ci extends GLLib implements av {
         if (baf != null && bap > 0) {
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             long j = (jCurrentTimeMillis - bap) / 1000;
             long jCurrentTimeMillis2 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             baf.b(51903, new String[]{"INT:" + Integer.toString(i), "INT:" + Integer.toString((int) ((jCurrentTimeMillis2 - bap) % 1000 > 0 ? 1 + j : j)), "INT:" + Integer.toString(FC())});
         }
@@ -63073,7 +63073,7 @@ public final class ci extends GLLib implements av {
         }
         fJ(2);
         baI = GloftGF2F.acx.bY("getAvailableSpace");
-        if ((baI != null || arf) && qD() != 20 && qD() >= 4 && Long.parseLong(baI) < 1) {
+        if ((baI != null || arf) && currentEngineState() != 20 && currentEngineState() >= 4 && Long.parseLong(baI) < 1) {
             F(47, 48, 7, 0);
         }
         ah.mg();
@@ -63088,7 +63088,7 @@ public final class ci extends GLLib implements av {
                 if (baf != null) {
                     baf.b(51916, new String[]{"INT:" + Integer.toString(123831), "INT:" + Integer.toString(123835), Ku(), "INT:" + Integer.toString(bbB)});
                 }
-            } else if (!arD && arF && qD() == 43 && aOG == 21) {
+            } else if (!arD && arF && currentEngineState() == 43 && aOG == 21) {
                 arF = false;
                 qB();
                 aOG = 0;
@@ -63099,25 +63099,25 @@ public final class ci extends GLLib implements av {
             }
         }
         qQ();
-        if (qD() >= 18) {
+        if (currentEngineState() >= 18) {
             Mq();
         }
         if (arg && bz.om().fZ()) {
             long jCurrentTimeMillis2 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (jCurrentTimeMillis2 - arC > 300000) {
                 long jCurrentTimeMillis3 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 arC = jCurrentTimeMillis3;
                 bz.om().on();
             } else if (FC() >= 3) {
                 jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 if (jCurrentTimeMillis - aMO > 2000) {
                     str = aMw;
@@ -63153,10 +63153,10 @@ public final class ci extends GLLib implements av {
                     }
                 }
             }
-        } else if (FC() >= 3 && apQ == 0 && qD() == 18 && !aMa && aOG != 21 && qD() != 43) {
+        } else if (FC() >= 3 && apQ == 0 && currentEngineState() == 18 && !aMa && aOG != 21 && currentEngineState() != 43) {
             jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (jCurrentTimeMillis - aMO > 2000 && !atA) {
                 str = aMw;
@@ -63198,10 +63198,10 @@ public final class ci extends GLLib implements av {
             }
             arJ = 1;
             s.aZ(GloftGF2F.acx.bY("GameVer"));
-            if (GLLib.jr() == null) {
+            if (GameRuntime.jr() == null) {
                 s.f("NULLUDID", true);
             } else {
-                s.f(GLLib.jr(), true);
+                s.f(GameRuntime.jr(), true);
             }
             s.ba(Constants.PLATFORM);
             String strIY = iY();
@@ -63219,7 +63219,7 @@ public final class ci extends GLLib implements av {
                 apY = false;
                 MA();
             }
-            GLLib.bM("" + s.js());
+            GameRuntime.bM("" + s.js());
             aqZ = true;
             GloftGF2F gloftGF2F = GloftGF2F.acx;
             GloftGF2F.acw.lm();
@@ -63232,18 +63232,18 @@ public final class ci extends GLLib implements av {
             arJ = 2;
             qH();
         }
-        if (qN() && bt.nY() && aLR && !qO() && !aJC && qD() != 35 && qD() != 32 && qD() != 20) {
-            E(qD(), true);
+        if (qN() && bt.nY() && aLR && !qO() && !aJC && currentEngineState() != 35 && currentEngineState() != 32 && currentEngineState() != 20) {
+            E(currentEngineState(), true);
             O("auth", "Fail");
         }
         if (qN() && bt.nY() && aLR && !arv && bt.nZ() != null && bt.nZ().getId() != "" && bt.nW() && qO()) {
             String str8 = "#Tho ---------- userName = " + bt.nZ().getId() + " -----------";
             String str9 = "#Tho ---------- password = " + bt.getPassword() + " -----------";
             s.aZ(GloftGF2F.acx.bY("GameVer"));
-            if (GLLib.jr() == null) {
+            if (GameRuntime.jr() == null) {
                 s.f("NULLUDID", true);
             } else {
-                s.f(GLLib.jr(), true);
+                s.f(GameRuntime.jr(), true);
             }
             String str10 = " User Id : " + bt.nZ().getId();
             String str11 = " User Name : " + bt.nZ().getName();
@@ -63252,7 +63252,7 @@ public final class ci extends GLLib implements av {
             s.aV("facebook");
             String str12 = "#quy Username" + s.js();
             s.jn();
-            GLLib.bM("anonymous:" + iY());
+            GameRuntime.bM("anonymous:" + iY());
             arv = true;
             bby = bt.nZ().getId();
             if (bt.nZ().getName() != "") {
@@ -63316,7 +63316,7 @@ public final class ci extends GLLib implements av {
         if (qN() && bt.nY() && ark && bt.nW() && arg && !ary) {
             long jCurrentTimeMillis4 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (jCurrentTimeMillis4 - arq > arp) {
                 String str13 = "== Saving Profile to Seshat every " + arp + " ==> FED ";
@@ -63333,7 +63333,7 @@ public final class ci extends GLLib implements av {
         if (qN() && arg && !arB) {
             long jCurrentTimeMillis5 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis5 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis5 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (jCurrentTimeMillis5 - ars > arr) {
                 String str15 = "== Getting Gifts from Hermes every " + arr + " ==> FED ";
@@ -63383,7 +63383,7 @@ public final class ci extends GLLib implements av {
         if (qN() && bt.nY() && ark && bt.nW() && arg && !arA) {
             long jCurrentTimeMillis6 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis6 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis6 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (jCurrentTimeMillis6 - aru > art) {
                 String str20 = "== Getting Messages via Hermes every " + art + " ==> FED ";
@@ -63391,7 +63391,7 @@ public final class ci extends GLLib implements av {
                 arA = true;
             }
         }
-        if (qD() == 18 || qD() == 15) {
+        if (currentEngineState() == 18 || currentEngineState() == 15) {
             qL();
         }
         if (qN() && bt.nY() && ark && bt.nW() && arg && arx && arm == 1) {
@@ -63432,13 +63432,13 @@ public final class ci extends GLLib implements av {
         gX(48);
         if (hQ(aZw[35])) {
             qB();
-            ch chVarFm = Fm();
+            FarmEntity chVarFm = Fm();
             int iM = (m(chVarFm) * 3) - chVarFm.pC();
             if (aty != null && chVarFm != null) {
                 chVarFm.ann = true;
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 aCn = jCurrentTimeMillis;
                 chVarFm.d(aty);
@@ -63478,7 +63478,7 @@ public final class ci extends GLLib implements av {
         }
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         bap = jCurrentTimeMillis;
         wx();
@@ -63501,7 +63501,7 @@ public final class ci extends GLLib implements av {
     static boolean wJ() {
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         aSz = jCurrentTimeMillis;
         switch (aSd) {
@@ -63526,7 +63526,7 @@ public final class ci extends GLLib implements av {
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (!qN() || strBY == null || strBY.equals("off")) {
             aPi = true;
-            E(qD(), true);
+            E(currentEngineState(), true);
         } else {
             hb(23);
             if (bt.nY()) {
@@ -63543,7 +63543,7 @@ public final class ci extends GLLib implements av {
             }
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             bap = jCurrentTimeMillis;
         }
@@ -63558,7 +63558,7 @@ public final class ci extends GLLib implements av {
     static int y(byte[] bArr, int i) {
         byte bJ = j(bArr, i);
         int i2 = i + 1;
-        ch chVarBs = bs(0, bJ);
+        FarmEntity chVarBs = bs(0, bJ);
         chVarBs.aoC = bJ;
         short sK = k(bArr, i2);
         int i3 = i2 + 2;
@@ -63596,7 +63596,7 @@ public final class ci extends GLLib implements av {
         int i13 = i12 + 8;
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         if ((jCurrentTimeMillis / 1000) - chVarBs.amC < 0) {
             chVarBs.amC /= 1000;
@@ -63641,14 +63641,14 @@ public final class ci extends GLLib implements av {
     static void yM() {
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         long j = (jCurrentTimeMillis / 1000) + 86400;
         aIM = j;
         aIM = j;
         aIN = false;
         bj(false);
-        ch.b(47, 3, new int[]{0, 0, 14}).b(620, 365, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, 1);
+        FarmEntity.b(47, 3, new int[]{0, 0, 14}).b(620, 365, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, 1);
         gX(60);
     }
 
@@ -63725,28 +63725,28 @@ public final class ci extends GLLib implements av {
             if (i == t.Ov) {
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 arq = jCurrentTimeMillis;
                 ary = false;
             } else if (i == t.Pd) {
                 long jCurrentTimeMillis2 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 aru = jCurrentTimeMillis2;
                 arA = false;
             } else if (i == t.Ot && !str2.startsWith("cloud")) {
                 long jCurrentTimeMillis3 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 aLI = jCurrentTimeMillis3;
                 aLG = false;
             } else if (i == t.Pa) {
                 long jCurrentTimeMillis4 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 ars = jCurrentTimeMillis4;
                 arB = false;
@@ -63758,7 +63758,7 @@ public final class ci extends GLLib implements av {
                 arX = new bc(str);
             }
             if (i != t.Pr && i != t.OZ && i != t.Nn && i2 != 200 && (i != t.Pz || i2 != 304)) {
-                if (!arK && !aMN && !aJC && qD() != 35 && qD() != 32) {
+                if (!arK && !aMN && !aJC && currentEngineState() != 35 && currentEngineState() != 32) {
                     bz(false);
                     if (i2 == 408 || i2 == 504) {
                         return;
@@ -63770,8 +63770,8 @@ public final class ci extends GLLib implements av {
                         String str16 = "==> -> Error. Exception: " + exc.getMessage();
                     }
                     if (!arg || i == t.ND) {
-                        E(qD(), true);
-                        if (qD() != 43 && qD() != 39 && qD() != 4) {
+                        E(currentEngineState(), true);
+                        if (currentEngineState() != 43 && currentEngineState() != 39 && currentEngineState() != 4) {
                             aOH += "Error initializing Federation - Forcing Logout";
                             aOH += "\n" + i2 + " " + str3;
                             kp(13);
@@ -63783,29 +63783,29 @@ public final class ci extends GLLib implements av {
                         MB();
                         String exceptionMessage = exc.getMessage();
                         if ("java.net.UnknownHostException".equals(exc.getClass().getName()) || "java.net.ConnectException".equals(exc.getClass().getName()) || "java.lang.SecurityException".equals(exc.getClass().getName()) || "java.net.SocketException".equals(exc.getClass().getName()) || "Network not available".equals(exc.getMessage()) || (("java.io.IOException".equals(exc.getClass().getName()) && exceptionMessage != null && exceptionMessage.startsWith("Unknown error")) || (exceptionMessage != null && exceptionMessage.startsWith("Could not initialize network")))) {
-                            E(qD(), true);
-                            if (qD() != 43 && qD() != 39 && qD() != 4) {
+                            E(currentEngineState(), true);
+                            if (currentEngineState() != 43 && currentEngineState() != 39 && currentEngineState() != 4) {
                                 aOH += "No Internet connection";
                                 aOH += "\n" + i2 + " " + str3;
                                 kp(13);
                             }
                         } else if (i2 == 408 || i2 == 504 || "java.net.SocketTimeoutException".equals(exc.getClass().getName())) {
-                            E(qD(), false);
-                            if (qD() != 43 && qD() != 39 && qD() != 4) {
+                            E(currentEngineState(), false);
+                            if (currentEngineState() != 43 && currentEngineState() != 39 && currentEngineState() != 4) {
                                 aOH += "Timed out";
                                 aOH += "\n" + i2 + " " + str3;
                                 kp(13);
                             }
                         } else if ("Received authentication challenge is null".equals(exc.getMessage())) {
-                            E(qD(), false);
-                            if (qD() != 43 && qD() != 39 && qD() != 4) {
+                            E(currentEngineState(), false);
+                            if (currentEngineState() != 43 && currentEngineState() != 39 && currentEngineState() != 4) {
                                 aOH += "Wrong login / password";
                                 aOH += "\n" + i2 + " " + str3;
                                 kp(13);
                             }
                         } else {
-                            E(qD(), false);
-                            if (qD() != 43 && qD() != 39 && qD() != 4) {
+                            E(currentEngineState(), false);
+                            if (currentEngineState() != 43 && currentEngineState() != 39 && currentEngineState() != 4) {
                                 aOH += "Unknown Error. Cancelling request.";
                                 aOH += "\n" + i2 + " " + str3;
                                 kp(13);
@@ -63813,8 +63813,8 @@ public final class ci extends GLLib implements av {
                             exc.printStackTrace();
                         }
                     } else {
-                        E(qD(), false);
-                        if (qD() != 43 && qD() != 39 && qD() != 4) {
+                        E(currentEngineState(), false);
+                        if (currentEngineState() != 43 && currentEngineState() != 39 && currentEngineState() != 4) {
                             aOH += "Error without exception. Cancelling request.";
                             aOH += "\n" + i2 + " " + str3;
                             kp(13);
@@ -63842,7 +63842,7 @@ public final class ci extends GLLib implements av {
                 aOc = Long.parseLong(str);
                 long jCurrentTimeMillis5 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis5 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis5 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 aOd = jCurrentTimeMillis5;
                 ari = true;
@@ -63921,13 +63921,13 @@ public final class ci extends GLLib implements av {
     /* JADX WARN: Code duplicated, block: B:84:0x0233  */
     @Override // com.quanhoang.greenfarm3.S800x480.GLLib
     public void jC() {
-        synchronized (ci.class) {
+        synchronized (FarmGameEngine.class) {
         processPendingMoveInterruption();
         TutorialFlowController.frameStarted();
         try {
         if (LanguageRestartController.frameStarted()) return;
         if (ProgressSaveController.isLoadBlocked()) {
-            if (qD() == 4) qV();
+            if (currentEngineState() == 4) qV();
             return;
         }
         long jCurrentTimeMillis;
@@ -63936,7 +63936,7 @@ public final class ci extends GLLib implements av {
         }
         long jCurrentTimeMillis2 = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         as.dV(Qy);
         wL();
@@ -63944,7 +63944,7 @@ public final class ci extends GLLib implements av {
         // The former cq worker could observe halfway-applied gameplay actions.
         long jCurrentTimeMillis5 = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis5 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis5 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         qG();
         if (apA == -1) {
@@ -63953,7 +63953,7 @@ public final class ci extends GLLib implements av {
         DH();
         if (ath != null) {
             try {
-                ath.dV(GLLib.Qy);
+                ath.dV(GameRuntime.Qy);
             } catch (Exception e2) {
             }
         }
@@ -63964,22 +63964,22 @@ public final class ci extends GLLib implements av {
         if (baf != null) {
             baf.iC();
         }
-        GLLib.r("G_DT : " + Qy + " ms");
+        GameRuntime.r("G_DT : " + Qy + " ms");
         StringBuilder sbAppend = new StringBuilder().append("G_Update : ");
         long jCurrentTimeMillis6 = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis6 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis6 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
-        GLLib.r(sbAppend.append(jCurrentTimeMillis6 - jCurrentTimeMillis5).append(" ms").toString());
+        GameRuntime.r(sbAppend.append(jCurrentTimeMillis6 - jCurrentTimeMillis5).append(" ms").toString());
         qK();
         auN--;
         StringBuilder sbAppend2 = new StringBuilder().append("G_Paint : ");
         long jCurrentTimeMillis7 = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis7 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis7 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
-        GLLib.r(sbAppend2.append(jCurrentTimeMillis7 - jCurrentTimeMillis2).append(" ms").toString());
-        int iQD = qD();
+        GameRuntime.r(sbAppend2.append(jCurrentTimeMillis7 - jCurrentTimeMillis2).append(" ms").toString());
+        int iQD = currentEngineState();
         if (com.gameloft.a.b.a.fZ() && Lc() && aTY && iQD != 4 && iQD != 2 && aUb) {
             com.gameloft.a.b.i iVarWv = com.gameloft.a.b.i.Wv();
             baQ = MF();
@@ -64030,24 +64030,24 @@ public final class ci extends GLLib implements av {
             if (bbr || aTK || bbm || bbi || bbl) {
             }
         }
-        if (qD() > 7 && aUb) {
+        if (currentEngineState() > 7 && aUb) {
             this.aYC = true;
         }
         if (com.gameloft.a.a.k.VR().fZ()) {
-            com.gameloft.a.a.k.VR().h(GLLib.Qy);
+            com.gameloft.a.a.k.VR().h(GameRuntime.Qy);
         }
         if (this.aYC) {
             if (this.aYD != 0) {
                 long jCurrentTimeMillis8 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis8 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis8 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 if (jCurrentTimeMillis8 - this.aYD > 600000) {
                     if (!this.aYE && !arD) {
                         new cs(this, null).start();
                         jCurrentTimeMillis = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         this.aYD = jCurrentTimeMillis;
                     }
@@ -64056,7 +64056,7 @@ public final class ci extends GLLib implements av {
                 new cs(this, null).start();
                 jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 this.aYD = jCurrentTimeMillis;
             }
@@ -64065,10 +64065,10 @@ public final class ci extends GLLib implements av {
             b.hL().Init();
         }
         com.gameloft.a.a.k.VR().a(new ck(this));
-        if (qD() > 7 && aUb && !aYF) {
+        if (currentEngineState() > 7 && aUb && !aYF) {
             Mo();
         }
-        if (FC() >= 3 && qD() == 18 && !aYu) {
+        if (FC() >= 3 && currentEngineState() == 18 && !aYu) {
             fE(65);
         }
         if (FC() < 3 || apr || aRu || !bbl || aTK) {
@@ -64103,17 +64103,17 @@ public final class ci extends GLLib implements av {
             } catch (Exception e) {
             }
             if (aGB) {
-                int iQD = qD();
-                int iQE = qE();
+                int iQD = currentEngineState();
+                int iQE = previousEngineState();
                 if ((iQD == 57 && iQE == 12) || iQD == 12) {
                     iN(aGD);
                     GN();
                 }
             }
-            if (bbE && !aLr && !aLs && (qD() != 4 || asi != 37 || ash != asg)) {
+            if (bbE && !aLr && !aLs && (currentEngineState() != 4 || asi != 37 || ash != asg)) {
                 try {
                     if (!((!awV || aYS == 0 || aYS == -1) ? false : true)) {
-                        ch.oM();
+                        FarmEntity.oM();
                     }
                     if (bbs) {
                         rz();
@@ -64122,7 +64122,7 @@ public final class ci extends GLLib implements av {
                 } catch (Exception e2) {
                 }
             }
-            if (!aOO && aLr && (qD() != 4 || asi != 37 || ash != asg)) {
+            if (!aOO && aLr && (currentEngineState() != 4 || asi != 37 || ash != asg)) {
                 aLr = false;
                 if (aLn > 0) {
                     hX(aLn);
@@ -64132,7 +64132,7 @@ public final class ci extends GLLib implements av {
                 }
                 rz();
             }
-            if (!aOO && aLs && (qD() != 4 || asi != 37 || ash != asg)) {
+            if (!aOO && aLs && (currentEngineState() != 4 || asi != 37 || ash != asg)) {
                 aLs = false;
                 if (aLC > 0) {
                     hX((int) aLC);
@@ -64149,7 +64149,7 @@ public final class ci extends GLLib implements av {
         bbA = true;
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         bau = jCurrentTimeMillis / 1000;
         try {
@@ -64173,7 +64173,7 @@ public final class ci extends GLLib implements av {
 
     static void DK() {
         if (ax.aim) {
-            if (!avb && aYR != -1) {
+            if (!avb && currentTutorialStepIndex != -1) {
                 q(12, false);
                 avb = true;
                 auY = true;
@@ -64187,7 +64187,7 @@ public final class ci extends GLLib implements av {
             }
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (avB) {
                 if (jCurrentTimeMillis - avz > 5000) {
@@ -64231,7 +64231,7 @@ public final class ci extends GLLib implements av {
         boolean z;
         boolean z2;
         boolean z3;
-        ch chVarFm;
+        FarmEntity chVarFm;
         if (!canConfirmMovePlacement()) {
             return;
         }
@@ -64266,7 +64266,7 @@ public final class ci extends GLLib implements av {
                 gX(48);
                 aa(avE.aoU, 1, 17);
                 aa(avE.aoU, 1, 9);
-                if (avE.Kx == 49 && aYR == 43) {
+                if (avE.Kx == 49 && currentTutorialStepIndex == 43) {
                     ayf++;
                     String str2 = "add tuto action count:" + ayf;
                 }
@@ -64303,7 +64303,7 @@ public final class ci extends GLLib implements av {
                         }
                     }
                     if (avE.anc > 0) {
-                        ch.b(47, 3, new int[]{0, 0, 14}).b(avE.aol, avE.aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, avE.anc);
+                        FarmEntity.b(47, 3, new int[]{0, 0, 14}).b(avE.aol, avE.aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, avE.anc);
                         String str3 = " add exp of animal buy" + ((int) avE.anc);
                         if (aTC) {
                             aTD = avE.anc;
@@ -64323,7 +64323,7 @@ public final class ci extends GLLib implements av {
                         avE.pN();
                     }
                     if (avE.anw) {
-                        ch chVarFm2 = Fm();
+                        FarmEntity chVarFm2 = Fm();
                         j jVarBY = j.bY(0);
                         int i6 = jVarBY.KW[avE.aoC][6];
                         String str4 = " ============ index ====================" + i6;
@@ -64416,7 +64416,7 @@ public final class ci extends GLLib implements av {
                         }
                         int iM = m(avE) * 3;
                         int iEd = Ed();
-                        ch chVar = avE;
+                        FarmEntity chVar = avE;
                         if (avE.pC() >= iEd) {
                             iEd = avE.pC() > iM ? iM : avE.pC();
                         }
@@ -64456,7 +64456,7 @@ public final class ci extends GLLib implements av {
                     avE.fp(2);
                 }
                 if (!avE.anw && axt != 0) {
-                    ch chVarHA = null;
+                    FarmEntity chVarHA = null;
                     if (axt == 1) {
                         chVarHA = hA(73);
                     } else if (axt == 2) {
@@ -64484,7 +64484,7 @@ public final class ci extends GLLib implements av {
                     z3 = false;
                 }
             } else if (avE.Kx == 69) {
-                ch chVarHA2 = null;
+                FarmEntity chVarHA2 = null;
                 if (axt == 1) {
                     chVarHA2 = hA(73);
                 } else if (axt == 2) {
@@ -64502,7 +64502,7 @@ public final class ci extends GLLib implements av {
                 if (avD == 0 || avD == 1) {
                     int i13 = j.bY(4).KW[avE.aoC][19];
                     if (i13 > 0) {
-                        ch.b(47, 3, new int[]{0, 0, 14}).b(avE.aol, avE.aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, i13);
+                        FarmEntity.b(47, 3, new int[]{0, 0, 14}).b(avE.aol, avE.aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, i13);
                         if (baf != null) {
                             a(115443, new String[]{"INT:" + Integer.toString(FB()), "INT:" + Integer.toString(0), "INT:" + Integer.toString(0), "INT:" + Integer.toString(116467), "INT:" + Integer.toString(115430), "N/A", "N/A", "INT:" + Integer.toString(i13), "INT:" + Integer.toString(FC())});
                         }
@@ -64517,10 +64517,10 @@ public final class ci extends GLLib implements av {
                 }
             } else if (avE.Kx == 50) {
                 if (avD == 0) {
-                    ch chVar2 = avE;
+                    FarmEntity chVar2 = avE;
                     long jCurrentTimeMillis = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                     chVar2.alV = jCurrentTimeMillis / 1000;
                     if (avE.aoU >= aZI[24] && avE.aoU <= aZI[26]) {
@@ -64532,11 +64532,11 @@ public final class ci extends GLLib implements av {
                             }
                             w(avE);
                         } else {
-                            ch chVarFo = Fo();
+                            FarmEntity chVarFo = Fo();
                             if (chVarFo != null && chVarFo != avE) {
                                 g(chVarFo);
                             }
-                            ch chVarFm3 = Fm();
+                            FarmEntity chVarFm3 = Fm();
                             if (chVarFm3 != null) {
                                 int i14 = jVarBY3.KW[avE.aoC][35];
                                 a(chVarFm3, -1, chVarFm3.pC() < i14 ? i14 - chVarFm3.pC() : 0, -1, -1, -1, -1, avE.aol, avE.aom);
@@ -64555,7 +64555,7 @@ public final class ci extends GLLib implements av {
                 if (avD == 4 && avE.aoU >= aZI[24] && avE.aoU <= aZI[26]) {
                     j jVarBY4 = j.bY(3);
                     aYh = jVarBY4.KW[avE.aoC][2];
-                    ch chVarFm4 = Fm();
+                    FarmEntity chVarFm4 = Fm();
                     if (chVarFm4 != null) {
                         int iM2 = m(chVarFm4) * 3;
                         int iPC = jVarBY4.KW[avE.aoC][35];
@@ -64564,7 +64564,7 @@ public final class ci extends GLLib implements av {
                         }
                         chVarFm4.fm(iPC);
                     }
-                    ch chVarFo2 = Fo();
+                    FarmEntity chVarFo2 = Fo();
                     if (chVarFo2 != null && chVarFo2 != avE) {
                         g(chVarFo2);
                     }
@@ -64582,10 +64582,10 @@ public final class ci extends GLLib implements av {
                 n(avE);
             }
             if (avD == 1 && avE.Kx == 49) {
-                int iAw = ch.aw(1, 49);
+                int iAw = FarmEntity.aw(1, 49);
                 String str6 = "cntPlot : " + iAw + " m_maxPlot : " + FI();
                 if (iAw < FI()) {
-                    ch chVarD = d(avE.Kx, 1, avE.aol, avE.aom, true);
+                    FarmEntity chVarD = d(avE.Kx, 1, avE.aol, avE.aom, true);
                     chVarD.aoU = aZE[0];
                     a(chVarD, false);
                 } else {
@@ -64596,7 +64596,7 @@ public final class ci extends GLLib implements av {
                 }
             } else if (avD == 1 && avE.Kx == 20) {
                 String str7 = "[Move Obj] make deco buy repeat.:" + avE + ",type" + avE.Kx + ",pos:" + avE.aol + ",y:" + avE.aom + ",dataid:" + avE.aoC;
-                ch chVarBs = bs(4, avE.aoC);
+                FarmEntity chVarBs = bs(4, avE.aoC);
                 chVarBs.aoU = avE.aoU;
                 a(chVarBs, false);
             } else {
@@ -64613,20 +64613,20 @@ public final class ci extends GLLib implements av {
                 lQ(i);
             }
         }
-        baa = true;
+        hasUnsavedGameChanges = true;
     }
 
     static void Ei() {
-        if (!TutorialFlowController.beginStep(2, aYR, aYS, awV)) return;
-        ch chVarHA;
+        if (!TutorialFlowController.beginStep(2, currentTutorialStepIndex, aYS, awV)) return;
+        FarmEntity chVarHA;
         if (axY != null || axZ != -1) {
             En();
         }
-        if (aYS >= 1053 && aYS <= 1059 && aZB == 0 && qD() == 18) {
+        if (aYS >= 1053 && aYS <= 1059 && aZB == 0 && currentEngineState() == 18) {
             Eg();
             if (ayb != -70) {
-                ch[] chVarArr = new ch[1];
-                ch.b(1, 50, 15, chVarArr, 1);
+                FarmEntity[] chVarArr = new FarmEntity[1];
+                FarmEntity.b(1, 50, 15, chVarArr, 1);
                 if (chVarArr[0] != null) {
                     aZj.y(chVarArr[0].aol, chVarArr[0].aom, 0);
                     b(chVarArr[0], 0, -70);
@@ -64707,7 +64707,7 @@ public final class ci extends GLLib implements av {
                 }
                 if (axW) {
                     Eh();
-                    ch.fr(151148);
+                    FarmEntity.fr(151148);
                 }
                 break;
             case 1005:
@@ -64733,7 +64733,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 1007:
-                if (!axV && qD() == 8) {
+                if (!axV && currentEngineState() == 8) {
                     axV = true;
                     String strDt2 = dt(954);
                     if (strDt2 == null) {
@@ -64746,7 +64746,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 1008:
-                if (!axV && qD() == 8) {
+                if (!axV && currentEngineState() == 8) {
                     axV = true;
                     String strDt3 = dt(955);
                     if (strDt3 == null) {
@@ -64795,11 +64795,11 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 1011:
-                if (qD() == 28 && atm[1][8] != -520) {
+                if (currentEngineState() == 28 && atm[1][8] != -520) {
                     D(1, -(atc[22][220][2] - atc[22][175][2]), 0);
                     gQ(1);
                 }
-                if (!axV && qD() == 28) {
+                if (!axV && currentEngineState() == 28) {
                     gM(22);
                     D(1, -(atc[22][220][2] - atc[22][175][2]), 0);
                     gQ(1);
@@ -64910,7 +64910,7 @@ public final class ci extends GLLib implements av {
                     axV = true;
                     axW = false;
                     aA(false);
-                    ch chVarFm = Fm();
+                    FarmEntity chVarFm = Fm();
                     if (chVarFm != null) {
                         aZj.y(chVarFm.aol, chVarFm.aom, 0);
                         b(chVarFm, 0, -100);
@@ -64940,7 +64940,7 @@ public final class ci extends GLLib implements av {
                 break;
             case 1022:
                 if (!axV) {
-                    ch chVarHA2 = hA(73);
+                    FarmEntity chVarHA2 = hA(73);
                     String str = "actorFox======================== " + chVarHA2;
                     if (chVarHA2 != null && chVarHA2.aol == chVarHA2.aoE && chVarHA2.aol != 0) {
                         aZj.y(chVarHA2.aol, chVarHA2.aom, 0);
@@ -64961,7 +64961,7 @@ public final class ci extends GLLib implements av {
                 }
                 if (axW) {
                     Eh();
-                    ch.c(true, true);
+                    FarmEntity.c(true, true);
                 }
                 break;
             case 1024:
@@ -64987,7 +64987,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 1026:
-                if (!axV && qD() == 8) {
+                if (!axV && currentEngineState() == 8) {
                     axV = true;
                     S(965, 7, 0);
                 }
@@ -64996,7 +64996,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 1027:
-                if (!axV && qD() == 8) {
+                if (!axV && currentEngineState() == 8) {
                     axV = true;
                     S(966, 7, 0);
                 }
@@ -65005,7 +65005,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 1028:
-                if (!axV && qD() == 8) {
+                if (!axV && currentEngineState() == 8) {
                     axV = true;
                     S(967, 7, 0);
                 }
@@ -65047,8 +65047,8 @@ public final class ci extends GLLib implements av {
                     axP = true;
                     axV = true;
                     aA(false);
-                    ch[] chVarArr2 = new ch[1];
-                    ch.b(1, 50, 24, chVarArr2, 1);
+                    FarmEntity[] chVarArr2 = new FarmEntity[1];
+                    FarmEntity.b(1, 50, 24, chVarArr2, 1);
                     if (chVarArr2[0] != null) {
                         chVarArr2[0].fo(1);
                         b(chVarArr2[0], 0, -70);
@@ -65060,7 +65060,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 1032:
-                if (!axV && qD() == 48) {
+                if (!axV && currentEngineState() == 48) {
                     S(970, 7, 0);
                     axV = true;
                 }
@@ -65142,10 +65142,10 @@ public final class ci extends GLLib implements av {
                 break;
             case 1038:
                 Eg();
-                if (!axV && qD() == 18) {
+                if (!axV && currentEngineState() == 18) {
                     axV = true;
                     axW = false;
-                    ch chVarFm2 = Fm();
+                    FarmEntity chVarFm2 = Fm();
                     if (chVarFm2 != null) {
                         chVarFm2.fo(1);
                         b(chVarFm2, 0, -100);
@@ -65155,11 +65155,11 @@ public final class ci extends GLLib implements av {
                     Et();
                     axW = false;
                     aYS = -1;
-                    ch chVarHA3 = hA(73);
-                    ch chVarHA4 = hA(74);
+                    FarmEntity chVarHA3 = hA(73);
+                    FarmEntity chVarHA4 = hA(74);
                     long jCurrentTimeMillis = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                     long j = jCurrentTimeMillis / 1000;
                     chVarHA4.amC = j;
@@ -65175,8 +65175,8 @@ public final class ci extends GLLib implements av {
                 if (!axV) {
                     axV = true;
                     aA(false);
-                    ch[] chVarArr3 = new ch[1];
-                    ch.b(1, 50, 15, chVarArr3, 1);
+                    FarmEntity[] chVarArr3 = new FarmEntity[1];
+                    FarmEntity.b(1, 50, 15, chVarArr3, 1);
                     if (chVarArr3[0] != null) {
                         aZj.y(chVarArr3[0].aol, chVarArr3[0].aom, 0);
                         b(chVarArr3[0], 0, -70);
@@ -65232,9 +65232,9 @@ public final class ci extends GLLib implements av {
                     if (!ha(1)) {
                         q(63, false);
                     }
-                    ch[] chVarArr4 = new ch[1];
+                    FarmEntity[] chVarArr4 = new FarmEntity[1];
                     String str2 = "actorFox======================== " + hA(73);
-                    ch.b(1, 54, 73, chVarArr4, 1);
+                    FarmEntity.b(1, 54, 73, chVarArr4, 1);
                     if (chVarArr4[0] != null && chVarArr4[0].aol == chVarArr4[0].aoE && chVarArr4[0].aol != 0) {
                         aZj.y(chVarArr4[0].aol, chVarArr4[0].aom, 0);
                         b(chVarArr4[0], 0, -100);
@@ -65280,7 +65280,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 1060:
-                if (!axV && qD() == 18) {
+                if (!axV && currentEngineState() == 18) {
                     axV = true;
                     axW = true;
                 }
@@ -65298,10 +65298,10 @@ public final class ci extends GLLib implements av {
                     Eh();
                     if (axt == 0) {
                         aYS = 1066;
-                        ch[] chVarArr5 = new ch[1];
-                        ch[] chVarArr6 = new ch[1];
-                        ch.b(1, 69, 22, chVarArr5, 1);
-                        ch.b(1, 69, 23, chVarArr6, 1);
+                        FarmEntity[] chVarArr5 = new FarmEntity[1];
+                        FarmEntity[] chVarArr6 = new FarmEntity[1];
+                        FarmEntity.b(1, 69, 22, chVarArr5, 1);
+                        FarmEntity.b(1, 69, 23, chVarArr6, 1);
                         if (chVarArr5[0] != null) {
                             aAY = true;
                             awH = false;
@@ -65333,7 +65333,7 @@ public final class ci extends GLLib implements av {
                 break;
             case 1063:
                 if (!axV) {
-                    ch chVarHA5 = hA(axt == 1 ? 73 : 74);
+                    FarmEntity chVarHA5 = hA(axt == 1 ? 73 : 74);
                     String str3 = "actorThief======================== " + chVarHA5;
                     if (chVarHA5 != null && chVarHA5.aol == chVarHA5.aoE && chVarHA5.aol != 0) {
                         aZj.y(chVarHA5.aol, chVarHA5.aom, 0);
@@ -65354,7 +65354,7 @@ public final class ci extends GLLib implements av {
                 }
                 if (axW) {
                     Eh();
-                    ch.c(true, true);
+                    FarmEntity.c(true, true);
                 }
                 break;
             case 1065:
@@ -65363,10 +65363,10 @@ public final class ci extends GLLib implements av {
                     axV = true;
                 }
                 if (axW) {
-                    ch[] chVarArr7 = new ch[1];
-                    ch[] chVarArr8 = new ch[1];
-                    ch.b(1, 69, 22, chVarArr7, 1);
-                    ch.b(1, 69, 23, chVarArr8, 1);
+                    FarmEntity[] chVarArr7 = new FarmEntity[1];
+                    FarmEntity[] chVarArr8 = new FarmEntity[1];
+                    FarmEntity.b(1, 69, 22, chVarArr7, 1);
+                    FarmEntity.b(1, 69, 23, chVarArr8, 1);
                     if (chVarArr7[0] != null) {
                         aAY = true;
                         awH = false;
@@ -65389,13 +65389,13 @@ public final class ci extends GLLib implements av {
             case 1066:
                 if (!axV) {
                     aA(false);
-                    ch[] chVarArr9 = new ch[1];
-                    ch[] chVarArr10 = new ch[1];
-                    ch.a(1, 69, 22, chVarArr9, 1);
-                    ch.a(1, 69, 23, chVarArr10, 1);
+                    FarmEntity[] chVarArr9 = new FarmEntity[1];
+                    FarmEntity[] chVarArr10 = new FarmEntity[1];
+                    FarmEntity.a(1, 69, 22, chVarArr9, 1);
+                    FarmEntity.a(1, 69, 23, chVarArr10, 1);
                     if (chVarArr9[0] == null && chVarArr10[0] == null) {
-                        ch.b(1, 69, 22, chVarArr9, 1);
-                        ch.b(1, 69, 23, chVarArr10, 1);
+                        FarmEntity.b(1, 69, 22, chVarArr9, 1);
+                        FarmEntity.b(1, 69, 23, chVarArr10, 1);
                         if (chVarArr9[0] != null) {
                             aAY = true;
                             awH = false;
@@ -65453,10 +65453,10 @@ public final class ci extends GLLib implements av {
             case 1069:
                 if (!axV) {
                     aA(false);
-                    ch[] chVarArr11 = new ch[1];
-                    ch[] chVarArr12 = new ch[1];
-                    ch.a(1, 69, 22, chVarArr11, 1);
-                    ch.a(1, 69, 23, chVarArr12, 1);
+                    FarmEntity[] chVarArr11 = new FarmEntity[1];
+                    FarmEntity[] chVarArr12 = new FarmEntity[1];
+                    FarmEntity.a(1, 69, 22, chVarArr11, 1);
+                    FarmEntity.a(1, 69, 23, chVarArr12, 1);
                     if (chVarArr11[0] != null) {
                         chVarArr11[0].fo(1);
                         aZj.y(chVarArr11[0].aol, chVarArr11[0].aom, 0);
@@ -65469,8 +65469,8 @@ public final class ci extends GLLib implements av {
                     axV = true;
                 }
                 if (axW) {
-                    ch[] chVarArr13 = new ch[1];
-                    ch.a(3, 47, chVarArr13, 1);
+                    FarmEntity[] chVarArr13 = new FarmEntity[1];
+                    FarmEntity.a(3, 47, chVarArr13, 1);
                     if (chVarArr13[0] == null) {
                         aa(3022, 1, 48);
                         Eh();
@@ -65502,7 +65502,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 1072:
-                if (!axV && qD() == 18) {
+                if (!axV && currentEngineState() == 18) {
                     S(12352, 136, 0);
                     axV = true;
                 }
@@ -65514,10 +65514,10 @@ public final class ci extends GLLib implements av {
             case 1073:
                 if (!axV) {
                     aA(false);
-                    ch[] chVarArr14 = new ch[1];
-                    ch[] chVarArr15 = new ch[1];
-                    ch.a(1, 69, 22, chVarArr14, 1);
-                    ch.a(1, 69, 23, chVarArr15, 1);
+                    FarmEntity[] chVarArr14 = new FarmEntity[1];
+                    FarmEntity[] chVarArr15 = new FarmEntity[1];
+                    FarmEntity.a(1, 69, 22, chVarArr14, 1);
+                    FarmEntity.a(1, 69, 23, chVarArr15, 1);
                     if (chVarArr14[0] != null) {
                         chVarArr14[0].fo(1);
                         aZj.y(chVarArr14[0].aol, chVarArr14[0].aom, 0);
@@ -65530,10 +65530,10 @@ public final class ci extends GLLib implements av {
                     axV = true;
                 }
                 if (axW) {
-                    ch[] chVarArr16 = new ch[1];
-                    ch[] chVarArr17 = new ch[1];
-                    ch.a(1, 69, 22, chVarArr16, 1);
-                    ch.a(1, 69, 23, chVarArr17, 1);
+                    FarmEntity[] chVarArr16 = new FarmEntity[1];
+                    FarmEntity[] chVarArr17 = new FarmEntity[1];
+                    FarmEntity.a(1, 69, 22, chVarArr16, 1);
+                    FarmEntity.a(1, 69, 23, chVarArr17, 1);
                     if (chVarArr16[0] != null) {
                         chVarArr16[0].ams = false;
                     } else if (chVarArr17[0] != null) {
@@ -65556,8 +65556,8 @@ public final class ci extends GLLib implements av {
             case 1075:
                 if (!axV) {
                     aA(false);
-                    ch[] chVarArr18 = new ch[1];
-                    ch.b(1, 50, 28, chVarArr18, 1);
+                    FarmEntity[] chVarArr18 = new FarmEntity[1];
+                    FarmEntity.b(1, 50, 28, chVarArr18, 1);
                     if (chVarArr18[0] != null) {
                         chVarArr18[0].fo(1);
                         aZj.y(chVarArr18[0].aol, chVarArr18[0].aom, 0);
@@ -65618,7 +65618,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 1080:
-                if (!axV && qD() == 18) {
+                if (!axV && currentEngineState() == 18) {
                     axV = true;
                     axW = true;
                 }
@@ -65638,7 +65638,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 1082:
-                if (!axV && qD() == 18) {
+                if (!axV && currentEngineState() == 18) {
                     axV = true;
                     axW = true;
                 }
@@ -65648,7 +65648,7 @@ public final class ci extends GLLib implements av {
                     aYS = -1;
                     awV = false;
                     Et();
-                    baa = true;
+                    hasUnsavedGameChanges = true;
                 }
                 break;
             case 1083:
@@ -65677,7 +65677,7 @@ public final class ci extends GLLib implements av {
                 break;
             case 1084:
                 if (!axV) {
-                    ch chVar = avH[0];
+                    FarmEntity chVar = avH[0];
                     if (chVar != null) {
                         chVar.ams = true;
                         chVar.fo(1);
@@ -65766,7 +65766,7 @@ public final class ci extends GLLib implements av {
             }
             gX(55);
             if (ii(azx[aZB - 1][5]) == 0) {
-                ch chVarFm = Fm();
+                FarmEntity chVarFm = Fm();
                 if (chVarFm != null && chVarFm.Bj == 8) {
                     z = false;
                 }
@@ -65782,7 +65782,7 @@ public final class ci extends GLLib implements av {
             case 0:
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 if (jCurrentTimeMillis - avC >= 700) {
                     gX(46);
@@ -65837,14 +65837,14 @@ public final class ci extends GLLib implements av {
                 if (!aAY) {
                     long jCurrentTimeMillis2 = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                     if (jCurrentTimeMillis2 - avC >= 700) {
                         gX(39);
                         avC = jCurrentTimeMillis2;
                     }
                     if (aCe[aCf].Kx == 49) {
-                        if ((aZB != 0 || hF(5) + ch.fe(3) + 1 <= Fw()) && (aZB != 0 || hF(5) + aAX + 1 <= Fw())) {
+                        if ((aZB != 0 || hF(5) + FarmEntity.fe(3) + 1 <= Fw()) && (aZB != 0 || hF(5) + aAX + 1 <= Fw())) {
                             i2 = aCe[aCf].aoC;
                             hI(1);
                             aCe[aCf].pq();
@@ -65872,7 +65872,7 @@ public final class ci extends GLLib implements av {
                                 i2 = 0;
                             }
                         }
-                    } else if (((aZB != 0 || hF(5) + ch.fe(3) + 3 <= Fw()) && (aZB != 0 || hF(5) + aAX + 3 <= Fw())) || aYS == 1069) {
+                    } else if (((aZB != 0 || hF(5) + FarmEntity.fe(3) + 3 <= Fw()) && (aZB != 0 || hF(5) + aAX + 3 <= Fw())) || aYS == 1069) {
                         i2 = aCe[aCf].aoC;
                         hI(3);
                         aCe[aCf].pw();
@@ -65949,7 +65949,7 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 2:
-                ch chVar = aCe[aCf];
+                FarmEntity chVar = aCe[aCf];
                 chVar.pA();
                 String str7 = "clean action:" + chVar.aoU;
                 aa(chVar.aoU, 1, 10);
@@ -66157,10 +66157,10 @@ public final class ci extends GLLib implements av {
                 FO();
                 break;
             case 6:
-                ch chVar2 = aCe[aCf];
+                FarmEntity chVar2 = aCe[aCf];
                 chVar2.qr();
                 o(chVar2);
-                ch.b(47, 3, new int[]{0, 0, 14}).b(chVar2.aol, chVar2.aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, 1);
+                FarmEntity.b(47, 3, new int[]{0, 0, 14}).b(chVar2.aol, chVar2.aom, 37, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS, false, false, 1);
                 chVar2.Bj = 9;
                 chVar2.aoG = -1;
                 chVar2.aoH = -1;
@@ -66349,8 +66349,8 @@ public final class ci extends GLLib implements av {
         if (aKE) {
             return;
         }
-        if (qD() != 18 && qD() != 43) {
-            String str = "Skip PN All - 2 status:" + qD();
+        if (currentEngineState() != 18 && currentEngineState() != 43) {
+            String str = "Skip PN All - 2 status:" + currentEngineState();
             return;
         }
         try {
@@ -66400,7 +66400,7 @@ public final class ci extends GLLib implements av {
                     a(strDt7, "launch", strDt8, "timer", AppEventsConstants.EVENT_PARAM_VALUE_YES, 1814400);
                     aKH = true;
                 }
-                ch chVarFm = Fm();
+                FarmEntity chVarFm = Fm();
                 if (chVarFm != null && chVarFm.pC() / 3 <= 1 && !aKJ) {
                     String strDt9 = dt(877);
                     if (strDt9 == null) {
@@ -66414,12 +66414,12 @@ public final class ci extends GLLib implements av {
                     aKN = true;
                 }
                 for (int i = 0; i < 6; i++) {
-                    ch chVar = ch.als[i];
+                    FarmEntity chVar = FarmEntity.als[i];
                     while (chVar != null) {
-                        ch chVar2 = chVar.aoi;
+                        FarmEntity chVar2 = chVar.aoi;
                         long jCurrentTimeMillis = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         long j = jCurrentTimeMillis / 1000;
                         if (chVar.Kx == 49 && (chVar.Bj == 3 || chVar.Bj == 4)) {
@@ -66633,7 +66633,7 @@ public final class ci extends GLLib implements av {
                 qB();
                 break;
             case 13:
-                if (qE() == 4) {
+                if (previousEngineState() == 4) {
                     aDe = true;
                 }
                 qB();
@@ -66660,7 +66660,7 @@ public final class ci extends GLLib implements av {
                 qB();
                 break;
             case 23:
-                int iQE = qE();
+                int iQE = previousEngineState();
                 String str = "[Confirm] prev state:" + iQE + ",fblogin:47";
                 aPk = false;
                 if (arb && bt.nY()) {
@@ -66858,7 +66858,7 @@ public final class ci extends GLLib implements av {
         }
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         if (jCurrentTimeMillis - ((long) aLd) > 1000 && !aLB) {
             gX(61);
@@ -66877,7 +66877,7 @@ public final class ci extends GLLib implements av {
             if (aLx == 1) {
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 if (jCurrentTimeMillis - aLt > 10 && !aLB) {
                     gX(61);
@@ -66893,12 +66893,12 @@ public final class ci extends GLLib implements av {
                 Il();
                 return;
             }
-            if (atc[1][109][2] > GLLib.kH()) {
+            if (atc[1][109][2] > GameRuntime.kH()) {
                 Il();
             }
             long jCurrentTimeMillis2 = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             if (jCurrentTimeMillis2 - aLt > 5000) {
                 j(false, -1);
@@ -66973,17 +66973,17 @@ public final class ci extends GLLib implements av {
                 StringBuilder sbAppend = new StringBuilder().append("loadint_times. ai select load on info.: ");
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 sbAppend.append(jCurrentTimeMillis / 1000).append(",start:").append(bap / 1000).toString();
                 long jCurrentTimeMillis2 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 long j = (jCurrentTimeMillis2 - bap) / 1000;
                 long jCurrentTimeMillis3 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 long j2 = (jCurrentTimeMillis3 - bap) % 1000 > 0 ? 1 + j : j;
                 if (z) {
@@ -67002,18 +67002,18 @@ public final class ci extends GLLib implements av {
         }
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         return jCurrentTimeMillis + aWK;
     }
 
     static void a(boolean z, int i, char c) {
-        int iQD = qD();
+        int iQD = currentEngineState();
         if (iQD != 18 && iQD != 19 && z) {
             awC = true;
             awD = c;
             aVF = i;
-            String str = "[Gameplay] keep QuestNotify. not gameplay state." + qD();
+            String str = "[Gameplay] keep QuestNotify. not gameplay state." + currentEngineState();
             return;
         }
         if (bg(1, 53)) {
@@ -67043,7 +67043,7 @@ public final class ci extends GLLib implements av {
             }
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             awz = jCurrentTimeMillis + 5000;
             e(1, 54, true);
@@ -67055,11 +67055,11 @@ public final class ci extends GLLib implements av {
         }
         String str3 = "[Gameplay] quest noti. status.:" + aVD[aVF];
         int iLz = Lz();
-        String str4 = "[Gameplay] quest notify. go quest complete page.  GetPreviousStateType ----------------------------------------------------------------------- state." + qE();
-        boolean z2 = qE() != -1 && aTz;
+        String str4 = "[Gameplay] quest notify. go quest complete page.  GetPreviousStateType ----------------------------------------------------------------------- state." + previousEngineState();
+        boolean z2 = previousEngineState() != -1 && aTz;
         if (iLz != -1 && !z2) {
             aVF = iLz;
-            String str5 = "[Gameplay] quest notify. go quest complete page.  current state. " + qD() + ",27";
+            String str5 = "[Gameplay] quest notify. go quest complete page.  current state. " + currentEngineState() + ",27";
             fE(27);
             awC = false;
             awD = (char) 0;
@@ -67073,7 +67073,7 @@ public final class ci extends GLLib implements av {
 
     static void aS(int i, int i2) {
         boolean z = false;
-        ch chVarBs = null;
+        FarmEntity chVarBs = null;
         switch (i) {
             case 50:
                 chVarBs = bs(3, i2);
@@ -67088,18 +67088,18 @@ public final class ci extends GLLib implements av {
                 z = true;
                 break;
             case 54:
-                ch chVarBs2 = bs(0, i2);
+                FarmEntity chVarBs2 = bs(0, i2);
                 chVarBs2.aol = 0;
                 chVarBs2.aom = 0;
                 chVarBs2.aoO.dU(2);
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 chVarBs2.amB = jCurrentTimeMillis;
                 long jCurrentTimeMillis2 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 chVarBs2.amC = jCurrentTimeMillis2;
                 chVarBs2.amD = 20;
@@ -67121,7 +67121,7 @@ public final class ci extends GLLib implements av {
                 if (rv() == null) {
                     s.f("NULLUDID", true);
                 } else {
-                    String str = " Device Id : " + GLLib.jr();
+                    String str = " Device Id : " + GameRuntime.jr();
                     s.f(rv(), true);
                 }
                 if (aCw == null || aCx == null) {
@@ -67144,7 +67144,7 @@ public final class ci extends GLLib implements av {
                 String str12 = "Cloud EndSave err : " + bq.i(str9, true);
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 aCC = jCurrentTimeMillis;
                 aCD = false;
@@ -67189,7 +67189,7 @@ public final class ci extends GLLib implements av {
                         j2 = aWm[i6];
                         jCurrentTimeMillis2 = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         if (a(j2, jCurrentTimeMillis2)) {
                             z = false;
@@ -67203,7 +67203,7 @@ public final class ci extends GLLib implements av {
                         long[] jArr = aWm;
                         jCurrentTimeMillis = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         jArr[i6] = jCurrentTimeMillis;
                     }
@@ -67245,7 +67245,7 @@ public final class ci extends GLLib implements av {
                             j2 = aWm[i6];
                             jCurrentTimeMillis2 = System.currentTimeMillis();
                             if (w.Vl) {
-                                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                                jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                             }
                             if (a(j2, jCurrentTimeMillis2)) {
                                 z = true;
@@ -67259,7 +67259,7 @@ public final class ci extends GLLib implements av {
                             long[] jArr2 = aWm;
                             jCurrentTimeMillis = System.currentTimeMillis();
                             if (w.Vl) {
-                                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                             }
                             jArr2[i6] = jCurrentTimeMillis;
                         }
@@ -67318,7 +67318,7 @@ public final class ci extends GLLib implements av {
         }
     }
 
-    static ch bs(int i, int i2) {
+    static FarmEntity bs(int i, int i2) {
         int[] iArr = new int[2];
         int[] iArr2 = {kH() >> 1, kI() >> 1};
         c(iArr2, iArr);
@@ -67327,7 +67327,7 @@ public final class ci extends GLLib implements av {
         j jVarBY = j.bY(i);
         switch (i) {
             case 0:
-                ch chVarB = ch.b(54, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][27], jVarBY.KW[i2][28], jVarBY.KW[i2][31], jVarBY.KW[i2][32], jVarBY.KW[i2][34], jVarBY.KW[i2][19], jVarBY.KW[i2][33], jVarBY.KW[i2][35], jVarBY.KW[i2][36], jVarBY.KW[i2][39], jVarBY.KW[i2][10]});
+                FarmEntity chVarB = FarmEntity.b(54, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][27], jVarBY.KW[i2][28], jVarBY.KW[i2][31], jVarBY.KW[i2][32], jVarBY.KW[i2][34], jVarBY.KW[i2][19], jVarBY.KW[i2][33], jVarBY.KW[i2][35], jVarBY.KW[i2][36], jVarBY.KW[i2][39], jVarBY.KW[i2][10]});
                 chVarB.aoC = i2;
                 if (chVarB.aoC == 73) {
                     chVarB.anj = true;
@@ -67382,7 +67382,7 @@ public final class ci extends GLLib implements av {
                 return chVarB;
             case 2:
                 if (i2 > 21) {
-                    ch chVarB2 = ch.b(69, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][20], jVarBY.KW[i2][28], jVarBY.KW[i2][29]});
+                    FarmEntity chVarB2 = FarmEntity.b(69, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][20], jVarBY.KW[i2][28], jVarBY.KW[i2][29]});
                     chVarB2.aoC = i2;
                     chVarB2.aoU = jVarBY.KW[i2][1];
                     chVarB2.aoL = jVarBY.KW[i2][24];
@@ -67395,7 +67395,7 @@ public final class ci extends GLLib implements av {
                     chVarB2.aoV = jVarBY.KW[i2][2];
                     return chVarB2;
                 }
-                ch chVarB3 = ch.b(52, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][20], jVarBY.KW[i2][28], jVarBY.KW[i2][29]});
+                FarmEntity chVarB3 = FarmEntity.b(52, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][20], jVarBY.KW[i2][28], jVarBY.KW[i2][29]});
                 chVarB3.aoC = i2;
                 chVarB3.aoU = jVarBY.KW[i2][1];
                 chVarB3.aoL = jVarBY.KW[i2][24];
@@ -67413,12 +67413,12 @@ public final class ci extends GLLib implements av {
                 chVarB3.amp = (byte) jVarBY.KW[i2][25];
                 return chVarB3;
             case 3:
-                ch chVarB4 = ch.b(50, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][0], jVarBY.KW[i2][24], jVarBY.KW[i2][25], jVarBY.KW[i2][22], jVarBY.KW[i2][23], jVarBY.KW[i2][26], jVarBY.KW[i2][27], jVarBY.KW[i2][28]});
+                FarmEntity chVarB4 = FarmEntity.b(50, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][0], jVarBY.KW[i2][24], jVarBY.KW[i2][25], jVarBY.KW[i2][22], jVarBY.KW[i2][23], jVarBY.KW[i2][26], jVarBY.KW[i2][27], jVarBY.KW[i2][28]});
                 chVarB4.aoU = jVarBY.KW[i2][1];
                 if (chVarB4.aoC == 12 || chVarB4.aoC == 11) {
                     long jCurrentTimeMillis = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                     chVarB4.alV = jCurrentTimeMillis / 1000;
                     chVarB4.alW = false;
@@ -67429,41 +67429,41 @@ public final class ci extends GLLib implements av {
                 }
                 return chVarB4;
             case 4:
-                ch chVarB5 = ch.b(20, 1, new int[]{iArr[0], iArr[1], jVarBY.KW[i2][15], jVarBY.KW[i2][0], jVarBY.KW[i2][12], jVarBY.KW[i2][13], jVarBY.KW[i2][11], jVarBY.KW[i2][9], jVarBY.KW[i2][10], jVarBY.KW[i2][16], jVarBY.KW[i2][17]});
+                FarmEntity chVarB5 = FarmEntity.b(20, 1, new int[]{iArr[0], iArr[1], jVarBY.KW[i2][15], jVarBY.KW[i2][0], jVarBY.KW[i2][12], jVarBY.KW[i2][13], jVarBY.KW[i2][11], jVarBY.KW[i2][9], jVarBY.KW[i2][10], jVarBY.KW[i2][16], jVarBY.KW[i2][17]});
                 chVarB5.aoC = i2;
                 chVarB5.aoU = jVarBY.KW[i2][1];
                 return chVarB5;
             case 8:
-                ch chVarB6 = ch.b(42, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][3]});
+                FarmEntity chVarB6 = FarmEntity.b(42, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][3]});
                 chVarB6.aoC = i2;
                 return chVarB6;
             case 9:
-                ch chVarB7 = ch.b(51, 1, new int[]{iArr[0], iArr[1], jVarBY.KW[i2][4], jVarBY.KW[i2][0], jVarBY.KW[i2][1], jVarBY.KW[i2][2], jVarBY.KW[i2][3]});
+                FarmEntity chVarB7 = FarmEntity.b(51, 1, new int[]{iArr[0], iArr[1], jVarBY.KW[i2][4], jVarBY.KW[i2][0], jVarBY.KW[i2][1], jVarBY.KW[i2][2], jVarBY.KW[i2][3]});
                 chVarB7.aoC = i2;
                 return chVarB7;
             case R.styleable.CardView_contentPaddingTop /* 11 */:
                 if (i2 == -1) {
-                    ch chVarB8 = ch.b(22, 1, new int[]{iArr[0], iArr[1], 12});
+                    FarmEntity chVarB8 = FarmEntity.b(22, 1, new int[]{iArr[0], iArr[1], 12});
                     chVarB8.aoC = i2;
                     chVarB8.aoU = -1;
                     return chVarB8;
                 }
                 if (i2 < 4 || i2 > 50) {
-                    ch chVarB9 = ch.b(48, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][7], jVarBY.KW[i2][8], jVarBY.KW[i2][9]});
+                    FarmEntity chVarB9 = FarmEntity.b(48, 1, new int[]{iArr[0], iArr[1], 12, jVarBY.KW[i2][7], jVarBY.KW[i2][8], jVarBY.KW[i2][9]});
                     chVarB9.aoC = i2;
                     chVarB9.aoU = jVarBY.KW[i2][1];
                     return chVarB9;
                 }
-                ch chVarB10 = ch.b(22, 1, new int[]{iArr[0], iArr[1], 12});
+                FarmEntity chVarB10 = FarmEntity.b(22, 1, new int[]{iArr[0], iArr[1], 12});
                 chVarB10.aoC = i2;
                 chVarB10.aoU = jVarBY.KW[i2][1];
                 return chVarB10;
             case 15:
-                ch chVarB11 = ch.b(32, 1, new int[]{iArr[0], iArr[1], jVarBY.KW[i2][7], jVarBY.KW[i2][1], jVarBY.KW[i2][2], jVarBY.KW[i2][4], jVarBY.KW[i2][5], jVarBY.KW[i2][3], jVarBY.KW[i2][6]});
+                FarmEntity chVarB11 = FarmEntity.b(32, 1, new int[]{iArr[0], iArr[1], jVarBY.KW[i2][7], jVarBY.KW[i2][1], jVarBY.KW[i2][2], jVarBY.KW[i2][4], jVarBY.KW[i2][5], jVarBY.KW[i2][3], jVarBY.KW[i2][6]});
                 chVarB11.aoC = i2;
                 return chVarB11;
             case 28:
-                ch chVarB12 = ch.b(34, 1, new int[]{90, jVarBY.KW[i2][1], jVarBY.KW[i2][2], jVarBY.KW[i2][3], jVarBY.KW[i2][4]});
+                FarmEntity chVarB12 = FarmEntity.b(34, 1, new int[]{90, jVarBY.KW[i2][1], jVarBY.KW[i2][2], jVarBY.KW[i2][3], jVarBY.KW[i2][4]});
                 chVarB12.aoC = i2;
                 return chVarB12;
             default:
@@ -67476,7 +67476,7 @@ public final class ci extends GLLib implements av {
             return;
         }
         if ((i == 20 || i == 27) && apB < 15
-                && !TutorialFlowController.openModal(i, aYR, aYS, awV)) return;
+                && !TutorialFlowController.openModal(i, currentTutorialStepIndex, aYS, awV)) return;
         if (i == 20 && aML != 10) {
             e(4, 47, false);
         }
@@ -67484,7 +67484,7 @@ public final class ci extends GLLib implements av {
             if (i == 35) {
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 bap = jCurrentTimeMillis;
             }
@@ -67502,45 +67502,45 @@ public final class ci extends GLLib implements av {
         switch (i) {
             case 0:
                 cK("CLOSING PACKAGE");
-                GLLib.ke();
+                GameRuntime.ke();
                 break;
             case 1:
                 String str2 = "OPEN PACK (FONT)" + aYU;
                 cK("OPEN PACK (FONT)");
                 if (aYU == 15) {
-                    GLLib.bk("/3");
+                    GameRuntime.bk("/3");
                 } else if (aYU == 16) {
-                    GLLib.bk("/4");
+                    GameRuntime.bk("/4");
                 } else if (aYU == 9) {
-                    GLLib.bk("/5");
+                    GameRuntime.bk("/5");
                 } else if (aYU == 7) {
-                    GLLib.bk("/6");
+                    GameRuntime.bk("/6");
                 } else {
-                    GLLib.bk("/2");
+                    GameRuntime.bk("/2");
                 }
                 ass = 2;
                 break;
             case 2:
                 cK("OPEN PACK (MAP)");
-                GLLib.bk("/14");
+                GameRuntime.bk("/14");
                 break;
             case 6:
                 cK("OPEN PACK (SPRITES)");
-                GLLib.bk("/9");
+                GameRuntime.bk("/9");
                 ass = 0;
                 break;
             case 7:
                 cK("OPEN PACK (GUI)");
-                GLLib.bk("/11");
+                GameRuntime.bk("/11");
                 ass = 1;
                 break;
             case 8:
                 if (aYU == 9 || aYU == 7) {
-                    GLLib.bk("/2");
-                    int[] iArr = (int[]) GLLib.de(7);
+                    GameRuntime.bk("/2");
+                    int[] iArr = (int[]) GameRuntime.de(7);
                     aZh[0] = b(0, 0, true, false);
                     aZh[0].e(iArr);
-                    GLLib.ke();
+                    GameRuntime.ke();
                 }
                 break;
             case 9:
@@ -67563,7 +67563,7 @@ public final class ci extends GLLib implements av {
                 break;
             case 22:
                 cK("RELEASING ACTORS");
-                ch.oL();
+                FarmEntity.oL();
                 aZi = null;
                 aZj = null;
                 break;
@@ -67580,7 +67580,7 @@ public final class ci extends GLLib implements av {
                 break;
             case 30:
                 cK("COMMON TEXT");
-                if (qE() == 1) {
+                if (previousEngineState() == 1) {
                     if (aYU == -1 || aYX || asM) {
                         int iKR = GloftGF2F.acw.kR();
                         String property = System.getProperty("microedition.locale");
@@ -67673,7 +67673,7 @@ public final class ci extends GLLib implements av {
                     Lw();
                     ET();
                 }
-                if (qD() == 2) {
+                if (currentEngineState() == 2) {
                     gD(4);
                     p(0, true);
                     e(0, 4, true);
@@ -67708,7 +67708,7 @@ public final class ci extends GLLib implements av {
                 break;
             case 37:
                 cK("MATH TABLES");
-                GLLib.c("/1", 1, 0);
+                GameRuntime.c("/1", 1, 0);
                 break;
             case 38:
                 cK("READING RMS");
@@ -67729,7 +67729,7 @@ public final class ci extends GLLib implements av {
                     aUb = true;
                     Mh();
                 }
-                if (qD() == 2) {
+                if (currentEngineState() == 2) {
                     gD(4);
                     p(0, true);
                     e(0, 4, true);
@@ -67752,12 +67752,12 @@ public final class ci extends GLLib implements av {
                 break;
             case 39:
                 cK("LOADING SOUNDS");
-                GLLib.bm("/0");
+                GameRuntime.bm("/0");
                 ac.el(82);
                 aY(60, 0);
                 break;
             case 40:
-                GLLib.bk("/10");
+                GameRuntime.bk("/10");
                 p(1, false);
                 p(2, false);
                 p(3, false);
@@ -67805,7 +67805,7 @@ public final class ci extends GLLib implements av {
                 p(42, false);
                 p(44, false);
                 p(29, false);
-                GLLib.ke();
+                GameRuntime.ke();
                 aYb = true;
                 break;
             case 41:
@@ -68111,7 +68111,7 @@ public final class ci extends GLLib implements av {
                     asq = false;
                     cK("CREATING ENTITIES - GAMEPLAY");
                     fN(aZB + 4);
-                    ch.fd(1);
+                    FarmEntity.fd(1);
                 } else {
                     if (!az(false) && aZB == 0) {
                         throw new IllegalStateException("Existing farm record could not be restored");
@@ -68124,8 +68124,8 @@ public final class ci extends GLLib implements av {
                     aS(50, 27);
                     aS(50, 29);
                 }
-                ch.pj();
-                ch.b(10, 0, new int[]{0, 0, 0});
+                FarmEntity.pj();
+                FarmEntity.b(10, 0, new int[]{0, 0, 0});
                 if (aZj != null && aZi != null) {
                     aZj.aol = aZi.aol - (kH() >> 1);
                     aZj.aom = aZi.aom - (kI() >> 1);
@@ -68138,18 +68138,18 @@ public final class ci extends GLLib implements av {
                 }
                 break;
             case 48:
-                aOF = qD();
+                aOF = currentEngineState();
                 if (aOF == 4) {
                     gJ(0);
                     dk(26856);
-                    GLLib.b(GLLib.Qj, atc[0][3][2], atc[0][3][3], 416.0f, 20.0f, true);
+                    GameRuntime.b(GameRuntime.Qj, atc[0][3][2], atc[0][3][3], 416.0f, 20.0f, true);
                 }
                 String str14 = "tracking leave app:" + bau + ",start app:" + bav + ",pn:" + aZb + ",pntype:" + aZc;
                 if (baf != null) {
                     bat = true;
                     long jCurrentTimeMillis = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                     long j = jCurrentTimeMillis / 1000;
                     if (!aYX && aZb) {
@@ -68223,7 +68223,7 @@ public final class ci extends GLLib implements av {
                     int i17 = i14 + iLB;
                     String str26 = "unlocked amount quest comp.:" + i17;
                     int iHD = hD(-1);
-                    int iAw = ch.aw(1, -1);
+                    int iAw = FarmEntity.aw(1, -1);
                     aqc = i17;
                     aqd = iHD + iAw;
                     aqe = iLB;
@@ -68259,11 +68259,11 @@ public final class ci extends GLLib implements av {
             case 127:
                 if (aYU == 20) {
                     GloftGF2F gloftGF2F = GloftGF2F.acx;
-                    ci ciVar = GloftGF2F.acw;
+                    FarmGameEngine ciVar = GloftGF2F.acw;
                     bK("le");
                 } else {
                     GloftGF2F gloftGF2F2 = GloftGF2F.acx;
-                    ci ciVar2 = GloftGF2F.acw;
+                    FarmGameEngine ciVar2 = GloftGF2F.acw;
                     bK(GloftGF2F.acw.dr(aYU));
                 }
                 StringBuilder sbAppend = new StringBuilder().append("[IAP] set lang. :").append(aYU).append(",iap lang:");
@@ -68307,9 +68307,9 @@ public final class ci extends GLLib implements av {
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
     static void fN(int i) {
         boolean z;
-        GLLib.bk("/14");
-        byte[] bArrDb = GLLib.db(i);
-        GLLib.ke();
+        GameRuntime.bk("/14");
+        byte[] bArrDb = GameRuntime.db(i);
+        GameRuntime.ke();
         int i2 = 0;
         boolean z2 = false;
         while (i2 < bArrDb.length && !z2) {
@@ -68331,14 +68331,14 @@ public final class ci extends GLLib implements av {
                 k(bArrDb, i8);
                 i2 = i8 + 2;
                 int[] iArr = {sK2, sK3, 11, 0};
-                ch chVarBs = null;
+                FarmEntity chVarBs = null;
                 if (bJ2 == 50 || bJ2 == 54 || bJ2 == 48) {
                     iArr[2] = 12;
                 }
                 switch (bJ2) {
                     case 13:
                         iArr[2] = 255;
-                        chVarBs = ch.e(bJ2, iArr);
+                        chVarBs = FarmEntity.e(bJ2, iArr);
                         aZj = chVarBs;
                         z = false;
                         break;
@@ -68367,7 +68367,7 @@ public final class ci extends GLLib implements av {
                         } else {
                             iArr[2] = 12;
                             iArr[3] = 2;
-                            chVarBs = ch.e(bJ2, iArr);
+                            chVarBs = FarmEntity.e(bJ2, iArr);
                             aZi = chVarBs;
                             z = false;
                         }
@@ -68379,7 +68379,7 @@ public final class ci extends GLLib implements av {
                         z = false;
                         break;
                     case 49:
-                        chVarBs = ch.e(bJ2, iArr);
+                        chVarBs = FarmEntity.e(bJ2, iArr);
                         if (bJ3 == -1) {
                             chVarBs.aoC = 65535;
                             chVarBs.fj(1);
@@ -68413,18 +68413,18 @@ public final class ci extends GLLib implements av {
                         z = false;
                         break;
                     case 54:
-                        ch chVarBs2 = bs(0, bJ3);
+                        FarmEntity chVarBs2 = bs(0, bJ3);
                         chVarBs2.aol = sK2;
                         chVarBs2.aom = sK3;
                         chVarBs2.aoO.dU(2);
                         long jCurrentTimeMillis = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         chVarBs2.amB = jCurrentTimeMillis;
                         long jCurrentTimeMillis2 = System.currentTimeMillis();
                         if (w.Vl) {
-                            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                            jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                         }
                         chVarBs2.amC = jCurrentTimeMillis2;
                         chVarBs2.amD = 20;
@@ -68527,13 +68527,13 @@ public final class ci extends GLLib implements av {
                             }
                             long jCurrentTimeMillis = System.currentTimeMillis();
                             if (w.Vl) {
-                                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                             }
                             if (i == 1) {
                                 avA = jCurrentTimeMillis;
                             } else if (i == 3) {
                                 avz = jCurrentTimeMillis;
-                                if (aYR == -1) {
+                                if (currentTutorialStepIndex == -1) {
                                     avB = true;
                                 }
                             }
@@ -68554,7 +68554,7 @@ public final class ci extends GLLib implements av {
             if (baf != null) {
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 a(FB(), 111551, 115429, aHf[i], ii(aGZ[i]) - ((int) ((jCurrentTimeMillis / 1000) - aHa[i])), baj, bai, a(aHg[i]), 0, 116031, ban, 111550, FC(), 0);
             }
@@ -68582,7 +68582,7 @@ public final class ci extends GLLib implements av {
             if (baf != null) {
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 a(FB(), 111551, 115428, aGv[i], ii(aGr[i]) - ((int) ((jCurrentTimeMillis / 1000) - aGs[i])), baj, bai, aGy[i], 0, 116027, ban, 111550, FC(), 0);
             }
@@ -68608,7 +68608,7 @@ public final class ci extends GLLib implements av {
         }
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         return (int) (((1800000 - jCurrentTimeMillis) + azH[i]) / 1000);
     }
@@ -68618,7 +68618,7 @@ public final class ci extends GLLib implements av {
         if (z) {
             aLz = i;
         }
-        if (qD() == 30 && z) {
+        if (currentEngineState() == 30 && z) {
             awY = true;
             awZ = i;
             return;
@@ -68626,7 +68626,7 @@ public final class ci extends GLLib implements av {
         String str2 = "Trophy_Get_Show :" + (z ? 1 : 0);
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         aLt = jCurrentTimeMillis;
         if (!z) {
@@ -68647,7 +68647,7 @@ public final class ci extends GLLib implements av {
         DF();
         gM(1);
         c(65645, 65647, atc[1][109][2], 0, 0, 0, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
-        short sKH = (short) GLLib.kH();
+        short sKH = (short) GameRuntime.kH();
         atc[1][109][2] = sKH;
         atc[1][111][2] = sKH;
         atc[1][110][2] = sKH;
@@ -68662,7 +68662,7 @@ public final class ci extends GLLib implements av {
         int i3;
         int i4;
         int iIi;
-        String str = "[IGM Callback] k_PGB_SKIP s_curTutorial: " + aYR + ",step:" + awW;
+        String str = "[IGM Callback] k_PGB_SKIP s_curTutorial: " + currentTutorialStepIndex + ",step:" + awW;
         gX(60);
         if (aZo != null) {
             j jVarBY = j.bY(2);
@@ -68717,7 +68717,7 @@ public final class ci extends GLLib implements av {
                 gX(48);
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 long j = jCurrentTimeMillis / 1000;
                 if (aZo.Kx == 49) {
@@ -68728,14 +68728,14 @@ public final class ci extends GLLib implements av {
                     iIi = (int) (((aZo.amq / 1000) + ((long) ii(aZo.amr))) - j);
                 } else if (aZo.Kx == 50 && ((aZo.aoC == 12 || aZo.aoC == 11) && aZB == 0)) {
                     long j2 = aZo.alV;
-                    ch chVar = aZo;
-                    iIi = (int) ((j2 + ((long) ii(ch.alU))) - j);
+                    FarmEntity chVar = aZo;
+                    iIi = (int) ((j2 + ((long) ii(FarmEntity.alU))) - j);
                 } else {
                     iIi = 0;
                 }
                 aZo.ql();
                 String str3 = "skip pgb. step:" + awW;
-                if (aYR == 18) {
+                if (currentTutorialStepIndex == 18) {
                     Et();
                 }
                 if (baf != null && aYS != 1042 && aYS != 1041 && aYS != 1067) {
@@ -68752,7 +68752,7 @@ public final class ci extends GLLib implements av {
                 }
             }
         }
-        a(false, (ch) null);
+        a(false, (FarmEntity) null);
     }
 
     static void rY() {
@@ -68761,7 +68761,7 @@ public final class ci extends GLLib implements av {
         int i3;
         int i4;
         int iIi;
-        String str = "[IGM Callback] k_PGB_SKIP s_curTutorial: " + aYR + ",step:" + awW;
+        String str = "[IGM Callback] k_PGB_SKIP s_curTutorial: " + currentTutorialStepIndex + ",step:" + awW;
         gX(60);
         if (aZo != null) {
             j jVarBY = j.bY(2);
@@ -68816,7 +68816,7 @@ public final class ci extends GLLib implements av {
                 gX(48);
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 long j = jCurrentTimeMillis / 1000;
                 if (aZo.Kx == 49) {
@@ -68827,14 +68827,14 @@ public final class ci extends GLLib implements av {
                     iIi = (int) (((aZo.amq / 1000) + ((long) ii(aZo.amr))) - j);
                 } else if (aZo.Kx == 50 && ((aZo.aoC == 12 || aZo.aoC == 11) && aZB == 0)) {
                     long j2 = aZo.alV;
-                    ch chVar = aZo;
-                    iIi = (int) ((j2 + ((long) ii(ch.alU))) - j);
+                    FarmEntity chVar = aZo;
+                    iIi = (int) ((j2 + ((long) ii(FarmEntity.alU))) - j);
                 } else {
                     iIi = 0;
                 }
                 aZo.ql();
                 String str3 = "skip pgb. step:" + awW;
-                if (aYR == 18) {
+                if (currentTutorialStepIndex == 18) {
                     Et();
                 }
                 if (baf != null && aYS != 1042 && aYS != 1041 && aYS != 1067) {
@@ -68851,7 +68851,7 @@ public final class ci extends GLLib implements av {
                 }
             }
         }
-        a(false, (ch) null);
+        a(false, (FarmEntity) null);
     }
 
     static void rt() {
@@ -68871,8 +68871,8 @@ public final class ci extends GLLib implements av {
             if (asM) {
             }
             int iA = a(bArr, a(bArr, a(bArr, a(bArr, b(bArr, a(bArr, 0, aCB), "" + rv()), (byte) (!aKo ? 0 : 1)), (byte) (!auT ? 0 : 1)), (byte) (!auU ? 0 : 1)), (byte) (!aKr ? 0 : 1));
-            String str2 = "Save cur tutorial:" + aYR;
-            int iA2 = a(bArr, d(bArr, d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, iA, (byte) aYR), (byte) (!awM ? 0 : 1)), (byte) (!awN ? 0 : 1)), (byte) (!awO ? 0 : 1)), (byte) (!awP ? 0 : 1)), (byte) (!awT ? 0 : 1)), (byte) (!awU ? 0 : 1)), awW), bas), axp);
+            String str2 = "Save cur tutorial:" + currentTutorialStepIndex;
+            int iA2 = a(bArr, d(bArr, d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, iA, (byte) currentTutorialStepIndex), (byte) (!awM ? 0 : 1)), (byte) (!awN ? 0 : 1)), (byte) (!awO ? 0 : 1)), (byte) (!awP ? 0 : 1)), (byte) (!awT ? 0 : 1)), (byte) (!awU ? 0 : 1)), awW), bas), axp);
             for (int i = 0; i < aVG; i++) {
                 int iD3 = d(bArr, d(bArr, iA2, aUU[i]), aVD[i]);
                 String str3 = "[rms] save quest state: I:" + i + "," + aVD[i];
@@ -68968,7 +68968,7 @@ public final class ci extends GLLib implements av {
             int iA8 = a(bArr, a(bArr, iA7, aUm), bav);
             long jCurrentTimeMillis = System.currentTimeMillis();
             if (w.Vl) {
-                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
             }
             bau = jCurrentTimeMillis / 1000;
             String str4 = "rms save. leave app:" + bau;
@@ -69036,7 +69036,7 @@ public final class ci extends GLLib implements av {
             }
             try {
                 aCy = a(bArr, a(bArr, a(bArr, b(bArr, a(bArr, iB, (byte) (!atG ? 0 : 1)), atH), (byte) (!aBH ? 0 : 1)), (byte) (!aBI ? 0 : 1)), (byte) (asJ ? 1 : 0));
-                GLLib.a("save_gameplay", bArr, rv());
+                GameRuntime.a("save_gameplay", bArr, rv());
                 a(bArr, 0, aCw, 0, bArr.length);
             } catch (Exception e) {
                 String str6 = "exception e : " + e;
@@ -69067,7 +69067,7 @@ public final class ci extends GLLib implements av {
                 qB();
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 bap = jCurrentTimeMillis;
                 break;
@@ -69118,8 +69118,8 @@ public final class ci extends GLLib implements av {
         for (int i2 = 0; i2 < 34; i2++) {
             aZx[i2] = jVarBY2.KW[i2][2];
         }
-        GLLib.TE = AndroidWebView.UTF_8;
-        aYR = 0;
+        GameRuntime.TE = AndroidWebView.UTF_8;
+        currentTutorialStepIndex = 0;
         aYP = 100;
         aZz = false;
         aZA = false;
@@ -69216,7 +69216,7 @@ public final class ci extends GLLib implements av {
         FM();
         Fj();
         Fs();
-        ch.Init();
+        FarmEntity.Init();
         aAD = new int[4];
         aAE = new int[4];
         aY(z);
@@ -69233,7 +69233,7 @@ public final class ci extends GLLib implements av {
         String str4 = "Check, m_animalListIndex = " + aIJ;
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         bap = jCurrentTimeMillis;
     }
@@ -69241,7 +69241,7 @@ public final class ci extends GLLib implements av {
     static boolean jL(int i) {
         int i2 = 2;
         if (i == 0) {
-            aZs = GLLib.a(aZs, new String[]{GLLib.Qu.bY("GameVer")});
+            aZs = GameRuntime.a(aZs, new String[]{GameRuntime.Qu.bY("GameVer")});
             aZv = aZh[0].a(aZs, kH() - 20, 0, a.Iy);
             asj = kI() - 32;
             ban = bao;
@@ -69260,7 +69260,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 3) {
             dk(0);
-            GLLib.b(GLLib.Qj, 0.0f, 0.0f, kH(), kI(), true);
+            GameRuntime.b(GameRuntime.Qj, 0.0f, 0.0f, kH(), kI(), true);
             aZh[0].bQ(1);
             aZh[0].a(Qj, aZs, aZv, kH() >> 1, asj, 0, 999, 17, -1);
             a(0.0f, kI() >> 1, kH(), kI() >> 1, -16777216, 0, 16);
@@ -69269,7 +69269,7 @@ public final class ci extends GLLib implements av {
     }
 
     static void DS() {
-        if (avE == null || awf == null || aYR == 15 || aYR == 54) {
+        if (avE == null || awf == null || currentTutorialStepIndex == 15 || currentTutorialStepIndex == 54) {
             return;
         }
         aa aaVar = awf;
@@ -69282,30 +69282,30 @@ public final class ci extends GLLib implements av {
         if (w.Zo) {
             aaVar2.aaW = i3;
         } else {
-            GLLib.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
+            GameRuntime.be("SetScale: Scaling is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
         }
-        GLLib.l(18, 5, 1);
+        GameRuntime.l(18, 5, 1);
         awf.lR();
-        GLLib.l(18, 5, 0);
+        GameRuntime.l(18, 5, 0);
     }
 
     static boolean Fc() {
-        return GLLib.dy(0) == 2;
+        return GameRuntime.dy(0) == 2;
     }
 
     static boolean Fd() {
-        return GLLib.dy(0) == 1;
+        return GameRuntime.dy(0) == 1;
     }
 
     static boolean k(int i, int i2, int i3, int i4, int i5) {
-        return GLLib.dy(0) == i && d(GLLib.dG(0), GLLib.dH(0), i2, i3, i4, i5);
+        return GameRuntime.dy(0) == i && d(GameRuntime.dG(0), GameRuntime.dH(0), i2, i3, i4, i5);
     }
 
     public static void HO() {
         if (!auu && aut) {
-            if (GLLib.dE(0) || GLLib.dC(0) || aKO) {
-                int iDG = GLLib.dG(0);
-                int iDH = GLLib.dH(0);
+            if (GameRuntime.dE(0) || GameRuntime.dC(0) || aKO) {
+                int iDG = GameRuntime.dG(0);
+                int iDH = GameRuntime.dH(0);
                 short s = atc[15][61][2];
                 short s2 = atc[15][61][3];
                 short s3 = atc[15][61][5];
@@ -69337,7 +69337,7 @@ public final class ci extends GLLib implements av {
                     aKQ = iDH;
                 }
             }
-            if (GLLib.dA(0)) {
+            if (GameRuntime.dA(0)) {
                 aKO = false;
             }
         }
@@ -69352,8 +69352,8 @@ public final class ci extends GLLib implements av {
         int iDG;
         short s;
         if (i == 0) {
-            if (aYR == 1) {
-                aYR = 1;
+            if (currentTutorialStepIndex == 1) {
+                currentTutorialStepIndex = 1;
                 axV = false;
                 axW = false;
                 axX = "";
@@ -69370,10 +69370,10 @@ public final class ci extends GLLib implements av {
             gM(1);
         }
         if (i == 8) {
-            if (GLLib.dA(0) && aMo && aAI == -1 && aAH == -1 && aAK == -1
+            if (GameRuntime.dA(0) && aMo && aAI == -1 && aAH == -1 && aAK == -1
                     && (avD == 0 || avD == 1 || avD == 4)) {
                 int[] iArr = new int[2];
-                int[] iArr2 = {GLLib.dG(0), GLLib.dH(0)};
+                int[] iArr2 = {GameRuntime.dG(0), GameRuntime.dH(0)};
                 c(iArr2, iArr);
                 f(iArr, iArr2);
                 if (avE != null && bE(iArr2[0], iArr2[1]) > -1) {
@@ -69392,9 +69392,9 @@ public final class ci extends GLLib implements av {
                             return true;
                         }
                     default:
-                        if (GLLib.dA(0) && isIntroSpeechStep(aYR)) {
-                            iDG = GLLib.dG(0);
-                            int iDH = GLLib.dH(0);
+                        if (GameRuntime.dA(0) && isIntroSpeechStep(currentTutorialStepIndex)) {
+                            iDG = GameRuntime.dG(0);
+                            int iDH = GameRuntime.dH(0);
                             s = atc[4][2][2];
                             short s2 = atc[4][2][3];
                             String str = "npc talk.pointer " + iDG + "," + iDH;
@@ -69417,9 +69417,9 @@ public final class ci extends GLLib implements av {
                             return true;
                         }
                     default:
-                        if (GLLib.dA(0) && isIntroSpeechStep(aYR)) {
-                            iDG = GLLib.dG(0);
-                            int iDH2 = GLLib.dH(0);
+                        if (GameRuntime.dA(0) && isIntroSpeechStep(currentTutorialStepIndex)) {
+                            iDG = GameRuntime.dG(0);
+                            int iDH2 = GameRuntime.dH(0);
                             s = atc[4][2][2];
                             short s3 = atc[4][2][3];
                             String str3 = "npc talk.pointer " + iDG + "," + iDH2;
@@ -69446,12 +69446,12 @@ public final class ci extends GLLib implements av {
                         }
                         break;
                     case 50:
-                        if (aYR == 55 && aZm.aoC == 9) {
+                        if (currentTutorialStepIndex == 55 && aZm.aoC == 9) {
                             axW = true;
                             fE(9);
                             return true;
                         }
-                        if (aYR == 50 && aZm.aoC == 10 && aZm.fz(AdRequest.MAX_CONTENT_URL_LENGTH)) {
+                        if (currentTutorialStepIndex == 50 && aZm.aoC == 10 && aZm.fz(AdRequest.MAX_CONTENT_URL_LENGTH)) {
                             axW = true;
                             fE(29);
                             return true;
@@ -69461,18 +69461,18 @@ public final class ci extends GLLib implements av {
                                 fE(26);
                                 return true;
                             }
-                        } else if (aZm.aoC == 14 && aZm.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && aYR == 23) {
+                        } else if (aZm.aoC == 14 && aZm.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && currentTutorialStepIndex == 23) {
                             gX(36);
                             fE(28);
                             return true;
                         }
                         break;
                     case 54:
-                        if (aYR == 34 && aZm.aoC == 17) {
+                        if (currentTutorialStepIndex == 34 && aZm.aoC == 17) {
                             axW = true;
-                        } else if (aYR == 17 && aZm.aoC == 16) {
+                        } else if (currentTutorialStepIndex == 17 && aZm.aoC == 16) {
                             axW = true;
-                        } else if (aYR == 32 && aZm.aoC == 17) {
+                        } else if (currentTutorialStepIndex == 32 && aZm.aoC == 17) {
                             axW = true;
                         }
                         if (aZm.pK()) {
@@ -69481,9 +69481,9 @@ public final class ci extends GLLib implements av {
                         break;
                 }
             }
-            if (GLLib.dA(0) && isIntroSpeechStep(aYR)) {
-                iDG = GLLib.dG(0);
-                int iDH3 = GLLib.dH(0);
+            if (GameRuntime.dA(0) && isIntroSpeechStep(currentTutorialStepIndex)) {
+                iDG = GameRuntime.dG(0);
+                int iDH3 = GameRuntime.dH(0);
                 s = atc[4][2][2];
                 short s4 = atc[4][2][3];
                 String str5 = "npc talk.pointer " + iDG + "," + iDH3;
@@ -69727,7 +69727,7 @@ public final class ci extends GLLib implements av {
             atA = false;
             atc[4][38][6] = 54;
         }
-        if (i == 8 && aML != 2 && aML != 12 && aML != 4 && aML != 5 && aML != 7 && aML != 8 && aMH > 700 && GLLib.dA(0)) {
+        if (i == 8 && aML != 2 && aML != 12 && aML != 4 && aML != 5 && aML != 7 && aML != 8 && aMH > 700 && GameRuntime.dA(0)) {
             tH();
         }
         if (i == 2) {
@@ -69750,7 +69750,7 @@ public final class ci extends GLLib implements av {
                             strDt14 = "";
                         }
                         dC(sbAppend.append(strDt14).toString());
-                    } else if (aYR == -1) {
+                    } else if (currentTutorialStepIndex == -1) {
                         String str10 = "1111111111111111111111111111111111111 m_messageDlgBoxType=== " + aML;
                         switch (aML) {
                             case 0:
@@ -69816,7 +69816,7 @@ public final class ci extends GLLib implements av {
                 } else if (aML == 5) {
                     tv();
                 } else if (!awV) {
-                    if (aYR == -1) {
+                    if (currentTutorialStepIndex == -1) {
                         String str11 = "1111111111111111111111111111111111111 m_messageDlgBoxType=== " + aML;
                         switch (aML) {
                             case 0:
@@ -69883,7 +69883,7 @@ public final class ci extends GLLib implements av {
                         }
                         dC(sbAppend3.append(strDt).toString());
                     }
-                } else if (aYR == -1) {
+                } else if (currentTutorialStepIndex == -1) {
                     String str12 = "1111111111111111111111111111111111111 m_messageDlgBoxType=== " + aML;
                     switch (aML) {
                         case 0:
@@ -69959,7 +69959,7 @@ public final class ci extends GLLib implements av {
             if (str13.equals(strDt15)) {
                 aKd.qb();
                 if (aKd.aoO != null) {
-                    aKd.aoO.dV(GLLib.Qy);
+                    aKd.aoO.dV(GameRuntime.Qy);
                 }
             }
             aMH += Qy;
@@ -70173,7 +70173,7 @@ public final class ci extends GLLib implements av {
                 b(true, true, false);
                 aC(true);
             }
-            a(false, (ch) null);
+            a(false, (FarmEntity) null);
             e(1, 79, false);
             f(1, 79, false);
             e(1, 53, false);
@@ -70182,12 +70182,12 @@ public final class ci extends GLLib implements av {
             Ex();
             ED();
             aCi &= -2;
-            ch[] chVarArr = new ch[50];
+            FarmEntity[] chVarArr = new FarmEntity[50];
             if (aZB > 0 && aZB <= 10) {
                 aMZ = axt;
                 axt = 0;
             }
-            int iA = ch.a(1, 54, 0, 75, chVarArr, 50);
+            int iA = FarmEntity.a(1, 54, 0, 75, chVarArr, 50);
             if (chVarArr != null) {
                 for (int i2 = 0; i2 < iA; i2++) {
                     if (aZB > 0 && aZB <= 10 && chVarArr[i2] != null) {
@@ -70245,7 +70245,7 @@ public final class ci extends GLLib implements av {
             bao = 116034;
             if (aZB <= 0 || aZB > 10) {
                 if (axt != 0) {
-                    ch chVarHA = null;
+                    FarmEntity chVarHA = null;
                     if (axt == 1) {
                         chVarHA = hA(73);
                     } else if (axt == 2) {
@@ -70257,9 +70257,9 @@ public final class ci extends GLLib implements av {
                         f(true, axt == 1);
                     }
                 } else {
-                    ch chVarHA2 = hA(73);
+                    FarmEntity chVarHA2 = hA(73);
                     if (chVarHA2 == null || !u(chVarHA2)) {
-                        ch chVarHA3 = hA(74);
+                        FarmEntity chVarHA3 = hA(74);
                         if (chVarHA3 != null && u(chVarHA3)) {
                             axt = 2;
                             f(true, false);
@@ -70270,7 +70270,7 @@ public final class ci extends GLLib implements av {
                     }
                 }
                 if (axt == 0) {
-                    ch.au(false);
+                    FarmEntity.au(false);
                     f(false, false);
                 }
                 String str = "m_nBlockingThieveAttack --------------------------------------------------------------------- " + axt;
@@ -70278,7 +70278,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 8) {
             if (aZB > 0 && aZB <= 10) {
-                if (avP > -1 && GLLib.dA(0) && aAI == -1 && ((aZm == null || (aZm.Kx != 49 && aZm.Kx != 52 && aZm.Kx != 69)) && Fb() < 50)) {
+                if (avP > -1 && GameRuntime.dA(0) && aAI == -1 && ((aZm == null || (aZm.Kx != 49 && aZm.Kx != 52 && aZm.Kx != 69)) && Fb() < 50)) {
                     hc(-1);
                 }
                 if (aZk != null) {
@@ -70416,10 +70416,10 @@ public final class ci extends GLLib implements av {
             FN();
             aCi |= 1;
             aZj.fh(100);
-            ch.oM();
-            baa = false;
+            FarmEntity.oM();
+            hasUnsavedGameChanges = false;
             bab = false;
-            ch.oL();
+            FarmEntity.oL();
             if (aZB <= 0 || aZB > 10) {
                 aNH = false;
             }
@@ -70438,7 +70438,7 @@ public final class ci extends GLLib implements av {
         }
         if (i == 1) {
         }
-        if (i == 8 && GLLib.dA(0) && aCu != 17) {
+        if (i == 8 && GameRuntime.dA(0) && aCu != 17) {
             FW();
         }
         if (i == 2) {
@@ -70681,11 +70681,11 @@ public final class ci extends GLLib implements av {
             aSo = -1;
             if (aYU == 20) {
                 GloftGF2F gloftGF2F2 = GloftGF2F.acx;
-                ci ciVar = GloftGF2F.acw;
+                FarmGameEngine ciVar = GloftGF2F.acw;
                 bK("le");
             } else {
                 GloftGF2F gloftGF2F3 = GloftGF2F.acx;
-                ci ciVar2 = GloftGF2F.acw;
+                FarmGameEngine ciVar2 = GloftGF2F.acw;
                 bK(GloftGF2F.acw.dr(aYU));
             }
             StringBuilder sbAppend = new StringBuilder().append("[IAP] set lang. :").append(aYU).append(",iap lang:");
@@ -70880,7 +70880,7 @@ public final class ci extends GLLib implements av {
                 e(8, 343, false);
                 f(8, FacebookRequestErrorClassification.EC_TOO_MANY_USER_ACTION_CALLS, false);
             }
-            if (!atP && aTn && !atT && aTo && qE() != 18) {
+            if (!atP && aTn && !atT && aTo && previousEngineState() != 18) {
                 GloftGF2F gloftGF2F6 = GloftGF2F.acx;
                 if (!GloftGF2F.acw.lh()) {
                     aTn = false;
@@ -70910,14 +70910,14 @@ public final class ci extends GLLib implements av {
                 if (aRR[i8] > 0) {
                     if (aRT[i8] > 0) {
                         int[] iArr = aRT;
-                        iArr[i8] = iArr[i8] - GLLib.Qy;
+                        iArr[i8] = iArr[i8] - GameRuntime.Qy;
                     } else if (aRS[i8] >= aRR[i8]) {
                         aRS[i8] = 0;
                         aRT[i8] = 1000;
                         aRV[i8] = 0;
                     } else {
                         int[] iArr2 = aRV;
-                        iArr2[i8] = iArr2[i8] + GLLib.Qy;
+                        iArr2[i8] = iArr2[i8] + GameRuntime.Qy;
                         int i9 = (aRV[i8] * aRR[i8]) / aRU[i8];
                         int[] iArr3 = aRS;
                         if (i9 < 0) {
@@ -70948,13 +70948,13 @@ public final class ci extends GLLib implements av {
                 aRZ = (aRW * Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS) / 20;
                 if (aRW > 0) {
                     if (aRY > 0) {
-                        aRY -= GLLib.Qy;
+                        aRY -= GameRuntime.Qy;
                     } else if (aRX >= aRW) {
                         aRX = 0;
                         aRY = Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS;
                         aSa = 0;
                     } else {
-                        aSa += GLLib.Qy;
+                        aSa += GameRuntime.Qy;
                         int i10 = (aSa * aRW) / aRZ;
                         if (i10 < 0) {
                             i10 = 0;
@@ -70984,9 +70984,9 @@ public final class ci extends GLLib implements av {
             aRv[1] = s2;
             aRv[2] = 10;
             aRv[3] = s4;
-            if (GLLib.dE(0) || GLLib.dC(0) || aKO) {
-                int iDG = GLLib.dG(0);
-                int iDH = GLLib.dH(0);
+            if (GameRuntime.dE(0) || GameRuntime.dC(0) || aKO) {
+                int iDG = GameRuntime.dG(0);
+                int iDH = GameRuntime.dH(0);
                 if (d(iDG, iDH, s, s2, s3, s4)) {
                     if (!aSI) {
                         aSH = iDH;
@@ -71007,10 +71007,10 @@ public final class ci extends GLLib implements av {
                     aSH = iDH;
                 }
             }
-            if (GLLib.dH(0) < atc[8][271][3] || GLLib.dH(0) > atc[8][271][3] + atc[8][271][6]) {
+            if (GameRuntime.dH(0) < atc[8][271][3] || GameRuntime.dH(0) > atc[8][271][3] + atc[8][271][6]) {
                 aSI = false;
             }
-            if (GLLib.dA(0)) {
+            if (GameRuntime.dA(0)) {
                 aSI = false;
             }
         }
@@ -71080,29 +71080,29 @@ public final class ci extends GLLib implements av {
         // Mr/Fi dispatch GUI releases before gameplay input. Consume captured
         // GUI events here; dispatching the buttons again would double-confirm.
         if (aAH != -1 || aAI != -1 || aAK != -1
-                || isMoveControlTouch(GLLib.dG(0), GLLib.dH(0))) {
+                || isMoveControlTouch(GameRuntime.dG(0), GameRuntime.dH(0))) {
             avI = false;
             avO = false;
             return true;
         }
-        if (GLLib.dB(0)) {
+        if (GameRuntime.dB(0)) {
             avI = avE == aZk;
             avO = avI;
-            avK = GLLib.dG(0);
-            avL = GLLib.dH(0);
+            avK = GameRuntime.dG(0);
+            avL = GameRuntime.dH(0);
             if (!avI) {
                 aZj.pb();
             }
-        } else if (GLLib.dC(0) || GLLib.dA(0)) {
+        } else if (GameRuntime.dC(0) || GameRuntime.dA(0)) {
             if (!avI) {
                 aZj.pb();
-            } else if (GLLib.dC(0) || !avO) {
+            } else if (GameRuntime.dC(0) || !avO) {
                 int[] world = new int[2];
-                int[] grid = {GLLib.dG(0), GLLib.dH(0)};
+                int[] grid = {GameRuntime.dG(0), GameRuntime.dH(0)};
                 c(grid, world);
                 f(world, grid);
                 if (bE(grid[0], grid[1]) >= 0) {
-                    if (aYR == -1 && GLLib.dC(0)) {
+                    if (currentTutorialStepIndex == -1 && GameRuntime.dC(0)) {
                         aZj.pc();
                     }
                     g(grid, world);
@@ -71111,7 +71111,7 @@ public final class ci extends GLLib implements av {
                     avO = false;
                 }
             }
-            if (GLLib.dA(0)) {
+            if (GameRuntime.dA(0)) {
                 avI = false;
                 avO = false;
             }
@@ -71129,10 +71129,10 @@ public final class ci extends GLLib implements av {
         boolean z2;
         boolean z3;
         boolean z4;
-        if (GLLib.dB(0)) {
+        if (GameRuntime.dB(0)) {
             if (avE == aZk) {
-                avK = GLLib.dG(0);
-                avL = GLLib.dH(0);
+                avK = GameRuntime.dG(0);
+                avL = GameRuntime.dH(0);
                 if (avE != null) {
                     avI = true;
                     avO = true;
@@ -71182,11 +71182,11 @@ public final class ci extends GLLib implements av {
                 aZj.pb();
                 z = false;
             }
-        } else if (GLLib.dC(0)) {
+        } else if (GameRuntime.dC(0)) {
             if (avI) {
                 if (avD != -1) {
                     int[] iArr = new int[2];
-                    int[] iArr2 = {GLLib.dG(0), GLLib.dH(0)};
+                    int[] iArr2 = {GameRuntime.dG(0), GameRuntime.dH(0)};
                     c(iArr2, iArr);
                     f(iArr, iArr2);
                     if (bE(iArr2[0], iArr2[1]) < 0) {
@@ -71198,7 +71198,7 @@ public final class ci extends GLLib implements av {
                     z3 = true;
                 }
                 if (z3) {
-                    if (aYR == -1) {
+                    if (currentTutorialStepIndex == -1) {
                         aZj.pc();
                     }
                     Ff();
@@ -71211,14 +71211,14 @@ public final class ci extends GLLib implements av {
                 aZj.pb();
                 z = false;
             }
-        } else if (!GLLib.dA(0)) {
+        } else if (!GameRuntime.dA(0)) {
             z = false;
         } else {
             if (!avI) {
                 aZj.pb();
                 return false;
             }
-            if (GLLib.dG(0) < avK - 20 || GLLib.dG(0) > avK + 20 || GLLib.dH(0) < avL - 20 || GLLib.dH(0) > avL + 20) {
+            if (GameRuntime.dG(0) < avK - 20 || GameRuntime.dG(0) > avK + 20 || GameRuntime.dH(0) < avL - 20 || GameRuntime.dH(0) > avL + 20) {
                 z = false;
             } else if (avI && avE != null && avO) {
                 avO = false;
@@ -71300,7 +71300,7 @@ public final class ci extends GLLib implements av {
                     avD = -1;
                     z = false;
                 } else if (avD == 4) {
-                    if (aYR == 53) {
+                    if (currentTutorialStepIndex == 53) {
                         axW = true;
                     }
                     DP();
@@ -71314,7 +71314,7 @@ public final class ci extends GLLib implements av {
                     z = true;
                 }
             } else if (avE == null) {
-                ch chVarFc = ch.fc(1);
+                FarmEntity chVarFc = FarmEntity.fc(1);
                 if (chVarFc != null) {
                     a(chVarFc, true);
                     if (avE != null && avE.fz(2) && avD == 3) {
@@ -71330,12 +71330,12 @@ public final class ci extends GLLib implements av {
             avI = false;
         }
         String str = "move : " + z;
-        String str2 = "tutorial stage:" + aYR;
-        if (!z || aYR == 15 || aYR == 52) {
+        String str2 = "tutorial stage:" + currentTutorialStepIndex;
+        if (!z || currentTutorialStepIndex == 15 || currentTutorialStepIndex == 52) {
             return false;
         }
         int[] iArr3 = new int[2];
-        int[] iArr4 = {GLLib.dG(0), GLLib.dH(0)};
+        int[] iArr4 = {GameRuntime.dG(0), GameRuntime.dH(0)};
         c(iArr4, iArr3);
         f(iArr3, iArr4);
         if (bE(iArr4[0], iArr4[1]) < 0) {
@@ -71377,7 +71377,7 @@ public final class ci extends GLLib implements av {
             short s2 = atc[15][23][3];
             short s3 = atc[15][23][5];
             short s4 = atc[15][23][6];
-            if (!GLLib.dF(0)) {
+            if (!GameRuntime.dF(0)) {
                 aKR--;
             }
             String str = "s_slideGroup[0][GUI.SLIDE_GROUP_OFFSET_Y] : " + atm[0][9];
@@ -71401,13 +71401,13 @@ public final class ci extends GLLib implements av {
         atc[44][14][8] = 3;
         atc[44][13][8] = 3;
         atc[44][12][8] = 3;
-        if (GLLib.dF(0) && h(atc[44][14][2], atc[44][14][3], atc[44][14][5], atc[44][14][6])) {
+        if (GameRuntime.dF(0) && h(atc[44][14][2], atc[44][14][3], atc[44][14][5], atc[44][14][6])) {
             atc[44][14][8] = 2;
         }
-        if (GLLib.dF(0) && h(atc[44][13][2], atc[44][13][3], atc[44][13][5], atc[44][13][6])) {
+        if (GameRuntime.dF(0) && h(atc[44][13][2], atc[44][13][3], atc[44][13][5], atc[44][13][6])) {
             atc[44][13][8] = 2;
         }
-        if (GLLib.dF(0) && h(atc[44][12][2], atc[44][12][3], atc[44][12][5], atc[44][12][6])) {
+        if (GameRuntime.dF(0) && h(atc[44][12][2], atc[44][12][3], atc[44][12][5], atc[44][12][6])) {
             atc[44][12][8] = 2;
         }
     }
@@ -71502,9 +71502,9 @@ public final class ci extends GLLib implements av {
             }
             DF();
             gM(13);
-            aBm = ch.aw(1, 52);
-            aBo = ch.aD(1, 54);
-            aBk = ch.aw(1, 49);
+            aBm = FarmEntity.aw(1, 52);
+            aBo = FarmEntity.aD(1, 54);
+            aBk = FarmEntity.aw(1, 49);
             Hu();
             ban = bao;
             bao = 0;
@@ -71516,8 +71516,8 @@ public final class ci extends GLLib implements av {
                 aIZ = false;
                 aJn = (short) 0;
                 aZD++;
-                ch[] chVarArr = new ch[2];
-                ch.b(1, 50, 18, chVarArr, 2);
+                FarmEntity[] chVarArr = new FarmEntity[2];
+                FarmEntity.b(1, 50, 18, chVarArr, 2);
                 chVarArr[0].ph();
                 aZj.y(chVarArr[0].aol, chVarArr[0].aom, Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS);
                 a aVar = aZf[128];
@@ -71529,8 +71529,8 @@ public final class ci extends GLLib implements av {
                 awU = true;
                 String str3 = "m_restoreIncomeXP : " + a(aJs);
                 if (a(aJs) > 0) {
-                    ch[] chVarArr2 = new ch[2];
-                    ch.b(1, 50, 18, chVarArr2, 2);
+                    FarmEntity[] chVarArr2 = new FarmEntity[2];
+                    FarmEntity.b(1, 50, 18, chVarArr2, 2);
                     a(true, a(aJs), chVarArr2[0].aol, chVarArr2[0].aom);
                     if (baf != null) {
                         a(115443, new String[]{"INT:" + Integer.toString(FB()), "INT:" + Integer.toString(0), "INT:" + Integer.toString(0), "INT:" + Integer.toString(116138), "INT:" + Integer.toString(119078), "N/A", "N/A", "INT:" + Integer.toString(a(aJs)), "INT:" + Integer.toString(FC())});
@@ -71654,7 +71654,7 @@ public final class ci extends GLLib implements av {
                     int i7 = aAG & 65535;
                     if (((aAG >> 16) & 65535) == 13 && i7 == aZD + 2 && !atk.lQ()) {
                         aIQ = true;
-                    } else if (!GLLib.dF(0) && aIQ) {
+                    } else if (!GameRuntime.dF(0) && aIQ) {
                         aIQ = false;
                     }
                     if (aIQ) {
@@ -71667,7 +71667,7 @@ public final class ci extends GLLib implements av {
                         f(13, aZD + 2, true);
                     }
                     if (atk != null) {
-                        atk.dV(GLLib.Qy);
+                        atk.dV(GameRuntime.Qy);
                     }
                 } else if (aJn == 2) {
                     atc[13][aZD + 2][6] = 8;
@@ -71684,7 +71684,7 @@ public final class ci extends GLLib implements av {
                         aaVar2.aaL = s;
                         aaVar2.aaM = s2;
                         if (atk != null) {
-                            atk.dV(GLLib.Qy);
+                            atk.dV(GameRuntime.Qy);
                         }
                     }
                 } else if (aJn == 1) {
@@ -71703,11 +71703,11 @@ public final class ci extends GLLib implements av {
                         int i8 = aAG & 65535;
                         if (((aAG >> 16) & 65535) == 13 && i8 == aZD + 2 && !atk.lQ()) {
                             aIQ = true;
-                        } else if (!GLLib.dF(0) && aIQ) {
+                        } else if (!GameRuntime.dF(0) && aIQ) {
                             aIQ = false;
                         }
                         if (atk != null) {
-                            atk.dV(GLLib.Qy);
+                            atk.dV(GameRuntime.Qy);
                         }
                     }
                 } else if (aJn != 0 || !lN(jo(aZD))) {
@@ -71741,7 +71741,7 @@ public final class ci extends GLLib implements av {
                             int i10 = aAG & 65535;
                             if (((aAG >> 16) & 65535) == 13 && i10 == i9 + 5 && !atj[i9].lQ()) {
                                 aIR[i9] = true;
-                            } else if (!GLLib.dF(0) && aIR[i9]) {
+                            } else if (!GameRuntime.dF(0) && aIR[i9]) {
                                 aIR[i9] = false;
                             }
                         } else {
@@ -71750,7 +71750,7 @@ public final class ci extends GLLib implements av {
                         }
                     }
                     if (atj[i9] != null) {
-                        atj[i9].dV(GLLib.Qy);
+                        atj[i9].dV(GameRuntime.Qy);
                     }
                     i9++;
                 }
@@ -71780,7 +71780,7 @@ public final class ci extends GLLib implements av {
                         } else {
                             atc[13][2][6] = 2;
                         }
-                    } else if (!GLLib.dF(0)) {
+                    } else if (!GameRuntime.dF(0)) {
                         if (i11 == 0 && aZD >= 1 && aIU && aIS[i11]) {
                             aIS[i11] = false;
                         } else if (i11 == 1 && aZD >= 2 && aIV && aIS[i11]) {
@@ -71790,7 +71790,7 @@ public final class ci extends GLLib implements av {
                         }
                     }
                     if (atl[i11] != null) {
-                        atl[i11].dV(GLLib.Qy);
+                        atl[i11].dV(GameRuntime.Qy);
                     }
                 }
                 for (int i13 = 0; i13 < 6; i13++) {
@@ -71829,7 +71829,7 @@ public final class ci extends GLLib implements av {
                         aIT = new aa(aZf[148], atc[13][41][2] + 104, atc[13][41][3] + 0);
                         aIT.Y(0, -1);
                     } else {
-                        aIT.dV(GLLib.Qy);
+                        aIT.dV(GameRuntime.Qy);
                     }
                 } else if (aIT != null) {
                     aIT = null;
@@ -71979,34 +71979,34 @@ public final class ci extends GLLib implements av {
             awJ = atc[(iGS >> 16) & 65535][iGS & 65535][6];
         }
         if (awH) {
-            awK = GLLib.dG(0);
-            awL = GLLib.dH(0);
+            awK = GameRuntime.dG(0);
+            awL = GameRuntime.dH(0);
         }
         if (aZj != null) {
             aZj.pd();
         }
-        ch.oI();
+        FarmEntity.oI();
         bad = false;
-        ch.eZ(1);
+        FarmEntity.eZ(1);
         FP();
         st();
         Eb();
         DR();
-        aa.a(GLLib.Qj, 0, 0, 0);
+        aa.a(GameRuntime.Qj, 0, 0, 0);
         if (qN()) {
             DK();
         }
         Ic();
         Im();
         Fy();
-        ch[] chVarArr = new ch[1];
-        ch.b(1, 50, 14, chVarArr, 1);
+        FarmEntity[] chVarArr = new FarmEntity[1];
+        FarmEntity.b(1, 50, 14, chVarArr, 1);
         if (chVarArr[0] != null && chVarArr[0].alW && !Hh()) {
             chVarArr[0].alW = false;
             chVarArr[0].qq();
         }
-        ch[] chVarArr2 = new ch[1];
-        ch.b(1, 50, 28, chVarArr2, 1);
+        FarmEntity[] chVarArr2 = new FarmEntity[1];
+        FarmEntity.b(1, 50, 28, chVarArr2, 1);
         if (chVarArr2[0] != null && chVarArr2[0].alW && !Hi()) {
             chVarArr2[0].alW = false;
             chVarArr2[0].qq();
@@ -72016,14 +72016,14 @@ public final class ci extends GLLib implements av {
     }
 
     static int Fb() {
-        return (GLLib.dG(0) - aAB < 0 ? -(GLLib.dG(0) - aAB) : GLLib.dG(0) - aAB) + (GLLib.dH(0) - aAC < 0 ? -(GLLib.dH(0) - aAC) : GLLib.dH(0) - aAC);
+        return (GameRuntime.dG(0) - aAB < 0 ? -(GameRuntime.dG(0) - aAB) : GameRuntime.dG(0) - aAB) + (GameRuntime.dH(0) - aAC < 0 ? -(GameRuntime.dH(0) - aAC) : GameRuntime.dH(0) - aAC);
     }
 
     static int Fh() {
         if (aAF != null) {
             for (int length = aAF.length - 1; length >= 0; length--) {
                 if (aAF[length] != null && aAF[length][5] != -1) {
-                    if (d(GLLib.dG(0), GLLib.dH(0), aAF[length][0], aAF[length][1], aAF[length][2], aAF[length][3])) {
+                    if (d(GameRuntime.dG(0), GameRuntime.dH(0), aAF[length][0], aAF[length][1], aAF[length][2], aAF[length][3])) {
                         return aAF[length][5];
                     }
                 }
@@ -72072,11 +72072,11 @@ public final class ci extends GLLib implements av {
             if (jO() == 19) {
                 GloftGF2F.acx.jf("MIDlet://minimize");
             }
-            if (c(GLLib.dG(0), GLLib.dH(0), aRw) && GLLib.dC(0)) {
+            if (c(GameRuntime.dG(0), GameRuntime.dH(0), aRw) && GameRuntime.dC(0)) {
                 short s = atc[42][6][7];
-                if (GLLib.dH(0) - GLLib.dJ(0) < 0) {
+                if (GameRuntime.dH(0) - GameRuntime.dJ(0) < 0) {
                     aRr -= aZh[gV(s)].hG() / 3;
-                } else if (GLLib.dH(0) - GLLib.dJ(0) > 0) {
+                } else if (GameRuntime.dH(0) - GameRuntime.dJ(0) > 0) {
                     aRr = (aZh[gV(s)].hG() / 3) + aRr;
                 }
             }
@@ -72097,10 +72097,10 @@ public final class ci extends GLLib implements av {
                 strDt = "";
             }
             a(strDt, 42, 7, 0, 0);
-            GLLib.a(GLLib.Qj, aRx, aRy, aRz, aRA, true);
+            GameRuntime.a(GameRuntime.Qj, aRx, aRy, aRz, aRA, true);
             e(aRs, 42, 6, 0, aRr);
             f(284050, -1121583, aRv[0] + 1, aRv[1], aRv[2], aRv[3], aRv[2], aRv[3]);
-            GLLib.a(GLLib.Qj, 0, 0, kH(), kI(), true);
+            GameRuntime.a(GameRuntime.Qj, 0, 0, kH(), kI(), true);
         }
         return i == 5 ? false : false;
     }
@@ -72110,28 +72110,28 @@ public final class ci extends GLLib implements av {
         if (LanguageRestartController.blocksGameplay()) return;
         if (Uu == 0) TutorialFlowController.pointerPressed();
         super.V(i, i2);
-        int iDG = GLLib.dG(0);
+        int iDG = GameRuntime.dG(0);
         if (iDG < w.ZB) {
             dI(iDG);
         }
-        int iDH = GLLib.dH(0);
+        int iDH = GameRuntime.dH(0);
         if (iDH < w.ZB) {
             dJ(iDH);
         }
-        aAo = GLLib.dG(0);
-        aAp = GLLib.dH(0);
-        aAs = GLLib.dG(0);
-        aAt = GLLib.dH(0);
-        aAq = GLLib.dG(0);
-        aAr = GLLib.dH(0);
-        aAB = GLLib.dG(0);
-        aAC = GLLib.dH(0);
-        aAu = GLLib.dG(0);
-        aAv = GLLib.dH(0);
-        aAw = GLLib.dG(0);
-        aAx = GLLib.dH(0);
-        aAy = GLLib.dG(0);
-        aAz = GLLib.dH(0);
+        aAo = GameRuntime.dG(0);
+        aAp = GameRuntime.dH(0);
+        aAs = GameRuntime.dG(0);
+        aAt = GameRuntime.dH(0);
+        aAq = GameRuntime.dG(0);
+        aAr = GameRuntime.dH(0);
+        aAB = GameRuntime.dG(0);
+        aAC = GameRuntime.dH(0);
+        aAu = GameRuntime.dG(0);
+        aAv = GameRuntime.dH(0);
+        aAw = GameRuntime.dG(0);
+        aAx = GameRuntime.dH(0);
+        aAy = GameRuntime.dG(0);
+        aAz = GameRuntime.dH(0);
         aAA = 0;
         aAg = 0;
     }
@@ -72147,8 +72147,8 @@ public final class ci extends GLLib implements av {
         }
         aAq = i;
         aAr = i2;
-        int iDG = GLLib.dG(0);
-        int iDH = GLLib.dH(0);
+        int iDG = GameRuntime.dG(0);
+        int iDH = GameRuntime.dH(0);
         if (iDG < 0) {
             iDG = 0;
         }
@@ -72160,42 +72160,42 @@ public final class ci extends GLLib implements av {
         super.W(i, i2);
         dI(i3);
         dJ(i4);
-        aAu = GLLib.dI(0);
-        aAv = GLLib.dJ(0);
-        aAy = GLLib.dG(0);
-        aAz = GLLib.dH(0);
-        if ((GLLib.dG(0) - aAw < 0 ? -(GLLib.dG(0) - aAw) : GLLib.dG(0) - aAw) < (i3 - aAw < 0 ? -(i3 - aAw) : i3 - aAw)) {
+        aAu = GameRuntime.dI(0);
+        aAv = GameRuntime.dJ(0);
+        aAy = GameRuntime.dG(0);
+        aAz = GameRuntime.dH(0);
+        if ((GameRuntime.dG(0) - aAw < 0 ? -(GameRuntime.dG(0) - aAw) : GameRuntime.dG(0) - aAw) < (i3 - aAw < 0 ? -(i3 - aAw) : i3 - aAw)) {
             aAw = i3;
             aAA = 0;
         }
-        if ((GLLib.dH(0) - aAx < 0 ? -(GLLib.dH(0) - aAx) : GLLib.dH(0) - aAx) < (i4 - aAx < 0 ? -(i4 - aAx) : i4 - aAx)) {
+        if ((GameRuntime.dH(0) - aAx < 0 ? -(GameRuntime.dH(0) - aAx) : GameRuntime.dH(0) - aAx) < (i4 - aAx < 0 ? -(i4 - aAx) : i4 - aAx)) {
             aAx = i4;
             aAA = 0;
         }
-        aAg += GLLib.Qy;
-        aAA += GLLib.Qy;
+        aAg += GameRuntime.Qy;
+        aAA += GameRuntime.Qy;
     }
 
     /* JADX WARN: Code duplicated, block: B:213:0x0379  */
     static boolean hh(int i) {
         boolean z;
-        if ((lM(aZQ[297]) || !lN(297)) && aYS != 1000 && aYS != 1001 && aYS != 1052 && ((aYS < 1053 || aYS > 1059 || qD() != 18 || aZB != 0) && !lN(298) && !lN(GLURLConnection.HTTP_FOUND))) {
+        if ((lM(aZQ[297]) || !lN(297)) && aYS != 1000 && aYS != 1001 && aYS != 1052 && ((aYS < 1053 || aYS > 1059 || currentEngineState() != 18 || aZB != 0) && !lN(298) && !lN(GLURLConnection.HTTP_FOUND))) {
             return false;
         }
         switch (i) {
             case 1003:
             case 1009:
             case 1029:
-                if (GLLib.dA(0) && aAI == -1 && aAH == -1 && aAK == -1) {
-                    if (aZo != null && aYR != 35 && aYR != 18) {
-                        a(false, (ch) null);
+                if (GameRuntime.dA(0) && aAI == -1 && aAH == -1 && aAK == -1) {
+                    if (aZo != null && currentTutorialStepIndex != 35 && currentTutorialStepIndex != 18) {
+                        a(false, (FarmEntity) null);
                     }
                     if (avD != 3) {
                         aA(false);
                     }
                     if (avD == 0 || avD == 1 || avD == 4) {
                         int[] iArr = new int[2];
-                        int[] iArr2 = {GLLib.dG(0), GLLib.dH(0)};
+                        int[] iArr2 = {GameRuntime.dG(0), GameRuntime.dH(0)};
                         c(iArr2, iArr);
                         f(iArr, iArr2);
                         if (avE != null && bE(iArr2[0], iArr2[1]) > -1) {
@@ -72301,13 +72301,13 @@ public final class ci extends GLLib implements av {
                 fE(12);
                 return true;
             case 1084:
-                if (GLLib.dB(0)) {
+                if (GameRuntime.dB(0)) {
                     awj = false;
                 }
                 if (aZn == null || !aZn.ams || aZp <= 15) {
                     return true;
                 }
-                if (avE != aZn && aYR != 15 && aYR != 53 && aYR != 52 && aYR != 43 && aYS != 1031) {
+                if (avE != aZn && currentTutorialStepIndex != 15 && currentTutorialStepIndex != 53 && currentTutorialStepIndex != 52 && currentTutorialStepIndex != 43 && aYS != 1031) {
                     String str = "move state;" + avD;
                     if (avD == 0 || avD == 1 || avD == 4) {
                         sv();
@@ -72361,7 +72361,7 @@ public final class ci extends GLLib implements av {
             // The original Android motion handler maps ACTION_CANCEL (and a
             // release after losing focus) to this sentinel. Do not dispatch
             // it as a GUI release or serialize state on the Android UI thread.
-            synchronized (ci.class) {
+            synchronized (FarmGameEngine.class) {
                 moveInterruptionRequested = true;
                 aAG = aAH = aAI = aAJ = aAK = -1;
                 avI = false;
@@ -72370,10 +72370,10 @@ public final class ci extends GLLib implements av {
             return;
         }
         if (LanguageRestartController.blocksGameplay()) return;
-        aAu = GLLib.dI(0);
-        aAv = GLLib.dJ(0);
-        int iDI = GLLib.dI(0);
-        int iDJ = GLLib.dJ(0);
+        aAu = GameRuntime.dI(0);
+        aAv = GameRuntime.dJ(0);
+        int iDI = GameRuntime.dI(0);
+        int iDJ = GameRuntime.dJ(0);
         if (iDI < 0) {
             iDI = 0;
         }
@@ -72385,34 +72385,34 @@ public final class ci extends GLLib implements av {
         super.U(i, i2);
         dI(i3);
         dJ(i4);
-        String str = "Pointer Released x:" + GLLib.dG(0) + " y:" + GLLib.dH(0);
+        String str = "Pointer Released x:" + GameRuntime.dG(0) + " y:" + GameRuntime.dH(0);
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         if (jCurrentTimeMillis - aAh >= 1250) {
             aAi = false;
         } else {
-            if ((GLLib.dG(0) - aAm < 0 ? -(GLLib.dG(0) - aAm) : GLLib.dG(0) - aAm) >= 30) {
+            if ((GameRuntime.dG(0) - aAm < 0 ? -(GameRuntime.dG(0) - aAm) : GameRuntime.dG(0) - aAm) >= 30) {
                 aAi = false;
             } else {
-                if ((GLLib.dH(0) - aAn < 0 ? -(GLLib.dH(0) - aAn) : GLLib.dH(0) - aAn) < 30) {
+                if ((GameRuntime.dH(0) - aAn < 0 ? -(GameRuntime.dH(0) - aAn) : GameRuntime.dH(0) - aAn) < 30) {
                     aAi = true;
                     aAj = false;
-                    aAk = GLLib.dG(0);
-                    aAl = GLLib.dH(0);
+                    aAk = GameRuntime.dG(0);
+                    aAl = GameRuntime.dH(0);
                 } else {
                     aAi = false;
                 }
             }
         }
         aAh = jCurrentTimeMillis;
-        aAm = GLLib.dG(0);
-        aAn = GLLib.dH(0);
+        aAm = GameRuntime.dG(0);
+        aAn = GameRuntime.dH(0);
     }
 
     // Original DEX synthetic accessors inlined by JADX into sibling classes.
-    static boolean a(ci instance, boolean value) {
+    static boolean a(FarmGameEngine instance, boolean value) {
         instance.aYE = value;
         return value;
     }

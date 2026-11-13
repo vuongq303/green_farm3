@@ -20,7 +20,7 @@ object PendingRewardState {
     @JvmStatic fun writeSnapshot() {
         requireWorldList()
         val entries = ArrayList<IntArray>()
-        var effect = ch.als[3]
+        var effect = FarmEntity.als[3]
         while (effect != null) {
             if (effect.Kx == 47 && effect.anX) {
                 if (entries.size == MAX_PENDING) throw invalid("Too many pending rewards", null)
@@ -36,18 +36,18 @@ object PendingRewardState {
             output.writeInt(entries.size)
             for (entry in entries) for (value in entry) output.writeInt(value)
             output.flush()
-            GLLib.a(RECORD, bytes.toByteArray(), ci.rv())
+            GameRuntime.a(RECORD, bytes.toByteArray(), FarmGameEngine.rv())
         } catch (failure: IOException) { throw invalid("Cannot encode pending rewards", failure) }
     }
 
     @JvmStatic fun restoreSnapshot() {
         if (restored) return
         requireWorldList()
-        val bytes = GLLib.B(RECORD, ci.rv())
+        val bytes = GameRuntime.B(RECORD, FarmGameEngine.rv())
         if (bytes == null) { restored = true; return }
         val entries = decode(bytes)
         if (entries.isNotEmpty()) {
-            var effect = ch.als[3]
+            var effect = FarmEntity.als[3]
             while (effect != null) {
                 if (effect.Kx == 47 && effect.anX) throw invalid("Pending rewards already exist before restore", null)
                 effect = effect.aoi
@@ -56,16 +56,16 @@ object PendingRewardState {
         // Kind60's initializer chooses a random chest reward; only reload the captured sprite.
         for (entry in entries) {
             if (entry[12] == 60) {
-                ci.s(1, entry[10] and 32768.inv(), 1, 24)
-                GLLib.bk("/11")
-                try { ci.fP(1) } finally { GLLib.ke() }
+                FarmGameEngine.s(1, entry[10] and 32768.inv(), 1, 24)
+                GameRuntime.bk("/11")
+                try { FarmGameEngine.fP(1) } finally { GameRuntime.ke() }
             }
         }
-        val created = arrayOfNulls<ch>(entries.size)
+        val created = arrayOfNulls<FarmEntity>(entries.size)
         try {
             for (index in entries.indices) {
                 val entry = entries[index]
-                val effect = ch.b(47, 3, intArrayOf(entry[1], entry[2], entry[3]))
+                val effect = FarmEntity.b(47, 3, intArrayOf(entry[1], entry[2], entry[3]))
                 created[index] = effect
                 effect.oN()
                 apply(effect, entry)
@@ -74,9 +74,9 @@ object PendingRewardState {
                 val effect = created[index]!!
                 effect.aok = 3
                 effect.aoj = null
-                effect.aoi = ch.als[3]
+                effect.aoi = FarmEntity.als[3]
                 effect.aoi?.aoj = effect
-                ch.als[3] = effect
+                FarmEntity.als[3] = effect
             }
             restored = true
         } catch (failure: RuntimeException) {
@@ -101,13 +101,13 @@ object PendingRewardState {
         } catch (failure: IOException) { throw invalid("Cannot decode pending rewards", failure) }
     }
 
-    private fun capture(effect: ch): IntArray = intArrayOf(
+    private fun capture(effect: FarmEntity): IntArray = intArrayOf(
         effect.HL, effect.aol, effect.aom, effect.aon, effect.aot, effect.aou, effect.aov, effect.aoo,
         effect.aoE, effect.aoF, effect.aoG, effect.aoH, effect.anG, effect.anH, effect.anI, effect.anJ,
         effect.anK, effect.anL, effect.anM, (if (effect.anN) 1 else 0) or (if (effect.anO) 2 else 0),
         effect.anP, effect.anQ, effect.anR, effect.anS, effect.anT, effect.anU, effect.anV, effect.anW)
 
-    private fun apply(effect: ch, words: IntArray) {
+    private fun apply(effect: FarmEntity, words: IntArray) {
         effect.HL = words[0]; effect.aol = words[1]; effect.aom = words[2]; effect.aon = words[3]
         effect.aot = words[4]; effect.aou = words[5]; effect.aov = words[6]; effect.aoo = words[7]
         effect.aoE = words[8]; effect.aoF = words[9]; effect.aoG = words[10]; effect.aoH = words[11]
@@ -119,7 +119,7 @@ object PendingRewardState {
         effect.anX = true
     }
     private fun requireWorldList() {
-        if (ch.als == null || ch.als.size <= 3) throw invalid("Reward queue is not ready", null)
+        if (FarmEntity.als == null || FarmEntity.als.size <= 3) throw invalid("Reward queue is not ready", null)
     }
     private fun invalid(message: String, cause: Throwable?): IllegalStateException = IllegalStateException(message, cause)
 }

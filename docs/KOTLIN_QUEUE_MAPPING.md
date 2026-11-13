@@ -9,7 +9,10 @@ Nhóm này chuyển triển khai thật của ba lớp sang Kotlin, không gọi
 Các tên public vốn đã mô tả đúng trách nhiệm được giữ lại. Giai đoạn còn có lời gọi
 Java/DEX phải giữ constructor, tên hàm, descriptor và field của API này. `ci.qD`,
 `ci.av`, `ci.rs`, `ci.aYU` và các peer obfuscated chưa được đổi tên trong nhóm này;
-chúng vẫn là hợp đồng với phần game chưa chuyển.
+chúng là hợp đồng ở checkpoint chuyển Kotlin đầu tiên. Sau đó lớp `ci/ch/GLLib`,
+field `aYR/baa` và accessor `qD/qE` được đổi tên đồng bộ bằng source/DEX refactor
+trong [bảng 7 tên đã xác minh](VERIFIED_GAME_NAMES.md). Các hàm codec `av/rs`
+và field ngôn ngữ `aYU` vẫn giữ nếu chưa có phân tích riêng.
 
 ## Ánh xạ tên đã xác minh
 
@@ -55,7 +58,7 @@ tắc thay tên toàn project. Không tên nào thay khóa SQLite, codec hoặc 
 - Sáu field public của `AsyncSaveQueue.Result` dùng `@JvmField`, vì caller Java đọc trực tiếp field thay vì getter.
 - Các hằng số policy dùng `const val`, giữ public static final và giá trị cũ.
 - Các hàm queue trước đây `synchronized` dùng `@Synchronized` trên chính instance queue. `wait/notifyAll` vẫn cùng monitor đó.
-- Controller vẫn đồng bộ lifecycle bằng `ci::class.java`, đúng monitor `ci.class` trước chuyển đổi. Các flag load/save trước đây `volatile` vẫn có `@Volatile`.
+- Controller đồng bộ lifecycle bằng `FarmGameEngine::class.java`, là monitor engine `ci.class` được đổi tên nhất quán cùng các caller. Các flag load/save trước đây `volatile` vẫn có `@Volatile`.
 - `===` được dùng cho checkpoint identity; không thay so sánh tham chiếu bằng `equals`.
 - Dữ liệu nullable như pending ticket, checkpoint và failure giữ nullable. Tham số exception không dùng của `isCriticalLoadFailure` cũng nullable, tránh thêm kiểm tra null vào hợp đồng Java cũ.
 - `beginCapture/finishCapture` vẫn chạy trên game thread; apply/hash/SQLite vẫn chạy trên worker. Không đổi schema 4, codec hoặc trạng thái retry/rollback.

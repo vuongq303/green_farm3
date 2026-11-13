@@ -9,29 +9,29 @@ open class j {
         private var KT: Array<j?>? = null
         @JvmStatic fun bY(index: Int): j? = KT!![index]
         @JvmStatic fun bZ(index: Int) {
-            GLLib.be("START LOADING CLASSES")
-            GLLib.be("START Opening file")
-            GLLib.bk("/13")
-            GLLib.be("START load currentClass = " + index)
+            GameRuntime.be("START LOADING CLASSES")
+            GameRuntime.be("START Opening file")
+            GameRuntime.bk("/13")
+            GameRuntime.be("START load currentClass = " + index)
             loadTable(index)
-            GLLib.ke()
+            GameRuntime.ke()
         }
         @JvmStatic fun il() {
-            GLLib.be("START LOADING CLASSES")
+            GameRuntime.be("START LOADING CLASSES")
             KT = arrayOfNulls(34)
-            GLLib.be("START Opening file")
-            GLLib.bk("/13")
-            GLLib.be("START loop")
+            GameRuntime.be("START Opening file")
+            GameRuntime.bk("/13")
+            GameRuntime.be("START loop")
             for (index in 0 until 34) loadTable(index)
-            GLLib.ke()
+            GameRuntime.ke()
         }
         private fun loadTable(index: Int) {
             KT!![index] = j()
-            val encoded = GLLib.db(index)
-            GLLib.be("Open File " + index)
+            val encoded = GameRuntime.db(index)
+            GameRuntime.be("Open File " + index)
             val table = KT!![index]!!
-            table.KV = GLLib.l(encoded, 0)
-            table.KU = GLLib.l(encoded, 4)
+            table.KV = GameRuntime.l(encoded, 0)
+            table.KU = GameRuntime.l(encoded, 4)
             var byteOffset = 8
             if (table.KV > 0 && table.KU > 0) {
                 val columnWidths = ByteArray(table.KU)
@@ -40,8 +40,8 @@ open class j {
                 for (row in 0 until table.KV) for (column in 0 until table.KU) {
                     when (columnWidths[column].toInt()) {
                         1 -> table.KW!![row][column] = encoded[byteOffset].toInt()
-                        2 -> table.KW!![row][column] = GLLib.k(encoded, byteOffset).toInt()
-                        4 -> table.KW!![row][column] = GLLib.l(encoded, byteOffset)
+                        2 -> table.KW!![row][column] = GameRuntime.k(encoded, byteOffset).toInt()
+                        4 -> table.KW!![row][column] = GameRuntime.l(encoded, byteOffset)
                     }
                     byteOffset += columnWidths[column].toInt()
                 }

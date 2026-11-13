@@ -196,7 +196,7 @@ public class a {
         for (int i5 = 0; i5 < this.Id; i5++) {
             short s3 = lVar.readShort();
             if (w.Xy) {
-                GLLib.be("pixel format = 0x" + Integer.toHexString(s3));
+                GameRuntime.be("pixel format = 0x" + Integer.toHexString(s3));
             }
             this.HN[i5] = lVar.readShort();
             int i6 = lVar.Lm.readByte() & 255;
@@ -240,7 +240,7 @@ public class a {
             byte[] bArr = this.Hy[s4];
             int iBE = bE(i10);
             if (w.Xy) {
-                GLLib.be("module = " + i10 + "; modules data index = " + ((int) s4));
+                GameRuntime.be("module = " + i10 + "; modules data index = " + ((int) s4));
             }
             this.HM = this.HN[iBE];
             if (bArr != null) {
@@ -261,7 +261,7 @@ public class a {
             }
             i9 = i10 + 1;
         }
-        if (w.VB && GLLib.kJ()) {
+        if (w.VB && GameRuntime.kJ()) {
             a(Gs, s, s2, w.VC);
         }
         this.HR[0][0] = ay.a(Gs, s, s2, true);
@@ -270,7 +270,7 @@ public class a {
 
     private static void aq(String str) {
         if (w.Xy) {
-            GLLib.be(str);
+            GameRuntime.be(str);
         }
     }
 
@@ -450,7 +450,7 @@ public class a {
                     z3 = true;
                     z5 = false;
                 } else {
-                    GLLib.c(false, "Invalid module type : " + unsignedByte + "   module #" + i4);
+                    GameRuntime.c(false, "Invalid module type : " + unsignedByte + "   module #" + i4);
                 }
                 if (z7) {
                     a(lVar, i4);
@@ -773,12 +773,12 @@ public class a {
     public void a(byte[] bArr, int i, int i2, int i3, ay ayVar) {
         try {
             if (bArr == null) {
-                GLLib.c(false, "Cant load sprite, file[] is null");
+                GameRuntime.c(false, "Cant load sprite, file[] is null");
                 return;
             }
             if (w.ZV) {
-                this.Gx = GLLib.RI;
-                this.Gy = GLLib.lE();
+                this.Gx = GameRuntime.RI;
+                this.Gy = GameRuntime.lE();
             }
             aq("ASprite.Load(" + bArr.length + " bytes, " + i + ")..." + this);
             if (w.Xw || Ik) {
@@ -788,7 +788,7 @@ public class a {
             lVar.Lm.skipBytes(i);
             short s = lVar.readShort();
             aq("  bs_version = 0x" + Integer.toHexString(s));
-            GLLib.c(s == 1503, "ASprite.Load.Invalid BSprite version !  GLLib supports only (0x" + Integer.toHexString(1503) + ")    this sprite version (0x" + Integer.toHexString(s) + ")");
+            GameRuntime.c(s == 1503, "ASprite.Load.Invalid BSprite version !  GLLib supports only (0x" + Integer.toHexString(1503) + ")    this sprite version (0x" + Integer.toHexString(s) + ")");
             this.Hz = lVar.readInt();
             aq("  bs_flags = 0x" + Integer.toHexString(this.Hz));
             if ((this.Hz & 4194304) != 0) {
@@ -802,7 +802,7 @@ public class a {
             e(lVar);
             if (this.Gz <= 0) {
                 if (w.XA) {
-                    GLLib.be("WARNING: sprite with num modules = " + this.Gz);
+                    GameRuntime.be("WARNING: sprite with num modules = " + this.Gz);
                 }
                 if (w.Xw || Ik) {
                     return;
@@ -871,7 +871,7 @@ public class a {
                     }
                 }
             } else if ((this.HL & 4) != 0) {
-                GLLib.be("SetForceShortFrameRC: You need to enable sprite_alwaysBsSkipFrameRc or export the sprite with BS_SKIP_FRAME_RC sprite flag to use this functionality!");
+                GameRuntime.be("SetForceShortFrameRC: You need to enable sprite_alwaysBsSkipFrameRc or export the sprite with BS_SKIP_FRAME_RC sprite flag to use this functionality!");
                 Y(false);
             }
             aq("ASprite.Load --- ok!");
@@ -879,9 +879,9 @@ public class a {
             }
         } catch (Exception e) {
             if (w.XA) {
-                GLLib.be("ASprite.Load()." + e);
+                GameRuntime.be("ASprite.Load()." + e);
             }
-            GLLib.c(false, "Asprite.Load. error while loading sprite : " + e);
+            GameRuntime.c(false, "Asprite.Load. error while loading sprite : " + e);
         }
     }
 
@@ -964,13 +964,13 @@ public class a {
     }
 
     private final boolean bi(int i) {
-        GLLib.c(w.WE, "ASprite.IsFrameMappingEnabled: you should enable sprite_useFrameMapping for using this functionality.");
+        GameRuntime.c(w.WE, "ASprite.IsFrameMappingEnabled: you should enable sprite_useFrameMapping for using this functionality.");
         return w.WE && this.Ht != null && bj(i) >= 0;
     }
 
     private final int bj(int i) {
-        GLLib.c(w.WE, "ASprite.GetFrameMappingConfigId: you should enable sprite_useFrameMapping for using this functionality.");
-        GLLib.c(this.Ht != null, "ASprite.GetFrameMappingConfigId: frame mapping is not enabled for this sprite.");
+        GameRuntime.c(w.WE, "ASprite.GetFrameMappingConfigId: you should enable sprite_useFrameMapping for using this functionality.");
+        GameRuntime.c(this.Ht != null, "ASprite.GetFrameMappingConfigId: frame mapping is not enabled for this sprite.");
         if (w.WE) {
             return this.Ht[i];
         }
@@ -978,13 +978,13 @@ public class a {
     }
 
     private final boolean bk(int i) {
-        GLLib.c(w.WE, "ASprite.IsFrameMappingEnabled: you should enable sprite_useFrameMapping for using this functionality.");
+        GameRuntime.c(w.WE, "ASprite.IsFrameMappingEnabled: you should enable sprite_useFrameMapping for using this functionality.");
         return w.WE && bl(i) != null;
     }
 
     private final a bl(int i) {
-        GLLib.c(w.WE, "ASprite.GetFrameMappingConfigSprite: you should enable sprite_useFrameMapping for using this functionality.");
-        GLLib.c(this.Hu != null && i < this.Hu.length, "ASprite.GetFrameMappingConfigSprite: frame mapping data is not set or it has not the correct size.");
+        GameRuntime.c(w.WE, "ASprite.GetFrameMappingConfigSprite: you should enable sprite_useFrameMapping for using this functionality.");
+        GameRuntime.c(this.Hu != null && i < this.Hu.length, "ASprite.GetFrameMappingConfigSprite: frame mapping data is not set or it has not the correct size.");
         if (w.WE) {
             return this.Hu[i];
         }
@@ -992,8 +992,8 @@ public class a {
     }
 
     private final int bm(int i) {
-        GLLib.c(w.WE, "ASprite.GetFrameMappingConfigPaletteId: you should enable sprite_useFrameMapping for using this functionality.");
-        GLLib.c(this.Hv != null && i < this.Hv.length, "ASprite.GetFrameMappingConfigPaletteId: frame mapping data is not set or it has not the correct size.");
+        GameRuntime.c(w.WE, "ASprite.GetFrameMappingConfigPaletteId: you should enable sprite_useFrameMapping for using this functionality.");
+        GameRuntime.c(this.Hv != null && i < this.Hv.length, "ASprite.GetFrameMappingConfigPaletteId: frame mapping data is not set or it has not the correct size.");
         if (w.WE) {
             return this.Hv[i] & 255;
         }
@@ -1001,8 +1001,8 @@ public class a {
     }
 
     private final int bn(int i) {
-        GLLib.c(w.WE, "ASprite.GetFrameMappingConfigFrameOff: you should enable sprite_useFrameMapping for using this functionality.");
-        GLLib.c(this.Hw != null && i < this.Hw.length, "ASprite.GetFrameMappingConfigFrameOff: frame mapping data is not set or it has not the correct size.");
+        GameRuntime.c(w.WE, "ASprite.GetFrameMappingConfigFrameOff: you should enable sprite_useFrameMapping for using this functionality.");
+        GameRuntime.c(this.Hw != null && i < this.Hw.length, "ASprite.GetFrameMappingConfigFrameOff: frame mapping data is not set or it has not the correct size.");
         if (w.WE) {
             return this.Hw[i];
         }
@@ -1240,37 +1240,37 @@ public class a {
                 i7 = iBA;
             }
             if (w.Zo) {
-                if ((GLLib.TX & 262144) != 0) {
-                    if (GLLib.TY[18][5] != 0) {
-                        int i8 = GLLib.TY[18][1];
+                if ((GameRuntime.TX & 262144) != 0) {
+                    if (GameRuntime.TY[18][5] != 0) {
+                        int i8 = GameRuntime.TY[18][1];
                         if (i8 == 100) {
-                            i8 = GLLib.TY[18][3];
+                            i8 = GameRuntime.TY[18][3];
                         }
                         i2 = (i8 * i2) / 100;
-                        int i9 = GLLib.TY[18][1];
+                        int i9 = GameRuntime.TY[18][1];
                         if (i9 == 100) {
-                            i9 = GLLib.TY[18][4];
+                            i9 = GameRuntime.TY[18][4];
                         }
                         i3 = (i9 * i3) / 100;
                     }
-                    int i10 = GLLib.TY[18][1];
+                    int i10 = GameRuntime.TY[18][1];
                     if (i10 == 100) {
-                        i10 = GLLib.TY[18][3];
+                        i10 = GameRuntime.TY[18][3];
                     }
                     i7 = (i10 * i7) / 100;
-                    int i11 = GLLib.TY[18][1];
+                    int i11 = GameRuntime.TY[18][1];
                     if (i11 == 100) {
-                        i11 = GLLib.TY[18][4];
+                        i11 = GameRuntime.TY[18][4];
                     }
                     iBB = (i11 * iBB) / 100;
-                    int i12 = GLLib.TY[18][1];
+                    int i12 = GameRuntime.TY[18][1];
                     if (i12 == 100) {
-                        i12 = GLLib.TY[18][3];
+                        i12 = GameRuntime.TY[18][3];
                     }
                     i6 = (i12 * i6) / 100;
-                    int i13 = GLLib.TY[18][1];
+                    int i13 = GameRuntime.TY[18][1];
                     if (i13 == 100) {
-                        i13 = GLLib.TY[18][4];
+                        i13 = GameRuntime.TY[18][4];
                     }
                     i5 = (i5 * i13) / 100;
                 }
@@ -1405,7 +1405,7 @@ public class a {
             }
             return Gv;
         }
-        GLLib.be("GetPixelBuffer_int: Error - passed buffer equals both temp_int AND transform_int, this means temp_int == transform_int?!?!");
+        GameRuntime.be("GetPixelBuffer_int: Error - passed buffer equals both temp_int AND transform_int, this means temp_int == transform_int?!?!");
         return null;
     }
 
@@ -1422,7 +1422,7 @@ public class a {
             }
             return Gw;
         }
-        GLLib.be("GetPixelBuffer_short: Error - passed buffer equals both temp_int AND transform_int, this means temp_short == transform_short?!?!");
+        GameRuntime.be("GetPixelBuffer_short: Error - passed buffer equals both temp_int AND transform_int, this means temp_short == transform_short?!?!");
         return null;
     }
 
@@ -1469,7 +1469,7 @@ public class a {
                 }
                 if (w.VB) {
                     int[] iArrD = d((int[]) x(i2, i));
-                    GLLib.c(iArrD != null, "BuildCacheSingleImageIndexed: trying to cache indexed image with borber alpha fix (GLLibConfig.ANDROID_OGLES_FIX_TEXTURE_ALPHA = true), but image palette has more than 127 colors. Skipping alpha fix");
+                    GameRuntime.c(iArrD != null, "BuildCacheSingleImageIndexed: trying to cache indexed image with borber alpha fix (GLLibConfig.ANDROID_OGLES_FIX_TEXTURE_ALPHA = true), but image palette has more than 127 colors. Skipping alpha fix");
                     if (iArrD != null) {
                         a(i2, i, iArrD);
                         z2 = true;
@@ -1489,7 +1489,7 @@ public class a {
                     this.HR[i][i2] = new ay(Gu, iArr, iBU, iBV);
                 }
             } else if (bArr != null && a(i2, bArr, 0, iBU, iBV)) {
-                if (w.VB && GLLib.kJ()) {
+                if (w.VB && GameRuntime.kJ()) {
                     a(Gs, iBU, iBV, w.VC);
                 }
                 this.HR[i][i2] = ay.a(Gs, iBU, iBV, true);
@@ -1535,13 +1535,13 @@ public class a {
                 return;
             }
         }
-        GLLib.be("SetForceShortFrameRC: You need to enable sprite_usePrecomputedFrameRect to use this functionality!");
+        GameRuntime.be("SetForceShortFrameRC: You need to enable sprite_usePrecomputedFrameRect to use this functionality!");
     }
 
     public void a(int i, int i2, int[] iArr) {
-        GLLib.c(this.HC != null, "SetPalette: Palette Array has not been initialized!");
-        GLLib.c(i2 >= 0, "SetPalette: Palette Index to set is invalid: " + i2);
-        GLLib.c(i2 < this.HC[i].length, "SetPalette: Palette Index to set is invalid: " + i2);
+        GameRuntime.c(this.HC != null, "SetPalette: Palette Array has not been initialized!");
+        GameRuntime.c(i2 >= 0, "SetPalette: Palette Index to set is invalid: " + i2);
+        GameRuntime.c(i2 < this.HC[i].length, "SetPalette: Palette Index to set is invalid: " + i2);
         this.HC[i][i2] = iArr;
     }
 
@@ -1645,10 +1645,10 @@ public class a {
                             iArr[i14] = unsignedByte;
                         }
                     } else {
-                        GLLib.c(false, "Sprite Pixel Format Error: Unsupported format! Format ID: 0x" + Integer.toHexString(i));
+                        GameRuntime.c(false, "Sprite Pixel Format Error: Unsupported format! Format ID: 0x" + Integer.toHexString(i));
                     }
-                    if (GLLib.lB()) {
-                        a(i3, i7, GLLib.lC());
+                    if (GameRuntime.lB()) {
+                        a(i3, i7, GameRuntime.lC());
                     }
                     i6 = i7 + 1;
                 } else {
@@ -1665,7 +1665,7 @@ public class a {
         short s = lVar.readShort();
         this.HM = lVar.readShort();
         if (w.Xy) {
-            GLLib.be("_pixel_format = 0x" + Integer.toHexString(s));
+            GameRuntime.be("_pixel_format = 0x" + Integer.toHexString(s));
         }
         this.Id = lVar.Lm.readByte();
         this.HF = new int[this.Id];
@@ -1683,7 +1683,7 @@ public class a {
                 this.HE = b;
             }
             aq("_palettes = " + this.HE);
-            GLLib.c(this.HE <= w.Wz, "Sprite is using more palettes than MAX_SPRITE_PALETTES, please increase this value in GLLibConfig!");
+            GameRuntime.c(this.HE <= w.Wz, "Sprite is using more palettes than MAX_SPRITE_PALETTES, please increase this value in GLLibConfig!");
             int unsignedByte = lVar.Lm.readUnsignedByte();
             if ((w.WQ || w.WP || w.WW) && unsignedByte == 0) {
                 unsignedByte = 256;
@@ -1822,7 +1822,7 @@ public class a {
             return null;
         }
         int[] iArr2 = new int[iArr.length + 127];
-        GLLib.a(iArr, 0, iArr2, 0, iArr.length);
+        GameRuntime.a(iArr, 0, iArr2, 0, iArr.length);
         for (int i = 0; i < iArr.length; i++) {
             iArr2[i + 127] = iArr[i] & 16777215;
         }
@@ -1907,7 +1907,7 @@ public class a {
                     i3 = lVar.readInt();
                 } else {
                     int unsignedShort = lVar.readUnsignedShort();
-                    GLLib.c(unsignedShort >= 0, "LoadingSingleImage: size read as short is negative. You need to add BS_IMAGE_SIZE_INT to this sprites export flags");
+                    GameRuntime.c(unsignedShort >= 0, "LoadingSingleImage: size read as short is negative. You need to add BS_IMAGE_SIZE_INT to this sprites export flags");
                     i3 = unsignedShort;
                 }
                 aq("png size = " + i3);
@@ -1924,7 +1924,7 @@ public class a {
                     this.HE = unsignedByte2;
                 }
                 aq("_palettes = " + this.HE);
-                GLLib.c(this.HE <= w.Wz, "Sprite is using more palettes than MAX_SPRITE_PALETTES, please increase this value in GLLibConfig!");
+                GameRuntime.c(this.HE <= w.Wz, "Sprite is using more palettes than MAX_SPRITE_PALETTES, please increase this value in GLLibConfig!");
                 if ((this.Hz & 1073741824) != 0) {
                     unsignedByte = lVar.Lm.readUnsignedByte();
                     if (unsignedByte == 0) {
@@ -2004,12 +2004,12 @@ public class a {
             if (Gs == null) {
                 Gs = new int[w.WA];
             }
-            GLLib.c(i5 * i6 <= Gs.length, "DecodeImage_Algorithm: Module WxH > temp_int.length (" + i5 + " x " + i6 + " = " + (i5 * i6) + " > " + Gs.length + ")! Either decrease module size or increase GLLibConfig.TMP_BUFFER_SIZE!");
+            GameRuntime.c(i5 * i6 <= Gs.length, "DecodeImage_Algorithm: Module WxH > temp_int.length (" + i5 + " x " + i6 + " = " + (i5 * i6) + " > " + Gs.length + ")! Either decrease module size or increase GLLibConfig.TMP_BUFFER_SIZE!");
         } else {
             if (Gu == null) {
                 Gu = new byte[w.WA];
             }
-            GLLib.c(i5 * i6 <= Gu.length, "DecodeImage_Algorithm: Module WxH > temp_byte.length (" + i5 + " x " + i6 + " = " + (i5 * i6) + " > " + Gu.length + ")!  Either decrease module size or increase GLLibConfig.TMP_BUFFER_SIZE!");
+            GameRuntime.c(i5 * i6 <= Gu.length, "DecodeImage_Algorithm: Module WxH > temp_byte.length (" + i5 + " x " + i6 + " = " + (i5 * i6) + " > " + Gu.length + ")!  Either decrease module size or increase GLLibConfig.TMP_BUFFER_SIZE!");
         }
         int[] iArr = null;
         if (z) {
@@ -2701,7 +2701,7 @@ public class a {
                 i126 = i127;
             }
         } else {
-            GLLib.c(false, "ERROR : sprite encoding for " + Integer.toHexString(this.HM) + " is not enabled. Check sprite_useEncodeFormat in GllibConfiguration");
+            GameRuntime.c(false, "ERROR : sprite encoding for " + Integer.toHexString(this.HM) + " is not enabled. Check sprite_useEncodeFormat in GllibConfiguration");
         }
         return true;
     }
@@ -2865,7 +2865,7 @@ public class a {
     public int bN(int i) {
         int i2 = 2;
         if (this.IZ == null && this.IY == null) {
-            GLLib.be("ERROR: _pMapCharInt and _pMapCharShort are null!!! Did you set the Char Map?");
+            GameRuntime.be("ERROR: _pMapCharInt and _pMapCharShort are null!!! Did you set the Char Map?");
             return 0;
         }
         int i3 = i % this.Jb;
@@ -2882,7 +2882,7 @@ public class a {
                 if (!w.XA) {
                     return 1;
                 }
-                GLLib.be("Character not available: char value = " + i + " and actual char = '" + ((char) i) + "'");
+                GameRuntime.be("Character not available: char value = " + i + " and actual char = '" + ((char) i) + "'");
                 return 1;
             }
             return this.IZ[i2 + i4 + 1];
@@ -2898,7 +2898,7 @@ public class a {
             if (!w.XA) {
                 return 1;
             }
-            GLLib.be("Character not available: char value = " + i + " and actual char = '" + ((char) i) + "'");
+            GameRuntime.be("Character not available: char value = " + i + " and actual char = '" + ((char) i) + "'");
             return 1;
         }
         return this.IY[i2 + i4 + 1];
@@ -2999,7 +2999,7 @@ public class a {
         int i16 = this.HI[0];
         int i17 = 0;
         if (w.XG) {
-            GLLib.c(i16 < 4095, "Warning: WrapTextB formatting can only save palettes up to 4095");
+            GameRuntime.c(i16 < 4095, "Warning: WrapTextB formatting can only save palettes up to 4095");
             i17 = (z12 ? Utility.DEFAULT_STREAM_BUFFER_SIZE : 0) | (i16 & 4095) | (z11 ? 4096 : 0);
         }
         int i18 = 0;
@@ -3038,7 +3038,7 @@ public class a {
                     if (w.XG) {
                         s5 = (short) (s16 + 1);
                         Jd[s16] = (short) i21;
-                        GLLib.c(i16 < 4095, "Warning: WrapTextB formatting can only save palettes up to 4095");
+                        GameRuntime.c(i16 < 4095, "Warning: WrapTextB formatting can only save palettes up to 4095");
                         i7 = (z2 ? Utility.DEFAULT_STREAM_BUFFER_SIZE : 0) | (i3 & 4095) | (z11 ? 4096 : 0);
                         i8 = i3;
                         z12 = z2;
@@ -3182,7 +3182,7 @@ public class a {
                 if (w.XG) {
                     short s21 = (short) (s20 + 1);
                     Jd[s20] = (short) i21;
-                    GLLib.c(i16 < 4095, "Warning: WrapTextB formatting can only save palettes up to 4095");
+                    GameRuntime.c(i16 < 4095, "Warning: WrapTextB formatting can only save palettes up to 4095");
                     i21 = (i16 & 4095) | (z11 ? 4096 : 0) | (z12 ? Utility.DEFAULT_STREAM_BUFFER_SIZE : 0);
                     s20 = s21;
                 }
@@ -3288,7 +3288,7 @@ public class a {
                         if (w.XG) {
                             s7 = (short) (s27 + 1);
                             Jd[s27] = (short) i21;
-                            GLLib.c(i16 < 4095, "Warning: WrapTextB formatting can only save palettes up to 4095");
+                            GameRuntime.c(i16 < 4095, "Warning: WrapTextB formatting can only save palettes up to 4095");
                             i21 = (z6 ? Utility.DEFAULT_STREAM_BUFFER_SIZE : 0) | (i12 & 4095) | (z7 ? 4096 : 0);
                             i16 = i12;
                             z12 = z6;
@@ -3436,9 +3436,9 @@ public class a {
             Jg = i11;
             Jg += i6;
         }
-        int i22 = GLLib.SF;
+        int i22 = GameRuntime.SF;
         int i23 = i22 - i16;
-        int i24 = GLLib.SH + i22 + i16;
+        int i24 = GameRuntime.SH + i22 + i16;
         int i25 = i3;
         while (i25 < i3 + i13) {
             int i26 = w.XG ? 5 : 4;
@@ -3612,7 +3612,7 @@ public class a {
                     } else {
                         iA = bN(cA);
                         if (w.XA && iA > hv()) {
-                            GLLib.be("Character not available: c = " + iA);
+                            GameRuntime.be("Character not available: c = " + iA);
                             iA = 0;
                         }
                         if (z4) {
@@ -3692,7 +3692,7 @@ public class a {
                     i5++;
                     iA = a(str, cArr, i5);
                     if (w.XA) {
-                        GLLib.be("Character not available: c = " + iA);
+                        GameRuntime.be("Character not available: c = " + iA);
                         iA = 0;
                     }
                     if (z4) {
@@ -3880,7 +3880,7 @@ public class a {
                         str = null;
                         cArr3 = Go;
                     } else {
-                        GLLib.a(cArr, i11, Go, 2, length - i11);
+                        GameRuntime.a(cArr, i11, Go, 2, length - i11);
                         cArr3 = Go;
                     }
                     Go[0] = 1;
@@ -3888,7 +3888,7 @@ public class a {
                     Go[i5 - 2] = 1;
                     Go[i5 - 1] = (char) this.HI[0];
                     i11 = 0;
-                    GLLib.a(cArr3, i5, true, true);
+                    GameRuntime.a(cArr3, i5, true, true);
                     cArr2 = cArr3;
                     str2 = str;
                 } else {
@@ -3910,7 +3910,7 @@ public class a {
                     if (w.Xs && c(cA)) {
                         z5 = false;
                         iA2 = a(cA);
-                        GLLib.QD.a(this, cA, i14, i13);
+                        GameRuntime.QD.a(this, cA, i14, i13);
                     }
                     if (w.Xq && cA == '\\') {
                         i6 = i11 + 1;
@@ -4004,7 +4004,7 @@ public class a {
                             if (w.XA || iA <= hv()) {
                                 i10 = iA;
                             } else {
-                                GLLib.be("Character not available: c = " + iA);
+                                GameRuntime.be("Character not available: c = " + iA);
                                 i10 = 0;
                             }
                             if (z5) {
@@ -4253,10 +4253,10 @@ public class a {
     }
 
     public void a(int i, int i2, int i3, boolean z, boolean z2) {
-        GLLib.c(i2 >= 0, "ModifyPaletteAlpha: Trying to modify palette of negative index!");
-        GLLib.c(i2 < this.HE, "ModifyPaletteAlpha: Trying to modify palette which is out-of-range: " + i2);
+        GameRuntime.c(i2 >= 0, "ModifyPaletteAlpha: Trying to modify palette of negative index!");
+        GameRuntime.c(i2 < this.HE, "ModifyPaletteAlpha: Trying to modify palette which is out-of-range: " + i2);
         int[] iArr = (int[]) x(i, i2);
-        GLLib.c(this.HC != null, "ModifyPaletteAlpha: This palette data is null!");
+        GameRuntime.c(this.HC != null, "ModifyPaletteAlpha: This palette data is null!");
         int length = iArr.length;
         if (z2) {
             for (int i4 = length - 1; i4 >= 0; i4--) {
@@ -4285,10 +4285,10 @@ public class a {
     }
 
     public void e(int i, int i2, int i3) {
-        GLLib.c(i2 >= 0, "ModifyPaletteAlphaUsingAltPalette: trying to modify palette of negative index!");
-        GLLib.c(i2 < this.HE, "ModifyPaletteAlphaUsingAltPalette: trying to modify palette which is out-of-range: " + i2);
-        GLLib.c(i3 >= 0, "ModifyPaletteAlphaUsingAltPalette: trying to use alpha palette of negative index!");
-        GLLib.c(i3 < this.HE, "ModifyPaletteAlphaUsingAltPalette: trying to use alpha palette which is out-of-range: " + i3);
+        GameRuntime.c(i2 >= 0, "ModifyPaletteAlphaUsingAltPalette: trying to modify palette of negative index!");
+        GameRuntime.c(i2 < this.HE, "ModifyPaletteAlphaUsingAltPalette: trying to modify palette which is out-of-range: " + i2);
+        GameRuntime.c(i3 >= 0, "ModifyPaletteAlphaUsingAltPalette: trying to use alpha palette of negative index!");
+        GameRuntime.c(i3 < this.HE, "ModifyPaletteAlphaUsingAltPalette: trying to use alpha palette which is out-of-range: " + i3);
         this.HJ = true;
         this.HK = true;
         int[] iArr = (int[]) x(i, i2);
@@ -4312,7 +4312,7 @@ public class a {
         int[] iArr = (int[]) x(i, i2);
         for (int i3 = 0; i3 < iArr.length; i3++) {
             if ((iArr[i3] & 16777215) != 16711935 && (iArr[i3] >> 24) != 0) {
-                iArr[i3] = GLLib.a(iArr[i3], beVar);
+                iArr[i3] = GameRuntime.a(iArr[i3], beVar);
             }
         }
     }
@@ -4355,7 +4355,7 @@ public class a {
     public void a(aj ajVar, int i, int i2, int i3, int i4, int i5) {
         int i6;
         if (w.Xz) {
-            GLLib.be("Sprite paint: aframe = " + i2);
+            GameRuntime.be("Sprite paint: aframe = " + i2);
         }
         int i7 = this.Hg[i] + i2;
         int i8 = (w.Xm || (w.Xl && (this.Hz & 2097152) != 0)) ? this.Hi[i7] : this.Hh[i7] & 255;
@@ -4373,7 +4373,7 @@ public class a {
         }
         if ((i5 & 4) != 0) {
             i10 = HY[i10 & 7] | (i10 & (-8));
-            if (w.Zo && ((GLLib.TX & 262144) != 0) && (GLLib.TY[18][6] % GLLib.Rk != 0 || GLLib.TY[18][10] != 0)) {
+            if (w.Zo && ((GameRuntime.TX & 262144) != 0) && (GameRuntime.TY[18][6] % GameRuntime.Rk != 0 || GameRuntime.TY[18][10] != 0)) {
                 i6 = iBu;
             } else {
                 i6 = -iBv;
@@ -4383,15 +4383,15 @@ public class a {
             i6 = iBu;
         }
         if (w.Zo) {
-            if ((GLLib.TX & 262144) != 0) {
-                if (!(GLLib.TY[18][5] != 0)) {
-                    int i11 = GLLib.TY[18][1];
+            if ((GameRuntime.TX & 262144) != 0) {
+                if (!(GameRuntime.TY[18][5] != 0)) {
+                    int i11 = GameRuntime.TY[18][1];
                     if (i11 == 100) {
-                        i11 = GLLib.TY[18][3];
+                        i11 = GameRuntime.TY[18][3];
                     }
-                    int i12 = GLLib.TY[18][1];
+                    int i12 = GameRuntime.TY[18][1];
                     if (i12 == 100) {
-                        i12 = GLLib.TY[18][4];
+                        i12 = GameRuntime.TY[18][4];
                     }
                     i6 = (i11 * i6) / 100;
                     iBv = (iBv * i12) / 100;
@@ -4475,7 +4475,7 @@ public class a {
         int i3;
         this.HS++;
         if (w.Xz) {
-            GLLib.be("Sprite paint: frame = " + i);
+            GameRuntime.be("Sprite paint: frame = " + i);
         }
         int iBr = br(i);
         if (iBr > 0) {
@@ -4531,7 +4531,7 @@ public class a {
                 }
             }
             if (w.XN && (this.HL & 32) != 0 && Iu >= 0) {
-                GLLib.QD.a(this, i, Iu, Iv, Iw, Ix);
+                GameRuntime.QD.a(this, i, Iu, Iv, Iw, Ix);
                 Iu = -1;
             }
         }
@@ -4553,7 +4553,7 @@ public class a {
         int i10;
         float f4;
         if (w.Xz) {
-            GLLib.be("Sprite paint: fmodule = " + i2);
+            GameRuntime.be("Sprite paint: fmodule = " + i2);
         }
         int iV = v(i, i2);
         int iBD = bD(iV);
@@ -4606,7 +4606,7 @@ public class a {
         }
         if ((i3 & 4) != 0) {
             i9 = (i9 & (-8)) | HY[i9 & 7];
-            if (w.Zo && ((GLLib.TX & 262144) != 0) && (GLLib.TY[18][6] % GLLib.Rk != 0 || GLLib.TY[18][10] != 0)) {
+            if (w.Zo && ((GameRuntime.TX & 262144) != 0) && (GameRuntime.TY[18][6] % GameRuntime.Rk != 0 || GameRuntime.TY[18][10] != 0)) {
                 f3 = fBw;
                 i10 = i9;
             } else {
@@ -4619,23 +4619,23 @@ public class a {
             i10 = i9;
         }
         if (w.Zo) {
-            if (!((GLLib.TX & 262144) != 0) || (w.Xp && HQ == 1)) {
+            if (!((GameRuntime.TX & 262144) != 0) || (w.Xp && HQ == 1)) {
                 f4 = f3;
             } else {
-                if (GLLib.TY[18][6] % GLLib.Rk != 0 || GLLib.TY[18][10] != 0) {
-                    GLLib.l(18, 7, (int) (-f3));
-                    GLLib.l(18, 8, (int) (-fBx));
+                if (GameRuntime.TY[18][6] % GameRuntime.Rk != 0 || GameRuntime.TY[18][10] != 0) {
+                    GameRuntime.l(18, 7, (int) (-f3));
+                    GameRuntime.l(18, 8, (int) (-fBx));
                 }
-                if (GLLib.TY[18][5] != 0) {
+                if (GameRuntime.TY[18][5] != 0) {
                     f4 = f3;
                 } else {
-                    int i12 = GLLib.TY[18][1];
+                    int i12 = GameRuntime.TY[18][1];
                     if (i12 == 100) {
-                        i12 = GLLib.TY[18][3];
+                        i12 = GameRuntime.TY[18][3];
                     }
-                    int i13 = GLLib.TY[18][1];
+                    int i13 = GameRuntime.TY[18][1];
                     if (i13 == 100) {
-                        i13 = GLLib.TY[18][4];
+                        i13 = GameRuntime.TY[18][4];
                     }
                     int i14 = w.Zp ? Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS : 100;
                     fBx = (fBx * i13) / i14;
@@ -4646,29 +4646,29 @@ public class a {
             f4 = f3;
         }
         if (w.Zn) {
-            if ((GLLib.TX & 32768) != 0) {
-                float f7 = GLLib.TY[15][1];
-                float f8 = GLLib.TY[15][2];
-                float f9 = GLLib.TY[15][3];
-                float f10 = GLLib.TY[15][4];
-                float f11 = GLLib.TY[15][5];
-                float f12 = GLLib.TY[15][6];
+            if ((GameRuntime.TX & 32768) != 0) {
+                float f7 = GameRuntime.TY[15][1];
+                float f8 = GameRuntime.TY[15][2];
+                float f9 = GameRuntime.TY[15][3];
+                float f10 = GameRuntime.TY[15][4];
+                float f11 = GameRuntime.TY[15][5];
+                float f12 = GameRuntime.TY[15][6];
                 int iBy = by(i);
                 int iBz = bz(i);
                 float fBA = f4 - bA(i);
                 float fBB = fBx - bB(i);
-                GLLib.a(f, f2, f7, f8, f9, f10, f11, f12, fBA, fBB, iBy, iBz);
-                HU[0] = GLLib.kA();
-                HU[1] = GLLib.kB();
-                GLLib.a(f, f2, f7, f8, f9, f10, f11, f12, fBA + i8, fBB, iBy, iBz);
-                HU[2] = GLLib.kA();
-                HU[3] = GLLib.kB();
-                GLLib.a(f, f2, f7, f8, f9, f10, f11, f12, fBA + i8, fBB + i7, iBy, iBz);
-                HU[4] = GLLib.kA();
-                HU[5] = GLLib.kB();
-                GLLib.a(f, f2, f7, f8, f9, f10, f11, f12, fBA, fBB + i7, iBy, iBz);
-                HU[6] = GLLib.kA();
-                HU[7] = GLLib.kB();
+                GameRuntime.a(f, f2, f7, f8, f9, f10, f11, f12, fBA, fBB, iBy, iBz);
+                HU[0] = GameRuntime.kA();
+                HU[1] = GameRuntime.kB();
+                GameRuntime.a(f, f2, f7, f8, f9, f10, f11, f12, fBA + i8, fBB, iBy, iBz);
+                HU[2] = GameRuntime.kA();
+                HU[3] = GameRuntime.kB();
+                GameRuntime.a(f, f2, f7, f8, f9, f10, f11, f12, fBA + i8, fBB + i7, iBy, iBz);
+                HU[4] = GameRuntime.kA();
+                HU[5] = GameRuntime.kB();
+                GameRuntime.a(f, f2, f7, f8, f9, f10, f11, f12, fBA, fBB + i7, iBy, iBz);
+                HU[6] = GameRuntime.kA();
+                HU[7] = GameRuntime.kB();
             } else {
                 f += f4;
                 f2 += fBx;
@@ -4680,9 +4680,9 @@ public class a {
         if (w.XN && (this.HL & 32) != 0 && Ir) {
             Ir = false;
             if (Iu >= 0) {
-                GLLib.QD.a(this, i, Iu, Iv, Iw, Ix);
+                GameRuntime.QD.a(this, i, Iu, Iv, Iw, Ix);
             }
-            GLLib.QD.a(this, i, Is, i10 & 15, (int) f, (int) f2, It);
+            GameRuntime.QD.a(this, i, Is, i10 & 15, (int) f, (int) f2, It);
             Iu = Is;
             Iv = (int) f;
             Iw = (int) f2;
@@ -4696,7 +4696,7 @@ public class a {
             return;
         }
         if (w.Xz) {
-            GLLib.be("Sprite paint: paint hyper frame");
+            GameRuntime.be("Sprite paint: paint hyper frame");
         }
         if (hJ() == 2 || hJ() == 0) {
             a(ajVar, i4, f, f2, i10 & 15);
@@ -4709,16 +4709,16 @@ public class a {
 
     public void a(aj ajVar, int i, int i2, int i3, int i4, int i5, int i6, boolean z) {
         if (w.Zo) {
-            GLLib.h(18, false);
-            GLLib.l(18, 1, 100);
-            GLLib.l(18, 3, i5);
-            GLLib.l(18, 1, 100);
-            GLLib.l(18, 4, i6);
+            GameRuntime.h(18, false);
+            GameRuntime.l(18, 1, 100);
+            GameRuntime.l(18, 3, i5);
+            GameRuntime.l(18, 1, 100);
+            GameRuntime.l(18, 4, i6);
             a(ajVar, i, (float) i2, (float) i3, i4);
-            GLLib.i(18, false);
+            GameRuntime.i(18, false);
             return;
         }
-        GLLib.be("PaintFrameScaled: Functionality is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
+        GameRuntime.be("PaintFrameScaled: Functionality is not enabled, you must set pfx_useSpriteEffectFreeRotateScale to TRUE!");
     }
 
     private int bW(int i) {
@@ -4766,16 +4766,16 @@ public class a {
         float f13;
         int i8;
         if (w.Zj) {
-            if ((GLLib.TX & AdRequest.MAX_CONTENT_URL_LENGTH) != 0) {
-                iBH = GLLib.dx(this.Ic[i]);
+            if ((GameRuntime.TX & AdRequest.MAX_CONTENT_URL_LENGTH) != 0) {
+                iBH = GameRuntime.dx(this.Ic[i]);
             } else if (w.Zm) {
-                if ((GLLib.TX & GLURLConnection.BUFFER_SIZE) != 0) {
+                if ((GameRuntime.TX & GLURLConnection.BUFFER_SIZE) != 0) {
                     z = true;
                 } else {
                     z = false;
                 }
                 if (z) {
-                    iBH = GLLib.TY[14][0];
+                    iBH = GameRuntime.TY[14][0];
                 } else {
                     iBH = bH(i);
                 }
@@ -4785,27 +4785,27 @@ public class a {
         } else if (!w.Zm) {
             iBH = bH(i);
         } else {
-            if ((GLLib.TX & GLURLConnection.BUFFER_SIZE) != 0) {
+            if ((GameRuntime.TX & GLURLConnection.BUFFER_SIZE) != 0) {
                 z = true;
             } else {
                 z = false;
             }
             if (z) {
-                iBH = GLLib.TY[14][0];
+                iBH = GameRuntime.TY[14][0];
             } else {
                 iBH = bH(i);
             }
         }
-        if (GLLib.lB()) {
-            be beVarLD = GLLib.lD();
-            GLLib.a(GLLib.o(this.Gx.substring(this.Gx.lastIndexOf(47)), this.Gy));
-            GLLib.dk(iBH);
+        if (GameRuntime.lB()) {
+            be beVarLD = GameRuntime.lD();
+            GameRuntime.a(GameRuntime.o(this.Gx.substring(this.Gx.lastIndexOf(47)), this.Gy));
+            GameRuntime.dk(iBH);
             beVar = beVarLD;
         } else if (((-16777216) & iBH) != 0) {
-            GLLib.dl(iBH);
+            GameRuntime.dl(iBH);
             beVar = null;
         } else {
-            GLLib.dk(iBH);
+            GameRuntime.dk(iBH);
             beVar = null;
         }
         switch (this.Ia != null ? this.Ia[i] & 255 : 0) {
@@ -4814,26 +4814,26 @@ public class a {
                 if (iBW != -1) {
                     int iDx = (this.GI[iBW + 0] & 65535) | ((this.GI[iBW + 1] << 16) & (-65536));
                     if (w.Zj) {
-                        if ((GLLib.TX & AdRequest.MAX_CONTENT_URL_LENGTH) != 0) {
-                            iDx = GLLib.dx(iDx);
+                        if ((GameRuntime.TX & AdRequest.MAX_CONTENT_URL_LENGTH) != 0) {
+                            iDx = GameRuntime.dx(iDx);
                         } else if (w.Zm) {
-                            if ((GLLib.TX & GLURLConnection.BUFFER_SIZE) != 0) {
+                            if ((GameRuntime.TX & GLURLConnection.BUFFER_SIZE) != 0) {
                                 z2 = true;
                             } else {
                                 z2 = false;
                             }
                             if (z2) {
-                                iDx = GLLib.TY[14][0];
+                                iDx = GameRuntime.TY[14][0];
                             }
                         }
                     } else if (w.Zm) {
-                        if ((GLLib.TX & GLURLConnection.BUFFER_SIZE) != 0) {
+                        if ((GameRuntime.TX & GLURLConnection.BUFFER_SIZE) != 0) {
                             z2 = true;
                         } else {
                             z2 = false;
                         }
                         if (z2) {
-                            iDx = GLLib.TY[14][0];
+                            iDx = GameRuntime.TY[14][0];
                         }
                     }
                     short s = this.GI[iBW + 2];
@@ -4870,9 +4870,9 @@ public class a {
                         }
                     }
                     if (((i6 >> 24) & 255) == 255 && ((i5 >> 24) & 255) == 255) {
-                        GLLib.b(ajVar, f3 + 0, f4 + 0, f, f2, i6, i5, i7);
+                        GameRuntime.b(ajVar, f3 + 0, f4 + 0, f, f2, i6, i5, i7);
                     } else {
-                        GLLib.c(ajVar, f3 + 0, f4 + 0, f, f2, i6, i5, i7);
+                        GameRuntime.c(ajVar, f3 + 0, f4 + 0, f, f2, i6, i5, i7);
                     }
                 }
                 break;
@@ -4900,7 +4900,7 @@ public class a {
                     f9 = f5;
                     f10 = f6;
                 }
-                GLLib.a(ajVar, f10, f8, f9, f7, true);
+                GameRuntime.a(ajVar, f10, f8, f9, f7, true);
                 break;
             case 249:
             case 250:
@@ -4911,14 +4911,14 @@ public class a {
                     float f18 = this.GI[iBW2 + 2];
                     float f19 = this.GI[iBW2 + 3];
                     if (w.Zo) {
-                        if ((GLLib.TX & 262144) != 0) {
-                            int i9 = GLLib.TY[18][1];
+                        if ((GameRuntime.TX & 262144) != 0) {
+                            int i9 = GameRuntime.TY[18][1];
                             if (i9 == 100) {
-                                i9 = GLLib.TY[18][3];
+                                i9 = GameRuntime.TY[18][3];
                             }
-                            int i10 = GLLib.TY[18][1];
+                            int i10 = GameRuntime.TY[18][1];
                             if (i10 == 100) {
-                                i10 = GLLib.TY[18][4];
+                                i10 = GameRuntime.TY[18][4];
                             }
                             int i11 = w.Zp ? Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS : 100;
                             f16 = (f16 * i9) / i11;
@@ -4955,11 +4955,11 @@ public class a {
                         f13 = f16;
                     }
                     if ((this.Ia != null ? this.Ia[i] & 255 : 0) != 250) {
-                        GLLib.a(ajVar, fAbs, fAbs2, fAbs + f13, fAbs2 + f17, fAbs + f12, fAbs2 + f11, true);
+                        GameRuntime.a(ajVar, fAbs, fAbs2, fAbs + f13, fAbs2 + f17, fAbs + f12, fAbs2 + f11, true);
                     } else {
-                        GLLib.a(ajVar, fAbs, fAbs2, fAbs + f13, fAbs2 + f17, true);
-                        GLLib.a(ajVar, fAbs + f13, fAbs2 + f17, fAbs + f12, fAbs2 + f11, true);
-                        GLLib.a(ajVar, fAbs, fAbs2, fAbs + f12, fAbs2 + f11, true);
+                        GameRuntime.a(ajVar, fAbs, fAbs2, fAbs + f13, fAbs2 + f17, true);
+                        GameRuntime.a(ajVar, fAbs + f13, fAbs2 + f17, fAbs + f12, fAbs2 + f11, true);
+                        GameRuntime.a(ajVar, fAbs, fAbs2, fAbs + f12, fAbs2 + f11, true);
                     }
                 }
                 break;
@@ -4985,44 +4985,44 @@ public class a {
                         i14 = i12 - 90;
                     }
                     if ((this.Ia != null ? this.Ia[i] & 255 : 0) != 252) {
-                        GLLib.a(ajVar, f3, f4, f, f2, i14, i13, true);
+                        GameRuntime.a(ajVar, f3, f4, f, f2, i14, i13, true);
                     } else {
-                        GLLib.b(ajVar, f3, f4, f, f2, i14, i13, true);
+                        GameRuntime.b(ajVar, f3, f4, f, f2, i14, i13, true);
                     }
                 }
                 break;
             case 254:
                 if ((((-16777216) & iBH) == -16777216 || ((-16777216) & iBH) == 0) && w.Zl) {
-                    if ((GLLib.TX & 4096) != 0) {
-                        GLLib.dl(iBH | (GLLib.TY[12][1] << 24));
+                    if ((GameRuntime.TX & 4096) != 0) {
+                        GameRuntime.dl(iBH | (GameRuntime.TY[12][1] << 24));
                     }
                 }
-                GLLib.b(ajVar, f3, f4, f, f2, true);
+                GameRuntime.b(ajVar, f3, f4, f, f2, true);
                 break;
             case 255:
                 float f21 = f - 1.0f;
                 float f22 = f2 - 1.0f;
                 if (w.Zl) {
-                    if ((GLLib.TX & 4096) != 0) {
-                        GLLib.dl((iBH & 16777215) | (GLLib.TY[12][1] << 24));
+                    if ((GameRuntime.TX & 4096) != 0) {
+                        GameRuntime.dl((iBH & 16777215) | (GameRuntime.TY[12][1] << 24));
                     }
                 }
-                GLLib.c(ajVar, f3, f4, f21, f22, true);
+                GameRuntime.c(ajVar, f3, f4, f21, f22, true);
                 break;
         }
-        if (!GLLib.lB() || beVar == null) {
+        if (!GameRuntime.lB() || beVar == null) {
             return;
         }
-        GLLib.a(beVar);
+        GameRuntime.a(beVar);
     }
 
     private static boolean a(aj ajVar, float f, float f2, float f3, float f4) {
-        int i = GLLib.SE;
-        int i2 = GLLib.SF;
-        int i3 = GLLib.SG;
-        int i4 = GLLib.SH;
-        float fKw = GLLib.kw();
-        float fKx = GLLib.kx();
+        int i = GameRuntime.SE;
+        int i2 = GameRuntime.SF;
+        int i3 = GameRuntime.SG;
+        int i4 = GameRuntime.SH;
+        float fKw = GameRuntime.kw();
+        float fKx = GameRuntime.kx();
         if (fKw != 1.0f || fKx != 1.0f) {
             f *= fKw;
             f2 *= fKx;
@@ -5030,38 +5030,38 @@ public class a {
             f4 *= fKx;
         }
         if (w.Zo) {
-            if ((GLLib.TX & 262144) != 0) {
-                int i5 = GLLib.TY[18][1];
+            if ((GameRuntime.TX & 262144) != 0) {
+                int i5 = GameRuntime.TY[18][1];
                 if (i5 == 100) {
-                    i5 = GLLib.TY[18][3];
+                    i5 = GameRuntime.TY[18][3];
                 }
-                int i6 = GLLib.TY[18][1];
+                int i6 = GameRuntime.TY[18][1];
                 if (i6 == 100) {
-                    i6 = GLLib.TY[18][4];
+                    i6 = GameRuntime.TY[18][4];
                 }
                 f3 = (i5 * f3) / 100.0f;
                 f4 = (i6 * f4) / 100.0f;
-                if (GLLib.TY[18][5] != 0) {
+                if (GameRuntime.TY[18][5] != 0) {
                     f = (i5 * f) / 100.0f;
                     f2 = (i5 * f2) / 100.0f;
                 }
-                int i7 = GLLib.TY[18][6];
-                if (GLLib.TY[18][10] != 0) {
-                    i7 = GLLib.TY[18][10] >> w.VP;
+                int i7 = GameRuntime.TY[18][6];
+                if (GameRuntime.TY[18][10] != 0) {
+                    i7 = GameRuntime.TY[18][10] >> w.VP;
                 }
-                if (i7 % GLLib.Rk != 0) {
+                if (i7 % GameRuntime.Rk != 0) {
                     int i8 = (int) f3;
                     int i9 = (int) f4;
                     int[] iArr = Ij;
-                    GLLib.c(GLLib.Rp != null, "!!ERROR!! Math_Sin.s_math_cosTable is null, call Math_Init first");
-                    GLLib.b(GLLib.cQ(GLLib.Rs - i7), GLLib.cQ(i7), i8, i9, iArr);
+                    GameRuntime.c(GameRuntime.Rp != null, "!!ERROR!! Math_Sin.s_math_cosTable is null, call Math_Init first");
+                    GameRuntime.b(GameRuntime.cQ(GameRuntime.Rs - i7), GameRuntime.cQ(i7), i8, i9, iArr);
                     f3 = Ij[0];
                     f4 = Ij[1];
                 }
             }
         }
         if (w.Zn) {
-            if ((GLLib.TX & 32768) != 0) {
+            if ((GameRuntime.TX & 32768) != 0) {
                 return true;
             }
         }
@@ -5102,15 +5102,15 @@ public class a {
         if (w.Xp) {
             if (HQ == 1) {
                 if (w.Zo) {
-                    if ((GLLib.TX & 262144) != 0) {
-                        if (GLLib.TY[18][5] != 0) {
-                            int i4 = GLLib.TY[18][1];
+                    if ((GameRuntime.TX & 262144) != 0) {
+                        if (GameRuntime.TY[18][5] != 0) {
+                            int i4 = GameRuntime.TY[18][1];
                             if (i4 == 100) {
-                                i4 = GLLib.TY[18][3];
+                                i4 = GameRuntime.TY[18][3];
                             }
-                            int i5 = GLLib.TY[18][1];
+                            int i5 = GameRuntime.TY[18][1];
                             if (i5 == 100) {
-                                i5 = GLLib.TY[18][4];
+                                i5 = GameRuntime.TY[18][4];
                             }
                             f = (i4 * f) / 100.0f;
                             f2 = (i5 * f2) / 100.0f;
@@ -5139,11 +5139,11 @@ public class a {
                 return;
             }
         } else if (HQ == 1) {
-            GLLib.c(false, "Error: Trying to use COMPUTE RECT OPERATION but sprite_useOperationRect is FALSE!!!");
+            GameRuntime.c(false, "Error: Trying to use COMPUTE RECT OPERATION but sprite_useOperationRect is FALSE!!!");
         }
         if ((this.Ia != null ? this.Ia[i3] & 255 : 0) == 0 || ajVar == null) {
             if ((this.Hz & 536870912) == 0) {
-                GLLib.c(false, "Only single image for all modules is supported in Android OpenGL. Please export your sprite with BS_SINGLE_IMAGE_INDEX flag");
+                GameRuntime.c(false, "Only single image for all modules is supported in Android OpenGL. Please export your sprite with BS_SINGLE_IMAGE_INDEX flag");
                 return;
             }
             if ((i2 & 4) != 0) {
@@ -5163,35 +5163,35 @@ public class a {
                 }
                 ay ayVar = this.HR[i6][iBE];
                 if ((this.HL & 64) != 0) {
-                    GLLib.ah(ayVar.nj());
+                    GameRuntime.ah(ayVar.nj());
                 } else {
-                    GLLib.ah(false);
+                    GameRuntime.ah(false);
                 }
                 if (w.Zn) {
-                    if ((GLLib.TX & 32768) != 0) {
-                        GLLib.a(ajVar, ayVar, iBs, iBt, (int) f6, (int) f5, HV[i2 & 7], HU[0], HU[1], HU[2], HU[3], HU[4], HU[5], HU[6], HU[7]);
+                    if ((GameRuntime.TX & 32768) != 0) {
+                        GameRuntime.a(ajVar, ayVar, iBs, iBt, (int) f6, (int) f5, HV[i2 & 7], HU[0], HU[1], HU[2], HU[3], HU[4], HU[5], HU[6], HU[7]);
                         return;
                     }
                 }
-                GLLib.a(ajVar, ayVar, iBs, iBt, (int) f6, (int) f5, HV[i2 & 7], f, f2, 20);
+                GameRuntime.a(ajVar, ayVar, iBs, iBt, (int) f6, (int) f5, HV[i2 & 7], f, f2, 20);
                 return;
             }
             return;
         }
         if (w.Zo) {
-            if ((GLLib.TX & 262144) != 0) {
-                int i7 = GLLib.TY[18][1];
+            if ((GameRuntime.TX & 262144) != 0) {
+                int i7 = GameRuntime.TY[18][1];
                 if (i7 == 100) {
-                    i7 = GLLib.TY[18][3];
+                    i7 = GameRuntime.TY[18][3];
                 }
-                int i8 = GLLib.TY[18][1];
+                int i8 = GameRuntime.TY[18][1];
                 if (i8 == 100) {
-                    i8 = GLLib.TY[18][4];
+                    i8 = GameRuntime.TY[18][4];
                 }
                 int i9 = w.Zp ? Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS : 100;
                 f4 = (i7 * f4) / i9;
                 f3 = (f3 * i8) / i9;
-                if (GLLib.TY[18][5] != 0) {
+                if (GameRuntime.TY[18][5] != 0) {
                     float f13 = (i7 * f) / i9;
                     float f14 = (i8 * f2) / i9;
                     f7 = f3;

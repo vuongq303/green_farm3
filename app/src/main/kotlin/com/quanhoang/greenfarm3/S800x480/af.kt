@@ -16,7 +16,7 @@ open class af {
         @JvmField val RA = af(1 shl w.VQ, 360)
         private var scratchMatrix = Array(2) { IntArray(2) }
         @JvmStatic fun af(numerator: Int, denominator: Int): Int {
-            GLLib.c(denominator != 0, "FixedPoint_Divide(): Division by Zero")
+            GameRuntime.c(denominator != 0, "FixedPoint_Divide(): Division by Zero")
             return (((((numerator.toLong() shl w.VP) shl 1) / denominator.toLong()) + 1L).toInt()) shr 1
         }
     }

@@ -1,11 +1,11 @@
 package com.quanhoang.greenfarm3.S800x480
 
-open class cq(@JvmField val bbN: ci?) : Runnable {
+open class cq(@JvmField val bbN: FarmGameEngine?) : Runnable {
     override fun run() {
-        while (ci.bbF != null) {
+        while (FarmGameEngine.bbF != null) {
             try {
-                if (ci.bbG) {
-                    ci.bbG = false
+                if (FarmGameEngine.bbG) {
+                    FarmGameEngine.bbG = false
                     // Only serialize after completed game-thread actions.
                     ProgressSaveController.requestSave()
                 }

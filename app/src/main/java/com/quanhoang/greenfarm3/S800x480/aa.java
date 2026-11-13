@@ -76,7 +76,7 @@ public class aa implements Runnable {
     private static boolean abg = w.VW;
     private static boolean abh = true;
     private static final int abj = w.Wf;
-    private static Context abL = GLLib.Qu.getApplicationContext();
+    private static Context abL = GameRuntime.Qu.getApplicationContext();
 
     static {
         abM = w.VW ? (AudioManager) abL.getSystemService("audio") : null;
@@ -93,7 +93,7 @@ public class aa implements Runnable {
     }
 
     public aa(a aVar, int i, int i2) {
-        GLLib.c(w.Wx <= 1000, "GLLibPlayer : Invalid value of GLLibConfig.sprite_animFPS > 1000");
+        GameRuntime.c(w.Wx <= 1000, "GLLibPlayer : Invalid value of GLLibConfig.sprite_animFPS > 1000");
         ip();
         this.aaL = i;
         this.aaM = i2;
@@ -141,10 +141,10 @@ public class aa implements Runnable {
     }
 
     public void q(int i, int i2, int i3) {
-        GLLib.c(this.aaO != null, "GLLibPlayer.SetAnim().sprite is not set");
-        GLLib.c(this.aaO != null, "GLLibPlayer.GetNbanim().sprite is not set");
-        GLLib.c(i < this.aaO.hu(), "GLLibPlayer.SetAnim().anim out of range");
-        GLLib.c(i2 != 0, "GLLibPlayer.SetAnim().nbLoop can not be 0. Use -1 for infinite animation");
+        GameRuntime.c(this.aaO != null, "GLLibPlayer.SetAnim().sprite is not set");
+        GameRuntime.c(this.aaO != null, "GLLibPlayer.GetNbanim().sprite is not set");
+        GameRuntime.c(i < this.aaO.hu(), "GLLibPlayer.SetAnim().anim out of range");
+        GameRuntime.c(i2 != 0, "GLLibPlayer.SetAnim().nbLoop can not be 0. Use -1 for infinite animation");
         if (this.aaU || i != this.aaP) {
             this.aaP = i;
             this.aaS = i3 == -1 ? aaX : i3 / ak(false);
@@ -155,8 +155,8 @@ public class aa implements Runnable {
     }
 
     public int dT(int i) {
-        GLLib.c(this.aaO != null, "GLLibPlayer.SetFrame().sprite is not set");
-        GLLib.c(i >= 0, "GLLibPlayer.SetFrame().frame is negative");
+        GameRuntime.c(this.aaO != null, "GLLibPlayer.SetFrame().sprite is not set");
+        GameRuntime.c(i >= 0, "GLLibPlayer.SetFrame().frame is negative");
         if (this.aaP < 0) {
             return -1;
         }
@@ -167,7 +167,7 @@ public class aa implements Runnable {
     }
 
     public void lM() {
-        this.aaQ = GLLib.L(0, lO());
+        this.aaQ = GameRuntime.L(0, lO());
         dS(0);
     }
 
@@ -216,7 +216,7 @@ public class aa implements Runnable {
     }
 
     public int k(int i, boolean z) {
-        GLLib.c(this.aaO != null, "GLLibPlayer.GetNbFrame().sprite is not set");
+        GameRuntime.c(this.aaO != null, "GLLibPlayer.GetNbFrame().sprite is not set");
         if (i >= 0) {
             if (z) {
                 return this.aaO.bq(i);
@@ -232,7 +232,7 @@ public class aa implements Runnable {
     }
 
     public final int lP() {
-        GLLib.c(this.aaO != null, "GLLibPlayer.GetDuration().sprite is not set");
+        GameRuntime.c(this.aaO != null, "GLLibPlayer.GetDuration().sprite is not set");
         if (this.aaP < 0) {
             return 0;
         }
@@ -241,7 +241,7 @@ public class aa implements Runnable {
     }
 
     public boolean lQ() {
-        GLLib.c(this.aaO != null, "GLLibPlayer.isAnimOver().sprite is not set");
+        GameRuntime.c(this.aaO != null, "GLLibPlayer.isAnimOver().sprite is not set");
         if (this.aaP < 0) {
             return true;
         }
@@ -258,52 +258,52 @@ public class aa implements Runnable {
     public void lR() {
         boolean z;
         boolean z2;
-        GLLib.c(this.aaO != null, "GLLibPlayer.render().sprite is not set");
+        GameRuntime.c(this.aaO != null, "GLLibPlayer.render().sprite is not set");
         if (this.aaP < 0) {
             return;
         }
         if (w.XO || !this.aaU) {
             if (w.Xz) {
-                GLLib.be("Sprite paint: anim = " + this.aaP);
+                GameRuntime.be("Sprite paint: anim = " + this.aaP);
             }
             if (!w.Zo && !w.Zl) {
                 z2 = false;
             } else if (!w.Zo || this.aaW == -1 || this.aaW == 100) {
                 if (w.Zl && this.aaV != -1) {
-                    if ((GLLib.TX & 4096) != 0) {
+                    if ((GameRuntime.TX & 4096) != 0) {
                         z = true;
                     } else {
                         z = false;
                     }
                     if (!z) {
-                        GLLib.h(12, false);
-                        GLLib.l(12, 1, this.aaV);
+                        GameRuntime.h(12, false);
+                        GameRuntime.l(12, 1, this.aaV);
                         z2 = true;
                     }
                 }
                 z2 = false;
             } else {
-                if ((GLLib.TX & 262144) != 0) {
+                if ((GameRuntime.TX & 262144) != 0) {
                     if (w.Zl) {
-                        if ((GLLib.TX & 4096) != 0) {
+                        if ((GameRuntime.TX & 4096) != 0) {
                             z = true;
                         } else {
                             z = false;
                         }
                         if (!z) {
-                            GLLib.h(12, false);
-                            GLLib.l(12, 1, this.aaV);
+                            GameRuntime.h(12, false);
+                            GameRuntime.l(12, 1, this.aaV);
                         }
                     }
                     z2 = false;
                 } else {
-                    GLLib.h(18, false);
+                    GameRuntime.h(18, false);
                     int i = this.aaW;
-                    GLLib.l(18, 1, i);
-                    GLLib.l(18, 3, i);
-                    GLLib.l(18, 4, i);
+                    GameRuntime.l(18, 1, i);
+                    GameRuntime.l(18, 3, i);
+                    GameRuntime.l(18, 4, i);
                     if (w.Zl && this.aaV != -1) {
-                        GLLib.l(18, 2, this.aaV);
+                        GameRuntime.l(18, 2, this.aaV);
                         z2 = true;
                     }
                 }
@@ -315,20 +315,20 @@ public class aa implements Runnable {
             if (this.aaY != -1) {
                 int iHI = this.aaO.hI();
                 this.aaO.bQ(this.aaY);
-                this.aaO.a(GLLib.Qj, this.aaP, this.aaQ, this.aaL, this.aaM, this.aaN);
+                this.aaO.a(GameRuntime.Qj, this.aaP, this.aaQ, this.aaL, this.aaM, this.aaN);
                 this.aaO.bQ(iHI);
             } else {
-                this.aaO.a(GLLib.Qj, this.aaP, this.aaQ, this.aaL, this.aaM, this.aaN);
+                this.aaO.a(GameRuntime.Qj, this.aaP, this.aaQ, this.aaL, this.aaM, this.aaN);
             }
             if ((w.Zo || w.Zl) && z2) {
-                GLLib.kZ();
+                GameRuntime.kZ();
             }
         }
     }
 
     public void dV(int i) {
         int iLP;
-        GLLib.c(i >= 0, "GLLibPlayer.Update.DT is negative");
+        GameRuntime.c(i >= 0, "GLLibPlayer.Update.DT is negative");
         if (!this.aaU && this.aaP >= 0 && (iLP = lP()) != 0) {
             if (w.Wy) {
                 if (lL() >= iLP) {
@@ -369,13 +369,13 @@ public class aa implements Runnable {
     }
 
     private final void lS() {
-        GLLib.c(w.WE, "GLLibPlayer.IsFrameMappingEnabled: you should enable sprite_useFrameMapping for using this functionality.");
+        GameRuntime.c(w.WE, "GLLibPlayer.IsFrameMappingEnabled: you should enable sprite_useFrameMapping for using this functionality.");
         if (w.WE && this.aaZ != null) {
             a aVar = this.aaO;
             a[] aVarArr = this.aaZ;
             byte[] bArr = this.aba;
             short[] sArr = this.abb;
-            GLLib.c(w.WE, "ASprite.SetFrameMappingData: you should enable sprite_useFrameMapping for using this functionality.");
+            GameRuntime.c(w.WE, "ASprite.SetFrameMappingData: you should enable sprite_useFrameMapping for using this functionality.");
             if (!w.WE) {
                 return;
             }
@@ -388,7 +388,7 @@ public class aa implements Runnable {
     private static final int dW(int i) {
         int i2;
         if (w.We) {
-            GLLib.bH("SndQueue_NormalizeIndex");
+            GameRuntime.bH("SndQueue_NormalizeIndex");
         }
         while (true) {
             i2 = i;
@@ -401,7 +401,7 @@ public class aa implements Runnable {
             i2 += 5;
         }
         if (w.We) {
-            GLLib.bI("SndQueue_NormalizeIndex");
+            GameRuntime.bI("SndQueue_NormalizeIndex");
         }
         return i2;
     }
@@ -409,9 +409,9 @@ public class aa implements Runnable {
     private static void a(int i, int i2, int i3, int i4, int i5, int i6, int i7, int i8) {
         if (abk) {
             if (w.We) {
-                GLLib.bH("SndQueue_Push_Normal");
+                GameRuntime.bH("SndQueue_Push_Normal");
             }
-            GLLib.c(abw[i] < 5, "SndQueue_Push: Too many sound requests given before Snd_Update!");
+            GameRuntime.c(abw[i] < 5, "SndQueue_Push: Too many sound requests given before Snd_Update!");
             int i9 = abv[i];
             int i10 = abw[i];
             int iDW = dW(i9 + i10);
@@ -431,7 +431,7 @@ public class aa implements Runnable {
             int[] iArr = abw;
             iArr[i] = iArr[i] + 1;
             if (w.We) {
-                GLLib.bI("SndQueue_Push_Normal");
+                GameRuntime.bI("SndQueue_Push_Normal");
             }
         }
     }
@@ -456,14 +456,14 @@ public class aa implements Runnable {
         iArr[7] = abw[i];
         if (abw[i] > 0) {
             if (w.We) {
-                GLLib.bH("SndQueue_Pop_Normal");
+                GameRuntime.bH("SndQueue_Pop_Normal");
             }
             System.arraycopy(abu, (abv[i] * 7) + (i * 5 * 7), iArr, 0, 7);
             abv[i] = dW(abv[i] + 1);
             int[] iArr2 = abw;
             iArr2[i] = iArr2[i] - 1;
             if (w.We) {
-                GLLib.bI("SndQueue_Pop_Normal");
+                GameRuntime.bI("SndQueue_Pop_Normal");
             }
         }
     }
@@ -483,21 +483,21 @@ public class aa implements Runnable {
     static final void Z(int i, int i2) {
         if (w.VW && abk) {
             if (w.We) {
-                GLLib.bH("Snd_Stop");
+                GameRuntime.bH("Snd_Stop");
             }
             if (i < 0) {
                 if (w.Wd) {
-                    GLLib.b("dummy sound skipping", "GLLib_snd", 3);
+                    GameRuntime.b("dummy sound skipping", "GLLib_snd", 3);
                 }
                 if (w.We) {
-                    GLLib.bI("Snd_Stop");
+                    GameRuntime.bI("Snd_Stop");
                     return;
                 }
                 return;
             }
             if (abG[i]) {
                 t(i, -1, 0);
-                GLLib.d(abI[i], 0);
+                GameRuntime.d(abI[i], 0);
                 for (int i3 = 0; i3 < abJ[i].length; i3++) {
                     abJ[i][i3] = false;
                 }
@@ -514,7 +514,7 @@ public class aa implements Runnable {
                 }
             }
             if (w.We) {
-                GLLib.bI("Snd_Stop");
+                GameRuntime.bI("Snd_Stop");
             }
         }
     }
@@ -522,22 +522,22 @@ public class aa implements Runnable {
     private static void r(int i, int i2, int i3) throws IOException {
         if (w.VW) {
             if (w.Wd) {
-                GLLib.b("Snd_PrepareExec", "GLLib_snd", 3);
+                GameRuntime.b("Snd_PrepareExec", "GLLib_snd", 3);
             }
             if (w.We) {
-                GLLib.bH("Snd_PrepareExec");
+                GameRuntime.bH("Snd_PrepareExec");
             }
             ed(i);
             if (w.Wd) {
-                GLLib.b("prepareexec : channel : " + i, "GLLib_snd", 3);
-                GLLib.b("prepareexec : index   : " + i2, "GLLib_snd", 3);
+                GameRuntime.b("prepareexec : channel : " + i, "GLLib_snd", 3);
+                GameRuntime.b("prepareexec : index   : " + i2, "GLLib_snd", 3);
             }
             if (!abl[i2]) {
                 if (w.Wd) {
-                    GLLib.b("create player: sound is not loaded yet!!", "GLLib_snd", 6);
+                    GameRuntime.b("create player: sound is not loaded yet!!", "GLLib_snd", 6);
                 }
                 if (w.We) {
-                    GLLib.bI("Snd_PrepareExec");
+                    GameRuntime.bI("Snd_PrepareExec");
                     return;
                 }
                 return;
@@ -549,36 +549,36 @@ public class aa implements Runnable {
             abq[i] = 1;
             abo[i] = i2;
             if (w.We) {
-                GLLib.bI("Snd_PrepareExec");
+                GameRuntime.bI("Snd_PrepareExec");
             }
         }
     }
 
     private static void d(int i, int i2, int i3, int i4, int i5) throws IOException {
-        if (!w.VW || GLLib.Qm) {
+        if (!w.VW || GameRuntime.Qm) {
             abD[i] = -1;
             return;
         }
         if (w.We) {
-            GLLib.bH("Snd_PlayExec");
+            GameRuntime.bH("Snd_PlayExec");
         }
         if (w.Wd) {
-            GLLib.b("Snd_PlayExec for channel : " + i, "GLLib_snd", 3);
+            GameRuntime.b("Snd_PlayExec for channel : " + i, "GLLib_snd", 3);
         }
         r(i, i2, i3);
-        if (GLLib.Qm) {
+        if (GameRuntime.Qm) {
             if (w.We) {
-                GLLib.bI("Snd_PlayExec");
+                GameRuntime.bI("Snd_PlayExec");
                 return;
             }
             return;
         }
         if (abq[i] != 1 || abm[i] == null) {
             if (w.We) {
-                GLLib.bI("Snd_PlayExec");
+                GameRuntime.bI("Snd_PlayExec");
             }
             if (w.Wd) {
-                GLLib.b("Snd_playExec : Cant play, state not ready or player is null", "GLLib_snd", 6);
+                GameRuntime.b("Snd_playExec : Cant play, state not ready or player is null", "GLLib_snd", 6);
             }
             abD[i] = -1;
             return;
@@ -586,7 +586,7 @@ public class aa implements Runnable {
         abm[i].setLooping(i4 == 0);
         abm[i].setVolume(dX(i5), dX(i5));
         if (w.Wd) {
-            GLLib.b("Start player", "GLLib_snd", 3);
+            GameRuntime.b("Start player", "GLLib_snd", 3);
         }
         abm[i].start();
         abD[i] = -1;
@@ -597,7 +597,7 @@ public class aa implements Runnable {
         abo[i] = i2;
         abn[i] = System.currentTimeMillis();
         if (w.We) {
-            GLLib.bI("Snd_PlayExec");
+            GameRuntime.bI("Snd_PlayExec");
         }
     }
 
@@ -626,10 +626,10 @@ public class aa implements Runnable {
             return 0;
         }
         if (w.We) {
-            GLLib.bH("");
+            GameRuntime.bH("");
         }
         if (w.We) {
-            GLLib.bI("");
+            GameRuntime.bI("");
         }
         return abr[i];
     }
@@ -637,7 +637,7 @@ public class aa implements Runnable {
     private static void aa(int i, int i2) {
         if (w.VW && abk && abm[i] != null) {
             if (w.We) {
-                GLLib.bH("Snd_SetChannelVolume");
+                GameRuntime.bH("Snd_SetChannelVolume");
             }
             try {
                 if (abm[i] != null) {
@@ -647,18 +647,18 @@ public class aa implements Runnable {
             } catch (Exception e) {
             }
             if (w.We) {
-                GLLib.bI("Snd_SetChannelVolume");
+                GameRuntime.bI("Snd_SetChannelVolume");
             }
         }
     }
 
     private static void ea(int i) {
         if (w.Wd) {
-            GLLib.b("Snd_stopExec", "GLLib_snd", 3);
+            GameRuntime.b("Snd_stopExec", "GLLib_snd", 3);
         }
         if (abm[i] != null) {
             if (w.We) {
-                GLLib.bH("Snd_StopExec");
+                GameRuntime.bH("Snd_StopExec");
             }
             abm[i].stop();
             abs[i] = 1;
@@ -666,49 +666,49 @@ public class aa implements Runnable {
             ed(i);
             abn[i] = 0;
             if (w.We) {
-                GLLib.bI("Snd_StopExec");
+                GameRuntime.bI("Snd_StopExec");
             }
         }
     }
 
     private static void eb(int i) {
         if (w.Wd) {
-            GLLib.b("Snd_PauseExec", "GLLib_snd", 3);
+            GameRuntime.b("Snd_PauseExec", "GLLib_snd", 3);
         }
-        GLLib.c(abm[i] != null, "Snd_pauseExec.player is null");
+        GameRuntime.c(abm[i] != null, "Snd_pauseExec.player is null");
         if (abm[i] != null) {
             if (w.We) {
-                GLLib.bH("Snd_PauseExec");
+                GameRuntime.bH("Snd_PauseExec");
             }
-            GLLib.c(abm[i].isPlaying(), "Snd_pauseExec.player wasn't playing");
+            GameRuntime.c(abm[i].isPlaying(), "Snd_pauseExec.player wasn't playing");
             abm[i].pause();
             abq[i] = 3;
             if (w.We) {
-                GLLib.bI("Snd_PauseExec");
+                GameRuntime.bI("Snd_PauseExec");
             }
         }
     }
 
     private static void ec(int i) {
         if (w.Wd) {
-            GLLib.b("Snd_ResumeExec", "GLLib_snd", 3);
+            GameRuntime.b("Snd_ResumeExec", "GLLib_snd", 3);
         }
         if (abq[i] != 3) {
             if (w.Wd) {
-                GLLib.b("Snd_ResumeExec. Can't resume channel " + i + " because state is not paused!", "GLLib_snd", 6);
+                GameRuntime.b("Snd_ResumeExec. Can't resume channel " + i + " because state is not paused!", "GLLib_snd", 6);
                 return;
             }
             return;
         }
-        GLLib.c(abm[i] != null, "Snd_ResumeExec.player is null");
+        GameRuntime.c(abm[i] != null, "Snd_ResumeExec.player is null");
         if (abm[i] != null) {
             if (w.We) {
-                GLLib.bH("Snd_ResumeExec");
+                GameRuntime.bH("Snd_ResumeExec");
             }
             abm[i].start();
             abq[i] = 2;
             if (w.We) {
-                GLLib.bI("Snd_ResumeExec");
+                GameRuntime.bI("Snd_ResumeExec");
             }
         }
     }
@@ -731,14 +731,14 @@ public class aa implements Runnable {
                         ed(i);
                     }
                 } catch (Exception e) {
-                    GLLib.d(e);
+                    GameRuntime.d(e);
                 }
                 if (!abA[i] && !abE[i]) {
                     c(i, aby);
                     if (aby[7] > 0) {
                         try {
                             if (w.Wd) {
-                                GLLib.b("Snd_update", "GLLib_snd", 3);
+                                GameRuntime.b("Snd_update", "GLLib_snd", 3);
                             }
                             switch (aby[0]) {
                                 case 0:
@@ -769,8 +769,8 @@ public class aa implements Runnable {
                                     break;
                             }
                         } catch (Exception e2) {
-                            GLLib.b("Snd_update.error on channel (" + i + ")." + e2, "GLLib_snd", 6);
-                            GLLib.d(e2);
+                            GameRuntime.b("Snd_update.error on channel (" + i + ")." + e2, "GLLib_snd", 6);
+                            GameRuntime.d(e2);
                         }
                     }
                 }
@@ -781,10 +781,10 @@ public class aa implements Runnable {
                     abf = false;
                     synchronized (abt) {
                         try {
-                            GLLib.b("Pause thread", "GLPlayer", 6);
+                            GameRuntime.b("Pause thread", "GLPlayer", 6);
                             abt.wait();
                         } catch (InterruptedException e3) {
-                            GLLib.d(e3);
+                            GameRuntime.d(e3);
                         }
                     }
                 }
@@ -813,14 +813,14 @@ public class aa implements Runnable {
             return false;
         }
         if (w.We) {
-            GLLib.bH("Snd_IsChannelPlaying");
+            GameRuntime.bH("Snd_IsChannelPlaying");
         }
         boolean z2 = true;
         if ((abm[i] != null && !abm[i].isPlaying() && abD[i] == -1) || (abE[i] && !z)) {
             z2 = false;
         }
         if (w.We) {
-            GLLib.bI("Snd_IsChannelPlaying");
+            GameRuntime.bI("Snd_IsChannelPlaying");
         }
         return z2;
     }
@@ -828,10 +828,10 @@ public class aa implements Runnable {
     private static void ed(int i) {
         if (w.VW && abk) {
             if (w.We) {
-                GLLib.bH("Snd_FreeChannelExec");
+                GameRuntime.bH("Snd_FreeChannelExec");
             }
             if (w.Wd) {
-                GLLib.b("Snd_FreeChannelExec = " + i, "GLLib_snd", 3);
+                GameRuntime.b("Snd_FreeChannelExec = " + i, "GLLib_snd", 3);
             }
             if (abm[i] != null) {
                 abm[i].stop();
@@ -841,7 +841,7 @@ public class aa implements Runnable {
             abq[i] = 0;
             abo[i] = -1;
             if (w.We) {
-                GLLib.bI("Snd_FreeChannelExec");
+                GameRuntime.bI("Snd_FreeChannelExec");
             }
         }
     }
@@ -849,20 +849,20 @@ public class aa implements Runnable {
     static void ee(int i) {
         if (w.VW && abk) {
             if (w.We) {
-                GLLib.bH("Snd_StopAllSounds");
+                GameRuntime.bH("Snd_StopAllSounds");
             }
             for (int i2 = 0; i2 < abe; i2++) {
                 Z(i2, i);
             }
             if (w.We) {
-                GLLib.bI("Snd_StopAllSounds");
+                GameRuntime.bI("Snd_StopAllSounds");
             }
         }
     }
 
     private static void k(int i, int i2, int i3, int i4) {
         if (w.We) {
-            GLLib.bH("Snd_FadeCommand");
+            GameRuntime.bH("Snd_FadeCommand");
         }
         int i5 = i2 * 4;
         if (!w.Wc) {
@@ -875,14 +875,14 @@ public class aa implements Runnable {
         abB[i2] = System.currentTimeMillis();
         abA[i2] = true;
         if (w.We) {
-            GLLib.bI("Snd_FadeCommand");
+            GameRuntime.bI("Snd_FadeCommand");
         }
     }
 
     private static void s(int i, int i2, int i3) {
         if (abk) {
             if (w.We) {
-                GLLib.bH("Snd_FadeVolumeOnChannel");
+                GameRuntime.bH("Snd_FadeVolumeOnChannel");
             }
             if (!w.Wc) {
                 i3 = 0;
@@ -890,7 +890,7 @@ public class aa implements Runnable {
             k(2, i, i2, i3);
             abF[i] = i2;
             if (w.We) {
-                GLLib.bI("Snd_FadeVolumeOnChannel");
+                GameRuntime.bI("Snd_FadeVolumeOnChannel");
             }
         }
     }
@@ -898,7 +898,7 @@ public class aa implements Runnable {
     private static void ef(int i) {
         int i2;
         if (w.We) {
-            GLLib.bH("SndFade_Update");
+            GameRuntime.bH("SndFade_Update");
         }
         int i3 = i * 4;
         int i4 = abz[i3 + 0];
@@ -920,7 +920,7 @@ public class aa implements Runnable {
                     }
                 }
                 if (w.Wd) {
-                    GLLib.b("FADE VOLUME TO " + i2, "GLLib_snd", 3);
+                    GameRuntime.b("FADE VOLUME TO " + i2, "GLLib_snd", 3);
                 }
             } catch (Exception e) {
                 abr[i] = i5;
@@ -932,7 +932,7 @@ public class aa implements Runnable {
                     try {
                         ec(i);
                     } catch (Exception e2) {
-                        GLLib.d(e2);
+                        GameRuntime.d(e2);
                     }
                 }
                 s(i, abz[i3 + 1], abz[i3 + 2]);
@@ -948,14 +948,14 @@ public class aa implements Runnable {
                             ea(i);
                             abE[i] = false;
                         } catch (Exception e3) {
-                            GLLib.d(e3);
+                            GameRuntime.d(e3);
                         }
                         break;
                     case 5:
                         try {
                             eb(i);
                         } catch (Exception e4) {
-                            GLLib.d(e4);
+                            GameRuntime.d(e4);
                         }
                         break;
                 }
@@ -964,33 +964,33 @@ public class aa implements Runnable {
             }
         }
         if (w.We) {
-            GLLib.bI("SndFade_Update");
+            GameRuntime.bI("SndFade_Update");
         }
     }
 
     static void lU() {
         if (w.VW && abk && w.Wb) {
             if (w.We) {
-                GLLib.bH("Snd_PauseNotify");
+                GameRuntime.bH("Snd_PauseNotify");
             }
             try {
                 ee(0);
-                if (w.VZ && GLLib.Qm) {
+                if (w.VZ && GameRuntime.Qm) {
                     lT();
                 }
             } catch (Exception e) {
-                GLLib.b("Snd_PauseNotify: exception!", "GLLib_snd", 6);
-                GLLib.d(e);
+                GameRuntime.b("Snd_PauseNotify: exception!", "GLLib_snd", 6);
+                GameRuntime.d(e);
             }
             if (w.We) {
-                GLLib.bI("Snd_PauseNotify");
+                GameRuntime.bI("Snd_PauseNotify");
             }
         }
     }
 
     static void lV() {
         if (w.Wg) {
-            GLLib.b("Snd_ResumeNotify: music is active: " + abM.isMusicActive(), "GLLib_snd", 6);
+            GameRuntime.b("Snd_ResumeNotify: music is active: " + abM.isMusicActive(), "GLLib_snd", 6);
             if (abM.isMusicActive()) {
                 abi = true;
             } else {
@@ -1002,7 +1002,7 @@ public class aa implements Runnable {
     private static void t(int i, int i2, int i3) {
         if (!abl[i]) {
             if (w.Wd) {
-                GLLib.b("Sound " + i + " is not loaded yet!", "GLLib_snd", 6);
+                GameRuntime.b("Sound " + i + " is not loaded yet!", "GLLib_snd", 6);
                 return;
             }
             return;
@@ -1012,7 +1012,7 @@ public class aa implements Runnable {
                 switch (i3) {
                     case 0:
                         if (w.Wd) {
-                            GLLib.b("Stopping stream " + abI[i][i4], "GLLib_snd", 6);
+                            GameRuntime.b("Stopping stream " + abI[i][i4], "GLLib_snd", 6);
                         }
                         abH.stop(abI[i][i4]);
                         break;
@@ -1038,8 +1038,8 @@ public class aa implements Runnable {
             abU = (byte[][][]) Array.newInstance((Class<?>) byte[].class, abO, 2);
             abV = new a[abO];
             if (w.Wo) {
-                int iCP = GLLib.cP(i3);
-                int iCP2 = GLLib.cP(i4);
+                int iCP = GameRuntime.cP(i3);
+                int iCP2 = GameRuntime.cP(i4);
                 abS[3] = iCP;
                 abS[2] = 1 << iCP;
                 abS[4] = abS[2] - 1;
@@ -1081,10 +1081,10 @@ public class aa implements Runnable {
     }
 
     public static void a(int i, byte[] bArr, byte[] bArr2, byte[] bArr3, a aVar, int i2, int i3, int i4, int i5, boolean z, int i6, int i7) {
-        GLLib.c(bArr != null, "GLLibPlayer.Tileset_LoadLayer.MapSizes is null");
-        GLLib.c(i4 == 0 || i4 == 1 || i4 == 2, "GLLibPlayer.Tileset_LoadLayer. X wrapping is not valid");
-        GLLib.c(i5 == 0 || i5 == 1 || i5 == 2, "GLLibPlayer.Tileset_LoadLayer. Y wrapping is not valid");
-        GLLib.c(i3 == 16 || i3 == 32, "GLLibPlayer.Tileset_LoadLayer. origin is not valid");
+        GameRuntime.c(bArr != null, "GLLibPlayer.Tileset_LoadLayer.MapSizes is null");
+        GameRuntime.c(i4 == 0 || i4 == 1 || i4 == 2, "GLLibPlayer.Tileset_LoadLayer. X wrapping is not valid");
+        GameRuntime.c(i5 == 0 || i5 == 1 || i5 == 2, "GLLibPlayer.Tileset_LoadLayer. Y wrapping is not valid");
+        GameRuntime.c(i3 == 16 || i3 == 32, "GLLibPlayer.Tileset_LoadLayer. origin is not valid");
         if (abN) {
             eg(i);
             abT[i][16] = i6;
@@ -1146,8 +1146,8 @@ public class aa implements Runnable {
             }
             abU[i][0] = bArr2;
             abU[i][1] = bArr3;
-            abT[i][2] = GLLib.k(bArr, 0);
-            abT[i][3] = GLLib.k(bArr, 2);
+            abT[i][2] = GameRuntime.k(bArr, 0);
+            abT[i][3] = GameRuntime.k(bArr, 2);
             abT[i][5] = abT[i][2] * abS[2];
             abT[i][6] = abT[i][3] * abS[5];
             abV[i] = aVar;
@@ -1373,9 +1373,9 @@ public class aa implements Runnable {
             }
         }
         if (abW != 100) {
-            GLLib.h(18, false);
-            GLLib.l(18, 1, abW);
-            GLLib.l(18, 5, 1);
+            GameRuntime.h(18, false);
+            GameRuntime.l(18, 1, abW);
+            GameRuntime.l(18, 5, 1);
         }
         while (i5-- >= 0) {
             int column = firstColumn;
@@ -1444,8 +1444,8 @@ public class aa implements Runnable {
             }
         }
         if (abW != 100) {
-            GLLib.l(18, 5, 0);
-            GLLib.i(18, false);
+            GameRuntime.l(18, 5, 0);
+            GameRuntime.i(18, false);
         }
     }
 
@@ -1522,7 +1522,7 @@ public class aa implements Runnable {
 
     private static void a(int i, int i2, int i3, int i4, boolean z) {
         if (z) {
-            GLLib.a(abU[i][i2], i3 << 1, (short) i4);
+            GameRuntime.a(abU[i][i2], i3 << 1, (short) i4);
         } else {
             abU[i][i2][i3] = (byte) i4;
         }
@@ -1534,7 +1534,7 @@ public class aa implements Runnable {
 
     private static int a(int i, int i2, int i3, boolean z) {
         if (z) {
-            return GLLib.k(abU[i][i2], i3 << 1) & 65535;
+            return GameRuntime.k(abU[i][i2], i3 << 1) & 65535;
         }
         if (w.Ww && i2 == 1) {
             return (abU[i][i2][i3 >> 1] >> ((i3 & 1) << 2)) & 15;
@@ -1577,9 +1577,9 @@ public class aa implements Runnable {
         int iMin;
         int iMin2;
         int i2;
-        GLLib.kC();
-        GLLib.a(GLLib.Qj, 2, 3);
-        GLLib.m2do(0);
+        GameRuntime.kC();
+        GameRuntime.a(GameRuntime.Qj, 2, 3);
+        GameRuntime.m2do(0);
         int[] iArr = abT[i];
         if (iArr[0] == 1 && iArr[1] == 1) {
             ek(i);
@@ -1587,8 +1587,8 @@ public class aa implements Runnable {
             boolean zAb2 = ab(i, 2);
             float f3 = (iArr[11] + iArr[14]) - f;
             float f4 = (iArr[15] + iArr[12]) - f2;
-            int iKH = (GLLib.kH() * 100) / abW;
-            int iKI = (GLLib.kI() * 100) / abW;
+            int iKH = (GameRuntime.kH() * 100) / abW;
+            int iKI = (GameRuntime.kI() * 100) / abW;
             int i3 = abS[2];
             int i4 = abS[5];
             int i5 = abT[i][2] * i3;
@@ -1629,9 +1629,9 @@ public class aa implements Runnable {
                         fAd2 = f7;
                         fAd = f5;
                     } else {
-                        fArrA = GLLib.a(fAd, iKH + fAd, iKI + fAd2, fAd2, GLLib.ST, GLLib.SU);
+                        fArrA = GameRuntime.a(fAd, iKH + fAd, iKI + fAd2, fAd2, GameRuntime.ST, GameRuntime.SU);
                     }
-                    GLLib.a(abX[i][length][length2], fArrA);
+                    GameRuntime.a(abX[i][length][length2], fArrA);
                     i12++;
                     f7 = fAd2;
                     f5 = fAd;

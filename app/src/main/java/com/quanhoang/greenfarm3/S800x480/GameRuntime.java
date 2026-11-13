@@ -37,7 +37,7 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.midlet.MIDlet;
 
 /* JADX INFO: loaded from: classes.dex */
-public abstract class GLLib extends javax.microedition.lcdui.f implements Runnable {
+public abstract class GameRuntime extends javax.microedition.lcdui.f implements Runnable {
     // DEX has no Java checked-exception restriction; preserve the original thrown instance.
     @SuppressWarnings("unchecked")
     private static <Failure extends Throwable> RuntimeException propagateChecked(Throwable failure) throws Failure {
@@ -47,7 +47,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     public static int QA;
     public static int QB;
     static int QC;
-    public static GLLib QD;
+    public static GameRuntime QD;
     static int QG;
     static int QH;
     static int QI;
@@ -341,7 +341,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
     public void a(a aVar, int i, int i2, int i3, int i4, boolean z) {
     }
 
-    public GLLib(Object obj, Object obj2) {
+    public GameRuntime(Object obj, Object obj2) {
         be("GLLib.constructor");
         QD = this;
         Qn = -1;
@@ -1422,7 +1422,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             return RJ;
 
         } catch (IOException failure) {
-            throw GLLib.<RuntimeException>propagateChecked(failure);
+            throw GameRuntime.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -1476,7 +1476,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             return i3;
 
         } catch (IOException failure) {
-            throw GLLib.<RuntimeException>propagateChecked(failure);
+            throw GameRuntime.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -1732,7 +1732,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             return RJ;
 
         } catch (IOException | InterruptedException failure) {
-            throw GLLib.<RuntimeException>propagateChecked(failure);
+            throw GameRuntime.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -1741,7 +1741,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             return (inputStream.read() & 255) + ((inputStream.read() & 255) << 8);
 
         } catch (IOException failure) {
-            throw GLLib.<RuntimeException>propagateChecked(failure);
+            throw GameRuntime.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -1750,7 +1750,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             return (inputStream.read() & 255) + ((inputStream.read() & 255) << 8) + ((inputStream.read() & 255) << 16) + ((inputStream.read() & 255) << 24);
 
         } catch (IOException failure) {
-            throw GLLib.<RuntimeException>propagateChecked(failure);
+            throw GameRuntime.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -2308,7 +2308,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             return inputStreamBl;
 
         } catch (IOException | InterruptedException failure) {
-            throw GLLib.<RuntimeException>propagateChecked(failure);
+            throw GameRuntime.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -4544,7 +4544,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             return (g(inputStream) & 255) | ((g(inputStream) & 255) << 8);
 
         } catch (IOException failure) {
-            throw GLLib.<RuntimeException>propagateChecked(failure);
+            throw GameRuntime.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -4553,7 +4553,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             return (g(inputStream) & 255) | ((g(inputStream) & 255) << 8) | ((g(inputStream) & 255) << 16) | ((g(inputStream) & 255) << 24);
 
         } catch (IOException failure) {
-            throw GLLib.<RuntimeException>propagateChecked(failure);
+            throw GameRuntime.<RuntimeException>propagateChecked(failure);
         }
     }
 
@@ -5570,7 +5570,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
                 TN.akW();
             } catch (Exception e) {
                 if (!(e instanceof javax.microedition.b.c)) {
-                    throw GLLib.<RuntimeException>propagateChecked(e);
+                    throw GameRuntime.<RuntimeException>propagateChecked(e);
                 }
                 be("ERROR! Failed closing RMS: " + e);
             }
@@ -6639,7 +6639,7 @@ public abstract class GLLib extends javax.microedition.lcdui.f implements Runnab
             return e(str, 0, str.length());
 
         } catch (IOException failure) {
-            throw GLLib.<RuntimeException>propagateChecked(failure);
+            throw GameRuntime.<RuntimeException>propagateChecked(failure);
         }
     }
 

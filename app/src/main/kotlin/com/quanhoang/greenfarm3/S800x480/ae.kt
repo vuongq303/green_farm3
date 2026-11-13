@@ -4,6 +4,6 @@ import android.media.MediaPlayer
 
 class ae : MediaPlayer.OnCompletionListener {
     override fun onCompletion(mediaPlayer: MediaPlayer?) {
-        if (w.Wd) GLLib.b("Complete playing MediaPlayer with session id " + mediaPlayer!!.audioSessionId, "GLLib_snd", 6)
+        if (w.Wd) GameRuntime.b("Complete playing MediaPlayer with session id " + mediaPlayer!!.audioSessionId, "GLLib_snd", 6)
     }
 }

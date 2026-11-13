@@ -85,10 +85,10 @@ class LanguageRestartController private constructor() {
             val selectionTicket: Int
             val text: Array<String>
             synchronized(selectionLock) {
-                if (restartState != IDLE || language == ci.aYU || !isSupported(language)) return
+                if (restartState != IDLE || language == FarmGameEngine.aYU || !isSupported(language)) return
                 requestedLanguage = language
                 // Capture the CURRENT locale before the proposed choice is applied.
-                currentLanguageDialogText = textFor(ci.aYU)
+                currentLanguageDialogText = textFor(FarmGameEngine.aYU)
                 text = currentLanguageDialogText!!
                 selectionGeneration++
                 selectionTicket = selectionGeneration
@@ -160,12 +160,12 @@ class LanguageRestartController private constructor() {
             return true
         }
 
-        private fun tutorialOptionsAvailable(): Boolean = synchronized(ci::class.java) {
-            val currentEngineState = ci.qD()
-            ProgressSaveController.isWorldReadyForMenu() && ci.aZB == 0 &&
-                (ci.aYR > 0 || (ci.awV && ci.aYS > 0)) &&
+        private fun tutorialOptionsAvailable(): Boolean = synchronized(FarmGameEngine::class.java) {
+            val currentEngineState = FarmGameEngine.currentEngineState()
+            ProgressSaveController.isWorldReadyForMenu() && FarmGameEngine.aZB == 0 &&
+                (FarmGameEngine.currentTutorialStepIndex > 0 || (FarmGameEngine.awV && FarmGameEngine.aYS > 0)) &&
                 (currentEngineState == 18 || currentEngineState == 19) &&
-                ci.avD == -1 && ci.apA == -1
+                FarmGameEngine.avD == -1 && FarmGameEngine.apA == -1
         }
 
         /** Consume UI decisions on the game thread; do not serialize on the UI thread. */
@@ -190,7 +190,7 @@ class LanguageRestartController private constructor() {
             if (openMenu && action == IDLE && tutorialOptionsAvailable()) {
                 clearInput()
                 // Original Options engine15 pushes Language engine5 (GUI26).
-                ci.fE(15)
+                FarmGameEngine.fE(15)
             }
             if (action != IDLE) clearInput()
             when (action) {
@@ -212,19 +212,19 @@ class LanguageRestartController private constructor() {
         }
 
         private fun clearInput() {
-            GLLib.lb()
-            GLLib.lb()
-            GLLib.lb()
-            GLLib.la()
-            ci.aAG = -1
-            ci.aAH = -1
-            ci.aAI = -1
-            ci.aAJ = -1
-            ci.aAK = -1
-            ci.aZn = null
-            ci.aZp = 0
-            ci.aAi = false
-            ci.aAj = false
+            GameRuntime.lb()
+            GameRuntime.lb()
+            GameRuntime.lb()
+            GameRuntime.la()
+            FarmGameEngine.aAG = -1
+            FarmGameEngine.aAH = -1
+            FarmGameEngine.aAI = -1
+            FarmGameEngine.aAJ = -1
+            FarmGameEngine.aAK = -1
+            FarmGameEngine.aZn = null
+            FarmGameEngine.aZp = 0
+            FarmGameEngine.aAi = false
+            FarmGameEngine.aAj = false
         }
 
         private fun checkpointFinished(selectionTicket: Int, language: Int, success: Boolean) {
@@ -238,9 +238,9 @@ class LanguageRestartController private constructor() {
                     TutorialFlowController.invalidateSession()
                     // Later lifecycle snapshots must match the committed header.
                     // Keep gameplay blocked; never reload old text packs in place.
-                    ci.aYU = language
-                    ci.aOD = language
-                    ci.auy = language
+                    FarmGameEngine.aYU = language
+                    FarmGameEngine.aOD = language
+                    FarmGameEngine.auy = language
                     restartState = RESTARTING
                 }
             }

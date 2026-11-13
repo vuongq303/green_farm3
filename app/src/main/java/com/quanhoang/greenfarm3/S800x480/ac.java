@@ -67,7 +67,7 @@ public class ac implements Runnable {
     private static boolean abg = w.VW;
     private static boolean abh = true;
     private static final int abj = w.Wf;
-    private static Context abL = GLLib.Qu.getApplicationContext();
+    private static Context abL = GameRuntime.Qu.getApplicationContext();
     private static AudioManager abM = (AudioManager) abL.getSystemService("audio");
     private static boolean abN = false;
     private static int abO = w.Wp;
@@ -86,7 +86,7 @@ public class ac implements Runnable {
             }
             if (i < 0) {
                 if (w.Wd) {
-                    GLLib.b("dummy sound skipping", "GLLib_snd", 3);
+                    GameRuntime.b("dummy sound skipping", "GLLib_snd", 3);
                 }
                 if (w.We) {
                 }
@@ -94,7 +94,7 @@ public class ac implements Runnable {
             }
             if (abG[i]) {
                 t(i, -1, 0);
-                GLLib.d(abI[i], 0);
+                GameRuntime.d(abI[i], 0);
                 for (int i3 = 0; i3 < abJ[i].length; i3++) {
                     abJ[i][i3] = false;
                 }
@@ -126,7 +126,7 @@ public class ac implements Runnable {
         }
         if (i < 0) {
             if (w.Wd) {
-                GLLib.b("dummy sound skipping", "GLLib_snd", 3);
+                GameRuntime.b("dummy sound skipping", "GLLib_snd", 3);
             }
             if (w.We) {
             }
@@ -134,25 +134,25 @@ public class ac implements Runnable {
         }
         if (abG[i]) {
             if (w.Wd) {
-                GLLib.b("Use SoundPool", "GLLib_snd", 3);
+                GameRuntime.b("Use SoundPool", "GLLib_snd", 3);
             }
             if (!abl[i]) {
                 if (!w.Wd) {
                     return -1;
                 }
-                GLLib.b("Sound " + i + " is not loaded yet!", "GLLib_snd", 6);
+                GameRuntime.b("Sound " + i + " is not loaded yet!", "GLLib_snd", 6);
                 return -1;
             }
             if (w.Wd) {
-                GLLib.b("Play SoundPool for sound " + acd[i], "GLLib_snd", 6);
-                GLLib.b("Volume " + dX(i3), "GLLib_snd", 6);
-                GLLib.b("Priority " + (15 - i4), "GLLib_snd", 6);
-                GLLib.b("Loop " + (i2 == 0 ? -1 : 0), "GLLib_snd", 6);
-                GLLib.b("Rate " + dY(acc[i]), "GLLib_snd", 6);
+                GameRuntime.b("Play SoundPool for sound " + acd[i], "GLLib_snd", 6);
+                GameRuntime.b("Volume " + dX(i3), "GLLib_snd", 6);
+                GameRuntime.b("Priority " + (15 - i4), "GLLib_snd", 6);
+                GameRuntime.b("Loop " + (i2 == 0 ? -1 : 0), "GLLib_snd", 6);
+                GameRuntime.b("Rate " + dY(acc[i]), "GLLib_snd", 6);
             }
             int iPlay = abH.play(acd[i], dX(i3), dX(i3), 15 - i4, i2 == 0 ? -1 : 0, dY(acc[i]));
             if (w.Wd) {
-                GLLib.b("StreamID " + iPlay, "GLLib_snd", 6);
+                GameRuntime.b("StreamID " + iPlay, "GLLib_snd", 6);
             }
             do {
                 zArr = abJ[i];
@@ -173,7 +173,7 @@ public class ac implements Runnable {
         }
         if (w.VW) {
             if (w.Wd) {
-                GLLib.b("Use MediaPlayer", "GLLib_snd", 3);
+                GameRuntime.b("Use MediaPlayer", "GLLib_snd", 3);
             }
             iLW = lW();
             if (iLW == -1 && (iLW = eo(i4)) == -1) {
@@ -191,7 +191,7 @@ public class ac implements Runnable {
             }
             int i7 = !w.Wc ? 0 : i5;
             if (w.Wd) {
-                GLLib.b("Snd_Play: Channel[" + iLW + "], ID[" + i + "], Loop[" + i2 + "], Volume[" + i3 + "] and Priority[" + i4 + "]", "GLLib_snd", 3);
+                GameRuntime.b("Snd_Play: Channel[" + iLW + "], ID[" + i + "], Loop[" + i2 + "], Volume[" + i3 + "] and Priority[" + i4 + "]", "GLLib_snd", 3);
             }
             abD[iLW] = i;
             aca[iLW] = (byte) i4;
@@ -203,7 +203,7 @@ public class ac implements Runnable {
                 try {
                     k(4, iLW, dZ(iLW), abj);
                 } catch (Exception e) {
-                    GLLib.d(e);
+                    GameRuntime.d(e);
                 }
             }
             c(iLW, 0, i, i4, i3, i2, -1, i7);
@@ -224,7 +224,7 @@ public class ac implements Runnable {
         if (abk) {
             if (w.We) {
             }
-            GLLib.c(abw[i] < 5, "SndQueue_Push: Too many sound requests given before Snd_Update!");
+            GameRuntime.c(abw[i] < 5, "SndQueue_Push: Too many sound requests given before Snd_Update!");
             int i9 = abv[i];
             int i10 = abw[i];
             int i11 = i9 + i10;
@@ -299,21 +299,21 @@ public class ac implements Runnable {
     static void a(byte[] bArr, int i, boolean z) throws IOException {
         if (w.VW && abk) {
             if (bArr == null || bArr.length <= 0) {
-                GLLib.b("Snd_LoadSound: soundData is null. Sound " + i + " not available.", "GLLib_snd", 6);
+                GameRuntime.b("Snd_LoadSound: soundData is null. Sound " + i + " not available.", "GLLib_snd", 6);
                 return;
             }
             if (w.We) {
             }
             if (i < 0) {
                 if (w.Wd) {
-                    GLLib.b("dummy sound skipping", "GLLib_snd", 3);
+                    GameRuntime.b("dummy sound skipping", "GLLib_snd", 3);
                 }
                 if (w.We) {
                 }
                 return;
             }
             if (w.Wd) {
-                GLLib.b("Snd_LoadSound for slot : " + i, "GLLib_snd", 3);
+                GameRuntime.b("Snd_LoadSound for slot : " + i, "GLLib_snd", 3);
             }
             if (!new File(abL.getFilesDir(), i + ".snddmp").exists()) {
                 FileOutputStream fileOutputStreamOpenFileOutput = abL.openFileOutput(i + ".snddmp", 0);
@@ -321,8 +321,8 @@ public class ac implements Runnable {
                 fileOutputStreamOpenFileOutput.flush();
                 fileOutputStreamOpenFileOutput.close();
                 if (w.Wd) {
-                    GLLib.b("Create file : " + i + ".snddmp", "GLLib_snd", 3);
-                    GLLib.b("Size : " + bArr.length, "GLLib_snd", 3);
+                    GameRuntime.b("Create file : " + i + ".snddmp", "GLLib_snd", 3);
+                    GameRuntime.b("Size : " + bArr.length, "GLLib_snd", 3);
                 }
             }
             if (z) {
@@ -330,8 +330,8 @@ public class ac implements Runnable {
                 acd[i] = abH.load(abL.getFilesDir() + "/" + i + ".snddmp", 1);
                 if (w.Wd) {
                     ace += bArr.length;
-                    GLLib.b("Total size in SoundPool : " + ace, "GLLib_snd", 3);
-                    GLLib.b("Loading sound : " + i + " to SoundPool. Given soundID is " + acd[i], "GLLib_snd", 3);
+                    GameRuntime.b("Total size in SoundPool : " + ace, "GLLib_snd", 3);
+                    GameRuntime.b("Loading sound : " + i + " to SoundPool. Given soundID is " + acd[i], "GLLib_snd", 3);
                 }
             } else {
                 abl[i] = true;
@@ -398,30 +398,30 @@ public class ac implements Runnable {
 
     static void c(String str, int i, boolean z) throws IOException {
         if (w.VW && abk) {
-            GLLib.c(i < abl.length, "resourceIndex is larger that slot count. Read the Warning in the doc.");
+            GameRuntime.c(i < abl.length, "resourceIndex is larger that slot count. Read the Warning in the doc.");
             if (w.Wd) {
-                GLLib.b("Snd_LoadSound : " + i, "GLLib_snd", 3);
+                GameRuntime.b("Snd_LoadSound : " + i, "GLLib_snd", 3);
             }
             if (i >= 0) {
-                GLLib.c(abl != null, "Snd_LoadSound.snd not correctly initialized");
-                GLLib.bk(str);
-                a(GLLib.db(i), i, z);
+                GameRuntime.c(abl != null, "Snd_LoadSound.snd not correctly initialized");
+                GameRuntime.bk(str);
+                a(GameRuntime.db(i), i, z);
             }
         }
     }
 
     private static void d(int i, int i2, int i3, int i4, int i5) throws IOException {
-        if (!w.VW || GLLib.Qm) {
+        if (!w.VW || GameRuntime.Qm) {
             abD[i] = -1;
             return;
         }
         if (w.We) {
         }
         if (w.Wd) {
-            GLLib.b("Snd_PlayExec for channel : " + i, "GLLib_snd", 3);
+            GameRuntime.b("Snd_PlayExec for channel : " + i, "GLLib_snd", 3);
         }
         r(i, i2, i3);
-        if (GLLib.Qm) {
+        if (GameRuntime.Qm) {
             if (w.We) {
             }
             return;
@@ -430,7 +430,7 @@ public class ac implements Runnable {
             if (w.We) {
             }
             if (w.Wd) {
-                GLLib.b("Snd_playExec : Cant play, state not ready or player is null", "GLLib_snd", 6);
+                GameRuntime.b("Snd_playExec : Cant play, state not ready or player is null", "GLLib_snd", 6);
             }
             abD[i] = -1;
             return;
@@ -438,7 +438,7 @@ public class ac implements Runnable {
         abm[i].setLooping(i4 == 0);
         abm[i].setVolume(dX(i5), dX(i5));
         if (w.Wd) {
-            GLLib.b("Start player", "GLLib_snd", 3);
+            GameRuntime.b("Start player", "GLLib_snd", 3);
         }
         abm[i].start();
         abD[i] = -1;
@@ -485,7 +485,7 @@ public class ac implements Runnable {
 
     private static void ea(int i) {
         if (w.Wd) {
-            GLLib.b("Snd_stopExec", "GLLib_snd", 3);
+            GameRuntime.b("Snd_stopExec", "GLLib_snd", 3);
         }
         if (abm[i] == null) {
             return;
@@ -503,15 +503,15 @@ public class ac implements Runnable {
 
     private static void eb(int i) {
         if (w.Wd) {
-            GLLib.b("Snd_PauseExec", "GLLib_snd", 3);
+            GameRuntime.b("Snd_PauseExec", "GLLib_snd", 3);
         }
-        GLLib.c(abm[i] != null, "Snd_pauseExec.player is null");
+        GameRuntime.c(abm[i] != null, "Snd_pauseExec.player is null");
         if (abm[i] == null) {
             return;
         }
         if (w.We) {
         }
-        GLLib.c(abm[i].isPlaying(), "Snd_pauseExec.player wasn't playing");
+        GameRuntime.c(abm[i].isPlaying(), "Snd_pauseExec.player wasn't playing");
         abm[i].pause();
         abq[i] = 3;
         if (w.We) {
@@ -520,16 +520,16 @@ public class ac implements Runnable {
 
     private static void ec(int i) {
         if (w.Wd) {
-            GLLib.b("Snd_ResumeExec", "GLLib_snd", 3);
+            GameRuntime.b("Snd_ResumeExec", "GLLib_snd", 3);
         }
         if (abq[i] != 3) {
             if (w.Wd) {
-                GLLib.b("Snd_ResumeExec. Can't resume channel " + i + " because state is not paused!", "GLLib_snd", 6);
+                GameRuntime.b("Snd_ResumeExec. Can't resume channel " + i + " because state is not paused!", "GLLib_snd", 6);
                 return;
             }
             return;
         }
-        GLLib.c(abm[i] != null, "Snd_ResumeExec.player is null");
+        GameRuntime.c(abm[i] != null, "Snd_ResumeExec.player is null");
         if (abm[i] != null) {
             if (w.We) {
             }
@@ -545,7 +545,7 @@ public class ac implements Runnable {
             if (w.We) {
             }
             if (w.Wd) {
-                GLLib.b("Snd_FreeChannelExec = " + i, "GLLib_snd", 3);
+                GameRuntime.b("Snd_FreeChannelExec = " + i, "GLLib_snd", 3);
             }
             if (abm[i] != null) {
                 abm[i].stop();
@@ -595,7 +595,7 @@ public class ac implements Runnable {
                     }
                 }
                 if (w.Wd) {
-                    GLLib.b("FADE VOLUME TO " + i2, "GLLib_snd", 3);
+                    GameRuntime.b("FADE VOLUME TO " + i2, "GLLib_snd", 3);
                 }
             } catch (Exception e) {
                 abr[i] = i5;
@@ -607,7 +607,7 @@ public class ac implements Runnable {
                     try {
                         ec(i);
                     } catch (Exception e2) {
-                        GLLib.d(e2);
+                        GameRuntime.d(e2);
                     }
                 }
                 s(i, abz[i3 + 1], abz[i3 + 2]);
@@ -623,14 +623,14 @@ public class ac implements Runnable {
                             ea(i);
                             abE[i] = false;
                         } catch (Exception e3) {
-                            GLLib.d(e3);
+                            GameRuntime.d(e3);
                         }
                         break;
                     case 5:
                         try {
                             eb(i);
                         } catch (Exception e4) {
-                            GLLib.d(e4);
+                            GameRuntime.d(e4);
                         }
                         break;
                 }
@@ -649,7 +649,7 @@ public class ac implements Runnable {
         if (w.We) {
         }
         if (w.Wd) {
-            GLLib.b("Snd_Init", "GLLib_snd", 3);
+            GameRuntime.b("Snd_Init", "GLLib_snd", 3);
         }
         abe = i;
         abm = new MediaPlayer[abc];
@@ -659,7 +659,7 @@ public class ac implements Runnable {
         abq = new int[abc];
         abr = new int[abc];
         abs = new int[abc];
-        GLLib.d(abs, 1);
+        GameRuntime.d(abs, 1);
         abu = new int[abc * 5 * 7];
         abv = new int[abc];
         abw = new int[abc];
@@ -672,14 +672,14 @@ public class ac implements Runnable {
         abD = new int[abc];
         abG = new boolean[i];
         acc = new int[i];
-        GLLib.d(acc, 100000);
+        GameRuntime.d(acc, 100000);
         acd = new int[i];
         abH = new SoundPool(abd, 3, 100);
         abH.setOnLoadCompleteListener(new ad());
         abI = (int[][]) Array.newInstance((Class<?>) Integer.TYPE, abe, 20);
         abJ = (boolean[][]) Array.newInstance((Class<?>) Boolean.TYPE, abe, 20);
         abK = new int[abe];
-        GLLib.d(abD, -1);
+        GameRuntime.d(abD, -1);
         for (int i2 = 0; i2 < abc; i2++) {
             abz[(i2 * 4) + 0] = 0;
         }
@@ -706,7 +706,7 @@ public class ac implements Runnable {
         if (abl != null) {
             return abl[i];
         }
-        GLLib.b("Sound engine is not initialized!!!", "GLLib_snd", 3);
+        GameRuntime.b("Sound engine is not initialized!!!", "GLLib_snd", 3);
         return false;
     }
 
@@ -749,7 +749,7 @@ public class ac implements Runnable {
     }
 
     static void eq(int i) {
-        GLLib.c(false, "MasterVolume is deprecated now, please don't use it!!!");
+        GameRuntime.c(false, "MasterVolume is deprecated now, please don't use it!!!");
         if (w.VW && abk && abk) {
             if (w.We) {
             }
@@ -773,7 +773,7 @@ public class ac implements Runnable {
                 }
                 i2++;
             } catch (Exception e) {
-                GLLib.d(e);
+                GameRuntime.d(e);
             }
         }
         if (w.We) {
@@ -852,14 +852,14 @@ public class ac implements Runnable {
                         ed(i);
                     }
                 } catch (Exception e) {
-                    GLLib.d(e);
+                    GameRuntime.d(e);
                 }
                 if (!abA[i] && !abE[i]) {
                     c(i, aby);
                     if (aby[7] > 0) {
                         try {
                             if (w.Wd) {
-                                GLLib.b("Snd_update", "GLLib_snd", 3);
+                                GameRuntime.b("Snd_update", "GLLib_snd", 3);
                             }
                             switch (aby[0]) {
                                 case 0:
@@ -890,8 +890,8 @@ public class ac implements Runnable {
                                     break;
                             }
                         } catch (Exception e2) {
-                            GLLib.b("Snd_update.error on channel (" + i + ")." + e2, "GLLib_snd", 6);
-                            GLLib.d(e2);
+                            GameRuntime.b("Snd_update.error on channel (" + i + ")." + e2, "GLLib_snd", 6);
+                            GameRuntime.d(e2);
                         }
                     }
                 }
@@ -902,10 +902,10 @@ public class ac implements Runnable {
                     abf = false;
                     synchronized (abt) {
                         try {
-                            GLLib.b("Pause thread", "GLPlayer", 6);
+                            GameRuntime.b("Pause thread", "GLPlayer", 6);
                             abt.wait();
                         } catch (InterruptedException e3) {
-                            GLLib.d(e3);
+                            GameRuntime.d(e3);
                         }
                     }
                 }
@@ -929,8 +929,8 @@ public class ac implements Runnable {
                 }
                 i++;
             } catch (Exception e) {
-                GLLib.b("Snd_GetFreeChannel: Error on channel " + i, "GLLib_snd", 6);
-                GLLib.d(e);
+                GameRuntime.b("Snd_GetFreeChannel: Error on channel " + i, "GLLib_snd", 6);
+                GameRuntime.d(e);
             }
         }
         if (w.We) {
@@ -954,7 +954,7 @@ public class ac implements Runnable {
     private static void lY() {
         if (w.VZ) {
             synchronized (abt) {
-                GLLib.b("Resume thread", "GLPlayer", 6);
+                GameRuntime.b("Resume thread", "GLPlayer", 6);
                 abt.notify();
             }
         }
@@ -965,25 +965,25 @@ public class ac implements Runnable {
     }
 
     static void p(String str, int i) throws IOException {
-        GLLib.c(false, "This load method is deprecated! Please use Snd_LoadSound(String dataFileName, int resourceIndex, boolean isUseSoundPool)");
+        GameRuntime.c(false, "This load method is deprecated! Please use Snd_LoadSound(String dataFileName, int resourceIndex, boolean isUseSoundPool)");
         c(str, i, acb);
     }
 
     private static void r(int i, int i2, int i3) throws IOException {
         if (w.VW) {
             if (w.Wd) {
-                GLLib.b("Snd_PrepareExec", "GLLib_snd", 3);
+                GameRuntime.b("Snd_PrepareExec", "GLLib_snd", 3);
             }
             if (w.We) {
             }
             ed(i);
             if (w.Wd) {
-                GLLib.b("prepareexec : channel : " + i, "GLLib_snd", 3);
-                GLLib.b("prepareexec : index   : " + i2, "GLLib_snd", 3);
+                GameRuntime.b("prepareexec : channel : " + i, "GLLib_snd", 3);
+                GameRuntime.b("prepareexec : index   : " + i2, "GLLib_snd", 3);
             }
             if (!abl[i2]) {
                 if (w.Wd) {
-                    GLLib.b("create player: sound is not loaded yet!!", "GLLib_snd", 6);
+                    GameRuntime.b("create player: sound is not loaded yet!!", "GLLib_snd", 6);
                 }
                 if (w.We) {
                 }
@@ -1017,7 +1017,7 @@ public class ac implements Runnable {
     private static void t(int i, int i2, int i3) {
         if (!abl[i]) {
             if (w.Wd) {
-                GLLib.b("Sound " + i + " is not loaded yet!", "GLLib_snd", 6);
+                GameRuntime.b("Sound " + i + " is not loaded yet!", "GLLib_snd", 6);
                 return;
             }
             return;
@@ -1027,7 +1027,7 @@ public class ac implements Runnable {
                 switch (i3) {
                     case 0:
                         if (w.Wd) {
-                            GLLib.b("Stopping stream " + abI[i][i4], "GLLib_snd", 6);
+                            GameRuntime.b("Stopping stream " + abI[i][i4], "GLLib_snd", 6);
                         }
                         abH.stop(abI[i][i4]);
                         break;
@@ -1085,12 +1085,12 @@ public class ac implements Runnable {
             if (w.We) {
             }
             if (w.Wd) {
-                GLLib.b("Snd_UnLoadSound : unloading sound " + i, "GLLib_snd", 3);
+                GameRuntime.b("Snd_UnLoadSound : unloading sound " + i, "GLLib_snd", 3);
             }
-            GLLib.c(abl != null, "Snd_UnLoadSound : array is not initialized");
+            GameRuntime.c(abl != null, "Snd_UnLoadSound : array is not initialized");
             if (i < 0) {
                 if (w.Wd) {
-                    GLLib.b("dummy sound skipping", "GLLib_snd", 3);
+                    GameRuntime.b("dummy sound skipping", "GLLib_snd", 3);
                 }
                 if (w.We) {
                 }
@@ -1099,7 +1099,7 @@ public class ac implements Runnable {
             abl[i] = false;
             if (abG[i]) {
                 abH.unload(acd[i]);
-                GLLib.d(abI[i], 0);
+                GameRuntime.d(abI[i], 0);
                 for (int i2 = 0; i2 < abJ.length; i2++) {
                     abJ[i][i2] = false;
                 }

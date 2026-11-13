@@ -22,7 +22,7 @@ import org.json.JSONException;
 public class s {
     // Preserve DEX exception behavior despite missing binary Throws metadata.
     private static byte[] decodeResponse(String value) throws IOException {
-        return GLLib.bJ(value);
+        return GameRuntime.bJ(value);
     }
 
     @SuppressWarnings("unchecked")
@@ -220,7 +220,7 @@ public class s {
     }
 
     public static void a(boolean z, String str) {
-        GLLib.c(w.YJ, "You need to enable federation_useHermes_Messages in GLLibConfig!");
+        GameRuntime.c(w.YJ, "You need to enable federation_useHermes_Messages in GLLibConfig!");
         aI(ShareConstants.WEB_DIALOG_PARAM_MESSAGE);
         String[] strArr = new String[1];
         strArr[0] = z ? AppEventsConstants.EVENT_PARAM_VALUE_YES : null;
@@ -228,7 +228,7 @@ public class s {
     }
 
     public static void b(boolean z, String str) {
-        GLLib.c(w.YJ, "You need to enable federation_useHermes_Messages in GLLibConfig!");
+        GameRuntime.c(w.YJ, "You need to enable federation_useHermes_Messages in GLLibConfig!");
         aI(ShareConstants.WEB_DIALOG_PARAM_MESSAGE);
         String[] strArr = new String[1];
         strArr[0] = z ? AppEventsConstants.EVENT_PARAM_VALUE_YES : null;
@@ -262,31 +262,31 @@ public class s {
     }
 
     public static void a(String str, String str2, String str3, String str4, String str5, String str6, String str7) {
-        GLLib.c(w.YJ, "You need to enable federation_useHermes_Messages in GLLibConfig!");
+        GameRuntime.c(w.YJ, "You need to enable federation_useHermes_Messages in GLLibConfig!");
         aI(ShareConstants.WEB_DIALOG_PARAM_MESSAGE);
         a(t.Pe, new String[]{str, str2, str3, str4, str5, str6}, str7);
     }
 
     public static void d(String str, String str2, String str3) {
-        GLLib.c(w.YH, "You need to enable federation_useHermes_RegisterDevice in GLLibConfig!");
+        GameRuntime.c(w.YH, "You need to enable federation_useHermes_RegisterDevice in GLLibConfig!");
         aI(ShareConstants.WEB_DIALOG_PARAM_MESSAGE);
         a(t.Pg, new String[]{str, str2}, str3);
     }
 
     public static void a(String str, String str2, String str3, String str4) {
-        GLLib.c(w.YJ, "You need to enable federation_useHermes_Messages in GLLibConfig!");
+        GameRuntime.c(w.YJ, "You need to enable federation_useHermes_Messages in GLLibConfig!");
         aI(ShareConstants.WEB_DIALOG_PARAM_MESSAGE);
         a(t.Pi, new String[]{str, str2, str3}, str4);
     }
 
     public static void e(String str, String str2, String str3) {
-        GLLib.c(w.YJ, "You need to enable federation_useHermes_Messages in GLLibConfig!");
+        GameRuntime.c(w.YJ, "You need to enable federation_useHermes_Messages in GLLibConfig!");
         aI(ShareConstants.WEB_DIALOG_PARAM_MESSAGE);
         a(t.Pj, new String[]{str, str2}, str3);
     }
 
     public static void b(String str, String str2, String str3, String str4, String str5, String str6) {
-        GLLib.c(w.YO, "You need to enable federation_useHestia_Config in GLLibConfig!");
+        GameRuntime.c(w.YO, "You need to enable federation_useHestia_Config in GLLibConfig!");
         aI("config");
         a(t.Pz, new String[]{str, str2, str3, str4}, (String[]) null, new String[]{str5}, (String) null, str6);
     }
@@ -356,13 +356,13 @@ public class s {
     }
 
     public static void b(String str, String str2, String str3, String str4, String str5) {
-        GLLib.c(w.Ys, "You need to enable federation_useJanus_DeviceInfo in GLLibConfig!");
+        GameRuntime.c(w.Ys, "You need to enable federation_useJanus_DeviceInfo in GLLibConfig!");
         aI("auth");
         a(t.No, new String[]{str, str2, str3, str4}, str5);
     }
 
     public static void f(String str, String str2, String str3) {
-        GLLib.c(w.Yv, "You need to enable federation_useJanus_Link in GLLibConfig!");
+        GameRuntime.c(w.Yv, "You need to enable federation_useJanus_Link in GLLibConfig!");
         aI("auth");
         a(t.Np, new String[]{str, str2, str3}, "");
     }
@@ -373,9 +373,9 @@ public class s {
 
     public static void a(String str, String str2, String str3, String str4, String str5, String str6, String[] strArr) {
         String[] strArr2 = null;
-        GLLib.c(w.Yr, "You need to enable federation_useJanus_Authorize in GLLibConfig!");
+        GameRuntime.c(w.Yr, "You need to enable federation_useJanus_Authorize in GLLibConfig!");
         if (jr() == null) {
-            GLLib.b("You didn't set device id. Please note that it's optional to set device id (for backward compatiblity) but is required for all new games.", "Federation", 3);
+            GameRuntime.b("You didn't set device id. Please note that it's optional to set device id (for backward compatiblity) but is required for all new games.", "Federation", 3);
         }
         boolean zAH = aH(str.trim());
         if (iN() && !iO()) {
@@ -409,7 +409,7 @@ public class s {
     }
 
     public static void o(String str, String str2) {
-        GLLib.c(w.Yr, "You need to enable federation_useJanus_Authorize in GLLibConfig!");
+        GameRuntime.c(w.Yr, "You need to enable federation_useJanus_Authorize in GLLibConfig!");
         a(t.Nt, new String[]{str, "refresh_token", str2}, "");
     }
 
@@ -537,7 +537,7 @@ public class s {
                     a(i, bcVar2);
                 }
             } catch (Exception e) {
-                GLLib.d(e);
+                GameRuntime.d(e);
                 str15 = null;
             }
         }
@@ -551,12 +551,12 @@ public class s {
         boolean zCk = bcVar.ck("success");
         if (!zCk) {
             if (w.XZ) {
-                GLLib.b("Anubis error.", "Federation", 3);
+                GameRuntime.b("Anubis error.", "Federation", 3);
             }
             String strCh = bcVar.ch("reason");
             n(i, strCh);
             if (w.XZ) {
-                GLLib.b("Reason: " + strCh, "Federation", 3);
+                GameRuntime.b("Reason: " + strCh, "Federation", 3);
             }
         }
         return zCk;
@@ -615,7 +615,7 @@ public class s {
                 a(i, bcVar2);
             }
         } catch (Exception e) {
-            GLLib.d(e);
+            GameRuntime.d(e);
         }
         strCh = null;
         if (!I(i, 2)) {
@@ -628,7 +628,7 @@ public class s {
     }
 
     public static void iQ() {
-        GLLib.c(w.YM, "You need to enable federation_useServerTimestamp in GLLibConfig!");
+        GameRuntime.c(w.YM, "You need to enable federation_useServerTimestamp in GLLibConfig!");
         a(t.OZ, (Object[]) null, "");
     }
 
@@ -665,9 +665,9 @@ public class s {
             if (cu(i)) {
                 Mh[i2] = 0;
                 if (w.XZ) {
-                    GLLib.b("Federation ERROR: Can't find service location " + str, "Federation", 3);
-                    GLLib.b("Error code: " + jl(), "Federation", 3);
-                    GLLib.b("Error message: " + jm(), "Federation", 3);
+                    GameRuntime.b("Federation ERROR: Can't find service location " + str, "Federation", 3);
+                    GameRuntime.b("Error code: " + jl(), "Federation", 3);
+                    GameRuntime.b("Error message: " + jm(), "Federation", 3);
                 }
             }
         }
@@ -678,7 +678,7 @@ public class s {
         String strIV = iV();
         if (strIV == null || strIV.length() == 0) {
             if (w.XZ) {
-                GLLib.b("Get pandora url error", "Federation", 3);
+                GameRuntime.b("Get pandora url error", "Federation", 3);
             }
             return false;
         }
@@ -711,8 +711,8 @@ public class s {
     }
 
     public static void a(String str, String str2, String str3, boolean z, String str4, String str5, String str6) {
-        GLLib.c(w.YE, "You need to enable federation_useOlympus_MyScores in GLLibConfig!");
-        GLLib.c((z && str4 == null) || !z, "Don't use aroundMe and aroundEntry at the same time, it have no sense");
+        GameRuntime.c(w.YE, "You need to enable federation_useOlympus_MyScores in GLLibConfig!");
+        GameRuntime.c((z && str4 == null) || !z, "Don't use aroundMe and aroundEntry at the same time, it have no sense");
         aI("leaderboard");
         String[] strArr = new String[6];
         strArr[0] = str5;
@@ -725,25 +725,25 @@ public class s {
     }
 
     public static void d(String str, String str2, String str3, String str4, String str5, String str6) {
-        GLLib.c(w.YF, "You need to enable federation_useOlympus_FriendScores in GLLibConfig!");
+        GameRuntime.c(w.YF, "You need to enable federation_useOlympus_FriendScores in GLLibConfig!");
         aI("leaderboard social");
         a(t.OW, new String[]{str5, str, str2, str3, str4}, str6);
     }
 
     public static void b(String str, String str2, String str3, String str4, String str5, String str6, String str7) {
-        GLLib.c(w.YE, "You need to enable federation_useOlympus_MyScores in GLLibConfig!");
+        GameRuntime.c(w.YE, "You need to enable federation_useOlympus_MyScores in GLLibConfig!");
         a(str, str2, "me", str3, null, str4, null, str5, str6, null, str7);
     }
 
     public static void a(String str, String str2, String str3, String str4, String str5, String str6, String str7, String str8, String str9, String[] strArr, String str10) {
-        GLLib.c(w.YE, "You need to enable federation_useOlympus_MyScores in GLLibConfig!");
-        GLLib.c(str8 == null || str9 == null, "Don't use aroundMe and aroundEntry at the same time, it have no sense");
+        GameRuntime.c(w.YE, "You need to enable federation_useOlympus_MyScores in GLLibConfig!");
+        GameRuntime.c(str8 == null || str9 == null, "Don't use aroundMe and aroundEntry at the same time, it have no sense");
         aI("leaderboard");
         a(t.OX, new String[]{str2, str, str3, str4, str5, str6, str7, str8, str9}, strArr, str10);
     }
 
     public static void g(String str, String str2, String str3) {
-        GLLib.c(w.YG, "You need to enable federation_useOlympus_ClearLeaderboard in GLLibConfig!");
+        GameRuntime.c(w.YG, "You need to enable federation_useOlympus_ClearLeaderboard in GLLibConfig!");
         aI("leaderboard_clear");
         a(t.OY, new String[]{str2, str}, str3);
     }
@@ -819,7 +819,7 @@ public class s {
     }
 
     public static String iW() {
-        GLLib.b("Federation EVE => status of clientID : " + Mt, "Federation", 3);
+        GameRuntime.b("Federation EVE => status of clientID : " + Mt, "Federation", 3);
         return Mt;
     }
 
@@ -884,7 +884,7 @@ public class s {
         }
         if (I(i, 1) && c(amVarCr)) {
             amVarCr.am(false);
-            GLLib.b("Iris_DownloadAsset_Exec:Result", "Federation", 3);
+            GameRuntime.b("Iris_DownloadAsset_Exec:Result", "Federation", 3);
             byte[] bArrE = e(amVarCr);
             String[] strArr = (String[]) cv(i);
             if (bArrE != null) {
@@ -893,7 +893,7 @@ public class s {
                 try {
                     b(strArr[1], bArrE);
                 } catch (Exception e) {
-                    GLLib.d(e);
+                    GameRuntime.d(e);
                 }
                 return strArr[0];
             }
@@ -908,9 +908,9 @@ public class s {
     private static boolean b(String str, byte[] bArr) throws Exception {
         try {
             File file = new File(str);
-            GLLib.b("FilePath:" + file.getPath(), "Federation", 3);
+            GameRuntime.b("FilePath:" + file.getPath(), "Federation", 3);
             if (!file.exists()) {
-                GLLib.b("Not Exist", "Federation", 3);
+                GameRuntime.b("Not Exist", "Federation", 3);
                 file.createNewFile();
             }
             FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -931,25 +931,25 @@ public class s {
     }
 
     public static void c(String str, String str2, String str3, String str4, String str5, String str6, String str7) {
-        GLLib.c(w.Yk, "You need to enable federation_useOsiris_Connections in GLLibConfig!");
+        GameRuntime.c(w.Yk, "You need to enable federation_useOsiris_Connections in GLLibConfig!");
         aI("social");
         a(t.NF, new String[]{str, str2, str3, str4, str5, str6}, str7);
     }
 
     public static void b(String str, String str2, String str3, String str4) {
-        GLLib.c(w.Yk, "You need to enable federation_useOsiris_Connections in GLLibConfig!");
+        GameRuntime.c(w.Yk, "You need to enable federation_useOsiris_Connections in GLLibConfig!");
         aI("social");
         a(t.Oc, new String[]{str, str2, str3}, str4);
     }
 
     public static void t(String str, String str2) {
-        GLLib.c(w.YB, "You need to enable federation_useSeshat_Storage in GLLibConfig!");
+        GameRuntime.c(w.YB, "You need to enable federation_useSeshat_Storage in GLLibConfig!");
         aI("storage");
         a(t.Ou, new String[]{str}, str2);
     }
 
     public static void d(String str, String str2, String str3, String str4, String str5) {
-        GLLib.c(w.YB, "You need to enable federation_useSeshat_Storage in GLLibConfig!");
+        GameRuntime.c(w.YB, "You need to enable federation_useSeshat_Storage in GLLibConfig!");
         aI("storage");
         a(t.Ot, new String[]{str, str2, str3, str4}, str5);
     }
@@ -959,37 +959,37 @@ public class s {
     }
 
     public static void c(String str, String str2, String str3, String str4) {
-        GLLib.c(w.YB, "You need to enable federation_useSeshat_Storage in GLLibConfig!");
+        GameRuntime.c(w.YB, "You need to enable federation_useSeshat_Storage in GLLibConfig!");
         aI("storage");
         a(t.Os, new String[]{str, str2}, (String[]) null, (String[]) null, str3, str4);
     }
 
     public static void f(String str, String str2, String str3, String str4, String str5, String str6) {
-        GLLib.c(w.YC, "You need to enable federation_useSeshat_StandardProfile in GLLibConfig!");
+        GameRuntime.c(w.YC, "You need to enable federation_useSeshat_StandardProfile in GLLibConfig!");
         aI("storage");
         a(t.Ov, new String[]{str, str2, str3, str4, str5}, str6);
     }
 
     public static void d(String str, String str2, String str3, String str4) {
-        GLLib.c(w.YC, "You need to enable federation_useSeshat_StandardProfile in GLLibConfig!");
+        GameRuntime.c(w.YC, "You need to enable federation_useSeshat_StandardProfile in GLLibConfig!");
         aI("storage");
         a(t.Ow, new String[]{str, str2, str3}, str4);
     }
 
     public static void k(String str, String str2, String str3) {
-        GLLib.c(w.YC, "You need to enable federation_useSeshat_StandardProfile in GLLibConfig!");
+        GameRuntime.c(w.YC, "You need to enable federation_useSeshat_StandardProfile in GLLibConfig!");
         aI("storage");
         a(t.Ox, new String[]{str, str2}, str3);
     }
 
     public static void aP(String str) {
-        GLLib.c(w.YC, "You need to enable federation_useSeshat_StandardProfile in GLLibConfig!");
+        GameRuntime.c(w.YC, "You need to enable federation_useSeshat_StandardProfile in GLLibConfig!");
         aI("storage");
         a(t.Oy, (Object[]) null, str);
     }
 
     public static void u(String str, String str2) {
-        GLLib.c(w.YC, "You need to enable federation_useSeshat_StandardProfile in GLLibConfig!");
+        GameRuntime.c(w.YC, "You need to enable federation_useSeshat_StandardProfile in GLLibConfig!");
         aI("storage");
         a(t.Oz, new String[]{str}, str2);
     }
@@ -1031,7 +1031,7 @@ public class s {
         String strSubstring = packageName.substring("com.gameloft.android.".length(), packageName.length());
         String str2 = strSubstring + "_fed_anon_name";
         if (!w.Yj) {
-            strKL = GLLib.kL();
+            strKL = GameRuntime.kL();
         } else {
             if (iOR == 2) {
                 if (com.gameloft.android.wrapper.e.getContext() == null) {
@@ -1061,21 +1061,21 @@ public class s {
             }
             strKL = strPx + strSubstring;
         }
-        GLLib.kM();
+        GameRuntime.kM();
         try {
-            GLLib.A(strKL, (String) null);
-            String strSubstring2 = GLLib.kP().substring(0, 16);
+            GameRuntime.A(strKL, (String) null);
+            String strSubstring2 = GameRuntime.kP().substring(0, 16);
             if (iOR == 2) {
                 String str3 = "android_v2_" + strSubstring + "_";
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 str = (str3 + String.valueOf(jCurrentTimeMillis / 1000)) + "_" + strSubstring2;
             } else {
                 str = "android_" + strSubstring2;
             }
-            String strE = GLLib.e(str.getBytes());
+            String strE = GameRuntime.e(str.getBytes());
             if (iOR == 2) {
                 com.gameloft.android.wrapper.e.S(str2, strE);
                 return strE;
@@ -1860,7 +1860,7 @@ public class s {
                         } else {
                             if (strArr[i2] != null) {
                                 if (strArr3[i4].startsWith("&")) {
-                                    strA = a(strA, strArr3[i4], GLLib.e(strArr[i2].getBytes(), 0, strArr[i2].getBytes().length), true);
+                                    strA = a(strA, strArr3[i4], GameRuntime.e(strArr[i2].getBytes(), 0, strArr[i2].getBytes().length), true);
                                 } else {
                                     strA = a(strA, strArr3[i4], strArr[i2], true);
                                 }
@@ -1916,7 +1916,7 @@ public class s {
                     try {
                         return new String(decodeResponse(strD));
                     } catch (IOException e) {
-                        GLLib.d(e);
+                        GameRuntime.d(e);
                     }
                 }
                 return strD;
@@ -1959,7 +1959,7 @@ public class s {
             } else {
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 int i3 = (int) (jCurrentTimeMillis - Mi[i2]);
                 if (!z && i3 <= 15000 && Mi[i2] != 0) {
@@ -1977,7 +1977,7 @@ public class s {
                 long[] jArr = Mi;
                 long jCurrentTimeMillis2 = System.currentTimeMillis();
                 if (w.Vl) {
-                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                    jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                 }
                 jArr[i2] = jCurrentTimeMillis2;
                 H(i, 0);
@@ -2078,7 +2078,7 @@ public class s {
             }
             MX = true;
         } else {
-            GLLib.c(false, "Federation: You are trying to add too many requests to the request pool. Eigther increase pool size (GLLibConfiguration ) or decrease requests amount");
+            GameRuntime.c(false, "Federation: You are trying to add too many requests to the request pool. Eigther increase pool size (GLLibConfiguration ) or decrease requests amount");
         }
     }
 
@@ -2095,10 +2095,10 @@ public class s {
         }
         if (!je() || fZ()) {
             if (!z) {
-                GLLib.c(false, "Federation.Update() now called automatically inside GLLib. Please make sure that GLLibConfiguration.useFederation=true (it's true by default for all platforms except midp1) and remove Federation.Update() from your code.");
+                GameRuntime.c(false, "Federation.Update() now called automatically inside GLLib. Please make sure that GLLibConfiguration.useFederation=true (it's true by default for all platforms except midp1) and remove Federation.Update() from your code.");
             }
             if (!jd()) {
-                GLLib.c(false, "You have to call Federation.Federation_Init() before you will be able to send any Federation request");
+                GameRuntime.c(false, "You have to call Federation.Federation_Init() before you will be able to send any Federation request");
             }
             jk();
             if (MX) {
@@ -2112,7 +2112,7 @@ public class s {
             for (int i = 0; i < iJi; i++) {
                 boolean z2 = (cC(i) == t.Nt && Mn != null) | (cC(i) == t.Nn && Mn != null) | (cC(i) == t.NA);
                 if (cC(i) != Integer.MAX_VALUE && cC(i) != -1 && (z2 || Ma != null)) {
-                    F(i, GLLib.Qy);
+                    F(i, GameRuntime.Qy);
                     if (!MY && (cB(i) < w.Yi || w.Yi == 0)) {
                         cG(i);
                         cK(i);
@@ -2144,7 +2144,7 @@ public class s {
                         }
                         cD(i);
                         if (w.Wm) {
-                            GLLib.a(iCC, MO, strCJ, ML);
+                            GameRuntime.a(iCC, MO, strCJ, ML);
                         }
                         a(new u(iCC, MO, null, strCJ, ML, MM, MN));
                     }
@@ -2166,7 +2166,7 @@ public class s {
                 aF(LX);
                 LW = w.YS;
             }
-            LW -= GLLib.Qy;
+            LW -= GameRuntime.Qy;
         }
     }
 
@@ -2186,7 +2186,7 @@ public class s {
         } else if (strJA.startsWith("std")) {
             bz.om().a(iJw, strJB, strJA, iJy, strJz, excJx);
         } else {
-            GLLib.QD.b(new u(iJw, strJB, null, strJA, iJy, strJz, excJx));
+            GameRuntime.QD.b(new u(iJw, strJB, null, strJA, iJy, strJz, excJx));
         }
     }
 
@@ -2196,12 +2196,12 @@ public class s {
         }
         try {
             if (com.gameloft.android2d.d.b.Qm() == null) {
-                GLLib.be("TrackingManager.GetManager(): null");
+                GameRuntime.be("TrackingManager.GetManager(): null");
                 return;
             }
         } catch (NoClassDefFoundError e) {
-            GLLib.be(e.toString());
-            GLLib.be("Call function: GlotAddEventPNTrackingEvent: Please enable GLOTv3 feature in Java-Android Wrapper(SET USE_GLOT3=1).");
+            GameRuntime.be(e.toString());
+            GameRuntime.be("Call function: GlotAddEventPNTrackingEvent: Please enable GLOTv3 feature in Java-Android Wrapper(SET USE_GLOT3=1).");
             return;
         }
         String[] strArr = (String[]) cv(cz(i));
@@ -2258,7 +2258,7 @@ public class s {
         } else if (iCC == t.NA) {
             MO = co(i);
         } else if (iCC == t.ND) {
-            GLLib.c(Mn != null, "Federation. EnableOnline field in Jad is not set.");
+            GameRuntime.c(Mn != null, "Federation. EnableOnline field in Jad is not set.");
             if (Mn != null) {
                 Ne = true;
                 MO = "";
@@ -2290,19 +2290,19 @@ public class s {
                     Mc = bcVar.ch("refresh_token");
                     long jCurrentTimeMillis = System.currentTimeMillis();
                     if (w.Vl) {
-                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
                     }
                     Mb = jCurrentTimeMillis;
                     if (w.XZ) {
-                        GLLib.b("--Token received", "Federation", 3);
-                        GLLib.b("--s_accessToken = " + Ma, "Federation", 3);
-                        GLLib.b("--s_refreshToken = " + Mc, "Federation", 3);
-                        GLLib.b("--s_accessToken_Timestamp = " + Mb, "Federation", 3);
+                        GameRuntime.b("--Token received", "Federation", 3);
+                        GameRuntime.b("--s_accessToken = " + Ma, "Federation", 3);
+                        GameRuntime.b("--s_refreshToken = " + Mc, "Federation", 3);
+                        GameRuntime.b("--s_accessToken_Timestamp = " + Mb, "Federation", 3);
                         return;
                     }
                     return;
                 } catch (Exception e) {
-                    GLLib.d(e);
+                    GameRuntime.d(e);
                     return;
                 }
             }
@@ -2449,7 +2449,7 @@ public class s {
             Ml[Ml.length - 1] = new am(false);
             Mg[Mg.length - 1] = 3;
         } else {
-            GLLib.c(false, "Try to remove " + i + " request from array " + w.Yf + " length");
+            GameRuntime.c(false, "Try to remove " + i + " request from array " + w.Yf + " length");
         }
         MS[MQ.length - 1] = null;
         MT[MQ.length - 1] = null;
@@ -2509,7 +2509,7 @@ public class s {
             return false;
         }
         if (w.XZ) {
-            GLLib.b("Federation. HTTP error", "Federation", 3);
+            GameRuntime.b("Federation. HTTP error", "Federation", 3);
         }
         ML = amVar.Bg;
         MM = amVar.acH;
@@ -2533,7 +2533,7 @@ public class s {
                 boolean zI = I(i, 4);
                 if ((!zI && i != -1 && MZ[i] < w.Ya) || (zI && iCL != -1 && Na[iCL] < w.Ya)) {
                     if (w.XZ) {
-                        GLLib.b("--Federation. Try to reconnect", "Federation", 3);
+                        GameRuntime.b("--Federation. Try to reconnect", "Federation", 3);
                     }
                     if (w.Yc > 0) {
                         try {
@@ -2623,19 +2623,19 @@ public class s {
 
     private static void jo() {
         if (Nf == null) {
-            aX(GLLib.Qu == null ? null : GLLib.Qu.bY("GAME-PRODUCT-ID"));
+            aX(GameRuntime.Qu == null ? null : GameRuntime.Qu.bY("GAME-PRODUCT-ID"));
         }
         if (Ng == null) {
-            aY(GLLib.Qu == null ? null : GLLib.Qu.bY("GAME-GGI"));
+            aY(GameRuntime.Qu == null ? null : GameRuntime.Qu.bY("GAME-GGI"));
         }
         if (Nh == null) {
-            aZ(GLLib.Qu == null ? null : GLLib.Qu.bY("MIDlet-Version"));
+            aZ(GameRuntime.Qu == null ? null : GameRuntime.Qu.bY("MIDlet-Version"));
         }
         if (Ni == null) {
-            ba(GLLib.Qu == null ? null : GLLib.Qu.bY("GAME-PLATFORM"));
+            ba(GameRuntime.Qu == null ? null : GameRuntime.Qu.bY("GAME-PLATFORM"));
         }
         if (Nj == null) {
-            bb(GLLib.Qu != null ? GLLib.Qu.bY("GAME-SHOP") : null);
+            bb(GameRuntime.Qu != null ? GameRuntime.Qu.bY("GAME-SHOP") : null);
         }
     }
 
@@ -2645,7 +2645,7 @@ public class s {
 
     public static void jq() {
         if (w.XZ) {
-            GLLib.b("--Reset federation", "Federation", 3);
+            GameRuntime.b("--Reset federation", "Federation", 3);
         }
         Ne = false;
         jh();
@@ -2661,11 +2661,11 @@ public class s {
     public static void f(String str, boolean z) {
         if (z) {
             try {
-                GLLib.kM();
-                GLLib.A(str, (String) null);
-                str = GLLib.kP();
+                GameRuntime.kM();
+                GameRuntime.A(str, (String) null);
+                str = GameRuntime.kP();
             } catch (UnsupportedEncodingException e) {
-                GLLib.d(e);
+                GameRuntime.d(e);
             }
         }
         LZ = str;
@@ -2677,7 +2677,7 @@ public class s {
 
     private static boolean af(boolean z) {
         if (!z) {
-            GLLib.c(false, "IsFederationInited function is deprecated now. Use IsInitialized() instead");
+            GameRuntime.c(false, "IsFederationInited function is deprecated now. Use IsInitialized() instead");
         }
         return Ne;
     }
@@ -2818,7 +2818,7 @@ public class s {
     public static boolean iN() {
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
-            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GLLib.Tn) - GLLib.To;
+            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
         return Ma != null && jCurrentTimeMillis - Mb > ((long) (w.YA * Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS));
     }
