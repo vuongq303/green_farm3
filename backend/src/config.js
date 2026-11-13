@@ -1,6 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { isIP } from 'node:net';
-import { resolve } from 'node:path';
+import { resolve, relative, isAbsolute, sep } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const backendDirectory = fileURLToPath(new URL('..', import.meta.url));
@@ -49,7 +50,7 @@ function integer(env, key, fallback, min, max) {
   return Number(text);
 }
 
-export function loadDatabaseConfig(env = process.env) {
+export function loadMysqlDatabaseConfig(env = process.env) {
   for (const key of ['DB_NAME', 'DB_USER', 'DB_PASSWORD']) {
     if (typeof env[key] !== 'string' || !env[key]) throw new Error('Configure ' + key + ' in backend/.env');
   }
@@ -65,6 +66,20 @@ export function loadDatabaseConfig(env = process.env) {
     connectionLimit: integer(env, 'DB_POOL_SIZE', 5, 1, 50),
     connectTimeout: integer(env, 'DB_CONNECT_TIMEOUT_MS', 5000, 100, 30000),
   };
+}
+
+/** Runtime storage. MySQL configuration is read only by explicit legacy tools. */
+export function loadDatabaseConfig(env = process.env) {
+  const configured = env.SQLITE_PATH ?? './data/green-farm.sqlite';
+  if (typeof configured !== 'string' || !configured.trim() || configured !== configured.trim() || configured.includes('\u0000') || configured === ':memory:' || configured.startsWith('file:')) {
+    throw new Error('SQLITE_PATH must name a persistent SQLite file');
+  }
+  const filename = resolve(backendDirectory, configured);
+  const temporary = resolve(tmpdir());
+  // path.relative follows the host filesystem's Windows drive/case rules.
+  const fromTemporary = relative(temporary, filename);
+  if (!fromTemporary || (!isAbsolute(fromTemporary) && fromTemporary !== '..' && !fromTemporary.startsWith('..' + sep))) throw new Error('SQLITE_PATH must not be in the system temporary directory');
+  return { filename, busyTimeoutMs: integer(env, 'SQLITE_BUSY_TIMEOUT_MS', 100, 1, 1000), requiresLegacyImport: Boolean(env.DB_NAME || env.DB_USER) };
 }
 
 export function loadConfig(env = process.env) {
@@ -85,5 +100,8 @@ export function loadConfig(env = process.env) {
   const sessionTtlSeconds = integer(env, 'SESSION_TTL_SECONDS', 900, 1, 86400);
   const refreshTtlSeconds = integer(env, 'REFRESH_TTL_SECONDS', 2592000, 1, 7776000);
   if (refreshTtlSeconds < sessionTtlSeconds) throw new Error('REFRESH_TTL_SECONDS must be at least SESSION_TTL_SECONDS');
-  return { host, port, publicBaseUrl, sessionSecret, sessionTtlSeconds, refreshTtlSeconds, database: loadDatabaseConfig(env) };
+  const guestSessionTtlSeconds = integer(env, 'GUEST_SESSION_TTL_SECONDS', 2592000, 60, 7776000);
+  const maxSnapshotBytes = integer(env, 'MAX_SNAPSHOT_BYTES', 16 * 1024 * 1024, 65536, 256 * 1024 * 1024);
+  const newPlayerDefaultsFile = resolve(backendDirectory, env.NEW_PLAYER_DEFAULTS_FILE ?? './config/new_player_defaults.json');
+  return { host, port, publicBaseUrl, sessionSecret, sessionTtlSeconds, refreshTtlSeconds, guestSessionTtlSeconds, maxSnapshotBytes, newPlayerDefaultsFile, database: loadDatabaseConfig(env) };
 }

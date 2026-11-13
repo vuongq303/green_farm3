@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "initialLevel": 1,
+  "initialExperience": 0,
+  "initialCoins": 2000,
+  "initialCash": 50,
+  "initialTutorialStep": 0,
+  "initialLanguage": "auto",
+  "initialCapacityLimits": {
+    "plots": 10,
+    "trees": 10,
+    "animals": 10,
+    "ponds": 1
+  },
+  "initialWorldTemplate": "original-4.4.2"
+}

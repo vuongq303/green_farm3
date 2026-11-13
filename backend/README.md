@@ -1,195 +1,198 @@
-# Green Farm backend: JavaScript và MySQL
+# Green Farm backend: JavaScript và SQLite
 
-Backend dùng Node.js 24+, JavaScript ES Modules và `mysql2/promise`. Điểm khởi
-động là `src/main.js`; không cần TypeScript hoặc bước transpile. Một nguồn URL
-chung cho app và backend nằm tại **`../gradle.properties`**, biến
-`BACKEND_BASE_URL`. Backend đọc trực tiếp file này để tạo mọi URL discovery.
+Backend dùng **Node.js 24+**, JavaScript ES Modules và `node:sqlite` có sẵn trong
+Node. Runtime không kết nối MySQL và không dùng database RAM/JSON làm fallback.
+Dependency `mysql2` được giữ cho công cụ xuất dữ liệu MySQL cũ, không nằm trong
+chuỗi import của server mới.
+
+URL chung vẫn là **`BACKEND_BASE_URL` trong `../gradle.properties`**:
 
 ```properties
 BACKEND_BASE_URL=http://10.37.233.55:8787/
 ```
 
-`10.37.233.55` là IPv4 Windows người dùng cung cấp. Nếu mạng đổi IP, sửa chính
-biến này, khởi động lại backend, **build và cài lại APK**. Đổi file cấu hình không
-đổi được URL đã nhúng trong APK đang cài. Không còn biến `localBackendUrl`,
-`PUBLIC_BASE_URL`, `BIND_HOST` hoặc fallback về localhost/`10.0.2.2`.
+Sửa URL khi IPv4/port thay đổi, khởi động lại backend và build/cài lại APK.
+`0.0.0.0` chỉ dùng làm địa chỉ bind; app không dùng localhost hoặc server giả.
 
-## Cấu hình và chạy
+## Chạy instance SQLite mới
 
-Từ thư mục `backend` trong PowerShell:
+Từ `backend` trong PowerShell:
 
 ```powershell
 npm ci
 Copy-Item .env.example .env
-```
-
-Sửa `.env`: đặt `DB_PASSWORD` riêng, tài khoản database và
-`RESEARCH_SESSION_SECRET` ngẫu nhiên, ít nhất 32 byte. Giữ session secret ổn định
-qua các lần restart; thay secret sẽ làm token hiện có không hợp lệ. Có thể tạo
-secret riêng bằng `node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"`
-rồi lưu vào `.env` của máy bạn, không đưa vào Git hoặc log hỗ trợ.
-
-MySQL 8.0/8.4: dùng tài khoản quản trị của chính bạn để tạo database và tài khoản
-ứng dụng một lần. Thay mật khẩu trong ví dụ trước khi chạy; không dùng tài khoản
-root cho server:
-
-```sql
-CREATE DATABASE IF NOT EXISTS green_farm CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
-CREATE USER 'green_farm_app'@'localhost' IDENTIFIED BY '<your-private-password>';
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, REFERENCES
-  ON green_farm.* TO 'green_farm_app'@'localhost';
-```
-
-Nếu user đã tồn tại, quản lý mật khẩu/quyền của user đó thay vì chạy lại
-`CREATE USER`. Tài khoản migration cần quyền tạo bảng; triển khai nghiêm ngặt có
-thể dùng tài khoản migration riêng rồi chỉ cấp SELECT/INSERT/UPDATE/DELETE cho
-user chạy app. Database không tự tạo và không bị reset bởi chương trình.
-
-Sau khi `.env` khớp MySQL:
-
-```powershell
+# Sửa RESEARCH_SESSION_SECRET trong .env thành giá trị riêng ít nhất 32 byte.
 npm run migrate
 npm start
-# Hoặc khi phát triển:
-npm run dev
 ```
 
-Backend kiểm tra kết nối MySQL, migration và các bảng cần thiết **trước khi mở
-cổng HTTP**. Chỉ khi kiểm tra thành công mới ghi `database_ready` rồi `listening`.
-Nếu MySQL không truy cập được, sai thông tin kết nối hoặc schema chưa sẵn sàng,
-backend ghi `startup_database_error`, hướng dẫn kiểm tra `DB_*`/chạy migration,
-đóng pool và thoát với mã **1**; không báo server đã chạy. Sửa cấu hình/khởi động
-MySQL, chạy `npm run migrate` nếu cần, rồi chạy lại `npm start`.
+Giữ `RESEARCH_SESSION_SECRET` ổn định để token compatibility đã phát hành vẫn
+hợp lệ. Không đưa `.env`, secret, token hoặc database vào Git. Node tự đọc
+`.env`; biến môi trường đã đặt có ưu tiên. Có thể tạo secret bằng
+`node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"`
+và lưu riêng vào `.env`.
 
-Migration có khóa chống chạy đồng thời, lưu checksum, tạo bảng nếu chưa có và
-không DROP/TRUNCATE/reset dữ liệu. Sau lần đầu, chạy lại giữ nguyên ID/nội dung.
-Một schema có checksum không khớp sẽ bị từ chối thay vì tự viết lại lịch sử.
+| Cấu hình | Mặc định và ý nghĩa |
+| --- | --- |
+| `HOST`, `PORT` | `0.0.0.0`, `8787`; port khớp URL chung. |
+| `SQLITE_PATH` | `./data/green-farm.sqlite`, luôn tính tương đối từ **backend/**. |
+| `SQLITE_BUSY_TIMEOUT_MS` | `100`, từ 1–1000; ghi thử tối đa 3 lần với backoff ngắn. |
+| `MAX_SNAPSHOT_BYTES` | `16777216` (16 MiB archive); có thể tăng đến 256 MiB. Vượt giới hạn trả lỗi, không cắt dữ liệu. |
+| `GUEST_SESSION_TTL_SECONDS` | `2592000` (30 ngày); hết hạn cấp lại bằng proof bền vững của cùng người chơi. |
+| `RESEARCH_SESSION_SECRET` | Bắt buộc, tối thiểu 32 byte; chỉ cho token giao thức legacy. |
+| `SESSION_TTL_SECONDS`, `REFRESH_TTL_SECONDS` | `900`, `2592000`, cho access/refresh legacy. |
+| `BACKEND_CONFIG_FILE` | Tùy chọn file properties khác cho instance kiểm thử riêng; vẫn đọc đúng một khóa `BACKEND_BASE_URL`. |
+| `NEW_PLAYER_DEFAULTS_FILE` | Tùy chọn file cấu hình khởi tạo riêng; mặc định `./config/new_player_defaults.json`, tính từ backend/. |
 
-| Cấu hình backend | Giá trị/mục đích |
-|---|---|
-| `HOST` | Mặc định `0.0.0.0`, lắng nghe mọi interface IPv4. |
-| `PORT` | Mặc định `8787`; phải khớp port của `BACKEND_BASE_URL`. |
-| `DB_HOST`, `DB_PORT` | Mặc định `127.0.0.1`, `3306`; chỉ backend truy cập MySQL. |
-| `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Bắt buộc, chỉ trong `.env`/môi trường backend. |
-| `DB_POOL_SIZE`, `DB_CONNECT_TIMEOUT_MS` | Pool mặc định 5 kết nối, timeout 5000 ms. |
-| `RESEARCH_SESSION_SECRET` | Bắt buộc, riêng tư và ổn định, ít nhất 32 byte. |
-| `SESSION_TTL_SECONDS` | Access token: mặc định 900 giây, tối đa 86400. |
-| `REFRESH_TTL_SECONDS` | Refresh token: mặc định 2592000 giây; ít nhất access TTL, tối đa 7776000. |
-| `BACKEND_CONFIG_FILE` | Tùy chọn đường dẫn file properties cho test/instance tách biệt. Vẫn đọc đúng khóa `BACKEND_BASE_URL`, không phải URL thứ hai. |
+SQLite nằm ở đường dẫn lưu bền vững, dùng WAL, `synchronous=FULL`, foreign keys
+và transaction. Không chấp nhận `:memory:`, URI database hoặc đường dẫn nằm trong
+thư mục tạm của hệ điều hành. Giữ cả database và WAL/SHM đang hoạt động; sao lưu
+instance đang chạy bằng SQLite backup API thay vì copy riêng file `.sqlite`.
 
-`.env` được Node tự đọc khi chạy entry point/migration; biến môi trường đã đặt
-có ưu tiên. Listener này dùng HTTP trực tiếp. Validator nhận cấu hình origin
-HTTP(S) IPv4 chuẩn; HTTPS không được mở bởi Node listener này và cần triển khai
-TLS/reverse proxy rõ ràng trước khi dùng. Không có chứng chỉ/TLS giả.
+`npm run migrate` tạo schema khi được yêu cầu rõ ràng. Migration bổ sung trên
+file có dữ liệu tạo backup nhất quán trong `data/backups/` trước, giữ checksum
+ledger và không sửa migration đã áp dụng. File hỏng hoặc checksum sai bị từ
+chối, không tự reset. **`npm start` không tự tạo hoặc migration database**: nó
+kiểm tra file, tính toàn vẹn và schema trước `database_ready`/`listening`; lỗi
+thoát mã 1 trước khi mở HTTP.
 
-## Kiểm tra IPv4 và mạng
+Nếu `.env` còn `DB_NAME`/`DB_USER` của MySQL cũ, backend không tự coi SQLite
+trống là tài khoản mới. Làm theo [migration MySQL → SQLite](docs/MYSQL_TO_SQLITE.md):
+xuất nhất quán, `npm run migrate -- --prepare-import`, rồi nhập backup. Server
+chỉ chạy sau khi có import ledger. Chỉ khi chủ động tạo **instance mới riêng**,
+dùng `npm run migrate -- --new-sqlite` để ghi lựa chọn này vào database; dữ liệu
+MySQL gốc vẫn giữ nguyên. Không gán tài khoản legacy/Facebook cho guest mới.
 
-Trên Windows chạy `ipconfig`, chọn IPv4 Address của adapter LAN/Wi-Fi đang kết
-nối, không chọn `0.0.0.0`, loopback hoặc adapter ảo không có đường tới emulator.
-`0.0.0.0` chỉ là địa chỉ bind của server, không phải URL app. Kiểm tra:
-
-```powershell
-Invoke-RestMethod http://10.37.233.55:8787/health
-Get-NetTCPConnection -State Listen -LocalPort 8787
-```
-
-Khi MySQL và migration sẵn sàng, `/health` trả HTTP200:
+`GET /health` và `/healthz` trả HTTP 200 khi schema sẵn sàng:
 
 ```json
-{"status":"ok","backend":{"status":"running"},"mysql":{"status":"ready","schemaVersion":1}}
+{"status":"ok","backend":{"status":"running"},"sqlite":{"status":"ready","schemaVersion":4}}
 ```
 
-Nếu MySQL/schema mất sẵn sàng **sau khi server đã khởi động thành công**,
-server phản hồi HTTP503 với backend `running`, MySQL `unavailable`.
-Đăng nhập/đọc/ghi phụ thuộc DB cũng trả lỗi503;
-không chuyển sang RAM/JSON hoặc trả đăng nhập thành công. `/healthz` là alias.
+Lỗi database sau startup trả 503; đăng nhập/lưu/tải không trả success giả. Log
+HTTP chỉ gồm method, route template và status; không ghi body, query, token,
+password, proof cài đặt hoặc dữ liệu nông trại.
 
-Chỉ khi Windows Firewall chặn kết nối, mở **đúng cổng TCP 8787** trên profile
-Private và giới hạn mạng nội bộ, trong PowerShell quản trị:
+## Cấu hình tài khoản mới
+
+Sửa **[config/new_player_defaults.json](config/new_player_defaults.json)** để quản
+lý tiền, cash, level, XP trong level, bước hướng dẫn khởi tạo, ngôn ngữ và giới
+hạn số đối tượng. Giá trị gốc đã đối chiếu là **2000 xu/50 cash**, level1/XP0,
+tutorial0 và ngôn ngữ `auto`. 1900 xu là số dư của một farm đã chi tiêu, không
+phải mặc định. [Hướng dẫn và giới hạn](docs/NEW_PLAYER_DEFAULTS.md).
+
+Server kiểm tra cấu hình trước khi mở cổng. Mỗi lần **tạo người chơi mới**, nó
+đọc lại file và lưu bản cấu hình chuẩn hóa/hash vào `gf_player_initializations`
+cùng transaction tạo người chơi. Sửa file tác động tài khoản tạo sau; reissue
+phiên của người chơi cũ trả đúng bản đã đóng băng, không nạp/cấp lại tài nguyên.
+Người chơi có trước migration002 nhận `initialization:null`, không tự gán
+defaults vào save cũ. Cấu hình hỏng khi đang chạy làm tạo người chơi mới thất
+bại và rollback; cấp lại phiên cũ vẫn dùng bản cấu hình đã lưu.
+
+## Phiên khách và API save mới
+
+Đây là **API mới của dự án**, không phải cấu trúc API Gameloft được suy đoán.
+Client giữ proof ngẫu nhiên 256 bit trong bộ nhớ riêng của ứng dụng, commit trước
+khi gọi server. Server chỉ lưu SHA-256 của proof và token, cấp UUID người chơi
+riêng cùng bearer token ngẫu nhiên. Cấp lại với cùng proof giữ cùng người chơi;
+không dùng Android ID hoặc `playerId` tùy ý để cấp quyền.
+
+| Route | Request / response |
+| --- | --- |
+| `POST /api/v1/guest/sessions` | JSON `{installationSecret}` (base64url canonical của 32 byte). Trả `{playerId,accessToken,expiresAt,initialization}`; thời hạn tính theo Unix seconds. `initialization` là `{configHash,defaults}` hoặc null cho người chơi cũ. |
+| Cấp lại guest có chủ sở hữu đã biết | Thêm `previousPlayerId`; proof không tồn tại trả 404 `SESSION_IDENTITY_NOT_FOUND`, không tạo profile khác. Proof trỏ ID khác trả 409 `SESSION_IDENTITY_CONFLICT`. |
+| `GET /api/v1/save` | Header `Authorization: Bearer <accessToken>`. Trả `{revision,operationId,snapshotBase64,snapshotHash}`. |
+| Save chưa tồn tại | Chỉ khi phiên hợp lệ và chưa có snapshot: 404 `{error:"NO_SAVE",code:"NO_SAVE",revision:0,initialization}`. 401/503 không phải profile rỗng. |
+| `PUT /api/v1/save` | JSON `{operationId,expectedRevision,snapshotBase64,snapshotHash}` và cùng bearer header. |
+| Commit thành công | 200 `{revision,operationId,snapshotHash,currentRevision,replayed}` sau COMMIT. |
+| Request cũ / tranh chấp | 409 `REVISION_CONFLICT` với `currentRevision`; không ghi đè. |
+| Cùng operation, khác payload/base revision | 409 `OPERATION_CONFLICT`; không nhận thưởng hay tăng revision. |
+| `POST /api/v1/save/adoption` | Sau xác nhận nhập và cho phép riêng của quản trị server: bearer và JSON `{operationId,snapshotHash}`. Trả `{adoptionToken,expiresAt}`, chỉ khi profile của phiên chưa có save và approval đúng người chơi/hash còn hiệu lực. |
+
+`operationId` là UUID; retry giữ nguyên ID, base revision và blob/hash. Receipt
+`gf_save_operations` cùng snapshot được commit trong một transaction. Retry sau
+khi mất response trả receipt cũ với `replayed:true`; `currentRevision` có thể
+mới hơn `revision`, không làm database lùi lại. Nhiều request cùng base revision
+chỉ một request mới có thể commit. Client không tự merge các mảng opaque khi có
+xung đột và giữ bản chờ cục bộ để xử lý.
+
+Snapshot đầu tiên của farm mới phải chứa `new_player_defaults_v1` với đúng
+64 byte ASCII configHash. Backend giải mã các trường format4 đã được kiểm chứng
+bằng bytecode/JVM gốc: xu/cash/level/XP, tutorial, ngôn ngữ và capacity, rồi so
+với cấu hình đã lưu. Client không có trường API để tự chọn tiền/level khởi tạo.
+Các snapshot sau vẫn là tiến trình bình thường, không bị nạp lại defaults.
+
+Đối với save cục bộ đã chơi, client phải có xác nhận nhập rõ ràng. Quản trị
+backend còn phải kiểm tra nguồn bản sao và cho phép **đúng người chơi/hash**
+bằng lệnh dưới đây, chạy với `SQLITE_PATH` của chính instance đang dùng:
 
 ```powershell
-New-NetFirewallRule -DisplayName 'Green Farm backend 8787' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8787 -Profile Private -RemoteAddress LocalSubnet
+node scripts/approve-local-adoption.js --player-id PLAYER_UUID --snapshot-hash SNAPSHOT_SHA256 --expires-in 900
 ```
 
-Không cần tắt toàn bộ firewall hoặc mở cổng MySQL cho Android. Nếu dùng port
-khác, cập nhật rule và cả `PORT`/URL chung. Từ trình duyệt trong emulator, mở
-**cùng** `http://10.37.233.55:8787/health`. Chỉ host truy cập được chưa chứng minh
-emulator có route qua LAN/VPN/firewall của máy bạn.
+Thay `PLAYER_UUID` và `SNAPSHOT_SHA256` bằng hai giá trị hiển thị ở client; không
+gửi token/proof trong lệnh hoặc log. Đây là CLI có quyền truy cập file database,
+không có HTTP endpoint tự cấp approval. Thiếu/hết hạn approval trả 403
+`LOCAL_ADOPTION_APPROVAL_REQUIRED` và giữ nguyên bản chờ ở client. Khách mới
+không thể tự gắn nhãn local-copy để bỏ qua cấu hình tiền/level khởi tạo.
 
-## Giao thức game được giữ
+Capability
+adoption ngẫu nhiên chỉ cho phép **chép** đúng hash và operation vào guest đang
+được xác thực, có hạn 5 phút và được tiêu thụ trong transaction commit save.
+Nó không chứng minh hoặc nhận quyền sở hữu một tài khoản Facebook/guest khác.
+PUT có `adoptionToken` tương ứng được giữ nguyên level/số dư/marker của bản cũ;
+không gán lại mặc định. Chỉ client đã ghi nhận xác nhận nhập mới xin capability
+khi gặp 403 `ADOPTION_AUTHORIZATION_REQUIRED` hoặc 400 `INITIALIZATION_MISMATCH`.
+Approval của quản trị cũng được tiêu thụ cùng transaction này, rollback không
+làm mất quyền retry. Farm mới bị sai cấu hình không tự chuyển sang luồng nhập
+này. Replay receipt
+được kiểm tra trước expiry của capability, nên retry sau mất ACK không tạo save
+hay thưởng lặp. Capability không bỏ kiểm tra archive/nguồn offline-test.
 
-Bằng chứng gốc ở [Accept](../docs/backend/ACCEPT_PROTOCOL_EVIDENCE.md),
-[startup profile](../docs/backend/CONFIG_STARTUP_EVIDENCE.md) và mã gốc
-`S800x480/s.java`, `t.java`, `cs.java`. Không đổi client sang REST/JSON form mới.
-POST vẫn là `application/x-www-form-urlencoded` UTF-8, giới hạn 8 KiB; discovery
-locator vẫn là text thuần, không quote, không newline và không slash cuối.
+Snapshot là **binary GF3SAVE1 hiện có** của `migration/SaveArchive.kt`, bọc base64;
+`snapshotHash` là SHA-256 toàn bộ bytes archive (gồm checksum cuối). Backend kiểm
+tra magic/version/schema4, package nguồn, generation/full snapshot, giới hạn,
+UTF-8, tên record duy nhất, hash từng record/hash archive, `RMSHeader`,
+`save_gameplay` format4/device binding, `save_farm0` và trạng thái reward/pose
+theo flag. Trạng thái gốc của tiền/cash/XP/level, kho, map, cây/công trình, đồng
+hồ, nhiệm vụ/tutorial nằm trong các record opaque đầy đủ; server không tự suy
+diễn layout hay cộng phần thưởng. Side farms/settings cần thiết vẫn được giữ
+trong archive. Đây chưa phải nền kinh tế do server kiểm chứng từng hành động.
 
-| Route | Dữ liệu/giao thức |
-|---|---|
-| `GET /config/{client}/datacenters` | JSON datacenter array như M0. |
-| `GET /config/{client}/datacenters/local/urls` | Đúng mười khóa gốc; mọi URL cùng origin cấu hình. |
-| `GET /locate/auth`, `GET /locate/storage` | Origin text thuần từ `BACKEND_BASE_URL`. |
-| `POST /authorize` | Ban đầu: form `client_id`, `username`, `password`, `scope`, `device_id`; JSON `access_token`, `refresh_token`. |
-| `POST /authorize` (refresh) | Form `client_id`, `grant_type=refresh_token`, `refresh_token`, `scope` tùy chọn; rotation token trong transaction thật. |
-| `GET /profiles/me/myprofile?access_token=...` | JSON `credential` đúng tài khoản của session đã kiểm tra. |
-| `POST /users/me/compliance` | Form `access_token`, `country`, `age`; persist và trả policy `LOCAL_RESEARCH_16_PLUS` như M0. |
+Nguồn `.offlinetest` và mọi record `offline_test_balances_v1` đều bị từ chối,
+kể cả marker đã đánh dấu deleted. Không hạ level hoặc tiền của save hợp lệ.
+Archive đã lưu bị hỏng trả 503 `SAVED_SNAPSHOT_CORRUPT`, giữ nguyên blob thay vì
+trả profile rỗng. Codecs hay dữ liệu không tương thích bị từ chối để xử lý.
 
-Core `s.cG` đọc cả access/refresh token; SDK wrapper cũ chỉ đọc access token và
-bỏ qua khóa bổ sung. Core `s.o` thực hiện refresh qua cùng route. Scope gốc
-`leaderboard social storage auth message config` được nhận cùng các scope M0
-`asset transaction`; nhận tên scope không có nghĩa các dịch vụ đó đã hoạt động.
+## Giao thức khởi động legacy được giữ
 
-Đăng nhập hiện là **anonymous legacy** (`anonymous:<credential>`), kiểm tra đúng
-phép dẫn xuất password UTF-16 của APK rồi kiểm tra hash trong MySQL. Đây là giao
-thức công khai có thể tự dẫn xuất, không phải chứng minh quyền sở hữu tài khoản
-hiện đại. `NODE_ENV=production` vẫn bị từ chối. Không tạo đăng nhập Facebook thành
-công giả; nút Connect qua SDK Facebook cũ chưa có backend độc lập tương đương.
+Discovery, locator, `/authorize`, `/profiles/me/myprofile` và compliance vẫn theo
+form/JSON gốc đã xác minh trong [Accept](../docs/backend/ACCEPT_PROTOCOL_EVIDENCE.md).
+Tài khoản, salted-scrypt hash, HMAC session và compliance nay được lưu SQLite;
+refresh token rotation vẫn transaction và chống replay.
 
-Session được ký HMAC, sid chỉ lưu SHA-256 trong DB. Access/refresh có thời hạn;
-refresh token chỉ dùng một lần, giao dịch tạo session mới và xóa session cũ nên
-replay bị từ chối. Hash password dùng salted scrypt. Request log chỉ gồm method,
-route template và status; lỗi database log mã lỗi đã lọc, không SQL, password,
-client ID, token, body hay query string.
-
-## Dữ liệu MySQL và giới hạn phục hồi
-
-- `gf_accounts`: ID ổn định, client namespace, credential gốc cần cho profile,
-  salt/hash password; không lưu password nguyên văn.
-- `gf_sessions`: tài khoản, device, sid hash, thời điểm cấp/hết hạn access/refresh.
-- `gf_compliance`: country/age và thời điểm cập nhật của tài khoản.
-- `gf_schema_migrations`: version/checksum migration, đồng thời khóa phát hành
-  session để giữ giới hạn 10.000 session như backend trước.
-
-Backend cũ chỉ có `Map` session RAM; không có database/file JSON hay export đã
-lưu. Các process M0 còn chạy không bị xóa/reset. Session RAM không có snapshot
-để chuyển đổi một cách có bằng chứng; không có script tự bịa ID hoặc nhập token
-không tồn tại. Từ lần chạy MySQL này, mọi bản ghi thành công được commit bền vững.
-
-Backend trước chưa quản lý farm, tiền, kho hay tiến trình gameplay. Dữ liệu farm
-vẫn ở RMS phía thiết bị; không có save API farm có bằng chứng để chuyển thành
-cloud save. Các profile write/delete, `/configs/users/me`, `/devices/mydevice`,
-quảng cáo/thanh toán và dịch vụ auxiliary trả501/404 rõ ràng, không success giả.
-Không diễn giải đọc profile identity như đã đọc/tải toàn bộ nông trại.
+Anonymous legacy có mật khẩu dẫn xuất công khai nên **không cấp quyền save API
+mới**. Token save guest độc lập, không ánh xạ tự động sang tài khoản Facebook
+hoặc anonymous cũ. `NODE_ENV=production` vẫn bị từ chối do compatibility auth
+còn giới hạn này. Listener hiện dùng HTTP LAN; TLS/reverse proxy chưa được thêm.
+Không coi khôi phục save API như đã khôi phục social/purchase/online economy.
 
 ## Kiểm thử
 
 ```powershell
 npm test
-# Dùng database thử nghiệm RIÊNG, tên kết thúc bằng _test:
-$env:DB_NAME='green_farm_test'
-npm run test:mysql
-Remove-Item Env:DB_NAME
+npm run test:sqlite
 ```
 
-`npm test` kiểm tra HTTP/config bằng repository test double **chỉ trong test**,
-không phải fallback runtime. `test:mysql` yêu cầu MySQL thật, migration thật,
-không skip nếu thiếu DB; kiểm tra restart, account/session/profile/compliance,
-refresh/replay, transaction rollback và concurrent identity. Nó cũng khởi động
-process Node riêng, gọi HTTP thật, restart process rồi xác minh token/profile và
-row MySQL còn nguyên; kiểm tra từ chối khởi động khi DB không truy cập được hoặc
-sai mật khẩu. Runtime DB lỗi trả503 vẫn được kiểm tra trong bộ HTTP. Nó chỉ xóa các row
-thuộc namespace ngẫu nhiên nó đã tạo trong DB `_test`, không reset database.
+Các suite SQLite tạo file kiểm thử riêng: hai người chơi, commit bytes thực tế,
+khởi động lại process Node và mở lại DB, CAS đồng thời, retry/idempotency, lỗi
+SQL giữa transaction, busy có giới hạn, phiên hết hạn/cấp lại, DB hỏng/mất và
+guard migration MySQL, cấu hình chỉ tác động người chơi mới, từ chối tự cấp
+capability, CLI approval và chép save cũ. Import MySQL được kiểm tra với source transaction mô
+phỏng và target SQLite thật; chưa kết nối database MySQL của người dùng.
+`npm run test:mysql` còn là kiểm tra store legacy riêng, yêu cầu DB test có đuôi
+`_test`, không chạy mặc định. Suite HTTP/MySQL cũ đã được thay bằng kiểm thử
+process HTTP/SQLite của runtime hiện tại.
 
-Các kiểm tra HTTP/DB riêng không thay thế việc chạy APK: cần xác nhận host và
-emulator cùng truy cập `/health`, backend nhận đúng request, rồi kiểm tra UI,
-network failure/timeout và save/load trên Android.
+Kết quả client Android/lifecycle/outbox nằm trong báo cáo bàn giao của dự án;
+test HTTP thành công chưa chứng minh gameplay trên thiết bị đã hoạt động.

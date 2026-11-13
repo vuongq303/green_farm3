@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.DatabaseErrorHandler
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.quanhoang.greenfarm3.migration.CloudMigrationBackup
 import java.io.DataInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -27,7 +28,7 @@ object GameSaveStore {
     const val STATUS_SAVED = 2
     const val STATUS_FAILED = 3
     const val DATABASE_NAME = "greenfarm-progress.db"
-    private const val VERSION = 4
+    private const val VERSION = 5
     private const val MAX_RECORD_BYTES = 64 * 1024 * 1024
     private const val SLOT = "device-local"
     private val LOCK = ReentrantLock(true)
@@ -533,6 +534,9 @@ object GameSaveStore {
                 commit.put("pose_snapshot", if (snapshot) slotNumber("pose_snapshot") else 0L)
                 db.insertOrThrow("save_commits", null, commit)
                 db.execSQL("DELETE FROM save_commits WHERE slot_id=? AND generation<?", arrayOf<Any>(SLOT, Math.max(0L, nextGeneration - 31)))
+                // Header/language-only and auxiliary commits can follow a full
+                // farm capture. Queue their complete archive in this same txn.
+                if (CloudSaveJournal.hasCompleteFarm(db)) CloudSaveJournal.enqueueCommittedFarm(db, context!!.packageName)
             }
             db.setTransactionSuccessful()
             successful = true
@@ -550,6 +554,7 @@ object GameSaveStore {
                     publishCommittedRecordsLocked()
                     currentStatus = STATUS_SAVED
                     error = ""
+                    if (writes > 0 || metadataChanged) BackendCloudController.localCommitAvailable()
                 }
                 RECORD_CHANGES.clear()
             }
@@ -756,6 +761,21 @@ object GameSaveStore {
     @JvmStatic fun generation(): Long = currentGeneration
     @JvmStatic fun isReady(): Boolean = ready
 
+    /** Cloud I/O uses this short database lock; network is always outside it. */
+    internal fun <T> cloudDatabase(transaction: Boolean = false, action: (SQLiteDatabase) -> T): T {
+        LOCK.lock()
+        try {
+            check(depth == 0) { "Cannot access the cloud journal during a local save" }
+            if (!ready) openLocked()
+            if (transaction) db.beginTransaction()
+            try {
+                val result = action(db)
+                if (transaction) db.setTransactionSuccessful()
+                return result
+            } finally { if (transaction) db.endTransaction() }
+        } finally { LOCK.unlock() }
+    }
+
     private fun slotNumber(column: String): Long {
         val cursor = db.query("save_slots", arrayOf(column), "slot_id = ?", arrayOf(SLOT), null, null, null)
         try {
@@ -920,7 +940,7 @@ object GameSaveStore {
         }
     }
 
-    private class Helper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, VERSION, CorruptionHandler()) {
+    private class Helper(private val context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, VERSION, CorruptionHandler()) {
         override fun onConfigure(db: SQLiteDatabase) {
             db.setForeignKeyConstraintsEnabled(true)
             db.execSQL("PRAGMA synchronous=FULL")
@@ -930,6 +950,7 @@ object GameSaveStore {
             upgradeOneToTwo(db)
             upgradeTwoToThree(db)
             upgradeThreeToFour(db)
+            CloudSaveJournal.migrate(db, context)
         }
         override fun onOpen(db: SQLiteDatabase) {
             val slots = hasTable(db, "save_slots")
@@ -952,6 +973,7 @@ object GameSaveStore {
                 if (!completeColumn) upgradeOneToTwo(db)
                 upgradeTwoToThree(db)
                 upgradeThreeToFour(db)
+                CloudSaveJournal.requireSchema(db)
                 db.setTransactionSuccessful()
             } finally { db.endTransaction() }
         }
@@ -970,9 +992,11 @@ object GameSaveStore {
         }
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
             if (oldVersion < 1 || oldVersion > VERSION || newVersion != VERSION) throw failed("Unsupported progress database migration; data was retained", null)
+            CloudMigrationBackup.preserve(db, context)
             if (oldVersion < 2) upgradeOneToTwo(db)
             if (oldVersion < 3) upgradeTwoToThree(db)
             if (oldVersion < 4) upgradeThreeToFour(db)
+            if (oldVersion < 5) CloudSaveJournal.migrate(db, context)
         }
         override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
             throw failed("Cannot downgrade the progress database; data was retained", null)

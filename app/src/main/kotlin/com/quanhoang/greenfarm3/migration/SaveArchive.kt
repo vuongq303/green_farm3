@@ -23,6 +23,9 @@ object SaveArchive {
     const val MAX_RECORD_BYTES = 64 * 1024 * 1024
     const val MAX_TOTAL_BYTES = 128L * 1024 * 1024
     const val MAX_RECORD_COUNT = 2048
+    // Cloud bookkeeping may upgrade the local database without changing the
+    // portable gameplay archive or exporting account/session credentials.
+    const val ARCHIVE_SCHEMA_VERSION = 4
     private const val ARCHIVE_VERSION = 1
     private val MAGIC = byteArrayOf(71, 70, 51, 83, 65, 86, 69, 49) // GF3SAVE1
     private val SOURCE_PACKAGES = setOf("com.gameloft.android.ANMP.GloftGF2F", "com.quanhoang.greenfarm3")
@@ -101,7 +104,7 @@ object SaveArchive {
         val output = DataOutputStream(hashed)
         output.write(MAGIC)
         output.writeInt(ARCHIVE_VERSION)
-        output.writeInt(4) // SQLite schema; the opaque game payload format is separately validated.
+        output.writeInt(ARCHIVE_SCHEMA_VERSION)
         writeString(output, snapshot.sourcePackage)
         output.writeLong(snapshot.generation)
         output.writeLong(snapshot.completeSnapshotGeneration)
@@ -131,7 +134,7 @@ object SaveArchive {
         val hashed = DigestInputStream(BufferedInputStream(source), digest)
         val input = DataInputStream(hashed)
         val magic = ByteArray(MAGIC.size).also { input.readFully(it) }
-        requireValid(magic.contentEquals(MAGIC) && input.readInt() == ARCHIVE_VERSION && input.readInt() == 4,
+        requireValid(magic.contentEquals(MAGIC) && input.readInt() == ARCHIVE_VERSION && input.readInt() == ARCHIVE_SCHEMA_VERSION,
             "Tệp không phải bản lưu Green Farm 3 được hỗ trợ.")
         val sourcePackage = readString(input)
         val generation = input.readLong()

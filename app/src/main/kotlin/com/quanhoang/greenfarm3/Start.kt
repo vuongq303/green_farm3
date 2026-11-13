@@ -18,9 +18,11 @@ import com.quanhoang.greenfarm3.migration.SaveTransferActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import com.quanhoang.greenfarm3.S800x480.BackendCloudController
 
 /** Android launcher configuration recovered from the original Start bytecode. */
 open class Start : BaseActivity() {
+    private var backendGateOnly = false
     // Original wrapper runnables still access these exact JVM fields.
     @JvmField var bcS: e? = null
     @JvmField var bcT: Int = 0
@@ -32,6 +34,12 @@ open class Start : BaseActivity() {
             super.onCreate(savedInstanceState)
             Toast.makeText(this, "Đang chuyển bản lưu. Hãy hoàn tất hoặc đóng màn hình chuyển dữ liệu rồi mở lại game.", Toast.LENGTH_LONG).show()
             finish()
+            return
+        }
+        if (!BackendCloudController.isPrepared()) {
+            backendGateOnly = true
+            super.onCreate(savedInstanceState)
+            BackendCloudController.prepare(this)
             return
         }
         bcR = this
@@ -169,6 +177,7 @@ open class Start : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (backendGateOnly) return
         try { Thread.sleep(1000L) } catch (interrupted: Exception) {
             // Preserve the original startup/lifecycle behavior in this conversion.
         }
@@ -183,6 +192,10 @@ open class Start : BaseActivity() {
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (backendGateOnly) {
+            super.onActivityResult(requestCode, resultCode, data)
+            return
+        }
         if (MIDlet.coi) {
             if (requestCode == 274) {
                 setResult(274)
@@ -194,6 +207,10 @@ open class Start : BaseActivity() {
     }
 
     override fun onDestroy() {
+        if (backendGateOnly) {
+            super.onDestroy()
+            return
+        }
         if (MIDlet.coi && MIDlet.cos) {
             setResult(274)
             finishActivity(274)

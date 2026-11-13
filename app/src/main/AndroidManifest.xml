@@ -16,6 +16,8 @@
         android:hardwareAccelerated="true"
         android:largeHeap="true"
         android:usesCleartextTraffic="false">
+        <!-- One origin shared by original discovery and durable save sync. -->
+        <meta-data android:name="greenfarm.backendBaseUrl" android:value="${backendBaseUrl}"/>
         <activity
             android:name="com.quanhoang.greenfarm3.migration.SaveTransferActivity"
             android:label="Chuyển bản lưu Green Farm 3"
@@ -130,17 +132,6 @@
             android:name="org.apache.http.legacy"
             android:required="false"/>
         <activity
-            android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="smallestScreenSize|screenSize|uiMode|screenLayout|orientation|keyboardHidden|keyboard"/>
-        <activity
-            android:name="com.facebook.ads.AudienceNetworkActivity"
-            android:configChanges="screenSize|orientation|keyboardHidden"/>
-        <activity
-            android:name="com.facebook.ads.internal.ipc.RemoteANActivity"
-            android:exported="false"
-            android:process=":adnw"
-            android:configChanges="screenSize|orientation|keyboardHidden"/>
-        <activity
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:name="com.unity3d.services.ads.adunit.AdUnitActivity"
             android:configChanges="fontScale|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
@@ -216,14 +207,6 @@
             android:screenOrientation="unspecified"
             android:configChanges="fontScale|layoutDirection|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|touchscreen|locale|mnc|mcc"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>
-        <activity
-            android:theme="@style/com_facebook_activity_theme"
-            android:name="com.facebook.FacebookActivity"
-            android:configChanges="screenSize|screenLayout|orientation|keyboardHidden|keyboard"/>
-        <activity android:name="com.facebook.CustomTabMainActivity"/>
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/app_id"/>
         <receiver android:name="com.quanhoang.greenfarm3.PushNotification.LocalPushReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>

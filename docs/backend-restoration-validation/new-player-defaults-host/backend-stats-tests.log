@@ -1,0 +1,11 @@
+✔ original JVM protected-value vectors decode exactly, including 64-bit sign extension (2.50111ms)
+✔ binding byte length controls the prefix and tutorial preserves signed -1 (5.056687ms)
+✔ unsupported format, invalid binding lengths and every truncated stats boundary are refused (10.590231ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 118.584884

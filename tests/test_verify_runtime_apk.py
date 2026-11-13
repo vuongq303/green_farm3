@@ -213,6 +213,65 @@ class NetworkPolicyTest(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     verify.network_policy('final.apk', 'sdk', self.BASE)
 
+
+class DisabledServicesPolicyTest(unittest.TestCase):
+    BASE = 'http://192.168.1.20:8787/'
+
+    @staticmethod
+    def tree(names=(), label='Green Farm 3', endpoint=None):
+        children = [{'tag': 'activity', 'attributes': {'name': name}, 'children': []} for name in names]
+        if endpoint is not None:
+            children.append({'tag': 'meta-data', 'attributes': {'name': 'greenfarm.backendBaseUrl', 'value': endpoint}, 'children': []})
+        return {'tag': 'manifest', 'attributes': {}, 'children': [
+            {'tag': 'application', 'attributes': {'label': label}, 'children': children}]}
+
+    def test_only_facebook_and_admob_declarations_are_removed(self):
+        retained = ('com.google.firebase.provider.FirebaseInitProvider', 'com.google.android.gms.measurement.AppMeasurementService')
+        original = self.tree(retained + ('com.google.android.gms.ads.AdActivity', 'com.facebook.FacebookActivity'))
+        final = self.tree(retained, endpoint=self.BASE)
+        result = verify.disabled_services_policy(final, original, self.BASE)
+        self.assertEqual(result['unrelated_google_components_and_metadata_preserved'], sorted(retained))
+        for name in ('com.facebook.FacebookActivity', 'com.facebook.sdk.ApplicationId', 'com.google.android.gms.ads.AdActivity'):
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'Disabled Facebook/Google Ads'):
+                verify.disabled_services_policy(self.tree(retained + (name,), endpoint=self.BASE), original, self.BASE)
+        with self.assertRaisesRegex(ValueError, 'Unrelated Google'):
+            verify.disabled_services_policy(self.tree(endpoint=self.BASE), original, self.BASE)
+
+    def test_endpoint_and_test_label_are_checked_in_final_binary_manifest(self):
+        original = self.tree()
+        for endpoint in (None, 'http://192.168.1.21:8787/'):
+            with self.subTest(endpoint=endpoint), self.assertRaisesRegex(ValueError, 'single configured backend origin'):
+                verify.disabled_services_policy(self.tree(endpoint=endpoint), original, self.BASE)
+        with self.assertRaisesRegex(ValueError, 'Offline test label'):
+            verify.disabled_services_policy(self.tree(label='Green Farm 3 Offline Test', endpoint=self.BASE), original, self.BASE)
+
+    def test_current_offline_profile_is_rejected_without_touching_legitimate_player_values(self):
+        for namespace in (verify.GAME, 'Lcom/quanhoang/greenfarm3/'):
+            for name in ('OfflineTestConfig;', 'OfflineTestConfig$Companion;', 'OfflineSession;', 'OfflineTestBalances;'):
+                with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'Offline test helper'):
+                    verify.reject_offline_test_classes([namespace + 'S800x480/' + name], verify.APPLICATION_PACKAGE)
+        with self.assertRaisesRegex(ValueError, 'Offline test application ID'):
+            verify.reject_offline_test_classes([], verify.APPLICATION_PACKAGE + '.offlinetest')
+        verify.reject_offline_test_classes(['Lcom/quanhoang/greenfarm3/S800x480/FarmGameEngine;'], verify.APPLICATION_PACKAGE)
+
+    def test_google_presentation_sdk_removed_while_identifier_allowlist_stays_exact(self):
+        for descriptor in ('Lcom/google/android/gms/ads/AdView;', 'Lcom/google/android/gms/internal/ads/zzabc;',
+                           'Lcom/google/ads/Ad;', 'Lcom/google/android/gms/ads/identifier/Unreviewed;'):
+            with self.subTest(descriptor=descriptor), self.assertRaisesRegex(ValueError, 'presentation SDK class remains'):
+                verify.verify_google_ads_absent([descriptor])
+        self.assertEqual(verify.verify_google_ads_absent(verify.GOOGLE_IDENTIFIER_CLASSES, True),
+                         sorted(verify.GOOGLE_IDENTIFIER_CLASSES))
+        with self.assertRaisesRegex(ValueError, 'shared Google identifier'):
+            verify.verify_google_ads_absent(set(verify.GOOGLE_IDENTIFIER_CLASSES) - {next(iter(verify.GOOGLE_IDENTIFIER_CLASSES))}, True)
+
+    def test_facebook_sdk_is_removed_but_legacy_profile_data_class_can_remain(self):
+        for descriptor in ('Lcom/facebook/FacebookSdk;', 'Lcom/facebook/GraphRequest;', 'Lcom/facebook/R;',
+                           'Lcom/facebook/ads/AudienceNetworkActivity;', 'Lcom/gameloft/android2d/socialnetwork/l;',
+                           'Ljavax/microedition/midlet/v;'):
+            with self.subTest(descriptor=descriptor), self.assertRaisesRegex(ValueError, 'Facebook SDK class remains'):
+                verify.verify_facebook_absent([descriptor])
+        verify.verify_facebook_absent(['Lcom/gameloft/android2d/socialnetwork/i;'])
+
     def test_binary_xml_dump_parser_retains_boolean_policy_attributes(self):
         dump = '''E: manifest (line=1)
   A: package="com.gameloft.android.ANMP.GloftGF2F"

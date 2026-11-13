@@ -1,5 +1,5 @@
 // Explicit test double for HTTP protocol tests only. Production main.js always
-// constructs createMysqlStore; this file is not imported by application code.
+// constructs createSqliteStore; this file is not imported by application code.
 export function createTestStore() {
   const accounts = new Map();
   const sessions = new Map();

@@ -12,6 +12,7 @@ import zipfile
 from build_binary_baseline import EXPECTED_APK_SHA256, SIGNATURE, sha256
 from build_core_source import regenerate_build_revision, verify_assets_native
 from android_build_tools import ensure_debug_keystore, signing_tools
+from verify_runtime_apk import GOOGLE_IDENTIFIER_CLASSES
 
 
 TARGET_CLASS = 'Lcom/gameloft/a/b/a;'
@@ -21,11 +22,16 @@ TARGET_METHOD = 'aL(Ljava/lang/String;)Ljava/lang/String;'
 ORIGINAL_URL = 'https://eve.gameloft.com/'
 
 
-def prepare(original, base, patched_dex, output, relocated_dex=None):
+def prepare(original, base, patched_dex, output, relocated_dex=None, disabled_sdk_dex=None, pruned_ads_dex=None, pruned_facebook_dex=None):
     original, base, patched_dex, output = map(Path, (original, base, patched_dex, output))
     base_report = base.with_suffix('.provenance.json')
     patch_report = patched_dex.with_suffix(patched_dex.suffix + '.json')
-    for source in (original, base, base_report, patched_dex, patch_report):
+    inputs = [original, base, base_report, patched_dex, patch_report]
+    for optional in (relocated_dex, disabled_sdk_dex, pruned_ads_dex, pruned_facebook_dex):
+        if optional is not None:
+            optional = Path(optional)
+            inputs.extend((optional, optional.with_suffix(optional.suffix + '.json')))
+    for source in inputs:
         if output.resolve() == source.resolve() or (
                 output.exists() and source.exists() and output.samefile(source)):
             raise ValueError('Output must not overwrite an input or provenance report')
@@ -46,6 +52,54 @@ def prepare(original, base, patched_dex, output, relocated_dex=None):
                 or relocation.get('legacy_game_class_definitions_remaining') != 0
                 or relocation.get('inverse_canonical_semantics_verified') is not True):
             raise ValueError('Game package relocation provenance mismatch')
+    if disabled_sdk_dex is not None:
+        disabled_sdk_dex = Path(disabled_sdk_dex)
+        policy = json.loads(disabled_sdk_dex.with_suffix(disabled_sdk_dex.suffix + '.json').read_text())
+        expected_counts = {'facebook_lifecycle_calls_disabled': 12, 'ads_lifecycle_calls_disabled': 12,
+                           'native_fullscreen_queries_disabled': 2, 'native_back_handlers_disabled': 1}
+        if (policy.get('schema_version') != 1
+                or policy.get('policy') != 'facebook-and-ads-lifecycle-disabled'
+                or policy.get('target_class') != 'Ljavax/microedition/midlet/MIDlet;'
+                or any(type(policy.get(key)) is not int or policy.get(key) != value
+                       for key, value in expected_counts.items())
+                or policy.get('instruction_widths_preserved') is not True
+                or policy.get('inverse_target_semantics_verified') is not True
+                or policy.get('unchanged_other_classes_verified') is not True
+                or policy.get('input_dex_sha256') != sha256(packaged_dex.read_bytes())
+                or policy.get('output_dex_sha256') != sha256(disabled_sdk_dex.read_bytes())):
+            raise ValueError('Disabled SDK lifecycle provenance mismatch')
+        packaged_dex = disabled_sdk_dex
+    if pruned_ads_dex is not None:
+        pruned_ads_dex = Path(pruned_ads_dex)
+        pruning = json.loads(pruned_ads_dex.with_suffix(pruned_ads_dex.suffix + '.json').read_text())
+        if (disabled_sdk_dex is None or pruning.get('schema_version') != 1
+                or pruning.get('policy') != 'remove-google-ads-presentation-sdk'
+                or type(pruning.get('removed_class_count')) is not int or pruning['removed_class_count'] != 1880
+                or pruning.get('retained_identifier_classes') != sorted(GOOGLE_IDENTIFIER_CLASSES)
+                or any(pruning.get(key) is not True for key in (
+                    'retained_structural_reference_audit_verified', 'retained_reflection_string_audit_verified',
+                    'retained_class_semantics_verified', 'inverse_class_set_semantics_verified'))
+                or pruning.get('input_dex_sha256') != sha256(packaged_dex.read_bytes())
+                or pruning.get('output_dex_sha256') != sha256(pruned_ads_dex.read_bytes())):
+            raise ValueError('Google Ads pruning provenance mismatch')
+        packaged_dex = pruned_ads_dex
+    if pruned_facebook_dex is not None:
+        pruned_facebook_dex = Path(pruned_facebook_dex)
+        facebook = json.loads(pruned_facebook_dex.with_suffix(pruned_facebook_dex.suffix + '.json').read_text())
+        counts = {'removed_facebook_class_count': 717, 'removed_provider_bridge_count': 24, 'removed_class_count': 741}
+        if (pruned_ads_dex is None or facebook.get('schema_version') != 1
+                or facebook.get('policy') != 'remove-facebook-sdk-and-provider-bridge'
+                or any(type(facebook.get(key)) is not int or facebook.get(key) != value for key, value in counts.items())
+                or facebook.get('retired_avatar_method') != 'Lcom/gameloft/android2d/socialnetwork/i;->UN()Ljavax/microedition/lcdui/ao;'
+                or facebook.get('original_profile_canonical_sha256') != '5b1b329c8487c068c8a2e1b4dbd2a0fdfabfa7a96faf7ec01acb0098ccd7fd12'
+                or any(facebook.get(key) is not True for key in (
+                    'retained_structural_reference_audit_verified', 'retained_reflection_string_audit_verified',
+                    'retired_nullable_avatar_method_verified', 'other_profile_data_and_methods_preserved',
+                    'retained_class_semantics_verified', 'inverse_class_set_and_method_semantics_verified'))
+                or facebook.get('input_dex_sha256') != sha256(packaged_dex.read_bytes())
+                or facebook.get('output_dex_sha256') != sha256(pruned_facebook_dex.read_bytes())):
+            raise ValueError('Facebook SDK pruning provenance mismatch')
+        packaged_dex = pruned_facebook_dex
     if (baseline.get('mode') != 'java-core-with-original-dex-sdk-dependencies'
             or baseline.get('original_apk_sha256') != EXPECTED_APK_SHA256
             or baseline.get('output_apk_sha256') != sha256(base.read_bytes())
@@ -98,6 +152,9 @@ def main():
     for name in ('original', 'base', 'patched-dex', 'output', 'sdk', 'keystore'):
         parser.add_argument('--' + name, required=True, type=Path)
     parser.add_argument('--relocated-dex', type=Path)
+    parser.add_argument('--disabled-sdk-dex', type=Path)
+    parser.add_argument('--pruned-ads-dex', type=Path)
+    parser.add_argument('--pruned-facebook-dex', type=Path)
     args = parser.parse_args()
     output = args.output.resolve()
     inputs = (args.original, args.base, args.patched_dex, args.keystore,
@@ -105,13 +162,19 @@ def main():
               args.patched_dex.with_suffix(args.patched_dex.suffix + '.json'))
     if args.relocated_dex is not None:
         inputs += (args.relocated_dex, args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json'))
+    if args.disabled_sdk_dex is not None:
+        inputs += (args.disabled_sdk_dex, args.disabled_sdk_dex.with_suffix(args.disabled_sdk_dex.suffix + '.json'))
+    if args.pruned_ads_dex is not None:
+        inputs += (args.pruned_ads_dex, args.pruned_ads_dex.with_suffix(args.pruned_ads_dex.suffix + '.json'))
+    if args.pruned_facebook_dex is not None:
+        inputs += (args.pruned_facebook_dex, args.pruned_facebook_dex.with_suffix(args.pruned_facebook_dex.suffix + '.json'))
     if any(output == p.resolve() or (output.exists() and p.exists() and output.samefile(p)) for p in inputs):
         raise ValueError('Output must not overwrite an input, key or provenance report')
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='local-backend-', dir=output.parent) as directory:
         temp = Path(directory)
         unsigned, aligned, signed = [temp / n for n in ('unsigned.apk', 'aligned.apk', 'signed.apk')]
-        baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned, args.relocated_dex)
+        baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned, args.relocated_dex, args.disabled_sdk_dex, args.pruned_ads_dex, args.pruned_facebook_dex)
         if args.relocated_dex is not None:
             from verify_runtime_apk import manifest
             relocation = json.loads(args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json').read_text())
@@ -128,7 +191,7 @@ def main():
         subprocess.run([str(tools.zipalign), '-c', '-P', '16', '4', str(signed)], check=True)
         payload = verify_assets_native(args.original, signed)
         with zipfile.ZipFile(signed) as apk:
-            packaged_dex_hash = sha256((args.relocated_dex or args.patched_dex).read_bytes())
+            packaged_dex_hash = sha256((args.pruned_facebook_dex or args.pruned_ads_dex or args.disabled_sdk_dex or args.relocated_dex or args.patched_dex).read_bytes())
             if sha256(apk.read('classes.dex')) != packaged_dex_hash:
                 raise ValueError('Signed APK DEX differs from verified endpoint patch')
         shutil.copyfile(signed, output)
@@ -141,6 +204,12 @@ def main():
         'packaged_dex_sha256': packaged_dex_hash,
         'package_relocation': (json.loads(args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json').read_text())
                                if args.relocated_dex else None),
+        'sdk_lifecycle_policy': (json.loads(args.disabled_sdk_dex.with_suffix(args.disabled_sdk_dex.suffix + '.json').read_text())
+                                 if args.disabled_sdk_dex else None),
+        'google_ads_pruning': (json.loads(args.pruned_ads_dex.with_suffix(args.pruned_ads_dex.suffix + '.json').read_text())
+                               if args.pruned_ads_dex else None),
+        'facebook_sdk_pruning': (json.loads(args.pruned_facebook_dex.with_suffix(args.pruned_facebook_dex.suffix + '.json').read_text())
+                                 if args.pruned_facebook_dex else None),
         'build_revision_metadata': revision,
         'unchanged_assets_native_sha256': payload,
         'scope': 'SDK and game Janus discovery constructors; unrelated legacy service clients are not migrated.',

@@ -19,11 +19,11 @@ export function respond(response, status, value) {
   response.end(text);
 }
 
-async function readBody(request) {
+async function readBody(request, maxBytes = MAX_FORM_BYTES, tooLarge = 'form_too_large') {
   const declaredLength = Number(request.headers['content-length']);
-  if (Number.isFinite(declaredLength) && declaredLength > MAX_FORM_BYTES) {
+  if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
     request.resume();
-    throw new HttpError(413, 'form_too_large');
+    throw new HttpError(413, tooLarge);
   }
   return await new Promise((resolve, reject) => {
     let size = 0;
@@ -32,10 +32,10 @@ async function readBody(request) {
     request.on('data', (chunk) => {
       if (finished) return;
       size += chunk.length;
-      if (size > MAX_FORM_BYTES) {
+      if (size > maxBytes) {
         finished = true;
         chunks = [];
-        reject(new HttpError(413, 'form_too_large'));
+        reject(new HttpError(413, tooLarge));
       } else {
         chunks.push(chunk);
       }
@@ -55,6 +55,19 @@ async function readBody(request) {
     request.once('aborted', abort);
     request.once('error', abort);
   });
+}
+
+export async function jsonBody(request, allowed, maxBytes) {
+  if (request.headers['content-type']?.split(';', 1)[0]?.trim().toLowerCase() !== 'application/json') {
+    request.resume();
+    throw new HttpError(415, 'JSON_CONTENT_TYPE_REQUIRED');
+  }
+  const bytes = await readBody(request, maxBytes, 'SNAPSHOT_TOO_LARGE');
+  let value;
+  try { value = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)); }
+  catch { throw new HttpError(400, 'INVALID_JSON'); }
+  if (!value || Array.isArray(value) || typeof value !== 'object' || Object.keys(value).some(key => !allowed.has(key))) throw new HttpError(400, 'INVALID_JSON_FIELDS');
+  return value;
 }
 
 export async function form(request, allowed) {

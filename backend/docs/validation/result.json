@@ -1,0 +1,39 @@
+{
+  "scope": "Actual Node.js HTTP, SQLite files, separate Node process restarts, configuration and original-codec host tests; not an Android gameplay claim",
+  "node": "24.22.1",
+  "schemaVersion": 4,
+  "runs": [
+    {
+      "command": "npm test",
+      "passed": 56,
+      "failed": 0,
+      "log": "backend-tests.log",
+      "sha256": "f651d2c05c5adc246145d3a946a451e2269d093e6708d5ab030eedc8695a4f19"
+    },
+    {
+      "command": "node --test test/initial-snapshot-policy.test.mjs test/sqlite-progress.test.mjs",
+      "passed": 14,
+      "failed": 0,
+      "log": "operator-policy-tests.log",
+      "sha256": "98679d6e605b042b1f1a9f8d5cd3f468a58c26c25116bdd9d346e84d8831cd7f"
+    }
+  ],
+  "checks": [
+    "Two independently authenticated players retain separate exact GF3SAVE1 binary snapshots after store and Node process restart",
+    "Atomic snapshot/receipt/initialization/operatorapproval commits, fault-trigger rollback and bounded SQLite busy retries",
+    "Revision CAS, concurrent writes, replay/idempotency and out-of-order rejection",
+    "Stable guest proof, token expiry/reissue and known-owner database-loss protection",
+    "Central original defaults2000/50/level1/XP0/tutorial0/auto; validated ranges and canonical per-new-player configuration copies",
+    "Live config changes affect later players only; schema1 upgrade retains existing save bytes without initialization reset",
+    "Fresh API initial-field and binary-value overrides refused; no HTTP self-approval for local adoption",
+    "Operator CLI approval permits only a specific player/hash; capability binds operation/hash and cannot bypass malformed/offline-test archive validation",
+    "Old normal initialization marker and played values remain unchanged during an operator-approved local copy",
+    "Original protected-value decoder tested with five original-method JVM vectors, UTF-8 prefix and truncated-boundary cases",
+    "Consistent MySQL export uses a simulated source transaction; actual SQLite import/backups preserve known IDs/hashes/sessions and unknown Facebook data"
+  ],
+  "not_verified": [
+    "User MySQL database migration was not run; original MySQL data/process remains untouched",
+    "Android runtime, lifecycle/outbox and actual UI testing are reported separately by the parent",
+    "Ongoing opaque gameplay snapshots are client-authored; this is not a server-authoritative anti-cheat economy"
+  ]
+}

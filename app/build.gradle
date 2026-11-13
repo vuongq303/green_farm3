@@ -77,6 +77,7 @@ android {
 
     defaultConfig {
         applicationId resolvedApplicationId
+        manifestPlaceholders = [backendBaseUrl: backendBaseUrl.get()]
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 44220
@@ -216,6 +217,9 @@ def compileDexMergeTool = tasks.register('compileDexMergeTool', JavaCompile) {
     source rootProject.file('tools/MergeCoreDex.java')
     source rootProject.file('tools/PatchBackendEndpoint.java')
     source rootProject.file('tools/RelocateGamePackage.java')
+    source rootProject.file('tools/PatchDisabledSdkLifecycle.java')
+    source rootProject.file('tools/PruneGoogleAds.java')
+    source rootProject.file('tools/PruneFacebookSdk.java')
     classpath = configurations.dexMergeTool
     destinationDirectory = layout.buildDirectory.dir('dex-merge-tool')
     sourceCompatibility = '8'

@@ -1,0 +1,9 @@
+test_callbacks_never_initialize_native_ads_or_grant_currency (test_retired_provider_services.RetiredProviderServicesTest.test_callbacks_never_initialize_native_ads_or_grant_currency) ... ok
+test_packed_gui_cannot_render_or_reactivate_provider_buttons (test_retired_provider_services.RetiredProviderServicesTest.test_packed_gui_cannot_render_or_reactivate_provider_buttons) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 11.807s
+
+OK
+PASS: 6000 real callback traces; no SDK init, reward, credential read or unrelated startup redirect
+Retired Facebook/video-ad controls: PASS: 8165 identity/reset/render/listener checks; hitboxes, currency controls and stale states verified

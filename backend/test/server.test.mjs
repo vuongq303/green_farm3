@@ -410,14 +410,14 @@ test('refresh rejects wrong namespace, invalid, expired and access tokens', asyn
   assert.equal((await postForm('/authorize', { client_id: CLIENT, grant_type: 'refresh_token', refresh_token: initial.refresh_token })).status, 401);
 });
 
-test('MySQL failures are observable and never produce successful login/profile/compliance responses', async t => {
+test('database failures never produce successful login/profile/compliance responses', async t => {
   const store = createTestStore();
   const { request, postForm, authorize } = await fixture(t, { store });
   const token = await authorize();
   store.setUnavailable(true);
   const health = await request('/health');
   assert.equal(health.status, 503);
-  assert.deepEqual(json(health), { status: 'degraded', backend: { status: 'running' }, mysql: { status: 'unavailable' } });
+  assert.deepEqual(json(health), { status: 'degraded', backend: { status: 'running' }, sqlite: { status: 'unavailable' } });
   for (const response of [
     await postForm('/authorize', authorizeFields()),
     await request(`/profiles/me/myprofile?${new URLSearchParams({ access_token: token })}`),
@@ -432,5 +432,5 @@ test('MySQL failures are observable and never produce successful login/profile/c
 });
 
 test('a production server cannot silently substitute an in-memory repository', () => {
-  assert.throws(() => createResearchServer({ publicBaseUrl: PUBLIC_BASE, sessionSecret: 'test-secret-for-local-research-only' }), /MySQL repository is required/u);
+  assert.throws(() => createResearchServer({ publicBaseUrl: PUBLIC_BASE, sessionSecret: 'test-secret-for-local-research-only' }), /SQLite repository is required/u);
 });

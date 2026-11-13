@@ -74,6 +74,10 @@ class CoreSourcePackagingTest(unittest.TestCase):
                        "replaced_classes": sorted(selected),
                        "added_classes": sorted("Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/" + name + ";"
                                                for name in build.ADDED_CORE_SOURCES)}
+        if (ROOT / 'app/src/main/kotlin/com/quanhoang/greenfarm3/migration/CloudMigrationBackup.kt').is_file():
+            backup = 'Lcom/gameloft/android/ANMP/GloftGF2F/migration/CloudMigrationBackup;'
+            self.report['kotlin_compiled_classes'].append(backup)
+            self.report['added_classes'].append(backup)
         self.write_report()
 
     def make_compiled(self, omit=(), duplicate_manifest=False, unsafe=False):
@@ -168,6 +172,17 @@ class CoreSourcePackagingTest(unittest.TestCase):
         self.write_report()
         with self.assertRaisesRegex(ValueError, "Kotlin runtime"): self.assemble()
         self.assertFalse(self.output.exists())
+
+    def test_cloud_migration_backup_requires_added_kotlin_definition(self):
+        backup = 'Lcom/gameloft/android/ANMP/GloftGF2F/migration/CloudMigrationBackup;'
+        if backup not in self.report['added_classes']:
+            self.skipTest('Migration source is not selected in this checkout')
+        for field in ('added_classes', 'kotlin_compiled_classes'):
+            self.report[field].remove(backup); self.write_report()
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'Cloud migration backup'):
+                self.assemble()
+            self.assertFalse(self.output.exists())
+            self.report[field].append(backup)
 
     def test_rejects_launcher_without_kotlin_metadata_proof(self):
         launcher = "Lcom/gameloft/android/ANMP/GloftGF2F/Start;"

@@ -1,0 +1,68 @@
+
+> green-farm-local-research-backend@0.3.0 test
+> node --test test/*.test.mjs
+
+✔ base URL accepts only canonical unicast IPv4 origins and normalizes a slash (13.955348ms)
+✔ backend reads the same one root property and fails on missing/duplicate/bad values (2.782553ms)
+✔ runtime uses a persistent SQLite path and preserves explicit legacy migration detection (1.492964ms)
+✔ original JVM protected-value vectors decode exactly, including 64-bit sign extension (3.064176ms)
+✔ binding byte length controls the prefix and tutorial preserves signed -1 (0.439831ms)
+✔ unsupported format, invalid binding lengths and every truncated stats boundary are refused (17.013796ms)
+✔ first configured snapshot matches original JVM numeric bytes and frozen server defaults; subsequent normal spending is allowed (128.440934ms)
+✔ fresh profiles cannot override initial resources, marker or tutorial through request fields or blob (45.321823ms)
+✔ explicit configured language is checked while auto preserves a supported device-selected language (48.096109ms)
+✔ approved local-copy grants bind player, operation and hash; expiration/rollback/replay never reset an existing farm (69.531786ms)
+✔ approved copies preserve an old normal initialization marker and played resources; a grant never bypasses archive validation (44.761892ms)
+✔ consistent source export preserves binary, decimal IDs, microseconds and unknown Facebook data (5.087508ms)
+✔ nontransactional sources fail without committing or publishing a partial backup (0.910348ms)
+✔ private export does not overwrite and rejects altered checksums or schema (5.776153ms)
+✔ real SQLite import backs up, commits all legacy values, archives unknowns and is replay-safe (34.4924ms)
+✔ a late conflicting row rolls back earlier inserts and never replaces target data (14.181267ms)
+✔ corrupt exports never create a missing target or lose the original input (4.8862ms)
+✔ import into actual migrated schema preserves a valid legacy session without creating any guest ownership (25.483498ms)
+✔ central defaults match original catalog and reject unsupported resource, XP, tutorial, language or template values (3.043485ms)
+✔ live configuration edits affect only newly created players, including retry/reissue and invalid-file rollback (21.731016ms)
+✔ upgrading schema1 keeps existing players and exact farm bytes without assigning new initialization (32.82274ms)
+✔ health, datacenter selection, ten URL keys, and plain auth locator use the configured base (32.166383ms)
+✔ authorization accepts the original UTF-16 password transform and all compatibility scope declarations (10.768548ms)
+✔ fresh sessions are distinct and accepted by the compliance route (6.323927ms)
+✔ the explicit local policy returns false below 16 and true from 16 through 120 (6.42614ms)
+✔ compliance requires a session token and rejects forged or changed tokens (9.404537ms)
+✔ expiry uses the injected clock and session TTL (7.039512ms)
+✔ tokens belong to the issuing server even when servers share an HMAC secret (2.96727ms)
+✔ profile credentials belong to the authorized session and stay isolated between users (5.548581ms)
+✔ profile reads require a valid unexpired session token (7.593154ms)
+✔ profile paths outside the implemented own-profile read remain unknown (8.357914ms)
+✔ authorization rejects missing fields, unsupported scope, and invalid credentials (15.563195ms)
+✔ compliance requires country and canonical integer age in the documented range (20.784654ms)
+✔ both POST routes reject content types other than URL-encoded forms (5.947ms)
+✔ form parsing rejects duplicate fields, malformed percent escapes, and malformed UTF-8 (13.181815ms)
+✔ both POST routes reject bodies exceeding 8 KiB (6.191157ms)
+✔ known routes return 405 for the wrong method (9.46014ms)
+✔ unknown paths return 404 and explicit unsupported surfaces return 501 (6.158187ms)
+✔ request logs contain only method, redacted route path, and status (4.517931ms)
+✔ core client scope declarations and durable refresh grant follow original request fields (5.276262ms)
+✔ refresh rejects wrong namespace, invalid, expired and access tokens (5.025003ms)
+✔ database failures never produce successful login/profile/compliance responses (5.213237ms)
+✔ a production server cannot silently substitute an in-memory repository (0.708164ms)
+✔ real Node process confirms SQLite readiness before listen and preserves two players after process restart (446.835996ms)
+✔ missing/corrupt SQLite refuses startup before HTTP, preserves damaged bytes and does not create empty replacement (153.558653ms)
+✔ legacy MySQL configuration cannot silently start a fresh SQLite identity database (187.317902ms)
+✔ invalid new-player configuration refuses startup without changing existing database contents (68.958322ms)
+✔ real HTTP+SQLite isolates two players, commits full binary bytes and preserves sessions/save through restart (114.689889ms)
+✔ guest proof retries preserve identity; known owner missing/conflicting never creates a replacement account (35.69156ms)
+✔ idempotent receipts, stale/reordered writes and concurrent CAS cannot roll progress backwards (40.072455ms)
+✔ SQL failure rolls snapshot and operation receipt back together, then exact request can retry (32.287821ms)
+✔ busy SQLite is bounded, observable and preserves pending request for a later retry (115.887865ms)
+✔ invalid credentials/claims, corrupt archives and offline-test preset never overwrite an existing farm (31.370888ms)
+✔ legacy anonymous tokens remain usable for compatibility profile but cannot access strong save API (53.345179ms)
+✔ archive validator checks outer/record checksums and keeps opaque bytes unchanged (1.288357ms)
+✔ migration is idempotent, preserves existing data, backs up additions and rejects changed migration files (16.634078ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 56
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1284.756524

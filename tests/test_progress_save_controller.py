@@ -54,7 +54,7 @@ ANDROID = {
         interface OnCancelListener {void onCancel(DialogInterface d);} }''',
     'android/app/Activity.java': '''package android.app;public class Activity extends android.content.Context {
         public boolean finishing;public boolean isFinishing(){return finishing;}
-        public void runOnUiThread(Runnable r){r.run();} }''',
+        public void runOnUiThread(Runnable r){r.run();}public void finish(){finishing=true;} }''',
     'android/app/AlertDialog.java': '''package android.app;public class AlertDialog {
         public static Builder latest;public static class Builder {
             public String title,message;public boolean cancelable=true;
@@ -94,13 +94,23 @@ ANDROID = {
 
 FIXTURE = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 import java.util.*;import android.view.KeyEvent;
+// Legacy controller checks do not exercise a network; cloud ordering is tested
+// separately against the actual persistent journal and real backend.
+class BackendCloudController {
+ static boolean isQuitPending(){return false;}static void frameFinished(){}
+}
+class NewPlayerDefaults {
+ static boolean enabled;static int markers;
+ static boolean onWorldReady(){if(!enabled)return false;ch.credits=2000;ci.aYR=0;return true;}
+ static void captureInitializationMarker(){if(enabled)markers++;}
+}
 class GameSaveStore {
  static final int STATUS_FAILED=3;static boolean ready,loading,failFinish,failInitialize,failReopen;
- static int initializes,reopens,begins,logicalLanguage,durableLanguage,durableCredits,durablePending,applies;
+ static int initializes,reopens,begins,logicalLanguage,durableLanguage,durableCredits,durablePending,durableTutorial,applies;
  static boolean capturing,serialized,whole;static Snapshot captured;static WriteDispatcher dispatcher;
  interface WriteDispatcher {void changed(Snapshot snapshot);}
  static final class Snapshot {
-  final int language,credits,pending;final boolean gameplay,whole;
+  final int language,credits,pending,tutorial=ci.aYR;final boolean gameplay,whole;
   Snapshot(int l,int c,int p,boolean g,boolean w){language=l;credits=c;pending=p;gameplay=g;whole=w;}
   int recordCount(){return gameplay?(whole?5:3):1;}long byteCount(){return 35;}
  }
@@ -113,9 +123,10 @@ class GameSaveStore {
  static void beginCapture(boolean farm){if(!isCaptureAvailable())throw new IllegalStateException("not loaded");capturing=true;serialized=false;whole=farm;}
  static void record(){serialized=true;captured=new Snapshot(ci.aYU,ch.credits,ch.pending,true,whole);}
  static Snapshot finishCapture(){capturing=false;if(!serialized)throw new IllegalStateException("incomplete");logicalLanguage=captured.language;return captured;}
+ static Snapshot coalesceSnapshots(Snapshot a,Snapshot b){return b==null?a:b;}
  static void abortCapture(){capturing=false;}
  static Snapshot captureLanguageSetting(int language){if(!ready)throw new IllegalStateException("no header");logicalLanguage=language;return new Snapshot(language,0,0,false,false);}
- static void apply(Snapshot s){applies++;durableLanguage=s.language;if(s.gameplay){durableCredits=s.credits;durablePending=s.pending;}}
+ static void apply(Snapshot s){applies++;durableLanguage=s.language;if(s.gameplay){durableCredits=s.credits;durablePending=s.pending;durableTutorial=s.tutorial;}}
 }
 class AsyncSaveQueue {
  interface RetryableCheckpoint {}
@@ -182,6 +193,7 @@ public class ProgressSaveChecks {
   MIDlet.cnz=MIDlet.cnA=null;AlertDialog.latest=null;AlarmManager.exact=AlarmManager.ordinary=android.os.Process.kills=0;
   com.quanhoang.greenfarm3.migration.SaveTransferActivity.launches=0;com.quanhoang.greenfarm3.migration.SaveTransferActivity.last=null;
   com.quanhoang.greenfarm3.migration.SaveTransferGate.preparing=false;
+  NewPlayerDefaults.enabled=false;NewPlayerDefaults.markers=0;
   AlarmManager.failAll=AlarmManager.exactDenied=false;android.content.pm.PackageManager.unavailable=false;
   set(LanguageRestartController.class,"restartState",0);set(LanguageRestartController.class,"restartPromptVisible",false);set(LanguageRestartController.class,"restartHandoff",null);
   set(LanguageRestartController.class,"menuKeyHeld",false);set(LanguageRestartController.class,"menuOpenRequested",false);
@@ -339,6 +351,25 @@ public class ProgressSaveChecks {
   check(!game.onKeyDown(4,event)&&com.quanhoang.greenfarm3.migration.SaveTransferActivity.launches==1,"non MENU long press opened migration");
   check(!game.onKeyDown(82,null),"null KeyEvent changed non-tutorial route");
  }
+ static void initialPlayerBarrier()throws Exception{
+  reset();NewPlayerDefaults.enabled=true;ready();
+  check(ProgressSaveController.isInitializationPending(),"initial durable barrier missing");
+  check(queue().pending.size()==1&&queue().pending.get(0).snapshot.credits==2000&&queue().pending.get(0).snapshot.tutorial==0,"initial snapshot not immediate/configured");
+  check(NewPlayerDefaults.markers==1,"initial marker omitted from capture");
+  // The unchanged original entry may advance tutorial in RAM after enterWorld.
+  // Its later state and an SDK setting must not coalesce into the first ticket.
+  ci.aYR=1;ch.credits=1900;ci.baa=true;
+  GameSaveStore.dispatcher.changed(new GameSaveStore.Snapshot(2,0,0,false,false));
+  frame(500);check(queue().pending.size()==1&&ci.attempts==1,"later mutations merged/captured before initial ack");
+  complete(true);check(ProgressSaveController.isInitializationPending(),"failed initial write released input");
+  check(queue().pending.size()==1&&queue().pending.get(0).snapshot.credits==2000,"initial retry lost frozen config snapshot");
+  complete(false);
+  check(!ProgressSaveController.isInitializationPending()&&GameSaveStore.durableCredits==2000&&GameSaveStore.durableTutorial==0,"initial ack not distinct/durable");
+  check(queue().pending.size()==1&&!queue().pending.get(0).snapshot.gameplay,"SDK auxiliary mutation was lost/unfrozen too early");
+  complete(false);frame(200);finishPending();
+  check(GameSaveStore.durableCredits==1900&&ci.aYR==1,"legitimate post-initial changes were reset/lost");
+  System.out.println("PASS initial player barrier: immediate frozen config capture, failed retry, delayed SDK writes and later gameplay");
+ }
  static void coldNoWriter(){
   check(ColdEngineInitProbe.initializations==0,"cold fixture initialized engine before flush");
   check(ProgressSaveController.flushForLifecycle(),"cold process with no writer rejected no-op flush");
@@ -351,6 +382,7 @@ public class ProgressSaveChecks {
   ColdEngineInitProbe.failInitialization=false;
   loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
   languageCancelAndRestart();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();saveTransferLongPress();saveTransferFreeze();
+  initialPlayerBarrier();
   System.out.println("PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff");
  }
 }

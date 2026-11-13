@@ -67,6 +67,11 @@ def assemble(original, compiled, merged_dex, output):
         return descriptor
     kotlin_expected = {original_core + binary_names.get(name, name) + ';' for name in kotlin_names}
     kotlin_actual = {normalized_kotlin_name(name) for name in report.get('kotlin_compiled_classes', [])}
+    backup_source = project / 'app/src/main/kotlin/com/quanhoang/greenfarm3/migration/CloudMigrationBackup.kt'
+    if backup_source.is_file():
+        backup = 'Lcom/gameloft/android/ANMP/GloftGF2F/migration/CloudMigrationBackup;'
+        if backup not in kotlin_actual or backup not in set(report.get('added_classes', [])):
+            raise ValueError('Cloud migration backup must be a compiled Kotlin addition')
     if not kotlin_expected.issubset(kotlin_actual):
         raise ValueError('A selected Kotlin implementation lacks Kotlin metadata in the compiled DEX: '
                          + ', '.join(sorted(kotlin_expected - kotlin_actual)))

@@ -80,7 +80,7 @@ public class MoreGamesProbe {
    check(MoreGamesRemoval.isWidget(layer,item)==removed,"wrong identity "+layer+":"+item);checks++;
   }
   int[][] removed={{1,34},{1,38},{27,22},{27,23}};
-  int[][] retained={{1,4},{1,5},{1,7},{1,46},{1,81},{27,8},{27,10},{27,12},{26,22}};
+  int[][] retained={{1,4},{1,5},{1,7},{1,46},{1,82},{27,8},{27,10},{27,12},{26,22}};
   for(int[] widget:removed){int l=widget[0],n=widget[1];
    for(int type:new int[]{202,204,205}){
     atd[l][n]=row(type);bd(l,n);
@@ -153,7 +153,7 @@ class MoreGamesRemovalTest(unittest.TestCase):
             java = package / 'MoreGamesProbe.java'
             java.write_text(adapt_fixture(source))
             helper = kotlin_source_directory() / 'MoreGamesRemoval.kt'
-            compile_mixed([helper], [java], directory)
+            compile_mixed([helper, kotlin_source_directory() / 'ServiceAvailability.kt'], [java], directory)
             return subprocess.run([str(jdk_tool('java')), '-cp', runtime_classpath(directory),
                                    PACKAGE.replace('/', '.') + '.MoreGamesProbe'],
                                   capture_output=True, text=True)
@@ -167,9 +167,9 @@ class MoreGamesRemovalTest(unittest.TestCase):
     def test_regressions_in_each_removal_boundary_are_detected(self):
         mutations = [
             ('MoreGamesRemoval.removeWidget(i, i2, atc[i][i2]);', ''),
-            ('if (MoreGamesRemoval.isWidget(i, i2)) {\n            return;', 'if (false) {\n            return;'),
-            ('if (!MoreGamesRemoval.isWidget(i, i3) &&', 'if (true &&'),
-            ('if (MoreGamesRemoval.isWidget((i >> 16) & 65535, i & 65535))', 'if (false)'),
+            ('if (MoreGamesRemoval.isWidget(i, i2) || ServiceAvailability.isUnavailableWidget(i, i2)) {\n            return;', 'if (false) {\n            return;'),
+            ('if (!MoreGamesRemoval.isWidget(i, i3) && !ServiceAvailability.isUnavailableWidget(i, i3) &&', 'if (true &&'),
+            ('if (MoreGamesRemoval.isWidget((i >> 16) & 65535, i & 65535) || ServiceAvailability.isUnavailableWidget((i >> 16) & 65535, i & 65535))', 'if (false)'),
         ]
         for mutation in mutations:
             with self.subTest(boundary=mutation[0]):
@@ -188,17 +188,17 @@ class MoreGamesRemovalTest(unittest.TestCase):
         self.assertNotIn('static void bp(int i, int i2)', self.source)
         self.assertNotRegex(self.source, r'case (?:65570|1769494):')
         self.assertNotRegex(self.source, r'\bdM\(aYU\)')
-        # IGP also transports unrelated legal/support/update links. Those callers
-        # and rewarded advertisements retain their original SDK implementation.
+        # IGP also transports unrelated legal/support/update links. Ads now use
+        # the separately tested provider-retirement adapter.
         for retained in ('GLLib.a(z, z2, i, i2)', 'wrapper.au.eu(', 'wrapper.au.ev(',
-                         'ctg=UPDATE', 'ctg=GAME_REVIEW', 'AdsManager.IsAdOnScreen(3)'):
+                         'ctg=UPDATE', 'ctg=GAME_REVIEW', 'b.isAdOnScreen(3)'):
             self.assertIn(retained, self.source)
 
     def welcome_fixture(self, mutation=None):
         resume = extract_method(self.source, 'public void jG()')
         # Keep the actual final resume block, including the shared CRM resume
         # callback. Everything before it is unrelated game/SDK initialization.
-        start = resume.rindex('        if (com.gameloft.a.a.k.VR() != null)')
+        start = resume.rindex('        if (ServiceAvailability.advertisementsEnabled() && com.gameloft.a.a.k.VR() != null)')
         resume = 'static void resume(){\n' + resume[start:]
         farm = extract_method(self.source, 'static boolean jM(int i)')
         marker = '                bas++;\n            }'
@@ -219,6 +219,9 @@ class MoreGamesRemovalTest(unittest.TestCase):
         return r'''
 package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 class ch {}
+// Provider retirement has its own fixture against real Kotlin. This peer
+// isolates only the unrelated More Games welcome-neighborhood regression.
+class ServiceAvailability {static boolean advertisementsEnabled(){return false;}}
 class SharedCrm {
  static int resumes;static final SharedCrm manager=new SharedCrm();
  static SharedCrm VR(){return manager;}void VT(){resumes++;}
@@ -240,8 +243,8 @@ public class WelcomeRemovalProbe {
     aYU=language;state=currentState;aTO=age;level=currentLevel;resume();farmEntry();runs++;
    }
   if(promotions!=0||checks!=0||closes!=0)throw new AssertionError("Welcome promotion route survived");
-  if(SharedCrm.resumes!=runs||gameplay!=runs*4)throw new AssertionError("shared resume/gameplay work removed");
-  System.out.println("PASS: "+runs+" actual resume/farm entry neighborhoods; no Welcome promotion, shared calls retained");
+  if(SharedCrm.resumes!=0||gameplay!=runs*4)throw new AssertionError("retired ads resumed or gameplay work removed");
+  System.out.println("PASS: "+runs+" actual resume/farm entry neighborhoods; no Welcome promotion, gameplay calls retained");
  }
 }
 '''.replace('%RESUME%', resume).replace('%FARM%', farm)
@@ -261,7 +264,7 @@ public class WelcomeRemovalProbe {
     def test_automatic_welcome_promotion_routes_are_removed(self):
         result = self.run_welcome_fixture()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('shared calls retained', result.stdout)
+        self.assertIn('gameplay calls retained', result.stdout)
         print(result.stdout.strip())
 
     def test_reintroducing_either_actual_welcome_route_is_detected(self):

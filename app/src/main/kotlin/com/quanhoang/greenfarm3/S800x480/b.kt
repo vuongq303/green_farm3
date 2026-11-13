@@ -4,15 +4,18 @@ import com.gameloft.android2d.adsmanager.AdsManager
 import java.util.Locale
 import org.json.JSONObject
 
-/** Original rewarded-ad callback adapter; SDK identifiers and public flags are unchanged. */
+/** Retained rewarded-ad JVM adapter. Retired providers never produce reward callbacks. */
 open class b {
     private var Jo: JSONObject? = null
     private var Jp = false
     private var Jq = false
     private var Jr = false
     private var Js = false
-    open fun CreateSingleAdsManagerInstance() { AdsManager.CreateSingleAdsManagerInstance() }
+    open fun CreateSingleAdsManagerInstance() {
+        if (ServiceAvailability.advertisementsEnabled()) AdsManager.CreateSingleAdsManagerInstance()
+    }
     open fun Init() {
+        if (!ServiceAvailability.advertisementsEnabled()) return
         try { CreateSingleAdsManagerInstance() } catch (failure: Exception) { failure.printStackTrace() }
         com.gameloft.android2d.c.a.setGameLanguage(GloftGF2F.acw!!.dr(FarmGameEngine.aYU).lowercase(Locale.getDefault()))
         AdsManager.SetAge(FarmGameEngine.aTL)
@@ -28,6 +31,7 @@ open class b {
         Jn = true
     }
     open fun OnAdError(adType: Int, placement: String?) {
+        if (!ServiceAvailability.advertisementsEnabled()) return
         if (adType == 3) {
             if (placement!!.equals("enter_section_iap_shop")) { JO = 1; JK = true; return }
             if (placement.equals("enter_section_video_bubble")) { JP = 1; JL = true }
@@ -36,6 +40,7 @@ open class b {
         }
     }
     open fun OnAdFinished(adType: Int, resultCode: Int, placement: String?, auxiliary: String?, campaignId: Int, argument: Int) {
+        if (!ServiceAvailability.advertisementsEnabled()) return
         if (adType == 3) {
             if (placement!!.equals("enter_section_iap_shop")) { JO = 1; JK = true; return }
             if (placement.equals("enter_section_video_bubble")) { JP = 1; JL = true }
@@ -44,6 +49,7 @@ open class b {
         }
     }
     open fun e(placement: String?, availabilityStatus: Int) {
+        if (!ServiceAvailability.advertisementsEnabled()) return
         val mappedStatus = when (availabilityStatus) { 0 -> 2; 1 -> 4; 2 -> 3; else -> 0 }
         if (placement!!.equals("enter_section_iap_shop")) { JO = mappedStatus; JK = true }
         else if (placement.equals("enter_section_video_bubble")) { JP = mappedStatus; JL = true }
@@ -96,7 +102,14 @@ open class b {
         @JvmField var Kf: Boolean = false
         @JvmField var Kg: Boolean = false
         @JvmField var Kh: Boolean = false
-        @JvmStatic fun ar(placement: String?) { AdsManager.IsIncentivizedAvailable(placement) }
+        @JvmStatic fun ar(placement: String?) {
+            if (ServiceAvailability.advertisementsEnabled()) AdsManager.IsIncentivizedAvailable(placement)
+        }
+        @JvmStatic fun showIncentivized(placement: String?) {
+            if (ServiceAvailability.advertisementsEnabled()) AdsManager.ShowIncentivized(placement)
+        }
+        @JvmStatic fun isAdOnScreen(adType: Int): Boolean =
+            ServiceAvailability.advertisementsEnabled() && AdsManager.IsAdOnScreen(adType)
         @JvmStatic fun hL(): b {
             if (Jm == null) Jm = b()
             return Jm!!

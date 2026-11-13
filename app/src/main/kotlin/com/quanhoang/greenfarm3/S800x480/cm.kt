@@ -1,16 +1,9 @@
 package com.quanhoang.greenfarm3.S800x480
 
+/** Retained constructor/Runnable ABI for an unregistered Facebook callback. */
 class cm : Runnable {
     override fun run() {
-        try { FarmGameEngine.JM() } catch (failure: Exception) {}
-        try { FarmGameEngine.Jd() } catch (failure: Exception) {}
-        if (FarmGameEngine.arm == 1) {
-            com.gameloft.android2d.socialnetwork.l.mU(1)
-            bt.nV()
-        } else {
-            com.gameloft.android2d.socialnetwork.l.mU(2)
-            bt.nV()
-        }
-        FarmGameEngine.ark = true
+        // The provider and its friend-fetch/reward dispatch were removed.
+        // Never manufacture friend data, grant a Connect reward or mark success.
     }
 }

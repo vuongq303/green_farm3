@@ -1,0 +1,7 @@
+test_real_quit_cleanup_is_deferred_and_false_local_container_is_preserved (test_backend_quit_checkpoint.BackendQuitCheckpointTest.test_real_quit_cleanup_is_deferred_and_false_local_container_is_preserved) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.898s
+
+OK
+PASS: 52 actual quit-order/container checks; no cleanup before checkpoint or legacy network upload

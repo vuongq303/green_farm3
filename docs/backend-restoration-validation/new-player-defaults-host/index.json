@@ -1,0 +1,57 @@
+{
+  "archived_at": "2026-11-13T12:45:27.897391+00:00",
+  "working_directory": "repository root",
+  "runs": [
+    {
+      "id": "client-defaults",
+      "source": ".local/new-player-oracle/client-defaults-tests.log",
+      "log": "client-defaults-tests.log",
+      "command": "JAVA_HOME=/workspace/tooling/jdk-25 python3 -m unittest discover -s tests -p test_new_player_defaults.py -v",
+      "passed_tests": 2,
+      "seconds_reported": 7.378,
+      "scope": "actual Kotlin strict helper, original protected wrappers/setters and actual ES/PT regional branches; public JVM oracle matches8 original source methods and5 vectors",
+      "log_sha256": "482f73412b827d338ff118f27d4cbfc2ba2fb0f23a3fce0b61e698ba326ba82f"
+    },
+    {
+      "id": "backend-decoder",
+      "source": ".local/new-player-oracle/backend-stats-tests.log",
+      "log": "backend-stats-tests.log",
+      "command": "node --test backend/test/gameplay-stats.test.mjs",
+      "passed_tests": 3,
+      "scope": "JVM vector decoding with signed Java arithmetic/64-bit sign extension, UTF8prefix, signed tutorial, truncation and version refusal",
+      "log_sha256": "4bc1ba401ce11529af0e9e1cbe15b4d1d54f96ed2712cdf017c008de55fd2f19"
+    },
+    {
+      "id": "adoption-origin",
+      "source": ".local/new-player-oracle/adoption-origin-host-tests.log",
+      "log": "adoption-origin-host-tests.log",
+      "command": "PYTHONPATH=tests JAVA_HOME=/workspace/tooling/jdk-25 python3 -m unittest test_cloud_save_journal test_save_archive_database_cloud -v",
+      "passed_tests": 2,
+      "seconds_reported": 22.137,
+      "printed_sqlite_checks": 55,
+      "scope": "actual journal31 checks incl origin+private adoption grant, controlled archive restore24 incl remote origin and transactional receipts",
+      "log_sha256": "e492615a98fb5147d514a9f64085a411ec57a01471c00d5324795241e8fcfa37"
+    }
+  ],
+  "total_passed_tests": 7,
+  "adb_or_android_build": false,
+  "normal_player_database_modified": false,
+  "real_credentials_used_in_tests": false,
+  "limitations": [
+    "These focused tests run on host JVM/Node and real host SQLite through thin Android peers; no APK/device/lifecycle/network verification is implied.",
+    "JSONObject is a map peer; Android HTTP JSON parsing is outside the helper fixture.",
+    "Original gameplay proof separately includes a numeric read-only decode of an existing private normal backup, with no binding/token/raw save bytes exported."
+  ],
+  "source_sha256_at_archival": {
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/NewPlayerDefaults.kt": "fe6fe6508bced22e0637481c80c4b0545c179dee38bc252d41211d75f651650b",
+    "app/src/main/java/com/quanhoang/greenfarm3/S800x480/GameRuntime.java": "1e366697b39695f9e6df7440e33b463f35cfc11ab8577d68c7a991661fc1c035",
+    "app/src/main/java/com/quanhoang/greenfarm3/S800x480/FarmGameEngine.java": "69f5550dbc9ebd169e32c71bdb32f3166b97c3d2adef24c0ed5f32e84559c9eb",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/CloudSaveJournal.kt": "db6f7410cb3bbef12ba127fa4171d492060b5e7c30d1f082951125d95f9ea8ae",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/migration/SaveArchiveDatabase.kt": "66faff8da6cc4775f4428d905d96fadd7eeb12361445381ba902408352107fde",
+    "backend/src/services/original-gameplay-stats.js": "79bb37988984de94342eddeaf5fadd8cf67f613efeb6c67c5d2b27b1295a0472",
+    "backend/test/gameplay-stats.test.mjs": "1bd3362726e4c668a128900ed69f573211eafbcd35a1217dc730b0940a529363",
+    "tests/test_new_player_defaults.py": "86dcb321f23bc3e10cdcd6e79ff64459192a979314e60f4594f490aebcf8cb8c",
+    "tests/test_cloud_save_journal.py": "04939485e489dfed685ef76b39c92a63814cccc3bb70d5e52abc6b6d25919e33",
+    "tests/test_save_archive_database_cloud.py": "8095066f75f21cacb5efcbe30d359cb414a5f9cabade13a4bc73bac358b2e5b1"
+  }
+}

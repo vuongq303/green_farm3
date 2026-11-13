@@ -3,7 +3,7 @@ import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { normalizeBackendBaseUrl, readBackendBaseUrl, loadConfig, loadDatabaseConfig } from '../src/config.js';
+import { normalizeBackendBaseUrl, readBackendBaseUrl, loadConfig, loadDatabaseConfig, loadMysqlDatabaseConfig } from '../src/config.js';
 
 const valid = 'http://10.37.233.55:8787/';
 
@@ -28,7 +28,7 @@ test('backend reads the same one root property and fails on missing/duplicate/ba
   }
 });
 
-test('runtime config rejects split endpoint variables, mismatched port and missing MySQL credentials', t => {
+test('runtime uses a persistent SQLite path and preserves explicit legacy migration detection', t => {
   const directory = mkdtempSync(join(tmpdir(), 'greenfarm-runtime-config-'));
   t.after(() => rmSync(directory, { recursive: true }));
   const file = join(directory, 'gradle.properties');
@@ -41,5 +41,9 @@ test('runtime config rejects split endpoint variables, mismatched port and missi
   for (const key of ['PUBLIC_BASE_URL', 'BIND_HOST', 'BACKEND_BASE_URL']) assert.throws(() => loadConfig({ ...env, [key]: valid }), /Remove/u);
   assert.throws(() => loadConfig({ ...env, PORT: '8788' }), /PORT must match/u);
   assert.throws(() => loadConfig({ ...env, RESEARCH_SESSION_SECRET: '' }), /RESEARCH_SESSION_SECRET/u);
-  assert.throws(() => loadDatabaseConfig({ ...env, DB_PASSWORD: '' }), /DB_PASSWORD/u);
+  assert.equal(config.database.requiresLegacyImport, true);
+  assert.match(config.database.filename, /data[/\\]green-farm\.sqlite$/u);
+  assert.equal(loadDatabaseConfig({}).requiresLegacyImport, false);
+  for (const path of [':memory:', '', 'file:memory', join(tmpdir(), 'temporary.sqlite')]) assert.throws(() => loadDatabaseConfig({ SQLITE_PATH: path }), /SQLITE_PATH/u);
+  assert.throws(() => loadMysqlDatabaseConfig({ ...env, DB_PASSWORD: '' }), /DB_PASSWORD/u);
 });

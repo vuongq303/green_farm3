@@ -24,6 +24,12 @@ object SaveTransferIdentity {
         context = application
     }
 
+    /** A same-process cloud restore has committed a different gameplay blob. */
+    @JvmStatic @Synchronized fun invalidate() {
+        importedBinding = null
+        checked = false
+    }
+
     @JvmStatic fun matches(savedBinding: String?, currentDeviceBinding: String?): Boolean {
         if (savedBinding != null && savedBinding == currentDeviceBinding) return true
         if (savedBinding == null) return false

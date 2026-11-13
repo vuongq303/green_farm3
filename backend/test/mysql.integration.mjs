@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { createServer } from 'node:net';
 import { after, test } from 'node:test';
-import { loadDatabaseConfig, loadEnvironment } from '../src/config.js';
+import { loadMysqlDatabaseConfig as loadDatabaseConfig, loadEnvironment } from '../src/config.js';
 import { createMysqlStore, createPoolFromConfig } from '../src/db/store.js';
 import { migrate } from '../src/db/migrate.js';
 

@@ -53,11 +53,14 @@ open class GloftGF2F : MIDlet() {
 
     public override fun al(unconditional: Boolean) {
         if (acw == null) return
+        if (!ProgressSaveController.flushForLifecycle()) return
+        // System-driven destruction may not leave time for a network roundtrip;
+        // the same local transaction has already retained the pending upload.
+        BackendCloudController.localCommitAvailable()
         FarmGameEngine.HH()
         FarmGameEngine.EZ()
         FarmGameEngine.Ms()
         FarmGameEngine.rE()
-        if (!ProgressSaveController.flushForLifecycle()) return
         GameRuntime.be("GLLib.quit")
         GameRuntime.Qn = -1
     }

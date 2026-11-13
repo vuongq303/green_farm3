@@ -5120,6 +5120,10 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
     }
 
     public int kR() {
+        Integer initialLanguage = NewPlayerDefaults.startupLanguageOverride();
+        if (initialLanguage != null) {
+            return initialLanguage.intValue();
+        }
         int i = -1;
         try {
             String property = System.getProperty("microedition.locale");

@@ -1,0 +1,58 @@
+{
+  "archived_at": "2026-11-13T12:19:40.255349+00:00",
+  "working_directory": "repository root",
+  "command": "PYTHONPATH=tests JAVA_HOME=/workspace/tooling/jdk-25 python3 -m unittest test_save_transfer_archive test_save_archive_database_cloud test_cloud_migration_backup test_cloud_save_journal -v",
+  "result": "passed",
+  "unittest_cases_passed": 9,
+  "elapsed_seconds_reported": 35.288,
+  "host_sqlite_version": "3.53.1",
+  "implementation": "production Kotlin executed on the host JVM; thin Android API peers delegate SQL to actual Python SQLite connections",
+  "log": "host-tests.log",
+  "log_sha256": "f62e2c26adb5aa1c7e8c2bb11c8f42774b659856da2ab8e0a5027325e771fd00",
+  "suites": [
+    {
+      "module": "test_save_transfer_archive",
+      "unittest_cases": 6,
+      "scope": "actual binary codec, exact roundtrip, corruption/truncation/bounds, metadata/UTF-8 validation"
+    },
+    {
+      "module": "test_save_archive_database_cloud",
+      "unittest_cases": 1,
+      "printed_checks": 23,
+      "scope": "actual Kotlin archive installation with SQLite, schema4/5, ownership/receipt guards, rollback, export privacy, backup and binding cache"
+    },
+    {
+      "module": "test_cloud_migration_backup",
+      "unittest_cases": 1,
+      "printed_checks": 11,
+      "scope": "actual Kotlin logical backup with SQLite plus independent binary decoder comparing every source table/typed row/column/DDL"
+    },
+    {
+      "module": "test_cloud_save_journal",
+      "unittest_cases": 1,
+      "printed_checks": 26,
+      "scope": "actual cloud journal, atomic farm+outbox, coalescing, UUID persistence, CAS/ACK/retry guards, conflict/test-marker handling"
+    }
+  ],
+  "normal_player_database_opened": false,
+  "real_credentials_used": false,
+  "adb_or_android_build_run": false,
+  "limitations": [
+    "Host SQLite and Android API peers do not establish device-specific Android SQLite, lifecycle, UI, actual gameplay or networking behavior.",
+    "Synthetic opaque game records are deliberately not real loadable player farms.",
+    "GameSaveStore schema upgrade call placement was reviewed; this host fixture directly executes the real journal/backup and archive code, not Android SQLiteOpenHelper.",
+    "Schema5 linked manual archive import is intentionally refused; cloud restore requires matching verified owner and empty outbox."
+  ],
+  "source_sha256_at_archival": {
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/migration/SaveArchive.kt": "2603b7458a35e3fa183e4bcd6eb59e5869335a1d45a10277bb8482a2df137c92",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/migration/SaveArchiveDatabase.kt": "8b0166a14a74c926ff695adfe869aca011b9e0fd57a8da72e461cb516dd78e78",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/migration/SaveTransferIdentity.kt": "df8e1087556956fdd305064807be270f6c14065823eb809c2a1cdc7836989a52",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/migration/CloudMigrationBackup.kt": "e4ef7dcbd918c17076933045c4e66c0358468a1778ec6000277bc5d30e31dde3",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/CloudSaveJournal.kt": "6dc4bd0bff64316302e12ed317d64e09ec1b8830b97aa5052914018c51f9dbd7",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/GameSaveStore.kt": "aec335fa306afe86fea4fd58ea01ae5f51630ebd9e761d09dbd3df3aa0700db6",
+    "tests/test_save_transfer_archive.py": "fa009325a3a1d46601a88535beaa914e637d6d2b2e6f6e508b2c1cbd8ff821a7",
+    "tests/test_save_archive_database_cloud.py": "8fa7d8dd0b3b2ed20bc76ae6875856fe1d11ad409c6f7cce52da86336a4ae5ce",
+    "tests/test_cloud_migration_backup.py": "2d83f925b1c1cce171bff46a3bc41d0bde1c82475d1bb84d0d9209b302e3dd4b",
+    "tests/test_cloud_save_journal.py": "0c62bf8ec906b9b25759f5a9cc3eaf5d75c26bb6d1c36adc3a870df71f22adfa"
+  }
+}

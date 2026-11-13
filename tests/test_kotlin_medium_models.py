@@ -151,7 +151,7 @@ class KotlinMediumModelsTest(unittest.TestCase):
             canonical = work / 'canonical-source'
             canonical.mkdir()
             sources = []
-            for name in ('e', 'bs', 'be', 'j', 'bl', 'b'):
+            for name in ('e', 'bs', 'be', 'j', 'bl', 'b', 'ServiceAvailability'):
                 text = legacy_fixture_names((core / (name + '.kt')).read_text())
                 declaration = 'package ' + qualified_package()
                 self.assertIn(declaration, text)
@@ -168,6 +168,11 @@ class KotlinMediumModelsTest(unittest.TestCase):
                 result = subprocess.run([str(jdk_tool('java')), '-cp', runtime_classpath(folder, work, original), PACKAGE.replace('/', '.') + '.MediumKotlinChecks'], capture_output=True, text=True, timeout=60)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 outputs.append(result.stdout.strip())
-            self.assertEqual(outputs[0], outputs[1])
+            # Provider callbacks are intentionally retired. Keep the original
+            # bytecode oracle for the five unchanged gameplay/model groups;
+            # tests/test_retired_provider_services.py verifies the new policy.
+            self.assertEqual(outputs[0].splitlines()[:-1], outputs[1].splitlines()[:-1])
+            self.assertTrue(outputs[0].splitlines()[-1].startswith('PASS medium Kotlin differential ads '))
+            self.assertNotEqual(outputs[0].splitlines()[-1], outputs[1].splitlines()[-1])
             self.assertIn('PASS medium Kotlin differential', outputs[1])
             print(outputs[1])

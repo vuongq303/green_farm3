@@ -1,0 +1,75 @@
+{
+  "vectors": [
+    {
+      "level": 1,
+      "experience": 0,
+      "coins": "2000",
+      "cash": 50,
+      "encodedHex": "f0ddbaabf0dfbaabf07fb5abfffffffff0bbbaab"
+    },
+    {
+      "level": 1,
+      "experience": 12,
+      "coins": "0",
+      "cash": 0,
+      "encodedHex": "f0ddbaabf0c7baabf0dfbaabfffffffff0dfbaab"
+    },
+    {
+      "level": 2,
+      "experience": 18,
+      "coins": "99999999",
+      "cash": 3000000,
+      "encodedHex": "f0dbbaabf0fbbaabf0217b40f4fffffff05f37f0"
+    },
+    {
+      "level": 49,
+      "experience": 249999,
+      "coins": "123456",
+      "cash": 98765,
+      "encodedHex": "f0bdbaabf0c11bacf05f7ea8fffffffff045b9a8"
+    },
+    {
+      "level": 50,
+      "experience": 0,
+      "coins": "99999999",
+      "cash": 3000000,
+      "encodedHex": "f0bbbaabf0dfbaabf0217b40f4fffffff05f37f0"
+    }
+  ],
+  "knownNormalBackup": {
+    "offsetFromPrefixEnd": 1335,
+    "level": 1,
+    "experience": 7,
+    "coins": "1900",
+    "cash": 50,
+    "tutorial": 23
+  },
+  "method": "Original Java methods extracted verbatim; original APK DEX signed shifts/endian instructions independently inspected",
+  "original_apk_sha256": "34ce4414370d66e6e0ed06d63612b9fe63b27c902bda8c6220c7bc013d464c5b",
+  "original_dex_methods_sha256": "42a2d89bac97d418c09d2ba6f88b189225bd69f9fe5b6e01d99087ceee888af0",
+  "oracle_java_sha256": "0eb2fe5ffc7adec3b6ea373580f431caeaa35f902dd2f5b7ea861c072f014b8b",
+  "verbatim_methods_sha256": "a031bc37e67311a939e436de309f0084d1c82e2ce535a8b7042199569e1bc509",
+  "primitive_methods": [
+    "GameRuntime.d(byte[],int,int)",
+    "GameRuntime.a(byte[],int,long)",
+    "GameRuntime.l(byte[],int)",
+    "GameRuntime.m(byte[],int)",
+    "FarmGameEngine.ih(int)",
+    "FarmGameEngine.ii(int)",
+    "FarmGameEngine.w(long)",
+    "FarmGameEngine.x(long)"
+  ],
+  "offset_derivation": {
+    "prefixEnd": "5 + binding UTF-8 byte length",
+    "tutorial": "prefixEnd + 4",
+    "playerFields": "prefixEnd + 27 + 4*23 + 304*4",
+    "level": 0,
+    "experience": 4,
+    "coinsInt64": 8,
+    "cash": 16,
+    "plots": 22,
+    "trees": 30,
+    "animals": 34,
+    "ponds": 42
+  }
+}

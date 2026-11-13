@@ -40,6 +40,13 @@ object ProgressSaveController {
     private var captureCount = 0L
     private var totalCaptureNanos = 0L
     private var legacyCallbackSequence = 0L
+    @Volatile private var initializingNewPlayer = false
+    private var initializationCapture = false
+    private var initializationSequence = -1L
+    private val initializationLock = Any()
+    private var initializationAuxiliary: GameSaveStore.Snapshot? = null
+    private var initializationAuxiliarySequence = 0L
+    private object InitialPlayerCheckpoint : AsyncSaveQueue.RetryableCheckpoint
 
     private class LanguageCheckpoint(
         val language: Int,
@@ -85,6 +92,13 @@ object ProgressSaveController {
         errorNoticeVisible = false
         saveFailure = false
         languageCheckpoint = null
+        initializingNewPlayer = false
+        initializationCapture = false
+        initializationSequence = -1L
+        synchronized(initializationLock) {
+            initializationAuxiliary = null
+            initializationAuxiliarySequence = 0L
+        }
         lastObservedRequestSequence = requestedSequence.get()
         durableRequestSequence = lastObservedRequestSequence
         legacyCallbackSequence = durableRequestSequence
@@ -98,12 +112,13 @@ object ProgressSaveController {
 
     @JvmStatic fun atSnapshotBoundary(): Boolean = snapshotBoundary
     @JvmStatic fun isForcedCheckpoint(): Boolean = forcedCheckpoint
-    @JvmStatic fun canSerialize(): Boolean = worldEligible() && GameSaveStore.isCaptureAvailable()
+    @JvmStatic fun canSerialize(): Boolean = (!initializingNewPlayer || initializationCapture) && worldEligible() && GameSaveStore.isCaptureAvailable()
+    @JvmStatic fun isInitializationPending(): Boolean = initializingNewPlayer
 
     /** The Android Menu key may expose existing settings during a tutorial. */
     @JvmStatic
     fun isWorldReadyForMenu(): Boolean = worldReady && globalLoaded && ownFarmLoaded && !loadBlocked &&
-        languageCheckpoint == null
+        languageCheckpoint == null && !initializingNewPlayer
 
     private fun worldEligible(): Boolean {
         val engineState = FarmGameEngine.currentEngineState()
@@ -122,23 +137,47 @@ object ProgressSaveController {
     @JvmStatic
     fun enterWorld() {
         if (!globalLoaded || !ownFarmLoaded || loadBlocked) return
+        val initializePlayer: Boolean
         try {
             GameSaveStore.finishLoading()
+            initializePlayer = NewPlayerDefaults.onWorldReady()
         } catch (failure: RuntimeException) {
             loadingFailed(failure)
             return
         }
         worldReady = true
+        initializingNewPlayer = initializePlayer
         pendingUnloadSaveSequence = -1L
         GameSaveStore.setWriteDispatcher(object : GameSaveStore.WriteDispatcher {
             override fun changed(mutation: GameSaveStore.Snapshot) {
                 val sequence = requestedSequence.incrementAndGet()
                 // Detached auxiliary SDK/settings records share the same writer
                 // without serializing the mutable farm on this callback thread.
-                sqliteWriteQueue!!.submit(mutation, sequence, null)
+                synchronized(initializationLock) {
+                    if (initializingNewPlayer) {
+                        initializationAuxiliary = GameSaveStore.coalesceSnapshots(initializationAuxiliary, mutation)
+                        initializationAuxiliarySequence = maxOf(initializationAuxiliarySequence, sequence)
+                    } else sqliteWriteQueue!!.submit(mutation, sequence, null)
+                }
             }
         })
         requestSave()
+        if (initializePlayer) {
+            initializationCapture = true
+            try { initializationSequence = capture(true, InitialPlayerCheckpoint) }
+            finally { initializationCapture = false }
+            if (initializationSequence < 0L) {
+                // No gameplay/input is accepted until a valid first snapshot is
+                // durable. An encoding failure requires reopening this new farm.
+                val activity = foregroundActivity()
+                activity?.runOnUiThread {
+                    if (!activity.isFinishing) AlertDialog.Builder(activity)
+                        .setTitle("Chưa thể khởi tạo bản lưu")
+                        .setMessage("Chưa ghi được checkpoint ban đầu. Hãy đóng và mở lại game để thử lại; các dữ liệu khác được giữ nguyên.")
+                        .setCancelable(false).setPositiveButton("Đóng") { _, _ -> activity.finish() }.show()
+                }
+            }
+        }
     }
 
     @JvmStatic
@@ -224,6 +263,12 @@ object ProgressSaveController {
     @JvmStatic
     fun frameFinished() {
         drainCompletions()
+        if (initializingNewPlayer) return
+        if (BackendCloudController.isQuitPending()) {
+            // No automatic capture can run after deferred quit clears entities.
+            BackendCloudController.frameFinished()
+            return
+        }
         if (worldReady && languageCheckpoint == null && sqliteWriteQueue!!.isIdle() &&
             !hasPendingChanges() && legacyCallbackSequence < durableRequestSequence) {
             legacyCallbackSequence = durableRequestSequence
@@ -295,6 +340,7 @@ object ProgressSaveController {
             }
             GameSaveStore.beginCapture(FarmGameEngine.aZB == 0)
             if (FarmGameEngine.aZB == 0) FarmGameEngine.av(false) else FarmGameEngine.rs()
+            NewPlayerDefaults.captureInitializationMarker()
             val snapshot = GameSaveStore.finishCapture()
             sqliteWriteQueue!!.submit(snapshot, sequence, checkpoint)
             batchPolicy.captured()
@@ -333,6 +379,15 @@ object ProgressSaveController {
                 Log.e("GreenFarmSave", "write_failed; absolute snapshot retained for retry", result.failure)
             }
             val checkpoint = result.checkpoint
+            if (checkpoint === InitialPlayerCheckpoint && result.failure == null) {
+                synchronized(initializationLock) {
+                    initializingNewPlayer = false
+                    initializationAuxiliary?.let { sqliteWriteQueue!!.submit(it, initializationAuxiliarySequence, null) }
+                    initializationAuxiliary = null
+                    initializationAuxiliarySequence = 0L
+                }
+                requestSave()
+            }
             if (checkpoint is LanguageRollback) {
                 val language = checkpoint.language
                 if (language === languageCheckpoint && result.failure == null) {
@@ -428,20 +483,28 @@ object ProgressSaveController {
         // static initialization before the MIDlet exists.
         if (sqliteWriteQueue == null) return@synchronized true
         FarmGameEngine.cancelMovePreviewForInterruption()
-        drainCompletions()
-        if (languageCheckpoint == null && worldEligible()) {
-            observeChanges(SystemClock.uptimeMillis())
-            if (capture(true, null) < 0L) return@synchronized false
+        val previousMoveMode = FarmGameEngine.avD
+        // The original move checkpoint already uses this idle serialization
+        // view when edit mode has no selected entity. Do the same on exit/home.
+        if (previousMoveMode == 3 && FarmGameEngine.avE == null) FarmGameEngine.avD = -1
+        try {
+            drainCompletions()
+            if (languageCheckpoint == null && worldEligible()) {
+                observeChanges(SystemClock.uptimeMillis())
+                if (capture(true, null) < 0L) return@synchronized false
+            }
+            if (!sqliteWriteQueue!!.awaitIdle(10000L)) return@synchronized false
+            drainCompletions()
+            !saveFailure && sqliteWriteQueue!!.durableSequence() >= requestedSequence.get()
+        } finally {
+            if (previousMoveMode == 3 && FarmGameEngine.avE == null && FarmGameEngine.avD == -1) FarmGameEngine.avD = previousMoveMode
         }
-        if (!sqliteWriteQueue!!.awaitIdle(10000L)) return@synchronized false
-        drainCompletions()
-        !saveFailure && sqliteWriteQueue!!.durableSequence() >= requestedSequence.get()
     }
 
     @JvmStatic
     fun prepareWorldUnload(): Boolean = synchronized(FarmGameEngine::class.java) {
         drainCompletions()
-        if (loadBlocked || languageCheckpoint != null) return@synchronized false
+        if (loadBlocked || languageCheckpoint != null || initializingNewPlayer) return@synchronized false
         if (!worldReady) return@synchronized sqliteWriteQueue?.isIdle() ?: true
         if (pendingUnloadSaveSequence >= 0L && (pendingUnloadAction != FarmGameEngine.apA || pendingUnloadTargetState != FarmGameEngine.apz ||
                 pendingUnloadStackDepth != FarmGameEngine.apB)) pendingUnloadSaveSequence = -1L
@@ -472,7 +535,7 @@ object ProgressSaveController {
 
     @JvmStatic
     fun requestLanguageCheckpoint(language: Int, completion: LanguageRestartController.SaveCompletion): Boolean {
-        if (languageCheckpoint != null || loadBlocked || sqliteWriteQueue == null) return false
+        if (languageCheckpoint != null || loadBlocked || sqliteWriteQueue == null || initializingNewPlayer) return false
         val request = LanguageCheckpoint(language, completion)
         languageCheckpoint = request
         request.sequence = requestLanguageCapture(request)

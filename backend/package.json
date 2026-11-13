@@ -1,6 +1,6 @@
 {
   "name": "green-farm-local-research-backend",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -11,7 +11,10 @@
     "dev": "node --watch src/main.js",
     "migrate": "node scripts/migrate.js",
     "test": "node --test test/*.test.mjs",
-    "test:mysql": "node --test test/mysql.integration.mjs test/http-mysql.integration.mjs"
+    "test:sqlite": "node --test test/sqlite-*.test.mjs test/new-player-defaults.test.mjs test/gameplay-stats.test.mjs test/initial-snapshot-policy.test.mjs test/mysql-preservation.test.mjs",
+    "test:mysql": "node --test test/mysql.integration.mjs",
+    "export:mysql": "node scripts/export-mysql.js",
+    "import:mysql": "node scripts/import-mysql.js"
   },
   "dependencies": {
     "mysql2": "3.24.6"

@@ -241,6 +241,114 @@ class LocalBackendPackagingTest(unittest.TestCase):
                 self.assertEqual(source.read_bytes(), contents)
                 self.assertEqual(hardlink.read_bytes(), contents)
 
+    def policy_fixture(self):
+        disabled = self.directory / 'disabled-sdk.dex'
+        disabled.write_bytes(b'dex\n035\0SDK lifecycle policy fixture')
+        policy = {'schema_version': 1, 'policy': 'facebook-and-ads-lifecycle-disabled',
+                  'target_class': 'Ljavax/microedition/midlet/MIDlet;',
+                  'facebook_lifecycle_calls_disabled': 12, 'ads_lifecycle_calls_disabled': 12,
+                  'native_fullscreen_queries_disabled': 2, 'native_back_handlers_disabled': 1,
+                  'instruction_widths_preserved': True, 'inverse_target_semantics_verified': True,
+                  'unchanged_other_classes_verified': True,
+                  'input_dex_sha256': build.sha256(self.dex.read_bytes()),
+                  'output_dex_sha256': build.sha256(disabled.read_bytes())}
+        report = disabled.with_suffix('.dex.json')
+        report.write_text(json.dumps(policy))
+        return disabled, report, policy
+
+    def test_sdk_policy_is_bound_to_exact_previous_and_final_dex(self):
+        disabled, report, policy = self.policy_fixture()
+        build.prepare(self.original, self.base, self.dex, self.output, disabled_sdk_dex=disabled)
+        with zipfile.ZipFile(self.output) as output:
+            self.assertEqual(output.read('classes.dex'), disabled.read_bytes())
+        self.output.unlink()
+        for field, invalid in (('input_dex_sha256', '0' * 64), ('output_dex_sha256', '0' * 64),
+                               ('facebook_lifecycle_calls_disabled', 11), ('native_back_handlers_disabled', True),
+                               ('inverse_target_semantics_verified', False), ('unchanged_other_classes_verified', False),
+                               ('instruction_widths_preserved', False), ('target_class', 'Lwrong/Owner;')):
+            changed = dict(policy); changed[field] = invalid; report.write_text(json.dumps(changed))
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'SDK lifecycle provenance'):
+                build.prepare(self.original, self.base, self.dex, self.output, disabled_sdk_dex=disabled)
+            self.assertFalse(self.output.exists())
+
+    def test_sdk_policy_dex_and_proof_cannot_be_overwritten(self):
+        disabled, report, _ = self.policy_fixture()
+        for output in (disabled, report):
+            before = output.read_bytes()
+            with self.assertRaisesRegex(ValueError, 'overwrite'):
+                build.prepare(self.original, self.base, self.dex, output, disabled_sdk_dex=disabled)
+            self.assertEqual(output.read_bytes(), before)
+
+    def test_sdk_policy_follows_relocation_without_weakening_endpoint_binding(self):
+        relocated = self.directory / 'relocated.dex'; relocated.write_bytes(b'relocated DEX fixture')
+        relocation = {'schema_version': 1, 'from_package': 'com.gameloft.android.ANMP.GloftGF2F',
+                      'to_package': 'com.quanhoang.greenfarm3',
+                      'input_dex_sha256': build.sha256(self.dex.read_bytes()),
+                      'output_dex_sha256': build.sha256(relocated.read_bytes()),
+                      'legacy_game_class_definitions_remaining': 0, 'inverse_canonical_semantics_verified': True}
+        relocated.with_suffix('.dex.json').write_text(json.dumps(relocation))
+        disabled, report, policy = self.policy_fixture()
+        with self.assertRaisesRegex(ValueError, 'SDK lifecycle provenance'):
+            build.prepare(self.original, self.base, self.dex, self.output, relocated, disabled)
+        policy['input_dex_sha256'] = build.sha256(relocated.read_bytes()); report.write_text(json.dumps(policy))
+        build.prepare(self.original, self.base, self.dex, self.output, relocated, disabled)
+        with zipfile.ZipFile(self.output) as output:
+            self.assertEqual(output.read('classes.dex'), disabled.read_bytes())
+
+    def test_google_ads_pruning_requires_the_closed_set_and_previous_policy_dex(self):
+        disabled, _, _ = self.policy_fixture()
+        pruned = self.directory / 'pruned-ads.dex'; pruned.write_bytes(b'dex\n035\0closed Google Ads set removed')
+        proof = {'schema_version': 1, 'policy': 'remove-google-ads-presentation-sdk',
+                 'removed_class_count': 1880, 'retained_identifier_classes': sorted(build.GOOGLE_IDENTIFIER_CLASSES),
+                 'retained_structural_reference_audit_verified': True, 'retained_reflection_string_audit_verified': True,
+                 'retained_class_semantics_verified': True, 'inverse_class_set_semantics_verified': True,
+                 'input_dex_sha256': build.sha256(disabled.read_bytes()),
+                 'output_dex_sha256': build.sha256(pruned.read_bytes())}
+        report = pruned.with_suffix('.dex.json'); report.write_text(json.dumps(proof))
+        build.prepare(self.original, self.base, self.dex, self.output, disabled_sdk_dex=disabled, pruned_ads_dex=pruned)
+        with zipfile.ZipFile(self.output) as output:
+            self.assertEqual(output.read('classes.dex'), pruned.read_bytes())
+        self.output.unlink()
+        for field, invalid in (('removed_class_count', 1879), ('retained_identifier_classes', []),
+                               ('retained_structural_reference_audit_verified', False), ('retained_reflection_string_audit_verified', False),
+                               ('retained_class_semantics_verified', False), ('inverse_class_set_semantics_verified', False),
+                               ('input_dex_sha256', '0' * 64), ('output_dex_sha256', '0' * 64)):
+            changed = dict(proof); changed[field] = invalid; report.write_text(json.dumps(changed))
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'Google Ads pruning provenance'):
+                build.prepare(self.original, self.base, self.dex, self.output, disabled_sdk_dex=disabled, pruned_ads_dex=pruned)
+            self.assertFalse(self.output.exists())
+
+    def test_facebook_pruning_binds_original_profile_and_exact_sdk_set(self):
+        disabled, _, _ = self.policy_fixture()
+        google = self.directory / 'google-free.dex'; google.write_bytes(b'dex\n035\0Google Ads removed')
+        google_proof = {'schema_version': 1, 'policy': 'remove-google-ads-presentation-sdk',
+            'removed_class_count': 1880, 'retained_identifier_classes': sorted(build.GOOGLE_IDENTIFIER_CLASSES),
+            'retained_structural_reference_audit_verified': True, 'retained_reflection_string_audit_verified': True,
+            'retained_class_semantics_verified': True, 'inverse_class_set_semantics_verified': True,
+            'input_dex_sha256': build.sha256(disabled.read_bytes()), 'output_dex_sha256': build.sha256(google.read_bytes())}
+        google.with_suffix('.dex.json').write_text(json.dumps(google_proof))
+        facebook = self.directory / 'facebook-free.dex'; facebook.write_bytes(b'dex\n035\0Facebook removed, real profile data retained')
+        proof = {'schema_version': 1, 'policy': 'remove-facebook-sdk-and-provider-bridge',
+            'removed_facebook_class_count': 717, 'removed_provider_bridge_count': 24, 'removed_class_count': 741,
+            'retired_avatar_method': 'Lcom/gameloft/android2d/socialnetwork/i;->UN()Ljavax/microedition/lcdui/ao;',
+            'original_profile_canonical_sha256': '5b1b329c8487c068c8a2e1b4dbd2a0fdfabfa7a96faf7ec01acb0098ccd7fd12',
+            'retained_structural_reference_audit_verified': True, 'retained_reflection_string_audit_verified': True,
+            'retired_nullable_avatar_method_verified': True, 'other_profile_data_and_methods_preserved': True,
+            'retained_class_semantics_verified': True, 'inverse_class_set_and_method_semantics_verified': True,
+            'input_dex_sha256': build.sha256(google.read_bytes()), 'output_dex_sha256': build.sha256(facebook.read_bytes())}
+        report = facebook.with_suffix('.dex.json'); report.write_text(json.dumps(proof))
+        build.prepare(self.original, self.base, self.dex, self.output, disabled_sdk_dex=disabled, pruned_ads_dex=google, pruned_facebook_dex=facebook)
+        with zipfile.ZipFile(self.output) as output: self.assertEqual(output.read('classes.dex'), facebook.read_bytes())
+        self.output.unlink()
+        for field, invalid in (('removed_facebook_class_count', 716), ('removed_provider_bridge_count', 23),
+                ('retired_avatar_method', 'wrong'), ('original_profile_canonical_sha256', '0' * 64),
+                ('other_profile_data_and_methods_preserved', False), ('inverse_class_set_and_method_semantics_verified', False),
+                ('input_dex_sha256', '0' * 64), ('output_dex_sha256', '0' * 64)):
+            changed = dict(proof); changed[field] = invalid; report.write_text(json.dumps(changed))
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'Facebook SDK pruning provenance'):
+                build.prepare(self.original, self.base, self.dex, self.output, disabled_sdk_dex=disabled, pruned_ads_dex=google, pruned_facebook_dex=facebook)
+            self.assertFalse(self.output.exists())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,7 @@
 import { createResearchServer } from './server.js';
 import { loadEnvironment, loadConfig } from './config.js';
-import { createMysqlStore } from './db/store.js';
+import { createSqliteStore } from './db/sqlite.js';
+import { loadNewPlayerDefaults } from './services/new-player-defaults.js';
 
 async function closeStore(store) {
   try { await store.close(); }
@@ -12,27 +13,28 @@ async function closeStore(store) {
 
 async function main() {
   let config;
-  try { loadEnvironment(); config = loadConfig(); }
+  try { loadEnvironment(); config = loadConfig(); loadNewPlayerDefaults(config.newPlayerDefaultsFile); }
   catch (error) {
     console.error(error.message);
     process.exitCode = 1;
     return;
   }
 
-  const store = createMysqlStore(config.database);
+  let store;
   try {
-    // mysql2 pools connect lazily. Creating a pool does not prove that MySQL
-    // accepts the credentials or that the required migration has been applied.
+    store = createSqliteStore(config.database);
     const database = await store.health();
     console.log(JSON.stringify({ event: 'database_ready', schema_version: database.schemaVersion }));
-  } catch {
+  } catch (error) {
     console.error(JSON.stringify({
       event: 'startup_database_error',
-      code: 'DATABASE_UNAVAILABLE',
-      message: 'Cannot connect to MySQL or the required schema is not ready. Check DB_* in backend/.env, start MySQL and run npm run migrate before restarting.',
+      code: error?.code === 'LEGACY_MIGRATION_REQUIRED' ? 'LEGACY_MIGRATION_REQUIRED' : 'DATABASE_UNAVAILABLE',
+      message: error?.code === 'LEGACY_MIGRATION_REQUIRED'
+        ? 'Legacy MySQL configuration is present but its consistent export has not been imported. Follow docs/MYSQL_TO_SQLITE.md; do not silently start an empty account database. Use npm run migrate -- --new-sqlite only for an explicitly separate new instance.'
+        : 'Cannot open the configured SQLite file or the schema is not ready. Check SQLITE_PATH, directory permissions and run npm run migrate before restarting. Existing data is retained.',
     }));
     process.exitCode = 1;
-    await closeStore(store);
+    if (store) await closeStore(store);
     return;
   }
 
@@ -50,7 +52,7 @@ async function main() {
     void closeStore(store);
   });
   server.listen(config.port, config.host, () => {
-    console.log(JSON.stringify({ event: 'listening', host: config.host, port: config.port, backend_base_url: config.publicBaseUrl, persistence: 'mysql' }));
+    console.log(JSON.stringify({ event: 'listening', host: config.host, port: config.port, backend_base_url: config.publicBaseUrl, persistence: 'sqlite' }));
   });
   let closing = false;
   for (const signal of ['SIGINT', 'SIGTERM']) {

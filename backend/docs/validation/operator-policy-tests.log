@@ -1,0 +1,22 @@
+✔ first configured snapshot matches original JVM numeric bytes and frozen server defaults; subsequent normal spending is allowed (95.335458ms)
+✔ fresh profiles cannot override initial resources, marker or tutorial through request fields or blob (46.598798ms)
+✔ explicit configured language is checked while auto preserves a supported device-selected language (44.844639ms)
+✔ approved local-copy grants bind player, operation and hash; expiration/rollback/replay never reset an existing farm (47.622225ms)
+✔ approved copies preserve an old normal initialization marker and played resources; a grant never bypasses archive validation (28.50855ms)
+✔ real HTTP+SQLite isolates two players, commits full binary bytes and preserves sessions/save through restart (132.68204ms)
+✔ guest proof retries preserve identity; known owner missing/conflicting never creates a replacement account (33.525973ms)
+✔ idempotent receipts, stale/reordered writes and concurrent CAS cannot roll progress backwards (36.623009ms)
+✔ SQL failure rolls snapshot and operation receipt back together, then exact request can retry (32.970478ms)
+✔ busy SQLite is bounded, observable and preserves pending request for a later retry (115.907932ms)
+✔ invalid credentials/claims, corrupt archives and offline-test preset never overwrite an existing farm (32.427723ms)
+✔ legacy anonymous tokens remain usable for compatibility profile but cannot access strong save API (49.395932ms)
+✔ archive validator checks outer/record checksums and keeps opaque bytes unchanged (1.551703ms)
+✔ migration is idempotent, preserves existing data, backs up additions and rejects changed migration files (15.480364ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 626.363468

@@ -19,6 +19,11 @@ from android_build_tools import BUILD_TOOLS_VERSION, executable_name
 
 LEGACY_PACKAGE = 'com.gameloft.android.ANMP.GloftGF2F'
 APPLICATION_PACKAGE = 'com.quanhoang.greenfarm3'
+GOOGLE_IDENTIFIER_CLASSES = frozenset('Lcom/google/android/gms/ads/identifier/' + name + ';'
+    for name in ('AdvertisingIdClient', 'AdvertisingIdClient$Info', 'a', 'b', 'zzb', 'zzc'))
+FACEBOOK_BRIDGE_CLASSES = frozenset('Lcom/gameloft/android2d/socialnetwork/' + name + ';'
+    for name in ('aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'l', 'm', 'n', 'o', 'p',
+                 'q', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')) | {'Ljavax/microedition/midlet/v;'}
 GAME = 'L' + LEGACY_PACKAGE.replace('.', '/') + '/'
 REQUIRED = ('Ljavax/microedition/midlet/App;', 'Ljavax/microedition/midlet/MIDlet;',
             GAME + 'Start;', GAME + 'S800x480/GloftGF2F;')
@@ -247,8 +252,62 @@ def missing_original_components(root, definitions, target_game_package):
     return sorted(result)
 
 
+def reject_offline_test_classes(classes, package):
+    if package.endswith('.offlinetest'):
+        raise ValueError('Offline test application ID is not a backend application')
+    for descriptor in classes:
+        for prefix in (GAME, 'L' + APPLICATION_PACKAGE.replace('.', '/') + '/'):
+            if any(descriptor.startswith(prefix + 'S800x480/' + helper + ending)
+                   for helper in ('OfflineTestConfig', 'OfflineTestBalances', 'OfflineSession')
+                   for ending in (';', '$')):
+                raise ValueError('Offline test helper remains in backend APK: ' + descriptor)
+
+
+def verify_google_ads_absent(classes, require_identifiers=False):
+    for descriptor in classes:
+        if ((descriptor.startswith('Lcom/google/android/gms/ads/') and descriptor not in GOOGLE_IDENTIFIER_CLASSES)
+                or descriptor.startswith(('Lcom/google/android/gms/internal/ads/', 'Lcom/google/ads/'))
+                or descriptor == 'Lcom/google/android/gms/dynamite/descriptors/com/google/android/gms/ads/dynamite/ModuleDescriptor;'):
+            raise ValueError('Google Ads presentation SDK class remains: ' + descriptor)
+    if require_identifiers and not GOOGLE_IDENTIFIER_CLASSES.issubset(classes):
+        raise ValueError('A shared Google identifier class needed by unrelated services was removed')
+    return sorted(set(classes) & GOOGLE_IDENTIFIER_CLASSES)
+
+
+def verify_facebook_absent(classes):
+    for descriptor in classes:
+        if descriptor.startswith('Lcom/facebook/') or descriptor in FACEBOOK_BRIDGE_CLASSES:
+            raise ValueError('Facebook SDK class remains: ' + descriptor)
+
+
+def disabled_services_policy(root, original_root, backend_base_url):
+    application = next(n for n in root['children'] if n['tag'] == 'application')
+    original = next(n for n in original_root['children'] if n['tag'] == 'application')
+    nodes = application.get('children', [])
+    names = {n['attributes'].get('name', '') for n in nodes}
+    for node in nodes:
+        name = node['attributes'].get('name', '')
+        if name.startswith(('com.facebook.', 'com.google.android.gms.ads.')):
+            raise ValueError('Disabled Facebook/Google Ads component or metadata remains: ' + name)
+    if any('offline test' in n.get('attributes', {}).get('label', '').lower()
+           for n in (application, *nodes)):
+        raise ValueError('Offline test label remains in backend APK')
+    preserved = sorted({n['attributes'].get('name', '') for n in original.get('children', [])
+                        if n['attributes'].get('name', '').startswith(('com.google.',))
+                        and not n['attributes'].get('name', '').startswith('com.google.android.gms.ads.')})
+    if not set(preserved).issubset(names):
+        raise ValueError('Unrelated Google component or metadata was removed')
+    endpoints = [n['attributes'].get('value') for n in nodes
+                 if n['tag'] == 'meta-data' and n['attributes'].get('name') == 'greenfarm.backendBaseUrl']
+    if endpoints != [backend_base_url]:
+        raise ValueError('Client cloud backend metadata differs from the single configured backend origin')
+    return {'facebook_and_google_ads_manifest_removed': True,
+            'unrelated_google_components_and_metadata_preserved': preserved,
+            'cloud_backend_base_url': endpoints[0], 'offline_test_helpers_absent': True}
+
+
 def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
-               application_id=None, game_package=None):
+               application_id=None, game_package=None, disabled_social_ads=False):
     apk, original = Path(apk), Path(original)
     classes, dex_count = {}, 0
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(apk) as output:
@@ -283,6 +342,9 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
             if source.read(name) != output.read(name) or source.getinfo(name).compress_type != output.getinfo(name).compress_type:
                 raise ValueError('Assets/native bytes or compression changed: ' + name)
     package, application, launcher = manifest(apk, sdk)
+    reject_offline_test_classes(classes, package)
+    retained_identifier = verify_google_ads_absent(classes, disabled_social_ads)
+    verify_facebook_absent(classes)
     original_package, original_application, original_launcher = manifest(original, sdk)
     expected_package = application_id or (APPLICATION_PACKAGE if detected_package == APPLICATION_PACKAGE else original_package)
     expected_launcher = original_launcher.replace(LEGACY_PACKAGE, detected_package, 1)
@@ -310,7 +372,9 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
               'dex_count': dex_count, 'class_count': len(classes), 'payload_count': len(names),
               'game_package': detected_package,
               'legacy_game_class_definitions_remaining': sum(name.startswith(GAME) for name in classes)}
-    if backend_base_url:
+    result['retained_shared_google_identifier_classes'] = retained_identifier
+    result['facebook_sdk_class_definitions_remaining'] = 0
+    if backend_base_url or disabled_social_ads:
         result['network_policy'] = network_policy(apk, sdk, backend_base_url)
         with zipfile.ZipFile(original) as reference:
             original_definitions = {name for entry in reference.namelist() if DEX_NAME.fullmatch(entry)
@@ -318,6 +382,9 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
         original_missing = missing_original_components(manifest_tree(original, sdk), original_definitions, detected_package)
         result['verified_game_components'] = verify_game_components(manifest_tree(apk, sdk), classes, package, original_missing)
         result['known_dangling_original_components'] = original_missing
+        if disabled_social_ads:
+            result['disabled_services'] = disabled_services_policy(manifest_tree(apk, sdk),
+                manifest_tree(original, sdk), backend_base_url)
     return result
 
 
@@ -329,9 +396,10 @@ def main():
     parser.add_argument('--backend-base-url')
     parser.add_argument('--application-id', choices=(LEGACY_PACKAGE, APPLICATION_PACKAGE))
     parser.add_argument('--game-package', choices=(LEGACY_PACKAGE, APPLICATION_PACKAGE))
+    parser.add_argument('--disabled-social-ads', action='store_true')
     args = parser.parse_args()
     print(json.dumps(verify_apk(args.apk, args.original, args.sdk, args.metadata, args.backend_base_url,
-                              args.application_id, args.game_package), indent=2))
+                              args.application_id, args.game_package, args.disabled_social_ads), indent=2))
 
 
 if __name__ == '__main__':

@@ -181,6 +181,7 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
                     '--base', base, '--patched-dex', patchedDex,
                     '--sdk', sdkDirectory.get().asFile, '--keystore', keystore.get().asFile,
                     '--output', output]
+            File policyInput = patchedDex
             if (gamePackage.get() == 'com.quanhoang.greenfarm3') {
                 Map mergeReport = (Map) new JsonSlurper().parse(new File(mergedDex.absolutePath + '.json'))
                 if (!(mergeReport.game_symbols_renamed instanceof Boolean)) {
@@ -192,7 +193,17 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
                 if (mergeReport.game_symbols_renamed) relocationArguments.add('--rename-symbols')
                 runJava('RelocateGamePackage', *relocationArguments)
                 packageArguments.addAll(['--relocated-dex', relocatedDex])
+                policyInput = relocatedDex
             }
+            File disabledSdkDex = new File(work, 'disabled-sdk/classes.dex')
+            runJava('PatchDisabledSdkLifecycle', policyInput, disabledSdkDex)
+            packageArguments.addAll(['--disabled-sdk-dex', disabledSdkDex])
+            File prunedAdsDex = new File(work, 'pruned-ads/classes.dex')
+            runJava('PruneGoogleAds', disabledSdkDex, prunedAdsDex)
+            packageArguments.addAll(['--pruned-ads-dex', prunedAdsDex])
+            File prunedFacebookDex = new File(work, 'pruned-facebook/classes.dex')
+            runJava('PruneFacebookSdk', prunedAdsDex, prunedFacebookDex)
+            packageArguments.addAll(['--pruned-facebook-dex', prunedFacebookDex])
             runPython('build_local_backend.py', *packageArguments)
             if (!output.isFile()) {
                 throw new GradleException('The complete APK was not produced: ' + output)
@@ -200,7 +211,7 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
             runPython('verify_runtime_apk.py', '--apk', output,
                     '--original', original, '--sdk', sdkDirectory.get().asFile,
                     '--backend-base-url', endpoint, '--application-id', applicationId.get(),
-                    '--game-package', gamePackage.get())
+                    '--game-package', gamePackage.get(), '--disabled-social-ads')
             return output
         }
     }

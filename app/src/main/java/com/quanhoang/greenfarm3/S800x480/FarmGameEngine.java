@@ -14,8 +14,6 @@ import com.gameloft.adsmanager.JavaUtils;
 import com.gameloft.android2d.adsmanager.AdsManager;
 import com.gameloft.glads.AndroidWebView;
 import com.gameloft.glads.GLURLConnection;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.formats.NativeContentAd;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import java.lang.reflect.Array;
 import java.net.URLEncoder;
@@ -3371,20 +3369,21 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void Bc() {
+        if (!ServiceAvailability.advertisementsEnabled()) return;
         if (b.JU && previousEngineState() == 18) {
             b.JU = false;
-            AdsManager.ShowIncentivized("enter_section_video_bubble");
+            b.showIncentivized("enter_section_video_bubble");
             return;
         }
         if (b.JV && previousEngineState() == 61) {
             b.JV = false;
-            AdsManager.ShowIncentivized("enter_section_video_lucky_wheel");
+            b.showIncentivized("enter_section_video_lucky_wheel");
         } else if (b.JW && previousEngineState() == 63) {
             b.JW = false;
-            AdsManager.ShowIncentivized("enter_section_video_daily_stamp");
+            b.showIncentivized("enter_section_video_daily_stamp");
         } else if (previousEngineState() == 61) {
             b.JV = false;
-            AdsManager.ShowIncentivized("enter_section_video_lucky_wheel");
+            b.showIncentivized("enter_section_video_lucky_wheel");
         }
     }
 
@@ -3527,6 +3526,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void Bm() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
             aPi = true;
@@ -3601,6 +3601,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void Bn() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (!qN() || strBY == null || strBY.equals("off")) {
             return;
@@ -3848,6 +3849,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void CN() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         hb(23);
         try {
             Thread.sleep(2000L);
@@ -4172,6 +4174,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void Cp() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         int i;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
@@ -4835,6 +4838,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void Dq() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         gX(56);
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (!qN() || strBY == null || strBY.equals("off")) {
@@ -5917,6 +5921,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void Ek() {
+        if (!ServiceAvailability.advertisementsEnabled()) return;
         if (b.Kf) {
             if (b.JS == 0) {
                 b.JS = GameRuntime.L(5, 10);
@@ -6458,7 +6463,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                     String str2 = "Tap Feed Mill. :" + chVarArr8[0];
                     if (chVarArr8[0] != null) {
                         b(chVarArr8[0], 5, -100);
-                        chVarArr8[0].fx(AdRequest.MAX_CONTENT_URL_LENGTH);
+                        chVarArr8[0].fx(512);
                     }
                 }
                 if (bh(1, 53)) {
@@ -7000,7 +7005,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                     FarmEntity.b(1, 50, 10, chVarArr16, 1);
                     String str8 = "Outro crop. actorsFound. deactivate flag:" + chVarArr16[0];
                     if (chVarArr16[0] != null) {
-                        chVarArr16[0].fy(AdRequest.MAX_CONTENT_URL_LENGTH);
+                        chVarArr16[0].fy(512);
                     }
                 }
                 if (axW) {
@@ -7038,7 +7043,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                     FarmEntity[] chVarArr18 = new FarmEntity[1];
                     FarmEntity.b(1, 50, 10, chVarArr18, 1);
                     if (chVarArr18[0] != null) {
-                        chVarArr18[0].fx(AdRequest.MAX_CONTENT_URL_LENGTH);
+                        chVarArr18[0].fx(512);
                     }
                     O(1, 9, 1);
                 }
@@ -9657,11 +9662,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void Gc() {
-        try {
-            bq.F(aCF, "greenfarm3_cloud");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Retain the old restore notification/records for migration, but do
+        // not start its obsolete Seshat preview or claim a restore succeeded.
+        GameRuntime.bx("Show_Toast_Tiến trình được tải từ hồ sơ khách khi mở game. Chức năng khôi phục cũ đã ngừng sử dụng.");
+        if (currentEngineState() == 43) qB();
     }
 
     public static void Gd() {
@@ -12454,6 +12458,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void Io() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
             aPi = true;
@@ -13444,6 +13449,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void Jd() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         String str = "[fblogin] facebook connect reward. rms record:" + aPg;
         if (aPg) {
             aPk = false;
@@ -16888,6 +16894,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void Ml() {
+        if (!ServiceAvailability.advertisementsEnabled()) return;
         String lowerCase = GloftGF2F.acw.dr(aYU).toLowerCase();
         if (lowerCase.indexOf("kr") != -1) {
             lowerCase = "ko";
@@ -16898,11 +16905,12 @@ public final class FarmGameEngine extends GameRuntime implements av {
         } else if (lowerCase.indexOf("es") != -1 && aYU == 20) {
             lowerCase = "le";
         }
-        com.gameloft.a.a.o.VW().m(NativeContentAd.ASSET_HEADLINE, "InitialFeed.bin", lowerCase);
+        com.gameloft.a.a.o.VW().m("1001", "InitialFeed.bin", lowerCase);
         Mm();
     }
 
     private static void Mm() {
+        if (!ServiceAvailability.advertisementsEnabled()) return;
         int iMy = com.gameloft.a.a.o.VW().my();
         while (iMy != 0 && iMy != 1) {
             try {
@@ -16960,6 +16968,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void Mn() {
+        if (!ServiceAvailability.advertisementsEnabled()) return;
         if (!com.gameloft.a.a.o.VW().VY()) {
             try {
                 Ml();
@@ -16975,6 +16984,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void Mo() {
+        if (!ServiceAvailability.advertisementsEnabled()) return;
         if (com.gameloft.a.a.k.VR().fZ() && aYx) {
             if (com.gameloft.a.a.o.VW().VY() && b.Jn) {
                 aYF = true;
@@ -16994,6 +17004,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void Mq() {
+        if (!ServiceAvailability.advertisementsEnabled()) return;
         if (aYN && bz.om().fZ() && qO()) {
             bz.om().on();
             bc bcVar = new bc();
@@ -17943,6 +17954,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void a(int i, int i2, String str, String str2, int i3, int i4) {
+        if (!ServiceAvailability.advertisementsEnabled()) return;
         String str3 = "AdsManager_OnAdView :: location : " + str;
         if (str.equals("enter_section_iap_shop")) {
             b.JT = false;
@@ -17988,6 +18000,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void a(int i, int i2, boolean z, String str, String str2, String str3, int i3, int i4) {
+        if (!ServiceAvailability.advertisementsEnabled()) return;
         String str4 = "AdsManager_OnIncentivizedAdReward :: adProvider :" + i2 + "rewardDelivered : " + z + "location" + str2;
         if (Lc() && z) {
             try {
@@ -18263,7 +18276,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void a(int i, short[] sArr, int i2) {
-        if (MoreGamesRemoval.isWidget(i, i2)) {
+        if (MoreGamesRemoval.isWidget(i, i2) || ServiceAvailability.isUnavailableWidget(i, i2)) {
             return;
         }
         switch (sArr[0]) {
@@ -20358,7 +20371,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         int iA = FarmEntity.a(1, -1, ayO, ayQ, ayP, ayR, chVarArr, 100);
         for (int i9 = 0; i9 < iA; i9++) {
             if (!chVarArr[i9].fz(4096)) {
-                chVarArr[i9].fx(AdRequest.MAX_CONTENT_URL_LENGTH);
+                chVarArr[i9].fx(512);
                 if (chVarArr[i9].Kx == 54 && z && !chVarArr[i9].fz(32)) {
                     chVarArr[i9].fy(4);
                     chVarArr[i9].fy(16);
@@ -23230,6 +23243,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             atc[i][i2][i3] = atd[i][i2][i3];
         }
         MoreGamesRemoval.removeWidget(i, i2, atc[i][i2]);
+        ServiceAvailability.removeWidget(i, i2, atc[i][i2]);
     }
 
     public static void bd(boolean z) {
@@ -23369,7 +23383,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static boolean bg(int i, int i2) {
-        if (MoreGamesRemoval.isWidget(i, i2)) {
+        if (MoreGamesRemoval.isWidget(i, i2) || ServiceAvailability.isUnavailableWidget(i, i2)) {
             return false;
         }
         if (atc[i][i2][0] == 205) {
@@ -23410,7 +23424,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static boolean bh(int i, int i2) {
-        return !MoreGamesRemoval.isWidget(i, i2)
+        return !MoreGamesRemoval.isWidget(i, i2) && !ServiceAvailability.isUnavailableWidget(i, i2)
                 && atc[i][i2][0] == 205 && atc[i][i2][18] != 0;
     }
 
@@ -25323,11 +25337,11 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if (!z) {
             chVar.fy(4096);
             chVar.fx(8);
-            chVar.fx(AdRequest.MAX_CONTENT_URL_LENGTH);
+            chVar.fx(512);
         } else {
             chVar.fx(4096);
             chVar.fy(8);
-            chVar.fy(AdRequest.MAX_CONTENT_URL_LENGTH);
+            chVar.fy(512);
             chVar.aoR = null;
             chVar.amP = false;
         }
@@ -25529,6 +25543,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void dE(String str) {
+        if (!ServiceAvailability.advertisementsEnabled() && ServiceAvailability.isAdPlacement(str)) return;
         if (com.gameloft.a.a.o.VW().VY()) {
             try {
                 JSONObject jSONObjectDz = dz(str);
@@ -26423,7 +26438,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void e(int i, int i2, boolean z) {
-        if (MoreGamesRemoval.isWidget(i, i2)) {
+        if (MoreGamesRemoval.isWidget(i, i2) || ServiceAvailability.isUnavailableWidget(i, i2)) {
             z = false;
         }
         if (!aTK) {
@@ -26575,7 +26590,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void f(int i, int i2, boolean z) {
-        if (MoreGamesRemoval.isWidget(i, i2)) {
+        if (MoreGamesRemoval.isWidget(i, i2) || ServiceAvailability.isUnavailableWidget(i, i2)) {
             z = false;
         }
         if (!aTK) {
@@ -26776,12 +26791,16 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void fF(int i) {
+        if (ServiceAvailability.isRetiredAdScreen(i)) return;
+        i = ServiceAvailability.startupDestination(i, aZB);
         apz = i;
         apA = 2;
         Ff();
     }
 
     static void fG(int i) {
+        if (ServiceAvailability.isRetiredAdScreen(i)) return;
+        i = ServiceAvailability.startupDestination(i, aZB);
         if (apB < 15) {
             apz = i;
             apA = 3;
@@ -27504,7 +27523,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             if (i3 >= atc[i].length) {
                 return;
             }
-            if (!MoreGamesRemoval.isWidget(i, i3) && atc[i][i3][0] == 205 && atc[i][i3][5] > -1 && atc[i][i3][18] == 1 && atc[i][i3][10] == 1) {
+            if (!MoreGamesRemoval.isWidget(i, i3) && !ServiceAvailability.isUnavailableWidget(i, i3) && atc[i][i3][0] == 205 && atc[i][i3][5] > -1 && atc[i][i3][18] == 1 && atc[i][i3][10] == 1) {
                 short s = atc[i][i3][5];
                 short s2 = atc[i][i3][6];
                 a aVar = s < 1000 ? atf[s] : aZf[s - 1000];
@@ -27685,7 +27704,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void gO(int i) {
-        if (MoreGamesRemoval.isWidget((i >> 16) & 65535, i & 65535)) {
+        if (MoreGamesRemoval.isWidget((i >> 16) & 65535, i & 65535) || ServiceAvailability.isUnavailableWidget((i >> 16) & 65535, i & 65535)) {
             return;
         }
         switch ((i >> 16) & 65535) {
@@ -29789,7 +29808,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                                 E(currentEngineState(), true);
                             } else if (b.JQ == 3 && !Ki()) {
                                 gX(60);
-                                AdsManager.ShowIncentivized("enter_section_video_lucky_wheel");
+                                b.showIncentivized("enter_section_video_lucky_wheel");
                             } else {
                                 String strDt3 = dt(12525);
                                 if (strDt3 == null) {
@@ -30101,7 +30120,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void gY(int i) {
-        if (ax.aim && auT && !lz() && !AdsManager.IsAdOnScreen(3) && abg) {
+        if (ax.aim && auT && !lz() && !b.isAdOnScreen(3) && abg) {
             int i2 = (avg * 10) / 100;
             String str = "volume : " + i2 + " p_soundID : " + i;
             if (avl || ac.c(i, 1, i2, avq[i][1], true) <= -1) {
@@ -37485,7 +37504,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                         z6 = true;
                         break;
                     case 22:
-                        String strDt16 = dt(AdRequest.MAX_CONTENT_URL_LENGTH);
+                        String strDt16 = dt(512);
                         if (strDt16 == null) {
                             strDt16 = "";
                         }
@@ -39397,6 +39416,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void lb(int i) {
+        if (!ServiceAvailability.advertisementsEnabled()) return;
         if (!qO()) {
             E(currentEngineState(), true);
             return;
@@ -39412,7 +39432,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if (i == aRi + 1) {
             gX(60);
             le(aRi);
-            AdsManager.ShowIncentivized("enter_section_video_daily_stamp");
+            b.showIncentivized("enter_section_video_daily_stamp");
         }
     }
 
@@ -47157,12 +47177,13 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void wg() {
+        if (!ServiceAvailability.advertisementsEnabled()) return;
         if (!qO()) {
             E(currentEngineState(), true);
             return;
         }
         if (b.JO == 3) {
-            AdsManager.ShowIncentivized("enter_section_iap_shop");
+            b.showIncentivized("enter_section_iap_shop");
             return;
         }
         String strDt = dt(12525);
@@ -48227,14 +48248,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void xj() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
             E(currentEngineState(), true);
-            return;
-        }
-        if (aNm == 0) {
-            com.gameloft.android2d.socialnetwork.l.ao(ShareConstants.WEB_DIALOG_PARAM_MESSAGE, ShareConstants.WEB_DIALOG_PARAM_DATA);
-            gX(60);
             return;
         }
         hb(23);
@@ -48248,6 +48265,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void xk() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
             E(currentEngineState(), true);
@@ -48264,6 +48282,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void xl() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
             E(currentEngineState(), true);
@@ -48280,6 +48299,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void xm() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
             E(currentEngineState(), true);
@@ -48297,6 +48317,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void xn() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
             E(currentEngineState(), true);
@@ -48932,6 +48953,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void yU() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         hb(23);
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
@@ -49325,7 +49347,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             FarmEntity[] chVarArr = new FarmEntity[1];
             FarmEntity.b(1, 50, 10, chVarArr, 1);
             if (chVarArr[0] != null) {
-                chVarArr[0].fx(AdRequest.MAX_CONTENT_URL_LENGTH);
+                chVarArr[0].fx(512);
             }
             O(1, 9, 1);
             e(1, 53, true);
@@ -49352,6 +49374,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void yz() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
             aPi = true;
@@ -49873,6 +49896,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void zt() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         hb(23);
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (strBY == null || strBY.equals("off")) {
@@ -50228,7 +50252,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 }
             }
         }
-        if (com.gameloft.a.a.k.VR() != null) {
+        if (ServiceAvailability.advertisementsEnabled() && com.gameloft.a.a.k.VR() != null) {
             com.gameloft.a.a.k.VR().VT();
         }
     }
@@ -51014,37 +51038,42 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void IT() {
+        if (BackendCloudController.isQuitPending()) return;
         aOH = "";
         aOI = "";
         aOJ = "";
         switch (aOG) {
             case 1:
-                if (avD == 3 && !awV) {
-                    sv();
-                }
-                rE();
-                if (baf != null) {
-                    be("*************** saving tracking data before exiting **********************");
-                    baW.Close();
-                    baf.NF();
-                }
-                EZ();
-                Ms();
-                HH();
-                if (aZB > 0 && aZB <= 10) {
-                    axt = aMZ;
-                }
-                FarmEntity.oM();
-                rz();
-                aOO = true;
-                bbE = false;
-                try {
-                    Thread.sleep(2000L);
-                    break;
-                } catch (InterruptedException e) {
-                }
-                GameRuntime.be("GLLib.quit");
-                GameRuntime.Qn = -1;
+                BackendCloudController.requestQuit(new Runnable() {
+                    @Override public void run() {
+                        if (avD == 3 && !awV) {
+                            sv();
+                        }
+                        rE();
+                        // Settle earned reward particles before the immutable
+                        // checkpoint; oM does not discard the farm entities.
+                        FarmEntity.oM();
+                    }
+                }, new Runnable() {
+                    @Override public void run() {
+                        if (baf != null) {
+                            be("*************** saving tracking data before exiting **********************");
+                            baW.Close();
+                            baf.NF();
+                        }
+                        EZ();
+                        Ms();
+                        HH();
+                        if (aZB > 0 && aZB <= 10) {
+                            axt = aMZ;
+                        }
+                        rz();
+                        aOO = true;
+                        bbE = false;
+                        GameRuntime.be("GLLib.quit");
+                        GameRuntime.Qn = -1;
+                    }
+                });
                 break;
             case 2:
                 qB();
@@ -51176,11 +51205,18 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 CN();
                 break;
             case 24:
-                FarmEntity.oM();
-                rz();
-                bbE = false;
-                GameRuntime.be("GLLib.quit");
-                GameRuntime.Qn = -1;
+                BackendCloudController.requestQuit(new Runnable() {
+                    @Override public void run() {
+                        FarmEntity.oM();
+                    }
+                }, new Runnable() {
+                    @Override public void run() {
+                        rz();
+                        bbE = false;
+                        GameRuntime.be("GLLib.quit");
+                        GameRuntime.Qn = -1;
+                    }
+                });
                 break;
             case 55:
                 String str11 = "#-------- Confirm_CB - Status: " + apl;
@@ -59420,7 +59456,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                                             if (FarmEntity.pk()) {
                                                 fE(61);
                                             }
-                                        } else if (aZm.aoC == 17 && aZm.fz(AdRequest.MAX_CONTENT_URL_LENGTH)) {
+                                        } else if (aZm.aoC == 17 && aZm.fz(512)) {
                                             aZm.qq();
                                             String strDt8 = dt(646);
                                             if (strDt8 == null) {
@@ -63522,6 +63558,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void xi() {
+        if (!ServiceAvailability.facebookLoginEnabled()) return;
         boolean z = true;
         String strBY = GloftGF2F.acx.bY("conectivity");
         if (!qN() || strBY == null || strBY.equals("off")) {
@@ -63925,6 +63962,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         processPendingMoveInterruption();
         TutorialFlowController.frameStarted();
         try {
+        if (ProgressSaveController.isInitializationPending()) return;
         if (LanguageRestartController.frameStarted()) return;
         if (ProgressSaveController.isLoadBlocked()) {
             if (currentEngineState() == 4) qV();
@@ -64033,10 +64071,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if (currentEngineState() > 7 && aUb) {
             this.aYC = true;
         }
-        if (com.gameloft.a.a.k.VR().fZ()) {
+        if (ServiceAvailability.advertisementsEnabled() && com.gameloft.a.a.k.VR().fZ()) {
             com.gameloft.a.a.k.VR().h(GameRuntime.Qy);
         }
-        if (this.aYC) {
+        if (this.aYC && ServiceAvailability.advertisementsEnabled()) {
             if (this.aYD != 0) {
                 long jCurrentTimeMillis8 = System.currentTimeMillis();
                 if (w.Vl) {
@@ -64061,14 +64099,14 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 this.aYD = jCurrentTimeMillis;
             }
         }
-        if (com.gameloft.a.a.o.VW().VY() && !b.Jn && aUb && com.gameloft.android2d.d.b.Qm().ga() != null && !com.gameloft.android2d.d.b.Qm().ga().equals("")) {
+        if (ServiceAvailability.advertisementsEnabled() && com.gameloft.a.a.o.VW().VY() && !b.Jn && aUb && com.gameloft.android2d.d.b.Qm().ga() != null && !com.gameloft.android2d.d.b.Qm().ga().equals("")) {
             b.hL().Init();
         }
-        com.gameloft.a.a.k.VR().a(new ck(this));
+        if (ServiceAvailability.advertisementsEnabled()) com.gameloft.a.a.k.VR().a(new ck(this));
         if (currentEngineState() > 7 && aUb && !aYF) {
             Mo();
         }
-        if (FC() >= 3 && currentEngineState() == 18 && !aYu) {
+        if (ServiceAvailability.advertisementsEnabled() && FC() >= 3 && currentEngineState() == 18 && !aYu) {
             fE(65);
         }
         if (FC() < 3 || apr || aRu || !bbl || aTK) {
@@ -64162,7 +64200,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             baW.OnPause();
             baf.OnPause();
         }
-        if (com.gameloft.a.a.k.VR() != null) {
+        if (ServiceAvailability.advertisementsEnabled() && com.gameloft.a.a.k.VR() != null) {
             com.gameloft.a.a.k.VR().VS();
         }
         aOO = false;
@@ -66457,7 +66495,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                                 aKG = true;
                             }
                         } else if (chVar.Kx == 54 && u(chVar)) {
-                            if (chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && chVar.fz(8) && chVar.fz(32)) {
+                            if (chVar.fz(512) && chVar.fz(8) && chVar.fz(32)) {
                                 if (!aKI) {
                                     int i4 = (int) (j - chVar.amJ);
                                     String strDt17 = dt(90);
@@ -66474,7 +66512,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                                     a(strDt19, "launch", strL3, "adult", AppEventsConstants.EVENT_PARAM_VALUE_YES, ii(chVar.amI) - i4);
                                     aKI = true;
                                 }
-                            } else if (chVar.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && !chVar.fz(4) && !chVar.fz(16) && !chVar.anw && !aKJ) {
+                            } else if (chVar.fz(512) && !chVar.fz(4) && !chVar.fz(16) && !chVar.anw && !aKJ) {
                                 int i5 = (int) (j - (chVar.amB / 1000));
                                 String strDt20 = dt(91);
                                 String str5 = strDt20 == null ? "" : strDt20;
@@ -67116,6 +67154,13 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void aZ(boolean z) {
+        if (z) {
+            // The atomic local snapshot already owns a durable upload-journal
+            // entry. Coalesce its modern backend sync; never send the obsolete
+            // Seshat container or treat local durability as a server ACK.
+            BackendCloudController.localCommitAvailable();
+            return;
+        }
         if (aCD) {
             if (!z || (qN() && arg)) {
                 if (rv() == null) {
@@ -67140,14 +67185,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
                     String str11 = "Local EndSave err : " + bq.i(str9, false);
                     return;
                 }
-                bq.cz("me");
-                String str12 = "Cloud EndSave err : " + bq.i(str9, true);
-                long jCurrentTimeMillis = System.currentTimeMillis();
-                if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
-                }
-                aCC = jCurrentTimeMillis;
-                aCD = false;
             }
         }
     }
@@ -67472,6 +67509,8 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void fE(int i) {
+        if (ServiceAvailability.isRetiredAdScreen(i)) return;
+        i = ServiceAvailability.startupDestination(i, aZB);
         if (i == 39 && lN(298)) {
             return;
         }
@@ -67603,6 +67642,8 @@ public final class FarmGameEngine extends GameRuntime implements av {
                             }
                         }
                     }
+                    Integer initialLanguage = NewPlayerDefaults.startupLanguageOverride();
+                    if (initialLanguage != null) aYU = initialLanguage;
                     bt.eL(aYU);
                 }
                 if (aYU != 2 && aYU != 0 && aYU != 1 && aYU != 4 && aYU != 3 && aYU != 5 && aYU != 10 && aYU != 11 && aYU != 16 && aYU != 15 && aYU != 9 && aYU != 7 && aYU != 12 && aYU != 20) {
@@ -68470,7 +68511,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         boolean z2;
         int i3;
         try {
-            if (lz() || AdsManager.IsAdOnScreen(3)) {
+            if (lz() || b.isAdOnScreen(3)) {
                 return;
             }
             if (avr == i2) {
@@ -69226,10 +69267,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
         aDY = 2;
         aDZ = -1;
         aEa = 0;
-        if (qN()) {
-            bt.I("554013181278341", "14ef973e6547391af39befb40735f43d");
-            bt.ar(64, 64);
-        }
         String str4 = "Check, m_animalListIndex = " + aIJ;
         long jCurrentTimeMillis = System.currentTimeMillis();
         if (w.Vl) {
@@ -69451,17 +69488,17 @@ public final class FarmGameEngine extends GameRuntime implements av {
                             fE(9);
                             return true;
                         }
-                        if (currentTutorialStepIndex == 50 && aZm.aoC == 10 && aZm.fz(AdRequest.MAX_CONTENT_URL_LENGTH)) {
+                        if (currentTutorialStepIndex == 50 && aZm.aoC == 10 && aZm.fz(512)) {
                             axW = true;
                             fE(29);
                             return true;
                         }
                         if (aZm.aoC == 17) {
-                            if (aZm.fz(AdRequest.MAX_CONTENT_URL_LENGTH)) {
+                            if (aZm.fz(512)) {
                                 fE(26);
                                 return true;
                             }
-                        } else if (aZm.aoC == 14 && aZm.fz(AdRequest.MAX_CONTENT_URL_LENGTH) && currentTutorialStepIndex == 23) {
+                        } else if (aZm.aoC == 14 && aZm.fz(512) && currentTutorialStepIndex == 23) {
                             gX(36);
                             fE(28);
                             return true;

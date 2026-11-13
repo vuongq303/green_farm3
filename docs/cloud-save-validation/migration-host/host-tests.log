@@ -1,0 +1,77 @@
+test_binding_uses_verified_format4_layout_and_utf8 (test_save_transfer_archive.SaveTransferArchiveTest.test_binding_uses_verified_format4_layout_and_utf8) ... ok
+test_byte_exact_roundtrip_tombstones_times_and_language (test_save_transfer_archive.SaveTransferArchiveTest.test_byte_exact_roundtrip_tombstones_times_and_language) ... ok
+test_count_and_size_are_bounded_before_allocation (test_save_transfer_archive.SaveTransferArchiveTest.test_count_and_size_are_bounded_before_allocation) ... ok
+test_every_single_bit_mutation_is_rejected (test_save_transfer_archive.SaveTransferArchiveTest.test_every_single_bit_mutation_is_rejected) ... ok
+test_every_truncation_and_trailing_bytes_are_rejected (test_save_transfer_archive.SaveTransferArchiveTest.test_every_truncation_and_trailing_bytes_are_rejected) ... ok
+test_required_records_versions_generations_and_codec_flags (test_save_transfer_archive.SaveTransferArchiveTest.test_required_records_versions_generations_and_codec_flags) ... ok
+test_actual_kotlin_archive_installation_uses_real_sqlite_transactions (test_save_archive_database_cloud.SaveArchiveDatabaseCloudTest.test_actual_kotlin_archive_installation_uses_real_sqlite_transactions) ... ok
+test_actual_kotlin_preserves_incomplete_sqlite_before_schema_upgrade (test_cloud_migration_backup.CloudMigrationBackupTest.test_actual_kotlin_preserves_incomplete_sqlite_before_schema_upgrade) ... ok
+test_actual_journal_atomic_pending_work_coalescing_ack_and_restart (test_cloud_save_journal.CloudSaveJournalTest.test_actual_journal_atomic_pending_work_coalescing_ack_and_restart) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 35.288s
+
+OK
+PASS new manual import creates schema4
+PASS schema4 export keeps every gameplay/account-label byte
+PASS schema5 exports identical game-only snapshot
+PASS portable archive header remains GF3SAVE1/schema4
+PASS private cloud session never appears in archive
+PASS manual import into unlinked schema5 never downgrades database
+PASS virgin cloud state retained exactly
+PASS non-game tables preserved on import
+PASS manual linked-profile import refuses without changing world/session
+PASS pending outbox blocks cloud restore and retains all progress
+PASS foreign owner, stale revision and mismatched same-revision hash rejected
+PASS old committed binding cached before restore
+PASS SQLite insertion failure rolls back records plus cloud receipt
+PASS failed transaction retains previous binding cache
+PASS consistent synced archive backup retained after failed import
+PASS receipt failure rolls back replaced gameplay and identity
+PASS same-owner receipt installs complete snapshot
+PASS same transaction commits revision/hash/adopted and clears conflict only
+PASS cloud restore retains schema5
+PASS committed cloud restore invalidates stale binding cache
+PASS older cloud response cannot roll back newer restored revision
+PASS cloud restore cannot create an unauthenticated destination
+PASS unsupported schema retained without downgrade/reset
+SAVE_ARCHIVE_CLOUD_HOST_PASS checks=23 sqlite=python-sqlite3 production=Kotlin
+PASS header-only SQLite progress backed up before DDL without requiring a farm
+PASS source user_version retained
+PASS failed upgrade rolls back DDL but keeps recovery backup
+PASS repeated migration preserves first checksum-verified copy
+PASS malformed or incomplete gameplay bytes are preserved without game-format validation
+PASS invalid existing backup blocks upgrade without replacing evidence
+PASS backup checksum failure retains original database rows
+PASS backup refuses an inconsistent nontransactional read
+PASS record bounds reject publication without deleting oversized source
+PASS all source rows retained after bounded backup failure
+PASS empty new database does not create a misleading recovery backup
+CLOUD_MIGRATION_BACKUP_HOST_PASS checks=11
+PASS additive migration leaves unlinked owner and no fabricated pending work
+PASS migration preserves a logical pre-schema5 backup
+PASS adopted snapshot has durable UUID and initial expected revision
+PASS queued archive hash matches exact immutable payload
+PASS original account-label data included without assigning its account identity
+PASS explicit fixture adoption retains one verified owner
+PASS binding cannot silently replace an existing player
+PASS rollback restores the original complete farm generation
+PASS same transaction rollback removes uncommitted queued snapshot
+PASS in-flight head remains immutable while local farm changes
+PASS multiple mutations coalesce to at most one head plus one tail
+PASS tail replaces superseded work and waits for head revision
+PASS tail contains the complete latest farm, not a partial delta
+PASS process connection reopen retains the pending operation UUID
+PASS invalid acknowledgement retains original pending head
+PASS invalid acknowledgement retains original pending head
+PASS invalid acknowledgement retains original pending head
+PASS exact committed acknowledgement promotes latest tail with new expected revision
+PASS only matching committed acknowledgement advances durable revision
+PASS duplicate old acknowledgement cannot clear newer pending work
+PASS CAS conflict is durable and retains work for explicit resolution
+PASS offline-test marker is never queued into the backend
+PASS rejected test data rolls back while existing farm remains unchanged
+PASS missing cloud table fails without resetting journal or progress
+PASS latest acknowledged snapshot commits revision/hash and clears only resolved work
+PASS acknowledgements never mutate gameplay or replay rewards
+CLOUD_SAVE_JOURNAL_HOST_PASS checks=26

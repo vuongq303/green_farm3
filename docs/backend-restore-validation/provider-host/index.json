@@ -1,0 +1,54 @@
+{
+  "format_version": 1,
+  "scope": "Host fixtures; no Android or real backend claims",
+  "runs": [
+    {
+      "id": "provider-gui-models",
+      "exit_code": 0,
+      "tests": 9,
+      "duration_seconds": 45.505,
+      "log": "provider-gui-models.log",
+      "reward_callback_traces": 6000,
+      "provider_widget_checks": 8165,
+      "more_games_checks": 8091,
+      "welcome_neighborhoods": 336,
+      "unchanged_model_groups_compared_to_original": [
+        "matrix",
+        "random",
+        "cloud",
+        "profiler",
+        "tables"
+      ],
+      "retired_ad_callback_digest": "intentionally differs from original; tested separately against no-reward policy"
+    },
+    {
+      "id": "quit-container",
+      "exit_code": 0,
+      "tests": 1,
+      "duration_seconds": 0.898,
+      "checks": 52,
+      "log": "quit-container.log",
+      "actual_reward_settlement": "FarmEntity.oM with pending XP, coin, cash and inventory particles, before immutable checkpoint",
+      "supersedes": "Earlier 42-check coarse settlement peer; ordering corrected after source review",
+      "legacy_restore_checks": "Retains notification/farm; closes only its own confirmation and reports retirement"
+    },
+    {
+      "id": "final-facebook-abi",
+      "exit_code": 0,
+      "tests": 2,
+      "duration_seconds": 11.807,
+      "log": "full-facebook-abi.log",
+      "sdk_reference_scan": [
+        "bt.class",
+        "bt$Companion.class",
+        "cm.class"
+      ],
+      "forbidden_constant_pool_references": [
+        "com/facebook/",
+        "com/gameloft/android2d/socialnetwork/l"
+      ],
+      "unavailable_abi": "No logged-in identity, token, friend data, image or fabricated completion; null inputs remain safe",
+      "retained_checks": "6000 actual reward callbacks and 8165 packed GUI checks"
+    }
+  ]
+}

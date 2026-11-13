@@ -14,6 +14,9 @@ import java.security.MessageDigest
 object SaveArchiveDatabase {
     const val BACKUP_FILE = "greenfarm-before-import.gf3save"
     private const val SLOT = SaveArchive.SLOT_ID
+    private const val CLOUD_SCHEMA_VERSION = 5
+    private const val MAX_SERVER_REVISION = 9_007_199_254_740_991L
+    private data class CloudReceipt(val playerId: String, val revision: Long, val hash: String)
     private val preserveCorruptDatabase = DatabaseErrorHandler {
         // The platform default deletes corrupt database/WAL files. An export
         // or failed import must retain the user's original bytes for recovery.
@@ -29,7 +32,9 @@ object SaveArchiveDatabase {
         val db = SQLiteDatabase.openDatabase(path.absolutePath, null,
             SQLiteDatabase.OPEN_READWRITE or SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING, preserveCorruptDatabase)
         try {
-            if (db.version != 4) throw IOException("Hãy mở và lưu bằng bản khôi phục mới nhất để nâng bản lưu lên schema4 trước khi chuyển.")
+            if (db.version !in SaveArchive.ARCHIVE_SCHEMA_VERSION..CLOUD_SCHEMA_VERSION) {
+                throw IOException("Schema bản lưu chưa được hỗ trợ; dữ liệu được giữ nguyên. Hãy dùng bản khôi phục hỗ trợ schema4 hoặc schema5.")
+            }
             db.execSQL("PRAGMA synchronous=FULL")
             db.beginTransactionNonExclusive()
             try {
@@ -71,13 +76,34 @@ object SaveArchiveDatabase {
 
     /** Import is all-or-nothing. A valid existing snapshot is backed up and synced before replacement. */
     fun install(context: Context, snapshot: SaveArchive.Snapshot) {
+        install(context, snapshot, null)
+    }
+
+    /**
+     * Restore only the already authenticated player's cloud snapshot. The caller
+     * verifies the downloaded archive's SHA-256 before supplying its receipt,
+     * closes GameSaveStore and excludes cloud writers for this whole operation.
+     * It must not use this path to adopt a local save into another guest account.
+     */
+    fun installCloud(context: Context, snapshot: SaveArchive.Snapshot, playerId: String, revision: Long, hash: String) {
+        if (playerId.isEmpty() || playerId.length > 128 || playerId.any { it <= ' ' } ||
+            revision !in 0..MAX_SERVER_REVISION || !hash.matches(Regex("[0-9a-f]{64}"))) {
+            throw IOException("Thông tin xác nhận bản lưu máy chủ không hợp lệ; dữ liệu hiện tại được giữ nguyên.")
+        }
+        install(context, snapshot, CloudReceipt(playerId, revision, hash))
+    }
+
+    private fun install(context: Context, snapshot: SaveArchive.Snapshot, receipt: CloudReceipt?) {
         SaveArchive.validate(snapshot)
         val path = context.getDatabasePath(SaveArchive.DATABASE_NAME)
         val newlyCreated = !path.exists()
+        if (newlyCreated && receipt != null) {
+            throw IOException("Chưa có phiên người chơi đã xác minh để nhận bản lưu máy chủ.")
+        }
         if (!newlyCreated) {
             val existing = SQLiteDatabase.openDatabase(path.absolutePath, null, SQLiteDatabase.OPEN_READONLY, preserveCorruptDatabase)
             val hasProgress = try {
-                if (existing.version != 4) throw IOException("Schema bản lưu hiện tại không được hỗ trợ; chưa nhập dữ liệu.")
+                requireInstallAllowed(existing, receipt)
                 existing.rawQuery("SELECT COUNT(*) FROM save_records WHERE slot_id=? AND store_name IN('save_gameplay','save_farm0') AND deleted=0", arrayOf(SLOT)).use {
                     it.moveToFirst(); it.getLong(0) > 0
                 }
@@ -91,13 +117,14 @@ object SaveArchiveDatabase {
         val db = SQLiteDatabase.openOrCreateDatabase(path.absolutePath, null, preserveCorruptDatabase)
         var installed = false
         try {
-            if (db.version !in intArrayOf(0, 4)) throw IOException("Schema bản lưu hiện tại không được hỗ trợ; chưa nhập dữ liệu.")
             db.enableWriteAheadLogging()
             db.execSQL("PRAGMA synchronous=FULL")
             db.execSQL("PRAGMA foreign_keys=ON")
             db.beginTransaction()
             try {
-                if (db.version == 0) createSchema(db)
+                val destinationVersion = db.version
+                if (newlyCreated && destinationVersion == 0 && receipt == null) createSchema(db)
+                else requireInstallAllowed(db, receipt) // Recheck after obtaining the SQLite writer lock.
                 db.execSQL("DELETE FROM save_records WHERE slot_id=?", arrayOf(SLOT))
                 db.execSQL("DELETE FROM save_commits WHERE slot_id=?", arrayOf(SLOT))
                 val slot = ContentValues().apply {
@@ -146,16 +173,66 @@ object SaveArchiveDatabase {
                     put("original_binding", SaveArchive.gameplayBinding(gameplay))
                     put("gameplay_checksum", SaveArchive.checksum(gameplay))
                 })
-                db.version = 4
+                if (receipt != null) installCloudReceipt(db, receipt)
+                if (destinationVersion == 0) db.version = SaveArchive.ARCHIVE_SCHEMA_VERSION
                 // Re-read checksums, required records and metadata before allowing this transaction to commit.
                 readSlot(db, context.packageName)
                 db.setTransactionSuccessful()
             } finally { db.endTransaction() }
             installed = true
+            // Invalidate only after commit. A failed import keeps the previous
+            // binding cached, matching the rolled-back original gameplay blob.
+            SaveTransferIdentity.invalidate()
         } finally {
             db.close()
             // This removes only a new, failed import's own empty database; never existing player data.
             if (newlyCreated && !installed) SQLiteDatabase.deleteDatabase(path)
+        }
+    }
+
+    private fun requireInstallAllowed(db: SQLiteDatabase, receipt: CloudReceipt?) {
+        if (db.version !in SaveArchive.ARCHIVE_SCHEMA_VERSION..CLOUD_SCHEMA_VERSION) {
+            throw IOException("Schema bản lưu hiện tại không được hỗ trợ; chưa nhập dữ liệu.")
+        }
+        fun hasTable(name: String): Boolean = db.rawQuery(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", arrayOf(name)
+        ).use { it.moveToFirst() }
+        val stateTable = hasTable("cloud_state")
+        val outboxTable = hasTable("cloud_outbox")
+        if (!stateTable && !outboxTable && db.version == SaveArchive.ARCHIVE_SCHEMA_VERSION && receipt == null) return
+        if (db.version != CLOUD_SCHEMA_VERSION || !stateTable || !outboxTable) {
+            throw IOException("Cấu trúc đồng bộ chưa được hỗ trợ; bản lưu và phiên hiện tại được giữ nguyên.")
+        }
+        db.rawQuery("SELECT 1 FROM cloud_outbox LIMIT 1", null).use {
+            if (it.moveToFirst()) throw IOException("Còn tiến độ chờ đồng bộ. Hãy đồng bộ hoặc xử lý xung đột trong game trước khi thay bản lưu.")
+        }
+        db.rawQuery("SELECT owner_player_id,server_revision,adopted,last_ack_hash,conflict_code,schema_version FROM cloud_state WHERE singleton=1", null).use {
+            if (!it.moveToFirst()) {
+                if (receipt != null) throw IOException("Không tìm thấy phiên người chơi đã xác minh; bản lưu máy chủ chưa được nhập.")
+                return
+            }
+            if (it.getInt(5) != 1) throw IOException("Phiên đồng bộ không được hỗ trợ; dữ liệu được giữ nguyên.")
+            if (receipt == null) {
+                if (!it.isNull(0) || it.getLong(1) != 0L || it.getInt(2) != 0 || !it.isNull(3) || !it.isNull(4)) {
+                    throw IOException("Bản lưu đã liên kết máy chủ. Hãy dùng luồng khôi phục/xử lý hồ sơ trong game; không thể nhập tệp lên phiên đang liên kết.")
+                }
+            } else if (it.isNull(0) || it.getString(0) != receipt.playerId || it.getLong(1) > receipt.revision ||
+                (it.getLong(1) == receipt.revision && !it.isNull(3) && it.getString(3) != receipt.hash)) {
+                throw IOException("Bản lưu máy chủ không khớp phiên hoặc đã cũ; tiến độ hiện tại được giữ nguyên.")
+            }
+        }
+    }
+
+    private fun installCloudReceipt(db: SQLiteDatabase, receipt: CloudReceipt) {
+        val values = ContentValues().apply {
+            put("server_revision", receipt.revision)
+            put("last_ack_hash", receipt.hash)
+            put("adopted", 1)
+            putNull("conflict_code")
+            put("origin_kind", "remote-restore")
+        }
+        if (db.update("cloud_state", values, "singleton=1 AND owner_player_id=? AND schema_version=1", arrayOf(receipt.playerId)) != 1) {
+            throw IOException("Phiên người chơi đã thay đổi; chưa ghi đè tiến độ hiện tại.")
         }
     }
 
