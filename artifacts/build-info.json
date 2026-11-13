@@ -1,11 +1,11 @@
 {
-  "source_commit": "d27a6ca1c2c9e4ccea894ca41ce4ae3073003a93",
-  "built_at": "2026-11-12T15:50:43.801044+00:00",
+  "source_commit": "cd8ff09d1c9292099ed339bdb9bec089f226d5ad",
+  "built_at": "2026-11-12T18:35:07.544708+00:00",
   "build_command": "./gradlew :app:assembleDebug -Pandroid.injected.build.api=24 --stacktrace",
-  "build_result": "BUILD SUCCESSFUL in 57s; 43 tasks, 13 executed, 30 up-to-date",
+  "build_result": "BUILD SUCCESSFUL in 54s; 43 tasks, 12 executed, 31 up-to-date",
   "artifact": "green-farm-3-debug.apk",
-  "size_bytes": 15013347,
-  "sha256": "764393e453a751471a8ed714ac0fce88eff128a1465d676fba63ceee1bf21b98",
+  "size_bytes": 15029731,
+  "sha256": "bdff4cd9f4ee223befb743c153d3b6f5832565667ad1b4dfdf908ef1a673d503",
   "application_id": "com.gameloft.android.ANMP.GloftGF2F",
   "application_class": "javax.microedition.midlet.App",
   "launcher_activity": "com.gameloft.android.ANMP.GloftGF2F.Start",
@@ -31,7 +31,7 @@
     "declared_min_sdk": 16
   },
   "apk_verification": {
-    "defined_classes": 6412,
+    "defined_classes": 6440,
     "dex_files": 1,
     "original_assets_and_native_payload_files_preserved": 59,
     "network_policy": {
@@ -61,21 +61,27 @@
     "this_exact_windows_ip_apk_tested": false,
     "windows_lan_connectivity_tested": false,
     "same_source_cloud_ip_variant_tested_on_api28": true,
-    "tested_cloud_apk_sha256": "bdfc975452e0cccbb886eb47f52be5190e0ef93c058aab0689a72ddc6278d933",
-    "evidence": "../docs/sqlite-validation/game-runtime.json",
-    "sqlite_probe_evidence": "../docs/sqlite-validation/probe-results.json",
-    "sqlite_probe_cases_passed": 26,
-    "python_tests_passed": 116,
-    "resource_tests_passed": 13,
+    "tested_cloud_apk_sha256": "a9ce1b7da2d3f9515bca3c47955dcf713c1c548f9401efb24a8132059e7aa759",
+    "storage_probe_and_performance_apk_sha256": "1dd040b97f0bb0fd446ba90efbe4de74afb03970f522253a6b6072daefed535f",
+    "evidence": "../docs/async-save-validation/game-runtime.json",
+    "report": "../docs/ASYNC_GAMEPLAY_CHECKPOINT.md",
+    "sqlite_probe_evidence": "../docs/async-save-validation/probe-results.json",
+    "sqlite_probe_cases_passed": 27,
+    "python_tests_passed": 129,
+    "tools_and_language_tests_passed": 20,
     "observed": [
-      "Original farm/tutorial resumed",
-      "SQLite schema3-to4 upgrade with existing data retained",
-      "Visible Saved indicator",
-      "Harvest interaction and tutorial advance",
-      "Modern snapshot restored after force-stop/reopen",
-      "Quest drawer opens with New label; no false completion observed"
+      "Existing farm preserved; no player database reset or gameplay state injection",
+      "Real harvest and rapid three-plot burst on earlier asynchronous-save candidate",
+      "Task book restored; all three quest objectives remained0/1 before real actions",
+      "Legitimate calf purchase reduced coins2000 to1900, cash50 unchanged",
+      "English confirmation Cancel preserved process and language/header generation",
+      "Original Vietnamese farm/dialogue loaded from the previously failing saved data",
+      "Vietnamese confirmation for English; four rapid OK touches caused one automatic process restart",
+      "Real farm restored after automatic restart with one SQLite writer and no app crash recorded",
+      "No routine save overlay observed on tested screens",
+      "English cold reopen restored farm, original English assets and tutorial23; one writer, no load failure or repeated confirmation"
     ],
-    "limitations": "Numeric XP/all balances, task detail/completion/claim, movement confirm/cancel through device UI, complete inventory/animal/building matrix, backend restart in this milestone, physical devices and newer Android remain unverified"
+    "limitations": "50-100 actual harvests with exact XP/inventory/quest totals, controlled gameplay FPS before/after, full crop/animal/building and14-language UI matrix, physical devices, newer Android, and Windows LAN remain unverified; one final cold reopen verified, long repeated-restart soak remains unverified"
   },
   "local_progress": {
     "storage": "Android SQLite",
@@ -88,8 +94,22 @@
       "GameSaveStore",
       "ProgressSaveController",
       "PendingRewardState",
-      "EntityPoseState"
+      "EntityPoseState",
+      "AsyncSaveQueue",
+      "SaveBatchPolicy",
+      "LanguageRestartController",
+      "TutorialFlowController",
+      "MoreGamesRemoval"
     ],
-    "backend_mysql_role": "Anonymous accounts, sessions and compliance; local farm progress is separate"
+    "backend_mysql_role": "Anonymous accounts, sessions and compliance; local farm progress is separate",
+    "write_policy": {
+      "debounce_ms": 200,
+      "max_wait_ms": 500,
+      "change_threshold": 50,
+      "worker_threads": 1,
+      "journal_mode": "WAL",
+      "synchronous": "FULL",
+      "notes": "Capture at completed game-frame boundary; original game codecs remain on game thread. SQLite apply/hash runs on writer. No schema migration in this change."
+    }
   }
 }

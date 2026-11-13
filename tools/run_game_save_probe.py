@@ -152,6 +152,7 @@ def main():
         ('seed', 'writefailure', 0), ('sqlite-write-error', 'writefailure', 0),
         ('seed', 'physicalcorrupt', 0), ('corrupt-file', 'physicalcorrupt', 0),
         ('seed', 'repair', 0), ('repair', 'repair', 0),
+        ('async-snapshots', 'async', 0),
     ]
     output = args.output.resolve()
     output.parent.mkdir(parents=True, exist_ok=True)

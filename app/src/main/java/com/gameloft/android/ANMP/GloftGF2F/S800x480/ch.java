@@ -17,6 +17,8 @@ class ch {
     static int[][] apg;
     static int aph;
     int Bj;
+    private long tutorialEatingEpoch;
+    private long tutorialGrowthEpoch;
     int HL;
     int Kx;
     int alC;
@@ -2687,8 +2689,7 @@ class ch {
                 this.aoO.a(aVar);
                 this.aoO.Y(0, -1);
             }
-            this.aoR = new aa(ci.aZf[13], this.aot, this.aou - 50);
-            this.aoR.Y(1, 1);
+            startGrowthEffect();
             if (ci.aZB == 0) {
                 if (this.anw) {
                     ci.axj = i;
@@ -2725,6 +2726,18 @@ class ch {
             String str5 = "Clear fx offset:" + this.amZ + ",y:" + this.ana + ",marker:" + iV2;
             this.amT = false;
         }
+    }
+
+    private void startGrowthEffect() {
+        this.aoR = new aa(ci.aZf[13], this.aot, this.aou - 50);
+        this.aoR.Y(1, 1);
+        tutorialGrowthEpoch = TutorialFlowController.captureCallback(ci.aYR, ci.aYS, ci.awV);
+    }
+
+    void restoreTutorialGrowthEffect() {
+        if (ci.aYR != 18 || this.Kx != 54 || this.aoC != 17
+                || this.anw || fz(32) || this.aoR != null) return;
+        startGrowthEffect();
     }
 
     void pS() {
@@ -3623,6 +3636,7 @@ class ch {
                 pG();
                 break;
         }
+        EntityPoseState.spriteUpdated(this);
         if (this.Kx == 10 || this.Kx == 13) {
             return;
         }
@@ -3803,6 +3817,9 @@ class ch {
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
     /* JADX WARN: Code duplicated, block: B:4:0x000d  */
     void fp(int i) {
+        if (i == 3) {
+            tutorialEatingEpoch = TutorialFlowController.captureCallback(ci.aYR, ci.aYS, ci.awV);
+        }
         boolean z;
         int i2;
         int i3;
@@ -4101,6 +4118,16 @@ class ch {
         }
     }
 
+    private void finishEatingTutorial() {
+        if (!ci.awO && ci.qD() == 19 && ci.aYR == 32
+                && TutorialFlowController.callbackCurrent(tutorialEatingEpoch, ci.aYR, ci.aYS, ci.awV)) {
+            ci.awO = true;
+            ci.axW = false;
+            ci.axV = false;
+            ci.aYR = 33;
+        }
+    }
+
     void pH() {
         ch chVarFn;
         String strDt;
@@ -4211,12 +4238,7 @@ class ch {
                 }
                 if (this.aoO.lQ() && !fz(GLURLConnection.BUFFER_SIZE)) {
                     String str = "ANIMAL EATING animation over. step:" + ci.awW + ",guide cow:" + ci.awO;
-                    if (!ci.awO && ci.qD() == 19) {
-                        ci.awO = true;
-                        ci.axW = false;
-                        ci.axV = false;
-                        ci.aYR = 33;
-                    }
+                    finishEatingTutorial();
                     if (this.anw) {
                         if (fz(32)) {
                             pR();
@@ -4940,7 +4962,7 @@ class ch {
             }
             if (this.aoR.lQ()) {
                 if (i == 1) {
-                    if (ci.aYR == 18) {
+                    if (ci.aYR == 18 && TutorialFlowController.callbackCurrent(tutorialGrowthEpoch, ci.aYR, ci.aYS, ci.awV)) {
                         ci.axW = true;
                     }
                     if (this.anw && ci.axj != -1) {
@@ -4976,7 +4998,7 @@ class ch {
             }
             if (this.aoS.lQ()) {
                 if (i5 == 1) {
-                    if (ci.aYR == 18) {
+                    if (ci.aYR == 18 && TutorialFlowController.callbackCurrent(tutorialGrowthEpoch, ci.aYR, ci.aYS, ci.awV)) {
                         ci.axW = true;
                     }
                     if (this.anw && ci.axj != -1) {

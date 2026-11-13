@@ -14,6 +14,9 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.CRC32;
 
 /** Android-only, real SQLite verification against the helper in the installed
@@ -91,6 +94,257 @@ public final class GameSaveStoreProbe {
             GameSaveStore.commitSave();
             committed = true;
         } finally { if (!committed) GameSaveStore.abortSave(); }
+    }
+    private static GameSaveStore.Snapshot capture(String stage, boolean wholeFarm) throws Exception {
+        GameSaveStore.beginCapture(wholeFarm);
+        try {
+            for (String record : RECORDS) {
+                if (!wholeFarm && (record.equals("save_farm0") || record.equals("entity_pose_v1"))) continue;
+                byte[] value = data(record + "-" + stage);
+                GameSaveStore.write(record, value, 0, value.length);
+                // The serializer's scratch buffer may be reused immediately.
+                Arrays.fill(value, (byte) 0);
+            }
+            return GameSaveStore.finishCapture();
+        } finally { GameSaveStore.abortCapture(); }
+    }
+    private static void applyOnWorker(final GameSaveStore.Snapshot snapshot) throws Exception {
+        final AtomicReference<Throwable> failure = new AtomicReference<Throwable>();
+        Thread worker = new Thread(new Runnable() {
+            public void run() {
+                try { GameSaveStore.applySnapshot(snapshot); }
+                catch (Throwable cause) { failure.set(cause); }
+            }
+        }, "isolated-save-probe-writer");
+        worker.start();
+        worker.join(5000L);
+        check(!worker.isAlive(), "Snapshot worker did not finish");
+        if (failure.get() != null) throw new AssertionError("Snapshot worker failed", failure.get());
+    }
+    private static void persisted(IsolatedContext context, String name, String expected) throws Exception {
+        SQLiteDatabase db = raw(context);
+        try {
+            Cursor cursor = db.rawQuery("SELECT payload,deleted FROM save_records WHERE store_name=? AND record_id=1", new String[]{name});
+            try {
+                check(cursor.moveToFirst() && cursor.getInt(1) == 0
+                        && Arrays.equals(cursor.getBlob(0), data(expected)), "Unexpected durable record: " + name);
+            } finally { cursor.close(); }
+        } finally { db.close(); }
+    }
+    /** This command uses only its own fresh fixture and real Android SQLite. */
+    private static void asyncSnapshots(final IsolatedContext context) throws Exception {
+        fresh(context);
+        GameSaveStore.initialize(context);
+        GameSaveStore.Snapshot initial = capture("initial", true);
+        check(initial.isGameplaySnapshot() && initial.isWholeFarm() && initial.recordCount() == 5
+                && initial.byteCount() > 0, "Capture metadata is incorrect");
+        check(GameSaveStore.generation() == 0, "Capture advanced durable generation");
+        SQLiteDatabase db = raw(context);
+        try { check(scalar(db, "SELECT COUNT(*) FROM save_records") == 0, "Capture performed SQLite writes"); }
+        finally { db.close(); }
+        applyOnWorker(initial);
+        for (String record : RECORDS) persisted(context, record, record + "-initial");
+
+        final GameSaveStore.Snapshot[] incidental = new GameSaveStore.Snapshot[1];
+        GameSaveStore.setWriteDispatcher(new GameSaveStore.WriteDispatcher() {
+            public void changed(GameSaveStore.Snapshot mutation) {
+                incidental[0] = GameSaveStore.coalesceSnapshots(incidental[0], mutation);
+            }
+        });
+        GameSaveStore.beginCapture(true);
+        byte[] olderHeader = data("RMSHeader-before-sdk-callback");
+        GameSaveStore.write("RMSHeader", olderHeader, 0, olderHeader.length);
+        final AtomicReference<Throwable> callbackFailure = new AtomicReference<Throwable>();
+        Thread callback = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    byte[] newerHeader = data("RMSHeader-from-newer-sdk-callback");
+                    GameSaveStore.write("RMSHeader", newerHeader, 0, newerHeader.length);
+                } catch (Throwable cause) { callbackFailure.set(cause); }
+            }
+        }, "isolated-save-probe-sdk-callback");
+        callback.start();
+        callback.join(5000L);
+        check(!callback.isAlive() && callbackFailure.get() == null, "Incidental callback did not finish");
+        for (String name : RECORDS) if (!name.equals("RMSHeader")) {
+            byte[] value = data(name + "-before-sdk-callback");
+            GameSaveStore.write(name, value, 0, value.length);
+        }
+        GameSaveStore.Snapshot olderCapture = GameSaveStore.finishCapture();
+        equal("RMSHeader", "RMSHeader-from-newer-sdk-callback");
+        check(incidental[0] != null, "Concurrent callback was not queued");
+        // Queue order can differ from byte capture order. Both coalescing and
+        // a delayed older commit must retain the newer per-record value.
+        GameSaveStore.Snapshot reversed = GameSaveStore.coalesceSnapshots(incidental[0], olderCapture);
+        applyOnWorker(incidental[0]);
+        applyOnWorker(olderCapture);
+        persisted(context, "RMSHeader", "RMSHeader-from-newer-sdk-callback");
+        long beforeReversed = GameSaveStore.generation();
+        applyOnWorker(reversed);
+        check(GameSaveStore.generation() == beforeReversed, "Reverse coalescing replayed obsolete bytes");
+        incidental[0] = null;
+        final CountDownLatch locked = new CountDownLatch(1);
+        final CountDownLatch release = new CountDownLatch(1);
+        final AtomicReference<Throwable> holderFailure = new AtomicReference<Throwable>();
+        Thread holder = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    GameSaveStore.beginSave();
+                    locked.countDown();
+                    try { check(release.await(5, TimeUnit.SECONDS), "Capture waited on SQLite writer lock"); }
+                    finally { GameSaveStore.abortSave(); }
+                } catch (Throwable cause) { holderFailure.set(cause); }
+            }
+        }, "isolated-save-probe-lock-holder");
+        holder.start();
+        check(locked.await(5, TimeUnit.SECONDS), "Writer did not acquire its transaction lock");
+        GameSaveStore.Snapshot whileLocked;
+        try {
+            // This completes before releasing the SQLite lock. The timeout in
+            // the holder exposes any accidental capture/read dependency on it.
+            whileLocked = capture("while-locked", true);
+            equal("RMSHeader", "RMSHeader-while-locked");
+        } finally { release.countDown(); }
+        holder.join(5000L);
+        check(!holder.isAlive() && holderFailure.get() == null, "Capture blocked behind SQLite");
+        GameSaveStore.Snapshot newer = capture("newer", true);
+        applyOnWorker(whileLocked);
+        equal("RMSHeader", "RMSHeader-newer");
+        persisted(context, "RMSHeader", "RMSHeader-while-locked");
+        // A writer reopen/retry must preserve accepted, newer logical bytes.
+        GameSaveStore.reopen();
+        equal("RMSHeader", "RMSHeader-newer");
+        applyOnWorker(newer);
+
+        GameSaveStore.Snapshot partial = capture("partial", false);
+        applyOnWorker(partial);
+        persisted(context, "save_gameplay", "save_gameplay-partial");
+        persisted(context, "save_farm0", "save_farm0-newer");
+        persisted(context, "entity_pose_v1", "entity_pose_v1-newer");
+        GameSaveStore.Snapshot full = capture("full-coalesced", true);
+        GameSaveStore.Snapshot visitor = capture("visitor-coalesced", false);
+        GameSaveStore.Snapshot combined = GameSaveStore.coalesceSnapshots(full, visitor);
+        check(combined.isWholeFarm() && combined.isGameplaySnapshot(), "Coalescing lost the pending full farm");
+        applyOnWorker(combined);
+        persisted(context, "RMSHeader", "RMSHeader-visitor-coalesced");
+        persisted(context, "save_farm0", "save_farm0-full-coalesced");
+        persisted(context, "entity_pose_v1", "entity_pose_v1-full-coalesced");
+
+        long generation = GameSaveStore.generation();
+        GameSaveStore.beginCapture(true);
+        try {
+            for (String name : RECORDS) {
+                byte[] unchanged = GameSaveStore.read(name);
+                GameSaveStore.write(name, unchanged, 0, unchanged.length);
+            }
+            applyOnWorker(GameSaveStore.finishCapture());
+        } finally { GameSaveStore.abortCapture(); }
+        check(GameSaveStore.generation() == generation, "Identical records caused another durable generation");
+        db = raw(context);
+        try { check(scalar(db, "SELECT changed_records FROM save_commits ORDER BY generation DESC LIMIT 1") == 5,
+                "Full/partial coalescing wrote an unexpected number of records"); }
+        finally { db.close(); }
+
+        GameSaveStore.beginCapture(true);
+        byte[] incomplete = data("must-never-publish");
+        GameSaveStore.write("RMSHeader", incomplete, 0, incomplete.length);
+        boolean rejected = false;
+        try { GameSaveStore.finishCapture(); } catch (RuntimeException expected) { rejected = true; }
+        check(rejected && GameSaveStore.generation() == generation, "Incomplete capture was accepted");
+        equal("RMSHeader", "RMSHeader-visitor-coalesced");
+        GameSaveStore.beginCapture(true);
+        GameSaveStore.write("RMSHeader", incomplete, 0, incomplete.length);
+        GameSaveStore.abortCapture();
+        equal("RMSHeader", "RMSHeader-visitor-coalesced");
+
+        GameSaveStore.beginAuxCapture();
+        byte[] header = data("RMSHeader-explicit-settings");
+        GameSaveStore.write("RMSHeader", header, 0, header.length);
+        GameSaveStore.Snapshot settings = GameSaveStore.finishCapture();
+        check(!settings.isGameplaySnapshot() && settings.recordCount() == 1, "Settings became a complete game snapshot");
+        applyOnWorker(settings);
+        persisted(context, "RMSHeader", "RMSHeader-explicit-settings");
+        db = raw(context);
+        try {
+            check(scalar(db, "SELECT complete_snapshot_generation FROM save_slots") == generation,
+                    "Settings changed the complete game snapshot generation");
+            check(scalar(db, "SELECT changed_records FROM save_commits ORDER BY generation DESC LIMIT 1") == 1,
+                    "Settings rewrote unchanged game records");
+        } finally { db.close(); }
+
+        generation = GameSaveStore.generation();
+        byte[] settingsBytes = data("queued-incidental-setting");
+        GameSaveStore.write("ProbeAsyncSetting", settingsBytes, 0, settingsBytes.length);
+        Arrays.fill(settingsBytes, (byte) 0);
+        equal("ProbeAsyncSetting", "queued-incidental-setting");
+        byte[] callerCopy = GameSaveStore.read("ProbeAsyncSetting");
+        Arrays.fill(callerCopy, (byte) 0);
+        equal("ProbeAsyncSetting", "queued-incidental-setting");
+        check(incidental[0] != null && !incidental[0].isGameplaySnapshot()
+                && GameSaveStore.generation() == generation, "Incidental write bypassed the writer queue");
+        applyOnWorker(incidental[0]);
+        incidental[0] = null;
+        GameSaveStore.delete("ProbeAsyncSetting");
+        check(GameSaveStore.read("ProbeAsyncSetting") == null && incidental[0] != null,
+                "Incidental deletion was not queued as an absolute tombstone");
+        applyOnWorker(incidental[0]);
+        incidental[0] = null;
+
+        GameSaveStore.beginLoading();
+        check(!GameSaveStore.isCaptureAvailable(), "Capture was allowed during decoding");
+        GameSaveStore.write("RMSHeader", incomplete, 0, incomplete.length);
+        GameSaveStore.delete("save_farm0");
+        GameSaveStore.finishLoading();
+        check(incidental[0] == null, "Default/repair writes from decoding were queued for later");
+        equal("RMSHeader", "RMSHeader-explicit-settings");
+        persisted(context, "save_farm0", "save_farm0-full-coalesced");
+
+        db = raw(context);
+        try { db.execSQL("CREATE TRIGGER probe_async_write_failure BEFORE INSERT ON save_records WHEN NEW.store_name='save_gameplay' BEGIN SELECT RAISE(ABORT,'Owned async probe write failure'); END"); }
+        finally { db.close(); }
+        generation = GameSaveStore.generation();
+        GameSaveStore.Snapshot failed = capture("retry-full", true);
+        rejected = false;
+        try { applyOnWorker(failed); }
+        catch (AssertionError expected) { rejected = expected.getCause() instanceof GameSaveStore.Failure; }
+        check(rejected && !GameSaveStore.isReady() && GameSaveStore.isCaptureAvailable()
+                && GameSaveStore.generation() == generation, "Failed writer lost retryable capture state");
+        persisted(context, "RMSHeader", "RMSHeader-explicit-settings");
+        persisted(context, "save_farm0", "save_farm0-full-coalesced");
+        GameSaveStore.Snapshot afterFailure = capture("retry-newer-partial", false);
+        db = raw(context);
+        try { db.execSQL("DROP TRIGGER probe_async_write_failure"); }
+        finally { db.close(); }
+        applyOnWorker(GameSaveStore.coalesceSnapshots(failed, afterFailure));
+        check(GameSaveStore.generation() == generation + 1, "Retry was duplicated or failed to commit");
+        persisted(context, "save_gameplay", "save_gameplay-retry-newer-partial");
+        persisted(context, "save_farm0", "save_farm0-retry-full");
+        persisted(context, "entity_pose_v1", "entity_pose_v1-retry-full");
+
+        byte[] languageHeader = new byte[35];
+        for (int index = 0; index < languageHeader.length; index++) languageHeader[index] = (byte) (index + 10);
+        languageHeader[4] = 1;
+        GameSaveStore.beginAuxCapture();
+        GameSaveStore.write("RMSHeader", languageHeader, 0, languageHeader.length);
+        applyOnWorker(GameSaveStore.finishCapture());
+        GameSaveStore.beginLoading();
+        generation = GameSaveStore.generation();
+        GameSaveStore.Snapshot language = GameSaveStore.captureLanguageSetting(7);
+        check(!language.isGameplaySnapshot() && language.recordCount() == 1
+                && GameSaveStore.generation() == generation, "Language setting was not detached");
+        GameSaveStore.write("RMSHeader", incomplete, 0, incomplete.length);
+        applyOnWorker(language);
+        languageHeader[4] = 7;
+        check(Arrays.equals(GameSaveStore.read("RMSHeader"), languageHeader),
+                "Language save changed another header byte or was suppressed by loading");
+        check(GameSaveStore.isLoading() && GameSaveStore.generation() == generation + 1,
+                "Language setting incorrectly released the world loading barrier");
+        GameSaveStore.Snapshot rollback = GameSaveStore.captureLanguageSetting(1);
+        applyOnWorker(rollback);
+        languageHeader[4] = 1;
+        check(Arrays.equals(GameSaveStore.read("RMSHeader"), languageHeader), "Language rollback did not preserve the header");
+        GameSaveStore.finishLoading();
+        GameSaveStore.setWriteDispatcher(null);
     }
     private static void verifyBaseline() throws Exception {
         equal("RMSHeader", "RMSHeader-v2");
@@ -497,6 +751,7 @@ public final class GameSaveStoreProbe {
         IsolatedContext context = new IsolatedContext(system.createPackageContext(PACKAGE, 0), args[1]);
         String command = args[0];
         if (command.equals("seed")) seed(context);
+        else if (command.equals("async-snapshots")) asyncSnapshots(context);
         else if (command.equals("legacy")) legacy(context);
         else if (command.equals("legacy-no-header")) legacyHeaderless(context);
         else if (command.equals("migrate-v1")) migrateVersion(context, 1);

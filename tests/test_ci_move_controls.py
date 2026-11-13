@@ -115,6 +115,10 @@ public static void main(String[]args){
  ok(!moveInterruptionRequested&&actor.aol==10&&actor.aom==20&&avD==-1,"next game frame rolls back canceled preview");
  ok(GLLib.pendingCount()==0&&GLLib.allIdle(),"all original pointer pending events drained and pointers idle");
  reset(-1);GLLib.Uu=0;game.U(20,30);ok(!moveInterruptionRequested&&GLLib.pendingCount()==2,"valid primary release retained in scalar and pointer buffers");
+ GLLib.lb();GLLib.la();LanguageRestartController.blocked=true;game.U(20,30);
+ ok(GLLib.pendingCount()==0&&!moveInterruptionRequested,"language checkpoint blocks ordinary pointer release");
+ game.U(-1,-1);ok(moveInterruptionRequested,"Android cancel still queues cleanup while language is blocked");
+ processPendingMoveInterruption();LanguageRestartController.blocked=false;
  GLLib.lb();GLLib.la();GLLib.Uu=1;game.U(-1,-1);
  ok(!moveInterruptionRequested&&GLLib.pendingCount()==1,"secondary release does not cancel primary preview");
  GLLib.lb();GLLib.la();
@@ -154,6 +158,7 @@ class GLLib{static int event,x,y;static long Tn,To;int surfaceChanges;
 class w{static int ZB=2;static boolean Vl;}
 class SystemClock{static long elapsedRealtime(){return 0;}}
 class ProgressSaveController{static void requestSave(){ci.saves++;}}
+class LanguageRestartController{static boolean blocked;static boolean blocksGameplay(){return blocked;}}
 '''
 
 

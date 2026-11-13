@@ -1,0 +1,269 @@
+{
+  "started_at": "2026-11-13T00:12:26+07:00",
+  "report_timezone": "Asia/Saigon",
+  "required_schema": 4,
+  "device": "emulator-5554",
+  "installed_apk_sha256": "1dd040b97f0bb0fd446ba90efbe4de74afb03970f522253a6b6072daefed535f",
+  "probe_dex_sha256": "40e882a1585bbf7365420b6bdc999e7b4ea8c7e62f8fb70b7cfb771644915a8e",
+  "probe_dex_classes": [
+    "LGameSaveStoreProbe$$ExternalSyntheticBackport0;",
+    "LGameSaveStoreProbe$1;",
+    "LGameSaveStoreProbe$2;",
+    "LGameSaveStoreProbe$3;",
+    "LGameSaveStoreProbe$4;",
+    "LGameSaveStoreProbe$IsolatedContext;",
+    "LGameSaveStoreProbe;"
+  ],
+  "storage_implementation": "GameSaveStore from installed complete APK",
+  "sqlite_implementation": "Android platform SQLite; no mock database",
+  "isolated_fixture_prefix": "s4_async_1112_a19c",
+  "normal_player_database_opened": false,
+  "passed": true,
+  "cases": [
+    {
+      "number": 1,
+      "command": "seed",
+      "fixture": "s4_async_1112_a19c_main",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 18.285
+    },
+    {
+      "number": 2,
+      "command": "verify",
+      "fixture": "s4_async_1112_a19c_main",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 8.383
+    },
+    {
+      "number": 3,
+      "command": "crash-uncommitted",
+      "fixture": "s4_async_1112_a19c_main",
+      "expected_exit": 17,
+      "actual_exit": 17,
+      "passed": true,
+      "seconds": 10.923
+    },
+    {
+      "number": 4,
+      "command": "verify",
+      "fixture": "s4_async_1112_a19c_main",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 8.581
+    },
+    {
+      "number": 5,
+      "command": "crash-committed",
+      "fixture": "s4_async_1112_a19c_main",
+      "expected_exit": 18,
+      "actual_exit": 18,
+      "passed": true,
+      "seconds": 5.535
+    },
+    {
+      "number": 6,
+      "command": "verify-committed",
+      "fixture": "s4_async_1112_a19c_main",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 5.306
+    },
+    {
+      "number": 7,
+      "command": "legacy",
+      "fixture": "s4_async_1112_a19c_legacy",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 6.882
+    },
+    {
+      "number": 8,
+      "command": "legacy-no-header",
+      "fixture": "s4_async_1112_a19c_noheader",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 7.239
+    },
+    {
+      "number": 9,
+      "command": "missing-records-and-imports",
+      "fixture": "s4_async_1112_a19c_legacydamage",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 9.289
+    },
+    {
+      "number": 10,
+      "command": "missing-critical-legacy",
+      "fixture": "s4_async_1112_a19c_criticalmissing",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 5.57
+    },
+    {
+      "number": 11,
+      "command": "migrate-v1",
+      "fixture": "s4_async_1112_a19c_migration1",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 5.135
+    },
+    {
+      "number": 12,
+      "command": "migrate-v3",
+      "fixture": "s4_async_1112_a19c_migration3",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 5.506
+    },
+    {
+      "number": 13,
+      "command": "seed",
+      "fixture": "s4_async_1112_a19c_corrupt",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 5.305
+    },
+    {
+      "number": 14,
+      "command": "corrupt-read",
+      "fixture": "s4_async_1112_a19c_corrupt",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 4.016
+    },
+    {
+      "number": 15,
+      "command": "seed",
+      "fixture": "s4_async_1112_a19c_missing",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 5.043
+    },
+    {
+      "number": 16,
+      "command": "missing-records",
+      "fixture": "s4_async_1112_a19c_missing",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 4.884
+    },
+    {
+      "number": 17,
+      "command": "seed",
+      "fixture": "s4_async_1112_a19c_allmissing",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 5.238
+    },
+    {
+      "number": 18,
+      "command": "missing-all-tables",
+      "fixture": "s4_async_1112_a19c_allmissing",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 4.182
+    },
+    {
+      "number": 19,
+      "command": "seed",
+      "fixture": "s4_async_1112_a19c_posemissing",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 8.196
+    },
+    {
+      "number": 20,
+      "command": "missing-pose",
+      "fixture": "s4_async_1112_a19c_posemissing",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 6.178
+    },
+    {
+      "number": 21,
+      "command": "seed",
+      "fixture": "s4_async_1112_a19c_writefailure",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 33.554
+    },
+    {
+      "number": 22,
+      "command": "sqlite-write-error",
+      "fixture": "s4_async_1112_a19c_writefailure",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 43.431
+    },
+    {
+      "number": 23,
+      "command": "seed",
+      "fixture": "s4_async_1112_a19c_physicalcorrupt",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 35.082
+    },
+    {
+      "number": 24,
+      "command": "corrupt-file",
+      "fixture": "s4_async_1112_a19c_physicalcorrupt",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 23.871
+    },
+    {
+      "number": 25,
+      "command": "seed",
+      "fixture": "s4_async_1112_a19c_repair",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 23.512
+    },
+    {
+      "number": 26,
+      "command": "repair",
+      "fixture": "s4_async_1112_a19c_repair",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 28.889
+    },
+    {
+      "number": 27,
+      "command": "async-snapshots",
+      "fixture": "s4_async_1112_a19c_async",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 30.772
+    }
+  ],
+  "case_count": 27,
+  "finished_at": "2026-11-13T00:18:25+07:00"
+}

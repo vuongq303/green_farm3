@@ -29,7 +29,11 @@ TOOL_SHA256 = 'ee7c45eb3c1d2474a6145d8d447e651a736a22d9664b6d3d3be5a5a817dda23a'
 TOOL_VERSION = '2.4'
 CLASS_COUNT = 6383
 CORE_SOURCE_COUNT = 108
-ADDED_CORE_SOURCES = frozenset({'GameSaveStore', 'ProgressSaveController', 'PendingRewardState', 'EntityPoseState'})
+ADDED_CORE_SOURCES = frozenset({
+    'GameSaveStore', 'ProgressSaveController', 'PendingRewardState', 'EntityPoseState',
+    'AsyncSaveQueue', 'SaveBatchPolicy', 'LanguageRestartController',
+    'TutorialFlowController', 'MoreGamesRemoval',
+})
 CORE_PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480/'
 RESOURCE_CLASSES = (
     'com/gameloft/android/ANMP/GloftGF2F/R', 'com/facebook/R',

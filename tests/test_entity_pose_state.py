@@ -58,7 +58,10 @@ public class EntityPoseChecks {
   // Decode/identity errors are resolved for every target before the first write.
   byte[]bad=saved.clone();intAt(bad,0,0);failRestore(bad,loadedA,loadedB);bad=saved.clone();intAt(bad,4,2);failRestore(bad,loadedA,loadedB);bad=saved.clone();intAt(bad,8,-1);failRestore(bad,loadedA,loadedB);bad=saved.clone();intAt(bad,8,20000);failRestore(bad,loadedA,loadedB);failRestore(Arrays.copyOf(saved,saved.length-1),loadedA,loadedB);failRestore(Arrays.copyOf(saved,saved.length+1),loadedA,loadedB);
   bad=saved.clone();intAt(bad,12+5*4,8);failRestore(bad,loadedA,loadedB);bad=saved.clone();intAt(bad,12+2*4,65536);failRestore(bad,loadedA,loadedB);bad=saved.clone();intAt(bad,12+6*4+4*4,0);failRestore(bad,loadedA,loadedB);bad=saved.clone();intAt(bad,12+6*4+1*4,8);failRestore(bad,loadedA,loadedB);
-  GLLib.record=saved;EntityPoseState.resetForLoad();loadedB.aoO=null;boolean failed=false;try{EntityPoseState.restoreSnapshot();}catch(IllegalStateException expected){failed=true;}check(failed&&loadedA.aoO.aaN==3,"null target caused partial restore");loadedB.aoO=new aa();EntityPoseState.restoreSnapshot();check(loadedA.aoO.aaN==1&&loadedB.aoO.aaN==6,"retry after failed matching did not recover");
+  GLLib.record=saved;EntityPoseState.resetForLoad();loadedB.aoO=null;boolean failed=false;EntityPoseState.restoreSnapshot();check(loadedA.aoO.aaN==1&&loadedB.aoO==null,"lazy target changed original sprite timing");EntityPoseState.writeSnapshot();check(intAt(GLLib.record,8)==2,"save before lazy allocation dropped transform");loadedB.aoO=new aa();EntityPoseState.spriteUpdated(loadedB);check(loadedB.aoO.aaN==6,"lazy allocation lost raw transform");loadedB.aoO.aaN=4;EntityPoseState.spriteUpdated(loadedB);check(loadedB.aoO.aaN==4,"deferred transform applied twice");
+  // Reset and removal release deferred identities; later sprite allocation is unrelated.
+  GLLib.record=saved;EntityPoseState.resetForLoad();loadedB.aoO=null;EntityPoseState.restoreSnapshot();EntityPoseState.resetForLoad();loadedB.aoO=new aa();EntityPoseState.spriteUpdated(loadedB);check(loadedB.aoO.aaN==0,"old load retained deferred identity");
+  GLLib.record=saved;EntityPoseState.resetForLoad();loadedB.aoO=null;EntityPoseState.restoreSnapshot();order(loadedA,loadedEmpty);EntityPoseState.writeSnapshot();loadedB.aoO=new aa();EntityPoseState.spriteUpdated(loadedB);check(loadedB.aoO.aaN==0,"removed entity retained deferred identity");
   // Match the exact original type allowlist; decorations 50/22,23 and effects are omitted.
   clear();int[]types={13,20,22,42,48,49,50,52,69,54};ch[]all=new ch[13];for(int i=0;i<types.length;i++)all[i]=entity(types[i],types[i]==13?-1:1,i,i,2);all[10]=entity(50,22,1,1,5);all[11]=entity(50,23,1,1,5);all[12]=entity(47,1,1,1,5);order(all);ch.b(54,3,new int[]{0,0,12});EntityPoseState.writeSnapshot();check(intAt(GLLib.record,8)==10,"persistent entity filter differs from farm codec");
   clear();ch plot=entity(49,65535,3,6,5);EntityPoseState.writeSnapshot();byte[]sentinel=GLLib.record.clone();check(plot.aoC==65535,"save changed definition");clear();ch decodedPlot=entity(49,-1,3,6,0);EntityPoseState.restoreSnapshot();check(decodedPlot.aoO.aaN==5,"signed-byte plot sentinel did not match");
@@ -70,6 +73,107 @@ public class EntityPoseChecks {
 
 
 class EntityPoseStateTest(unittest.TestCase):
+    def test_original_building_codec_and_lazy_sprite_update(self):
+        """Building 17 has a periodic sprite, absent immediately after ci.s."""
+        home = Path(os.environ.get('JAVA_HOME', '/workspace/tooling/jdk-25'))
+        javac, java = home / 'bin/javac', home / 'bin/java'
+        if not javac.is_file() or not java.is_file():
+            self.skipTest('Requires installed JDK')
+        source = ROOT / 'app/src/main/java' / PACKAGE
+        game, actor, library = ((source / name).read_text() for name in ('ci.java', 'ch.java', 'GLLib.java'))
+        methods = lambda text, signatures: '\n'.join(extract_method(text, signature) for signature in signatures)
+        initialize = extract_method(actor, 'void d(int i, int[] iArr)')
+        building = initialize[initialize.index('            case 50:'):initialize.index('            case 51:')]
+        periodic = extract_method(extract_method(actor, 'void pf()'), 'if (this.aoC == 17)')
+        fixture = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
+class AdRequest {static final int MAX_CONTENT_URL_LENGTH=512;}
+class SystemClock {static long elapsedRealtime(){return 0;}}
+class w {static boolean Vl;}
+class a {}
+class aa {
+ int aaN,aaL,aaM;boolean ended;
+ aa(){}aa(a sprite,int x,int y){}
+ void Y(int animation,int repeats){}void dV(int time){}boolean lQ(){return ended;}
+}
+class GLLib {
+ static byte[] record;static int Qy=20;static long Tn,To;
+ static void a(String key,byte[] data,String binding){record=data.clone();}
+ static byte[] B(String key,String binding){return record==null?null:record.clone();}
+ static int L(int a,int b){return a;}
+LIBRARY
+}
+class ci extends GLLib {
+ static int aYh,asL=406,aZB=1,aZD,aNG,aZW,aZX;static long aUl,aUm;
+ static a[]aZf={new a()};static ch last;
+ static String rv(){return "fixture";}static int bF(int x,int y){return x*y;}
+ static void n(ch e){}static void k(ch e){}static void gX(int sound){}
+ static ch bs(int group,int id){if(group!=3)throw new AssertionError();return last=ch.b(50,1,new int[]{0,0,12,id,0,0,4,4,0,0,0});}
+GAME
+}
+class ch {
+ static ch[]als=new ch[6];static int api;
+ int Kx,aoC=-1,aol,aom,aon,aov,aoG=1,aoW,aok=-1,aoU=4000;
+ int aoH,aoy,aoz,aoA,aoJ,aoK,HL,Bj,aot,aou,aoE,aoF,alZ;
+ long alV;boolean apk;ch aoi,aoj,aoM;aa aoO;
+ void d(int i,int[]iArr){Kx=i;aoO=null;switch(i){
+BUILDING
+ default:throw new AssertionError();}}
+ void fx(int flag){HL|=flag;}void fy(int flag){HL&=~flag;}boolean fz(int flag){return(HL&flag)==flag;}
+ boolean qs(){return false;}void e(ch e){}void qq(){}void oV(){}
+ void oN(){}void qb(){}void qf(){}void qc(){}void qd(){}void qm(){}void pW(){}void oX(){}void pX(){}void pl(){}void qe(){}void ps(){}void pG(){}
+ void pf(){PERIODIC}
+ACTOR
+}
+'''
+        fixture = fixture.replace('LIBRARY', methods(library, (
+            'public static int a(byte[] bArr, int i, byte b)',
+            'public static int a(byte[] bArr, int i, short s)',
+            'public static int d(byte[] bArr, int i, int i2)',
+            'public static int a(byte[] bArr, int i, long j)',
+            'public static byte j(byte[] bArr, int i)',
+            'public static short k(byte[] bArr, int i)',
+            'public static int l(byte[] bArr, int i)',
+            'public static long m(byte[] bArr, int i)')))
+        fixture = fixture.replace('GAME', methods(game, (
+            'static int c(byte[] bArr, int i, ch chVar)', 'static int s(byte[] bArr, int i)',
+            *(f'static int {name}(int i, int i2)' for name in ('bG', 'bH', 'bI', 'bJ')))))
+        fixture = fixture.replace('BUILDING', building).replace('PERIODIC', periodic)
+        fixture = fixture.replace('ACTOR', methods(actor, (
+            'static ch b(int i, int i2, int[] iArr)', 'static void a(ch chVar, int i)', 'int oW()', 'void mg()')))
+        runner = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
+import java.util.Arrays;
+public class LazyBuildingChecks {
+ static void check(boolean condition,String reason){if(!condition)throw new AssertionError(reason);}
+ public static void main(String[]args){
+  ch live=ci.bs(3,17);live.aol=ci.bI(55,55);live.aom=ci.bJ(55,55);live.aoO=new aa();live.aoO.aaN=7;
+  byte[]farm=new byte[204800];int size=ci.c(farm,26,live);check(size==39,"original building encoding length");
+  EntityPoseState.writeSnapshot();byte[]pose=GLLib.record.clone();byte[]before=farm.clone();
+  ch.als=new ch[6];EntityPoseState.resetForLoad();check(ci.s(farm,27)==size,"original decoder consumed different record");
+  ch loaded=ci.last;check(loaded.aoC==17&&loaded.aoO==null,"original building decoder unexpectedly creates animated sprite");
+  EntityPoseState.restoreSnapshot();check(loaded.aoO==null,"restore fabricated periodic animation");
+  EntityPoseState.writeSnapshot();check(Arrays.equals(pose,GLLib.record),"save before first animation lost deferred raw transform");
+  loaded.alZ=100;loaded.mg();check(loaded.aoO==null,"original animation delay changed");
+  loaded.alZ=0;loaded.mg();check(loaded.aoO!=null&&loaded.aoO.aaN==7,"original lazy sprite/update hook lost raw transform");
+  loaded.aoO.aaN=2;loaded.mg();check(loaded.aoO.aaN==2,"deferred transform applied repeatedly");
+  loaded.aoO.ended=true;loaded.mg();check(loaded.aoO==null,"original animation completion changed");
+  check(Arrays.equals(before,farm),"pose restore mutated encoded farm");
+  System.out.println("PASS original ci.c/ci.s building codec, ch.d initializer, periodic ch.pf allocation and ch.mg restore hook");
+ }
+}
+'''
+        with tempfile.TemporaryDirectory(prefix='entity-pose-lazy-codec-') as temporary:
+            folder = Path(temporary)
+            (folder / 'Fixture.java').write_text(fixture)
+            (folder / 'LazyBuildingChecks.java').write_text(runner)
+            result = subprocess.run([str(javac), '-source', '8', '-target', '8', '-d', str(folder),
+                                     str(folder / 'Fixture.java'), str(folder / 'LazyBuildingChecks.java'),
+                                     str(source / 'EntityPoseState.java')], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            result = subprocess.run([str(java), '-cp', str(folder), PACKAGE.replace('/', '.') + '.LazyBuildingChecks'],
+                                    capture_output=True, text=True, timeout=20)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            print(result.stdout.strip())
+
     def test_actual_helper_and_original_pose_codec(self):
         home = Path(os.environ.get('JAVA_HOME', '/workspace/tooling/jdk-25'))
         suffix = '.exe' if os.name == 'nt' else ''

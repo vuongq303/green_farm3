@@ -13,7 +13,10 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.locks.ReentrantLock;
@@ -37,6 +40,19 @@ public final class GameSaveStore {
     private static final ReentrantLock LOCK = new ReentrantLock(true);
     private static final Pattern LEGACY_FILE = Pattern.compile("^(.+)_1(?:_saved([0-9]+)|_CRC([0-9]+))?$");
     private static final Set<String> TOUCHED = new HashSet<String>();
+    private static final Map<String, byte[]> RECORD_CHANGES = new HashMap<String, byte[]>();
+    private static final Map<String, Long> APPLIED_VERSIONS = new HashMap<String, Long>();
+    private static final ThreadLocal<Capture> CAPTURE = new ThreadLocal<Capture>();
+    private static final ThreadLocal<Boolean> APPLYING_SNAPSHOT = new ThreadLocal<Boolean>();
+    private static final Object CACHE_LOCK = new Object();
+    // The values are private, immutable byte arrays. Publishing this map never
+    // requires the game thread to wait for the SQLite writer's lock.
+    private static volatile Map<String, byte[]> confirmedRecords = Collections.emptyMap();
+    private static volatile Map<String, byte[]> logicalRecords = Collections.emptyMap();
+    private static Map<String, Long> logicalVersions = Collections.emptyMap();
+    private static volatile boolean logicalReady;
+    private static volatile WriteDispatcher writeDispatcher;
+    private static long acceptedVersion;
     private static Helper helper;
     private static SQLiteDatabase database;
     private static Context context;
@@ -47,7 +63,7 @@ public final class GameSaveStore {
     private static long nextGeneration;
     private static volatile boolean ready;
     private static volatile boolean loading;
-    private static boolean protectExistingSnapshot;
+    private static volatile boolean protectExistingSnapshot;
     private static volatile int currentStatus = STATUS_IDLE;
     private static volatile String error = "";
     private static volatile long currentGeneration;
@@ -56,6 +72,246 @@ public final class GameSaveStore {
 
     public static final class Failure extends RuntimeException {
         Failure(String message, Throwable cause) { super(message, cause); }
+    }
+
+    /** Detached absolute record values; safe to retain/retry on one writer. */
+    public static final class Snapshot {
+        private final Map<String, byte[]> records;
+        private final Map<String, Long> versions;
+        private final boolean wholeFarm;
+        private final boolean gameplaySnapshot;
+        private final boolean loadingHeaderOnly;
+        private final long bytes;
+
+        private Snapshot(Map<String, byte[]> captured, Map<String, Long> versions,
+                boolean wholeFarm, boolean gameplaySnapshot, boolean loadingHeaderOnly) {
+            this.records = Collections.unmodifiableMap(new HashMap<String, byte[]>(captured));
+            this.versions = Collections.unmodifiableMap(new HashMap<String, Long>(versions));
+            this.wholeFarm = wholeFarm;
+            this.gameplaySnapshot = gameplaySnapshot;
+            this.loadingHeaderOnly = loadingHeaderOnly;
+            long size = 0L;
+            for (byte[] value : records.values()) if (value != null) size += value.length;
+            this.bytes = size;
+        }
+
+        public boolean isWholeFarm() { return wholeFarm; }
+        public boolean isGameplaySnapshot() { return gameplaySnapshot; }
+        public int recordCount() { return records.size(); }
+        public long byteCount() { return bytes; }
+    }
+
+    private static final class Capture {
+        final boolean wholeFarm;
+        final boolean gameplaySnapshot;
+        final Map<String, byte[]> base;
+        final Map<String, byte[]> records = new HashMap<String, byte[]>();
+        final Map<String, Long> versions = new HashMap<String, Long>();
+        boolean poisoned;
+        Capture(boolean wholeFarm, boolean gameplaySnapshot, Map<String, byte[]> base) {
+            this.wholeFarm = wholeFarm;
+            this.gameplaySnapshot = gameplaySnapshot;
+            this.base = base;
+        }
+    }
+
+    /** Start serialization on the game thread. This performs no SQLite I/O. */
+    public static void beginCapture(boolean wholeFarm) {
+        beginCapture(wholeFarm, true);
+    }
+
+    /** Capture an explicit settings change without declaring a game snapshot. */
+    public static void beginAuxCapture() { beginCapture(false, false); }
+
+    /** The language menu is available after header decoding, before world load.
+     * Preserve its verified header and change only the explicit language byte.
+     */
+    public static Snapshot captureLanguageSetting(int language) {
+        if (language < 0 || language > 255 || !logicalReady) {
+            throw new Failure("Language settings cannot be captured before storage is ready", null);
+        }
+        synchronized (CACHE_LOCK) {
+            byte[] existing = logicalRecords.get("RMSHeader");
+            if (existing == null || existing.length < 35) {
+                throw new Failure("The saved language header is missing or truncated", null);
+            }
+            byte[] header = Arrays.copyOf(existing, existing.length);
+            header[4] = (byte) language;
+            Map<String, byte[]> records = new HashMap<String, byte[]>();
+            records.put("RMSHeader", header);
+            return acceptSnapshot(records, false, false, true);
+        }
+    }
+
+    private static void beginCapture(boolean wholeFarm, boolean gameplaySnapshot) {
+        if (CAPTURE.get() != null) throw new Failure("A game snapshot is already being captured", null);
+        if (loading) throw new Failure("Game progress is still loading", null);
+        if (!logicalReady) throw new Failure("Game storage is not ready for a snapshot", null);
+        CAPTURE.set(new Capture(wholeFarm, gameplaySnapshot, logicalRecords));
+    }
+
+    public static Snapshot finishCapture() {
+        Capture capture = CAPTURE.get();
+        if (capture == null) throw new Failure("No game snapshot is being captured on this thread", null);
+        try {
+            if (capture.poisoned) throw new Failure("The captured game snapshot has already failed", null);
+            if (capture.gameplaySnapshot) {
+                requireCaptured(capture, "RMSHeader");
+                requireCaptured(capture, "save_gameplay");
+                requireCaptured(capture, "pending_rewards_v1");
+                if (capture.wholeFarm) {
+                    requireCaptured(capture, "save_farm0");
+                    requireCaptured(capture, "entity_pose_v1");
+                }
+            }
+            Snapshot snapshot = new Snapshot(capture.records, capture.versions,
+                    capture.wholeFarm, capture.gameplaySnapshot, false);
+            publishLogicalSnapshot(snapshot);
+            return snapshot;
+        } finally { CAPTURE.remove(); }
+    }
+
+    public static void abortCapture() { CAPTURE.remove(); }
+
+    private static void requireCaptured(Capture capture, String name) {
+        if (!capture.records.containsKey(name) || capture.records.get(name) == null) {
+            throw captureFailed(capture, "Game snapshot is incomplete; existing progress was retained");
+        }
+    }
+
+    /** Keep every pending absolute value; newer records supersede older ones. */
+    public static Snapshot coalesceSnapshots(Snapshot older, Snapshot newer) {
+        if (older == null) return newer;
+        if (newer == null) return older;
+        Map<String, byte[]> merged = new HashMap<String, byte[]>(older.records);
+        Map<String, Long> versions = new HashMap<String, Long>(older.versions);
+        for (Map.Entry<String, byte[]> record : newer.records.entrySet()) {
+            Long prior = versions.get(record.getKey());
+            Long next = newer.versions.get(record.getKey());
+            if (prior == null || next.longValue() >= prior.longValue()) {
+                merged.put(record.getKey(), record.getValue());
+                versions.put(record.getKey(), next);
+            }
+        }
+        boolean gameplay = older.gameplaySnapshot || newer.gameplaySnapshot;
+        Long headerVersion = versions.get("RMSHeader");
+        boolean headerOnly = !gameplay && merged.size() == 1 && merged.get("RMSHeader") != null
+                && ((older.loadingHeaderOnly && headerVersion.equals(older.versions.get("RMSHeader")))
+                || (newer.loadingHeaderOnly && headerVersion.equals(newer.versions.get("RMSHeader"))));
+        return new Snapshot(merged, versions, older.wholeFarm || newer.wholeFarm, gameplay, headerOnly);
+    }
+
+    /** Called only by the controller's single writer, never during capture. */
+    public static void applySnapshot(Snapshot snapshot) {
+        if (snapshot == null) throw new Failure("No captured game snapshot to save", null);
+        if (CAPTURE.get() != null) throw new Failure("Cannot write SQLite while capturing game progress", null);
+        boolean committed = false;
+        boolean begun = false;
+        APPLYING_SNAPSHOT.set(Boolean.TRUE);
+        try {
+            beginSave(snapshot.wholeFarm, snapshot.loadingHeaderOnly);
+            begun = true;
+            for (Map.Entry<String, byte[]> record : snapshot.records.entrySet()) {
+                Long applied = APPLIED_VERSIONS.get(record.getKey());
+                if (applied != null && applied.longValue() > snapshot.versions.get(record.getKey()).longValue()) {
+                    // Enqueue order may race an incidental SDK write. An old
+                    // absolute snapshot never supersedes an accepted newer one.
+                    TOUCHED.add(record.getKey());
+                    continue;
+                }
+                byte[] value = record.getValue();
+                mutate(record.getKey(), value, value == null);
+            }
+            if (snapshot.gameplaySnapshot) commitSave();
+            else {
+                try { finishLocked(false); }
+                finally { LOCK.unlock(); }
+            }
+            committed = true;
+            // commitSave releases LOCK, so reacquire it before publishing the
+            // in-memory durable ordering used by an out-of-order retry.
+            LOCK.lock();
+            try {
+                for (Map.Entry<String, Long> version : snapshot.versions.entrySet()) {
+                    Long applied = APPLIED_VERSIONS.get(version.getKey());
+                    if (applied == null || applied.longValue() < version.getValue().longValue()) {
+                        APPLIED_VERSIONS.put(version.getKey(), version.getValue());
+                    }
+                }
+            } finally { LOCK.unlock(); }
+        } finally {
+            try { if (!committed && begun) abortSave(); }
+            finally { APPLYING_SNAPSHOT.remove(); }
+        }
+    }
+
+    private static Failure captureFailed(Capture capture, String message) {
+        // A malformed capture must not poison a transaction already running on
+        // the worker. The controller records this failure and retains dirtiness.
+        capture.poisoned = true;
+        return new Failure(message, null);
+    }
+
+    private static String captureName(Capture capture, String name) {
+        if (name == null || name.length() == 0 || name.length() > 512 || name.indexOf('\0') >= 0) {
+            throw captureFailed(capture, "Invalid game record name");
+        }
+        return name.replace('/', 'S');
+    }
+
+    /** Routes incidental record writes through the same bounded writer queue. */
+    public interface WriteDispatcher { void changed(Snapshot mutation); }
+
+    public static void setWriteDispatcher(WriteDispatcher dispatcher) { writeDispatcher = dispatcher; }
+
+    public static boolean isCaptureAvailable() { return logicalReady && !loading; }
+
+    private static Snapshot acceptSnapshot(Map<String, byte[]> records, boolean wholeFarm,
+            boolean gameplaySnapshot, boolean loadingHeaderOnly) {
+        synchronized (CACHE_LOCK) {
+            long version = ++acceptedVersion;
+            Map<String, Long> versions = new HashMap<String, Long>();
+            for (String name : records.keySet()) versions.put(name, version);
+            Snapshot snapshot = new Snapshot(records, versions, wholeFarm, gameplaySnapshot, loadingHeaderOnly);
+            publishLogicalSnapshot(snapshot);
+            return snapshot;
+        }
+    }
+
+    private static void publishLogicalSnapshot(Snapshot snapshot) {
+        synchronized (CACHE_LOCK) {
+            Map<String, byte[]> accepted = new HashMap<String, byte[]>();
+            Map<String, Long> versions = new HashMap<String, Long>(logicalVersions);
+            for (Map.Entry<String, byte[]> record : snapshot.records.entrySet()) {
+                Long prior = versions.get(record.getKey());
+                Long next = snapshot.versions.get(record.getKey());
+                if (prior == null || next.longValue() >= prior.longValue()) {
+                    accepted.put(record.getKey(), record.getValue());
+                    versions.put(record.getKey(), next);
+                }
+            }
+            logicalRecords = overlayRecords(logicalRecords, accepted);
+            logicalVersions = Collections.unmodifiableMap(versions);
+        }
+    }
+
+    private static Map<String, byte[]> overlayRecords(Map<String, byte[]> base, Map<String, byte[]> changes) {
+        Map<String, byte[]> updated = new HashMap<String, byte[]>(base);
+        for (Map.Entry<String, byte[]> record : changes.entrySet()) {
+            if (record.getValue() == null) updated.remove(record.getKey());
+            else updated.put(record.getKey(), record.getValue());
+        }
+        return Collections.unmodifiableMap(updated);
+    }
+
+    private static boolean dispatchMutation(String name, byte[] value) {
+        WriteDispatcher dispatcher = writeDispatcher;
+        if (dispatcher == null || loading) return false;
+        Map<String, byte[]> records = new HashMap<String, byte[]>();
+        records.put(name, value);
+        Snapshot mutation = acceptSnapshot(records, false, false, false);
+        dispatcher.changed(mutation);
+        return true;
     }
 
     /** App startup entry point. Do not use external or temporary storage. */
@@ -92,6 +348,12 @@ public final class GameSaveStore {
             if (depth != 0) throw failed("Cannot close storage while a save is pending", null);
             closeLocked();
             context = null;
+            confirmedRecords = Collections.emptyMap();
+            logicalRecords = Collections.emptyMap();
+            logicalVersions = Collections.emptyMap();
+            logicalReady = false;
+            writeDispatcher = null;
+            APPLIED_VERSIONS.clear();
             loading = false;
             protectExistingSnapshot = false;
         } finally { LOCK.unlock(); }
@@ -186,6 +448,7 @@ public final class GameSaveStore {
                 database.setTransactionSuccessful();
             } finally { database.endTransaction(); }
             currentGeneration = slotNumber("generation");
+            refreshConfirmedRecordsLocked();
             ready = true;
             if (currentStatus == STATUS_FAILED) currentStatus = STATUS_IDLE;
             error = "";
@@ -204,6 +467,12 @@ public final class GameSaveStore {
             if (!ready) openLocked();
             loading = true;
             protectExistingSnapshot = readLocked("save_gameplay") != null;
+            // The controller drains its writer before entering a new load.
+            // Reads during decoding still use SQLite and verify every checksum.
+            synchronized (CACHE_LOCK) {
+                logicalRecords = confirmedRecords;
+                logicalVersions = Collections.emptyMap();
+            }
         } finally { LOCK.unlock(); }
     }
 
@@ -229,11 +498,16 @@ public final class GameSaveStore {
 
     /** A visited-farm save may update global state while retaining own-farm data. */
     public static void beginSave(boolean wholeFarm) {
+        beginSave(wholeFarm, false);
+    }
+
+    private static void beginSave(boolean wholeFarm, boolean loadingHeaderOnly) {
+        if (CAPTURE.get() != null) throw new Failure("Cannot open SQLite while capturing game progress", null);
         LOCK.lock();
         boolean acquired = false;
         boolean started = false;
         try {
-            if (loading) throw failed("Game progress is still loading", null);
+            if (loading && !loadingHeaderOnly) throw failed("Game progress is still loading", null);
             if (depth == 0) {
                 if (!ready) openLocked();
                 database.beginTransaction();
@@ -241,6 +515,7 @@ public final class GameSaveStore {
                 poisoned = false;
                 writes = 0;
                 TOUCHED.clear();
+                RECORD_CHANGES.clear();
                 requireWholeFarm = wholeFarm;
                 nextGeneration = slotNumber("generation") + 1;
                 currentStatus = STATUS_SAVING;
@@ -271,6 +546,12 @@ public final class GameSaveStore {
                     poisoned = true;
                     error = "Game snapshot is incomplete; existing progress was retained";
                 }
+                if (readLocked("RMSHeader") == null || readLocked("save_gameplay") == null
+                        || readLocked("pending_rewards_v1") == null
+                        || (requireWholeFarm && (readLocked("save_farm0") == null || readLocked("entity_pose_v1") == null))) {
+                    poisoned = true;
+                    error = "Game snapshot records are missing; existing progress was retained";
+                }
                 if (!requireWholeFarm && readLocked("save_farm0") == null) {
                     poisoned = true;
                     error = "Own farm must be saved before saving a visited farm";
@@ -295,6 +576,7 @@ public final class GameSaveStore {
             finally {
                 depth = 0;
                 TOUCHED.clear();
+                RECORD_CHANGES.clear();
                 currentStatus = STATUS_FAILED;
                 if (error.length() == 0) error = "Game save was cancelled; previous progress was retained";
             }
@@ -303,9 +585,14 @@ public final class GameSaveStore {
 
     private static void finishLocked(boolean snapshot) {
         boolean successful = false;
+        boolean metadataChanged = false;
         try {
             if (poisoned) throw failed(error.length() == 0 ? "Game save failed; previous progress was retained" : error, null);
-            if (writes > 0) {
+            // An unchanged legacy payload can still become the first verified
+            // five-record snapshot. Upgrade its marker without rewriting blobs.
+            metadataChanged = snapshot && (slotNumber("complete_snapshot_generation") == 0
+                    || slotNumber("snapshot_format") < 1 || (requireWholeFarm && slotNumber("pose_snapshot") < 1));
+            if (writes > 0 || metadataChanged) {
                 ContentValues slot = new ContentValues();
                 slot.put("generation", nextGeneration);
                 slot.put("updated_at", System.currentTimeMillis());
@@ -340,15 +627,27 @@ public final class GameSaveStore {
                 depth = 0;
                 TOUCHED.clear();
                 if (successful) {
-                    if (writes > 0) currentGeneration = nextGeneration;
+                    if (writes > 0 || metadataChanged) currentGeneration = nextGeneration;
+                    publishCommittedRecordsLocked();
                     currentStatus = STATUS_SAVED;
                     error = "";
                 }
+                RECORD_CHANGES.clear();
             }
         }
     }
 
     public static byte[] read(String storeName) {
+        Capture capture = CAPTURE.get();
+        if (capture != null) {
+            String name = captureName(capture, storeName);
+            byte[] value = capture.records.containsKey(name) ? capture.records.get(name) : capture.base.get(name);
+            return value == null ? null : Arrays.copyOf(value, value.length);
+        }
+        if (writeDispatcher != null && !loading && logicalReady && APPLYING_SNAPSHOT.get() == null) {
+            byte[] value = logicalRecords.get(detachedName(storeName));
+            return value == null ? null : Arrays.copyOf(value, value.length);
+        }
         LOCK.lock();
         try {
             if (!ready) {
@@ -357,7 +656,11 @@ public final class GameSaveStore {
             }
             String name = normalizeName(storeName);
             importRequestedLegacyLocked(name);
-            return readLocked(name);
+            byte[] value = readLocked(name);
+            // read() can perform a one-time lazy import of a headerless store.
+            // Never publish transaction-local bytes before their commit.
+            if (depth == 0) publishConfirmedRecordLocked(name, value);
+            return value;
         } catch (Exception cause) { throw failed("Cannot load saved game data", cause); }
         finally { LOCK.unlock(); }
     }
@@ -408,6 +711,25 @@ public final class GameSaveStore {
     }
 
     public static void write(String storeName, byte[] payload, int offset, int length) {
+        Capture capture = CAPTURE.get();
+        if (capture != null) {
+            if (payload == null || offset < 0 || length < 0 || length > MAX_RECORD_BYTES || offset > payload.length - length) {
+                throw captureFailed(capture, "Invalid game record payload");
+            }
+            String name = captureName(capture, storeName);
+            if (capture.poisoned) throw captureFailed(capture, "The captured game snapshot has already failed");
+            byte[] value = Arrays.copyOfRange(payload, offset, offset + length);
+            captureMutation(capture, name, value);
+            return;
+        }
+        if (writeDispatcher != null && !loading && APPLYING_SNAPSHOT.get() == null) {
+            if (payload == null || offset < 0 || length < 0 || length > MAX_RECORD_BYTES || offset > payload.length - length) {
+                throw new Failure("Invalid game record payload", null);
+            }
+            String name = detachedName(storeName);
+            if (deferWhileLoading(name)) return;
+            if (dispatchMutation(name, Arrays.copyOfRange(payload, offset, offset + length))) return;
+        }
         LOCK.lock();
         try {
             if (payload == null || offset < 0 || length < 0 || length > MAX_RECORD_BYTES || offset > payload.length - length) {
@@ -420,6 +742,18 @@ public final class GameSaveStore {
     }
 
     public static void delete(String storeName) {
+        Capture capture = CAPTURE.get();
+        if (capture != null) {
+            String name = captureName(capture, storeName);
+            if (capture.poisoned) throw captureFailed(capture, "The captured game snapshot has already failed");
+            captureMutation(capture, name, null);
+            return;
+        }
+        if (writeDispatcher != null && !loading && APPLYING_SNAPSHOT.get() == null) {
+            String name = detachedName(storeName);
+            if (deferWhileLoading(name)) return;
+            if (dispatchMutation(name, null)) return;
+        }
         LOCK.lock();
         try {
             String name = normalizeName(storeName);
@@ -427,6 +761,21 @@ public final class GameSaveStore {
             mutate(name, null, true);
         }
         finally { LOCK.unlock(); }
+    }
+
+    private static void captureMutation(Capture capture, String name, byte[] value) {
+        if (!capture.wholeFarm && (name.equals("save_farm0") || name.equals("entity_pose_v1"))) {
+            if (value == null || !Arrays.equals(capture.base.get(name), value)) {
+                throw captureFailed(capture, "A visited-farm snapshot cannot replace the saved own farm or its orientation");
+            }
+            // Retain the worker's newest own-farm record, including a preceding
+            // queued full snapshot, rather than reapplying this cached value.
+            return;
+        }
+        capture.records.put(name, value);
+        // Reserve ordering when the bytes are serialized, rather than when
+        // the entire snapshot finishes. A concurrent newer SDK write wins.
+        synchronized (CACHE_LOCK) { capture.versions.put(name, ++acceptedVersion); }
     }
 
     private static boolean deferWhileLoading(String name) {
@@ -449,6 +798,7 @@ public final class GameSaveStore {
                 poisoned = false;
                 writes = 0;
                 TOUCHED.clear();
+                RECORD_CHANGES.clear();
                 nextGeneration = slotNumber("generation") + 1;
                 depth = 1;
                 currentStatus = STATUS_SAVING;
@@ -462,13 +812,14 @@ public final class GameSaveStore {
             // A tombstone still matters even when a record has never been read.
             if ((deleted && !isDeletedLocked(name)) || (!deleted && !Arrays.equals(current, payload))) {
                 putLocked(name, payload, deleted, nextGeneration);
+                RECORD_CHANGES.put(name, deleted ? null : payload);
                 writes++;
             }
             if (own) finishLocked(false);
         } catch (Exception cause) {
             poisoned = true;
             if (own && depth != 0) {
-                try { database.endTransaction(); } finally { depth = 0; TOUCHED.clear(); }
+                try { database.endTransaction(); } finally { depth = 0; TOUCHED.clear(); RECORD_CHANGES.clear(); }
             }
             throw failed("Cannot save game data; changes remain unsaved", cause);
         } finally { LOCK.unlock(); }
@@ -496,6 +847,14 @@ public final class GameSaveStore {
     }
 
     public static boolean hasGameplaySave() {
+        Capture capture = CAPTURE.get();
+        if (capture != null) {
+            return (capture.records.containsKey("save_gameplay")
+                    ? capture.records.get("save_gameplay") : capture.base.get("save_gameplay")) != null;
+        }
+        if (writeDispatcher != null && !loading && logicalReady && APPLYING_SNAPSHOT.get() == null) {
+            return logicalRecords.get("save_gameplay") != null;
+        }
         LOCK.lock();
         try {
             if (!ready) openLocked();
@@ -530,6 +889,55 @@ public final class GameSaveStore {
             throw failed("Invalid game record name", null);
         }
         return name.replace('/', 'S');
+    }
+
+    private static String detachedName(String name) {
+        if (name == null || name.length() == 0 || name.length() > 512 || name.indexOf('\0') >= 0) {
+            throw new Failure("Invalid game record name", null);
+        }
+        return name.replace('/', 'S');
+    }
+
+    private static void refreshConfirmedRecordsLocked() {
+        Map<String, byte[]> records = new HashMap<String, byte[]>();
+        Cursor names = database.query("save_records", new String[]{"store_name"},
+                "slot_id=? AND record_id=1 AND deleted=0", new String[]{SLOT}, null, null, null);
+        try {
+            while (names.moveToNext()) {
+                String name = names.getString(0);
+                records.put(name, readLocked(name));
+            }
+        } finally { names.close(); }
+        confirmedRecords = Collections.unmodifiableMap(records);
+        if (!logicalReady) {
+            synchronized (CACHE_LOCK) {
+                logicalRecords = confirmedRecords;
+                logicalReady = true;
+            }
+        }
+    }
+
+    private static void publishConfirmedRecordLocked(String name, byte[] value) {
+        Map<String, byte[]> change = new HashMap<String, byte[]>();
+        change.put(name, value == null ? null : Arrays.copyOf(value, value.length));
+        confirmedRecords = overlayRecords(confirmedRecords, change);
+        if (writeDispatcher == null && APPLYING_SNAPSHOT.get() == null) {
+            synchronized (CACHE_LOCK) {
+                // A decoder read can observe disk before an explicit pending
+                // language setting commits. It must not roll back accepted RAM.
+                if (!logicalVersions.containsKey(name)) logicalRecords = overlayRecords(logicalRecords, change);
+            }
+        }
+    }
+
+    private static void publishCommittedRecordsLocked() {
+        if (RECORD_CHANGES.isEmpty()) return;
+        confirmedRecords = overlayRecords(confirmedRecords, RECORD_CHANGES);
+        // Captures have already published their accepted absolute state. An
+        // older commit or retry must never replace a newer queued value.
+        if (APPLYING_SNAPSHOT.get() == null) {
+            acceptSnapshot(RECORD_CHANGES, false, false, false);
+        }
     }
 
     private static byte[] digest(byte[] data) {

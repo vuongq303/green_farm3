@@ -1,0 +1,105 @@
+{
+  "tested_apk_sha256": "a9ce1b7da2d3f9515bca3c47955dcf713c1c548f9401efb24a8132059e7aa759",
+  "source_commit": "cd8ff09d1c9292099ed339bdb9bec089f226d5ad",
+  "device": "emulator-5554; Android9/API28; software/noKVM",
+  "backend_base_url": "http://172.26.91.236:18787/",
+  "player_data_reset_or_sql_repaired": false,
+  "english_to_vietnamese": {
+    "native_confirmation_language": "English (current language)",
+    "cancel_preserved_pid_locale_and_header_generation": true,
+    "rapid_ok_touches": 4,
+    "automatic_restart_old_pid": "19609",
+    "automatic_restart_new_pid": "20072",
+    "initial_loader_error": "Saved entity transform does not match the loaded farm; valid building17 lazy sprite missing on decode",
+    "data_preserved_after_failure": true,
+    "fixed_apk_resumed_same_database_without_repair": true,
+    "actual_vietnamese_original_game_dialogue_visible": true,
+    "evidence": [
+      "ui/vietnamese-farm-recovered.png",
+      "ui/vietnamese-next-speech.png"
+    ],
+    "confirmation_and_initial_restart_apk_sha256": "e99e12fdf6805149d586cd66e76d3dc679abc9a7b5f35d80ba63d5298e464382",
+    "recovered_database_apk_sha256": "a9ce1b7da2d3f9515bca3c47955dcf713c1c548f9401efb24a8132059e7aa759"
+  },
+  "vietnamese_to_english": {
+    "native_confirmation_language": "Vietnamese (current language)",
+    "rapid_ok_touches": 4,
+    "automatic_restart_old_pid": "20377",
+    "automatic_restart_new_pid": "20959",
+    "first_new_pid_after_seconds": 9.894,
+    "monitor_seconds": 65.127,
+    "additional_restarts_during_monitor": 0,
+    "manual_start_or_stop_during_automatic_monitor": false,
+    "actual_farm_loaded": true,
+    "saved_language": 0,
+    "saved_tutorial_step": 23,
+    "sqlite_worker_count": 1,
+    "crash_buffer_bytes": 0,
+    "evidence": [
+      "ui/vietnamese-confirm-english.png",
+      "ui/automatic-restart-pids.json",
+      "ui/farm-after-auto-restart.png"
+    ]
+  },
+  "explicit_cold_reopen": {
+    "force_stop_and_normal_start": true,
+    "old_pid": "20959",
+    "new_pid": "21432",
+    "original_english_loading_and_connect_text_visible": true,
+    "connect_not_now_actual_touch": true,
+    "actual_farm_loaded": true,
+    "retained_visible_world": [
+      "mature cow",
+      "previously harvested plots",
+      "farmhouse",
+      "FeedMill",
+      "player character"
+    ],
+    "state_before": {
+      "saved_language": 0,
+      "header_generation": 1090,
+      "saved_intro": 23,
+      "gameplay_generation": 1130,
+      "query_stderr": ""
+    },
+    "state_after": {
+      "saved_language": 0,
+      "header_generation": 1090,
+      "saved_intro": 23,
+      "gameplay_generation": 1138,
+      "query_stderr": ""
+    },
+    "sqlite_worker_count": 1,
+    "crash_buffer_bytes": 0,
+    "load_failure_overlay_visible": false,
+    "ordinary_saving_saved_overlay_visible": false,
+    "language_confirmation_replayed": false,
+    "evidence": [
+      "ui/english-connect-after-cold-reopen.png",
+      "ui/farm-after-cold-reopen.png",
+      "ui/cold-reopen-metadata.json",
+      "ui/state-after-cold-reopen.json"
+    ]
+  },
+  "limits": [
+    "HUD hidden during current tutorial; final numeric coins/cash/XP not independently re-read. Earlier actual calf purchase was2000->1900coins/cash50.",
+    "One final cold reopen plus observed language auto restarts; no large repeated-restart soak.",
+    "One SQLiteworker per observed process does not prove all timer/listener counts.",
+    "No50-100actualharvest/FPS test; no all14languages ondevice; no physical/newAndroid.",
+    "Exact WindowsLAN URL delivery APK not installed on this emulator; cloudURL variant tested.",
+    "Cold loading and encoder/worker latencies remain high on softwareemulator; no claim of smoothFPS."
+  ],
+  "earlier_gameplay_candidate": {
+    "apk_sha256": "327c4c41ff29cfa31f9c22dab19a4881b50330ae4b222b11de1c35fe51cae8b9",
+    "observations": [
+      "Task book cold-restored at tutorial12",
+      "Opening quest showed three objectives0/1, no automatic completion",
+      "Go opened calf Market",
+      "Actual confirmed calf purchase cost100coins:2000 to1900; cash50 unchanged"
+    ],
+    "evidence": [
+      "ui/quest-objectives-before-action.png",
+      "ui/calf-purchase-confirmed.png"
+    ]
+  }
+}

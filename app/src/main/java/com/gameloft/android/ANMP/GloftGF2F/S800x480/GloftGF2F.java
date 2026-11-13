@@ -1,5 +1,6 @@
 package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 
+import android.view.KeyEvent;
 import javax.microedition.midlet.MIDlet;
 
 /* JADX INFO: loaded from: classes.dex */
@@ -9,6 +10,20 @@ public class GloftGF2F extends MIDlet {
 
     public GloftGF2F() {
         acx = this;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU && acw != null
+                && LanguageRestartController.menuKeyDown()) return true;
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU && acw != null
+                && LanguageRestartController.menuKeyUp()) return true;
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override // javax.microedition.midlet.MIDlet
@@ -43,10 +58,10 @@ public class GloftGF2F extends MIDlet {
             ci.HH();
             ci ciVar2 = acw;
             ci.EZ();
-            if (!ProgressSaveController.flushForLifecycle()) return;
             ci ciVar3 = acw;
             ci.Ms();
             ci.rE();
+            if (!ProgressSaveController.flushForLifecycle()) return;
             ci ciVar4 = acw;
             GLLib.be("GLLib.quit");
             GLLib.Qn = -1;

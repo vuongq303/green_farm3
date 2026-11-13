@@ -1,0 +1,7 @@
+--------- beginning of main
+11-12 18:38:28.604 20959 21019 D GreenFarmSave: write seq=2 us=71515 ok=true
+11-12 18:38:30.639 20959 21019 D GreenFarmSave: capture seq=3 us=343403 records=9 bytes=307612
+11-12 18:38:34.296 20959 21019 D GreenFarmSave: write seq=3 us=3553700 ok=true
+11-12 18:38:42.092 20959 21019 D GreenFarmSave: capture seq=3 us=928884 records=9 bytes=307588
+11-12 18:38:45.424 20959 21019 D GreenFarmSave: write seq=3 us=2133614 ok=true
+11-12 18:38:53.395 20959 21019 D GreenFarmSave: capture seq=3 us=776979 records=9 bytes=307588
