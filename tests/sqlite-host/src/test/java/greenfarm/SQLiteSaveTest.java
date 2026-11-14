@@ -7,6 +7,8 @@ import com.quanhoang.greenfarm3.S800x480.AsyncSaveQueue;
 import com.quanhoang.greenfarm3.S800x480.GameSaveStore;
 import java.nio.ByteBuffer;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
@@ -38,6 +40,18 @@ public class SQLiteSaveTest {
     }
     private static byte[] value(int n) { return ByteBuffer.allocate(4).putInt(n).array(); }
     private static int read(String name) { return ByteBuffer.wrap(GameSaveStore.read(name)).getInt(); }
+    /** Inspect durable bytes/checksums directly, independently of the store's logical cache. */
+    private List<String> persistedRecords() {
+        List<String> records = new ArrayList<>();
+        try (SQLiteDatabase database = SQLiteDatabase.openDatabase(
+                context.getDatabasePath(GameSaveStore.DATABASE_NAME).getPath(), null, SQLiteDatabase.OPEN_READONLY);
+             android.database.Cursor rows = database.rawQuery(
+                "SELECT store_name,hex(payload),hex(checksum),deleted,generation FROM save_records ORDER BY store_name", null)) {
+            while (rows.moveToNext()) records.add(rows.getString(0) + ":" + rows.getString(1) + ":" +
+                rows.getString(2) + ":" + rows.getLong(3) + ":" + rows.getLong(4));
+        }
+        return records;
+    }
     private static GameSaveStore.Snapshot snapshot(int n) {
         GameSaveStore.beginAuxCapture();
         for (String name : new String[] {"test_coins", "test_milk", "test_planted"}) {
@@ -100,6 +114,10 @@ public class SQLiteSaveTest {
     }
     @Test public void walAndSchemaThreeUpgradeKeepRecords() {
         GameSaveStore.applySnapshot(snapshot(37));
+        GameSaveStore.applySnapshot(fullSnapshot(37));
+        GameSaveStore.applySnapshot(deletion("test_deleted"));
+        long generation = GameSaveStore.generation();
+        List<String> records = persistedRecords();
         GameSaveStore.close();
         SQLiteDatabase external = SQLiteDatabase.openDatabase(context.getDatabasePath(GameSaveStore.DATABASE_NAME).getPath(), null, SQLiteDatabase.OPEN_READWRITE);
         external.execSQL("ALTER TABLE save_slots DROP COLUMN pose_snapshot");
@@ -107,13 +125,62 @@ public class SQLiteSaveTest {
         external.setVersion(3);
         external.close();
         GameSaveStore.initialize(context);
-        assertEquals(37, read("test_milk"));
+        assertEquals("migration must not create a new player generation", generation, GameSaveStore.generation());
+        assertEquals("migration changed payloads, checksums or deletion markers", records, persistedRecords());
+        for (String name : new String[] {"test_coins", "test_milk", "test_planted", "RMSHeader",
+                "save_gameplay", "save_farm0", "pending_rewards_v1", "entity_pose_v1"}) {
+            assertEquals(37, read(name));
+        }
+        assertNull(GameSaveStore.read("test_deleted"));
         external = SQLiteDatabase.openDatabase(context.getDatabasePath(GameSaveStore.DATABASE_NAME).getPath(), null, SQLiteDatabase.OPEN_READWRITE);
         assertEquals(4, external.getVersion());
         try (android.database.Cursor rows = external.rawQuery("PRAGMA journal_mode", null)) {
             assertTrue(rows.moveToFirst()); assertEquals("wal", rows.getString(0));
         }
         external.close();
+    }
+    @Test public void failedRestoreRetainsEveryRecordAndBlocksDefaultWritesUntilSuccessfulLoad() {
+        GameSaveStore.applySnapshot(snapshot(83));
+        GameSaveStore.applySnapshot(fullSnapshot(83));
+        GameSaveStore.applySnapshot(deletion("test_deleted"));
+        long generation = GameSaveStore.generation();
+        List<String> original = persistedRecords();
+        // A pre-captured fresh-player snapshot must not bypass the loading barrier.
+        GameSaveStore.Snapshot defaults = fullSnapshot(0);
+        GameSaveStore.beginLoading();
+        GameSaveStore.failLoad("injected restore rejection");
+        for (String name : new String[] {"RMSHeader", "save_gameplay", "save_farm0",
+                "pending_rewards_v1", "entity_pose_v1", "test_coins"}) {
+            GameSaveStore.write(name, new byte[35], 0, 35);
+            GameSaveStore.delete(name);
+        }
+        try {
+            GameSaveStore.applySnapshot(defaults);
+            fail("a failed restore must not permit a default-player snapshot");
+        } catch (GameSaveStore.Failure expected) {
+            assertTrue(GameSaveStore.isLoading());
+        }
+        assertEquals(generation, GameSaveStore.generation());
+        assertEquals("failed restore overwrote original SQLite records", original, persistedRecords());
+        GameSaveStore.close();
+        GameSaveStore.initialize(context);
+        GameSaveStore.beginLoading();
+        assertEquals(generation, GameSaveStore.generation());
+        assertEquals(original, persistedRecords());
+        for (String name : new String[] {"test_coins", "test_milk", "test_planted", "RMSHeader",
+                "save_gameplay", "save_farm0", "pending_rewards_v1", "entity_pose_v1"}) {
+            assertEquals(83, read(name));
+        }
+        assertNull(GameSaveStore.read("test_deleted"));
+        try {
+            GameSaveStore.beginCapture(true);
+            fail("retrying the load must still block serialization before success");
+        } catch (GameSaveStore.Failure expected) { /* original snapshot remains protected */ }
+        GameSaveStore.finishLoading();
+        GameSaveStore.applySnapshot(fullSnapshot(84));
+        GameSaveStore.reopen();
+        assertEquals(84, read("save_gameplay"));
+        assertEquals(83, read("test_coins"));
     }
     @Test public void lockedWriterRetriesWithoutPartialState() throws Exception {
         GameSaveStore.applySnapshot(snapshot(7));
@@ -126,6 +193,11 @@ public class SQLiteSaveTest {
             AsyncSaveQueue.Result failed = results.poll(10, TimeUnit.SECONDS);
             assertNotNull("a locked write must return a bounded failure", failed);
             assertNotNull(failed.failure);
+            assertFalse("pending data must remain queued while SQLite is locked", queue.awaitIdle(1));
+            try {
+                queue.close();
+                fail("shutdown must not discard a pending save");
+            } catch (IllegalStateException expected) { /* release the lock and retain the same queued data */ }
         } finally {
             external.endTransaction(); external.close();
             assertTrue("writer did not recover after lock release", queue.awaitIdle(10000));
