@@ -68,6 +68,8 @@ class LanguageRestartController private constructor() {
         private const val RESTARTING = 4
         private const val RESTART_FAILED = 5
         private const val RETRY_RESTART = 6
+        private const val PREPARING_NOTICE = 7
+        private const val FINAL_SAVING = 8
         private val selectionLock = Any()
         @Volatile private var restartState = IDLE
         private var selectionGeneration = 0
@@ -84,8 +86,9 @@ class LanguageRestartController private constructor() {
             synchronized(selectionLock) {
                 if (restartState != IDLE || (language == FarmGameEngine.aYU && !ProgressSaveController.hasDeferredLanguage()) || !isSupported(language)) return
                 requestedLanguage = language
-                // Capture the CURRENT locale before the proposed choice is applied.
-                currentLanguageDialogText = textFor(FarmGameEngine.aYU)
+                // Keep strings in the selected locale; load its glyph group
+                // only after the gameplay/header checkpoint becomes durable.
+                currentLanguageDialogText = textFor(language)
                 selectionGeneration++
                 selectionTicket = selectionGeneration
                 restartState = CONFIRMING
@@ -159,7 +162,7 @@ class LanguageRestartController private constructor() {
                 openMenu = menuOpenRequested
                 menuOpenRequested = false
                 if (action == ACCEPTED) restartState = SAVING
-                else if (action == RETRY_RESTART) restartState = RESTARTING
+                else if (action == RETRY_RESTART) restartState = FINAL_SAVING
             }
             if (openMenu && action == IDLE && tutorialOptionsAvailable()) {
                 clearInput()
@@ -177,7 +180,19 @@ class LanguageRestartController private constructor() {
                         checkpointFinished(selectionTicket, language, false)
                     }
                 }
-                RETRY_RESTART -> restart(selectionTicket)
+                RETRY_RESTART -> {
+                    try {
+                        // Prepare the handoff first; no alarm is armed until
+                        // every write accepted while the popup was open commits.
+                        if (restartHandoff == null) restartHandoff = RestartHandoff.prepare(foregroundActivity())
+                        if (!ProgressSaveController.requestLanguageCheckpoint(language, object : SaveCompletion {
+                            override fun completed(success: Boolean) = finalCheckpointFinished(selectionTicket, success)
+                        })) finalCheckpointFinished(selectionTicket, false)
+                    } catch (failure: RuntimeException) {
+                        finalCheckpointFinished(selectionTicket, false)
+                    }
+                }
+                PREPARING_NOTICE -> showSaved(selectionTicket)
                 RESTART_FAILED -> showFailure(selectionTicket, true)
             }
             return action != IDLE && !GameNotification.isVisible()
@@ -220,14 +235,51 @@ class LanguageRestartController private constructor() {
         }
 
         private fun showSaved(selectionTicket: Int) {
+            if (!FarmGameEngine.prepareLanguageNotificationFonts(requestedLanguage)) {
+                showFontFailure(selectionTicket)
+                return
+            }
+            synchronized(selectionLock) {
+                if (selectionTicket != selectionGeneration) return
+                restartState = CONFIRMING
+                restartPromptVisible = false
+            }
             val text = currentLanguageDialogText!!
-            GameNotification.show(text[0], text[1], text[2], text[3]) { restartNow ->
+            GameNotification.show(text[0], text[1], text[2], "", canDismiss = false) { restartNow ->
                 synchronized(selectionLock) {
-                    if (selectionTicket == selectionGeneration && restartState == CONFIRMING) {
-                        restartState = if (restartNow) RETRY_RESTART else IDLE
+                    if (restartNow && selectionTicket == selectionGeneration && restartState == CONFIRMING) {
+                        restartState = RETRY_RESTART
                     }
                 }
             }
+        }
+
+        private fun showFontFailure(selectionTicket: Int) {
+            synchronized(selectionLock) {
+                if (selectionTicket != selectionGeneration || restartPromptVisible) return
+                restartPromptVisible = true
+                restartState = CONFIRMING
+            }
+            // A failed target glyph pack cannot render its own error text.
+            // Retain the valid current font group and offer explicit retry;
+            // the selected setting is already durable and is never rolled back.
+            val text = textFor(FarmGameEngine.aYU)
+            GameNotification.show(text[0], text[7], text[4], "", canDismiss = false) { retry ->
+                synchronized(selectionLock) {
+                    if (retry && selectionTicket == selectionGeneration) {
+                        restartPromptVisible = false
+                        restartState = PREPARING_NOTICE
+                    }
+                }
+            }
+        }
+
+        private fun finalCheckpointFinished(selectionTicket: Int, success: Boolean) {
+            synchronized(selectionLock) {
+                if (selectionTicket != selectionGeneration || restartState != FINAL_SAVING) return
+                restartState = if (success) RESTARTING else RESTART_FAILED
+            }
+            if (success) restart(selectionTicket) else showFailure(selectionTicket, true, pendingSave = true)
         }
 
         private fun restart(selectionTicket: Int) {
@@ -244,13 +296,14 @@ class LanguageRestartController private constructor() {
             }
         }
 
-        private fun showFailure(selectionTicket: Int, saved: Boolean) {
+        private fun showFailure(selectionTicket: Int, saved: Boolean, pendingSave: Boolean = false) {
             val text = currentLanguageDialogText ?: return
             synchronized(selectionLock) {
                 if (selectionTicket != selectionGeneration || restartPromptVisible || GameNotification.isVisible()) return
                 restartPromptVisible = true
             }
-            GameNotification.show(text[0], text[if (saved) 6 else 5], text[4], text[3]) { retry ->
+            val displayText = if (saved) text else textFor(FarmGameEngine.aYU)
+            GameNotification.show(displayText[0], displayText[if (pendingSave) 8 else if (saved) 6 else 5], displayText[if (saved) 2 else 4], "", canDismiss = false) { retry ->
                 synchronized(selectionLock) {
                     restartPromptVisible = false
                     if (selectionTicket == selectionGeneration) {
@@ -271,20 +324,20 @@ class LanguageRestartController private constructor() {
 
         /** The fourteen shipped text packs and the original fM(30) whitelist. */
         @JvmStatic fun textFor(language: Int): Array<String> = when (language) {
-            1 -> arrayOf("Sprache ändern", "Die Sprache wurde gespeichert. Starte das Spiel neu, um sie anzuwenden. Dein Fortschritt wurde gespeichert.", "Neu starten", "Später", "Erneut versuchen", "Der Spielfortschritt konnte nicht gespeichert werden. Deine Sprache und die aktuelle Spielsitzung bleiben unverändert. Versuche es erneut.", "Dein Spielfortschritt wurde gespeichert, aber das Spiel konnte nicht neu gestartet werden. Versuche es erneut.")
-            2 -> arrayOf("Changer de langue", "La langue a été enregistrée. Redémarrez le jeu pour l’appliquer. Votre progression a été sauvegardée.", "Redémarrer", "Plus tard", "Réessayer", "Impossible de sauvegarder la progression. La langue et la session de jeu en cours sont inchangées. Réessayez.", "Votre progression a été sauvegardée, mais le jeu n’a pas pu redémarrer. Réessayez.")
-            3 -> arrayOf("Cambia lingua", "La lingua è stata salvata. Riavvia il gioco per applicarla. I tuoi progressi sono stati salvati.", "Riavvia", "Più tardi", "Riprova", "Impossibile salvare i progressi. La lingua e la sessione di gioco attuale sono rimaste invariate. Riprova.", "I tuoi progressi sono stati salvati, ma non è stato possibile riavviare il gioco. Riprova.")
-            4 -> arrayOf("Cambiar idioma", "El idioma se ha guardado. Reinicia el juego para aplicarlo. Tu progreso está guardado.", "Reiniciar", "Más tarde", "Reintentar", "No se pudo guardar el progreso. El idioma y la sesión actual se han conservado. Inténtalo de nuevo.", "Tu progreso se ha guardado, pero no se pudo reiniciar el juego. Inténtalo de nuevo.")
-            5 -> arrayOf("Alterar idioma", "O idioma foi salvo. Reinicie o jogo para aplicar a alteração. Seu progresso foi salvo.", "Reiniciar", "Mais tarde", "Tentar novamente", "Não foi possível salvar o progresso. O idioma e a sessão atual foram mantidos. Tente novamente.", "Seu progresso foi salvo, mas não foi possível reiniciar o jogo. Tente novamente.")
-            7 -> arrayOf("言語の変更", "言語設定を保存しました。適用するにはゲームを再起動してください。進行状況は保存されています。", "再起動", "後で", "再試行", "進行状況を保存できませんでした。言語と現在のプレイ状態は変更されていません。もう一度お試しください。", "進行状況は保存されましたが、ゲームを再起動できませんでした。もう一度お試しください。")
-            9 -> arrayOf("언어 변경", "언어 설정을 저장했습니다. 적용하려면 게임을 다시 시작하세요. 진행 상황은 저장되었습니다.", "다시 시작", "나중에", "다시 시도", "진행 상황을 저장하지 못했습니다. 언어와 현재 게임 상태가 그대로 유지됩니다. 다시 시도해 주세요.", "진행 상황은 저장되었지만 게임을 다시 시작하지 못했습니다. 다시 시도해 주세요.")
-            10 -> arrayOf("Смена языка", "Язык сохранён. Перезапустите игру, чтобы применить его. Ваш прогресс сохранён.", "Перезапустить", "Позже", "Повторить", "Не удалось сохранить прогресс. Язык и текущий сеанс игры остались без изменений. Повторите попытку.", "Ваш прогресс сохранён, но не удалось перезапустить игру. Повторите попытку.")
-            11 -> arrayOf("Dili değiştir", "Dil ayarı kaydedildi. Uygulamak için oyunu yeniden başlatın. İlerlemeniz kaydedildi.", "Yeniden başlat", "Daha sonra", "Tekrar dene", "İlerleme kaydedilemedi. Diliniz ve mevcut oyun oturumunuz korundu. Tekrar deneyin.", "İlerlemeniz kaydedildi ancak oyun yeniden başlatılamadı. Tekrar deneyin.")
-            12 -> arrayOf("Zmiana języka", "Język został zapisany. Uruchom grę ponownie, aby go zastosować. Postęp został zapisany.", "Uruchom ponownie", "Później", "Spróbuj ponownie", "Nie udało się zapisać postępu. Język i bieżąca sesja gry pozostały bez zmian. Spróbuj ponownie.", "Twój postęp został zapisany, ale nie udało się ponownie uruchomić gry. Spróbuj ponownie.")
-            15 -> arrayOf("เปลี่ยนภาษา", "บันทึกภาษาแล้ว กรุณาเริ่มเกมใหม่เพื่อใช้ภาษาใหม่ บันทึกความคืบหน้าแล้ว", "เริ่มใหม่", "ภายหลัง", "ลองอีกครั้ง", "ไม่สามารถบันทึกความคืบหน้าได้ ภาษาและการเล่นปัจจุบันของคุณยังคงเดิม โปรดลองอีกครั้ง", "ความคืบหน้าของคุณถูกบันทึกแล้ว แต่ไม่สามารถเริ่มเกมใหม่ได้ โปรดลองอีกครั้ง")
-            16 -> arrayOf("Thay đổi ngôn ngữ", "Đã lưu thay đổi ngôn ngữ thành công. Bạn cần khởi động lại trò chơi để áp dụng thay đổi. Tiến độ nông trại đã được lưu.", "Khởi động lại", "Để sau", "Thử lại", "Không thể lưu tiến độ. Ngôn ngữ và phiên chơi hiện tại của bạn vẫn được giữ nguyên. Vui lòng thử lại.", "Tiến độ của bạn đã được lưu, nhưng không thể khởi động lại trò chơi. Vui lòng thử lại.")
-            20 -> arrayOf("Cambiar idioma", "El idioma se guardó. Reinicia el juego para aplicarlo. Tu progreso está guardado.", "Reiniciar", "Más tarde", "Reintentar", "No se pudo guardar el progreso. El idioma y la sesión actual se conservaron. Inténtalo de nuevo.", "Tu progreso se guardó, pero no se pudo reiniciar el juego. Inténtalo de nuevo.")
-            else -> arrayOf("Change language", "The language setting has been saved. Restart the game to apply it. Your farm progress has been saved.", "Restart now", "Later", "Retry", "Could not save progress. Your language and current session have been kept. Try again.", "Your progress has been saved, but the game could not restart. Try again.")
+            1 -> arrayOf("Sprache ändern", "Die Sprache wurde gespeichert. Starte das Spiel neu, um sie anzuwenden. Dein Fortschritt wurde gespeichert.", "Neu starten", "Später", "Erneut versuchen", "Der Spielfortschritt konnte nicht gespeichert werden. Deine Sprache und die aktuelle Spielsitzung bleiben unverändert. Versuche es erneut.", "Dein Spielfortschritt wurde gespeichert, aber das Spiel konnte nicht neu gestartet werden. Versuche es erneut.", "Fortschritt und Sprache sind gespeichert, aber die gewählten Schriftdateien konnten nicht geladen werden. Versuche es erneut.", "Ausstehende Änderungen konnten nicht gespeichert werden. Der Neustart wurde zum Schutz deines Fortschritts angehalten. Versuche den Neustart erneut.")
+            2 -> arrayOf("Changer de langue", "La langue a été enregistrée. Redémarrez le jeu pour l’appliquer. Votre progression a été sauvegardée.", "Redémarrer", "Plus tard", "Réessayer", "Impossible de sauvegarder la progression. La langue et la session de jeu en cours sont inchangées. Réessayez.", "Votre progression a été sauvegardée, mais le jeu n’a pas pu redémarrer. Réessayez.", "Votre progression et la langue sont enregistrées, mais les polices choisies n’ont pas pu être chargées. Réessayez.", "Les changements en attente n’ont pas pu être sauvegardés. Le redémarrage est suspendu pour protéger votre progression. Réessayez.")
+            3 -> arrayOf("Cambia lingua", "La lingua è stata salvata. Riavvia il gioco per applicarla. I tuoi progressi sono stati salvati.", "Riavvia", "Più tardi", "Riprova", "Impossibile salvare i progressi. La lingua e la sessione di gioco attuale sono rimaste invariate. Riprova.", "I tuoi progressi sono stati salvati, ma non è stato possibile riavviare il gioco. Riprova.", "I progressi e la lingua sono salvati, ma non è stato possibile caricare i caratteri scelti. Riprova.", "Impossibile salvare le modifiche in attesa. Il riavvio è sospeso per proteggere i progressi. Riprova.")
+            4 -> arrayOf("Cambiar idioma", "El idioma se ha guardado. Reinicia el juego para aplicarlo. Tu progreso está guardado.", "Reiniciar", "Más tarde", "Reintentar", "No se pudo guardar el progreso. El idioma y la sesión actual se han conservado. Inténtalo de nuevo.", "Tu progreso se ha guardado, pero no se pudo reiniciar el juego. Inténtalo de nuevo.", "El progreso y el idioma están guardados, pero no se pudieron cargar las fuentes elegidas. Inténtalo de nuevo.", "No se pudieron guardar los cambios pendientes. Se ha detenido el reinicio para proteger tu progreso. Inténtalo de nuevo.")
+            5 -> arrayOf("Alterar idioma", "O idioma foi salvo. Reinicie o jogo para aplicar a alteração. Seu progresso foi salvo.", "Reiniciar", "Mais tarde", "Tentar novamente", "Não foi possível salvar o progresso. O idioma e a sessão atual foram mantidos. Tente novamente.", "Seu progresso foi salvo, mas não foi possível reiniciar o jogo. Tente novamente.", "Seu progresso e idioma estão salvos, mas não foi possível carregar as fontes escolhidas. Tente novamente.", "Não foi possível salvar as alterações pendentes. O reinício foi pausado para proteger seu progresso. Tente novamente.")
+            7 -> arrayOf("言語の変更", "言語設定を保存しました。適用するにはゲームを再起動してください。進行状況は保存されています。", "再起動", "後で", "再試行", "進行状況を保存できませんでした。言語と現在のプレイ状態は変更されていません。もう一度お試しください。", "進行状況は保存されましたが、ゲームを再起動できませんでした。もう一度お試しください。", "進行状況と言語設定は保存されていますが、選択した言語のフォントを読み込めませんでした。再試行してください。", "保留中の変更を保存できませんでした。進行状況を保護するため再起動を停止しています。再起動を押して再試行してください。")
+            9 -> arrayOf("언어 변경", "언어 설정을 저장했습니다. 적용하려면 게임을 다시 시작하세요. 진행 상황은 저장되었습니다.", "다시 시작", "나중에", "다시 시도", "진행 상황을 저장하지 못했습니다. 언어와 현재 게임 상태가 그대로 유지됩니다. 다시 시도해 주세요.", "진행 상황은 저장되었지만 게임을 다시 시작하지 못했습니다. 다시 시도해 주세요.", "진행 상황과 언어 설정은 저장되었지만 선택한 언어의 글꼴을 불러오지 못했습니다. 다시 시도하세요.", "대기 중인 변경 사항을 저장하지 못했습니다. 진행 상황을 보호하기 위해 재시작을 멈췄습니다. 다시 시작을 눌러 재시도하세요.")
+            10 -> arrayOf("Смена языка", "Язык сохранён. Перезапустите игру, чтобы применить его. Ваш прогресс сохранён.", "Перезапустить", "Позже", "Повторить", "Не удалось сохранить прогресс. Язык и текущий сеанс игры остались без изменений. Повторите попытку.", "Ваш прогресс сохранён, но не удалось перезапустить игру. Повторите попытку.", "Прогресс и язык сохранены, но не удалось загрузить выбранные шрифты. Повторите попытку.", "Не удалось сохранить ожидающие изменения. Перезапуск приостановлен для защиты прогресса. Повторите попытку.")
+            11 -> arrayOf("Dili değiştir", "Dil ayarı kaydedildi. Uygulamak için oyunu yeniden başlatın. İlerlemeniz kaydedildi.", "Yeniden başlat", "Daha sonra", "Tekrar dene", "İlerleme kaydedilemedi. Diliniz ve mevcut oyun oturumunuz korundu. Tekrar deneyin.", "İlerlemeniz kaydedildi ancak oyun yeniden başlatılamadı. Tekrar deneyin.", "İlerlemeniz ve dil seçiminiz kaydedildi ancak seçilen yazı tipleri yüklenemedi. Tekrar deneyin.", "Bekleyen değişiklikler kaydedilemedi. İlerlemenizi korumak için yeniden başlatma durduruldu. Tekrar deneyin.")
+            12 -> arrayOf("Zmiana języka", "Język został zapisany. Uruchom grę ponownie, aby go zastosować. Postęp został zapisany.", "Uruchom ponownie", "Później", "Spróbuj ponownie", "Nie udało się zapisać postępu. Język i bieżąca sesja gry pozostały bez zmian. Spróbuj ponownie.", "Twój postęp został zapisany, ale nie udało się ponownie uruchomić gry. Spróbuj ponownie.", "Postęp i język zostały zapisane, ale nie udało się wczytać wybranych czcionek. Spróbuj ponownie.", "Nie udało się zapisać oczekujących zmian. Ponowne uruchomienie wstrzymano, aby chronić postęp. Spróbuj ponownie.")
+            15 -> arrayOf("เปลี่ยนภาษา", "บันทึกภาษาแล้ว กรุณาเริ่มเกมใหม่เพื่อใช้ภาษาใหม่ บันทึกความคืบหน้าแล้ว", "เริ่มใหม่", "ภายหลัง", "ลองอีกครั้ง", "ไม่สามารถบันทึกความคืบหน้าได้ ภาษาและการเล่นปัจจุบันของคุณยังคงเดิม โปรดลองอีกครั้ง", "ความคืบหน้าของคุณถูกบันทึกแล้ว แต่ไม่สามารถเริ่มเกมใหม่ได้ โปรดลองอีกครั้ง", "บันทึกความคืบหน้าและภาษาแล้ว แต่โหลดแบบอักษรของภาษาที่เลือกไม่ได้ โปรดลองอีกครั้ง", "บันทึกการเปลี่ยนแปลงที่ค้างอยู่ไม่ได้ จึงหยุดการเริ่มเกมใหม่เพื่อปกป้องความคืบหน้า โปรดกดเริ่มใหม่เพื่อลองอีกครั้ง")
+            16 -> arrayOf("Thay đổi ngôn ngữ", "Đã lưu thay đổi ngôn ngữ thành công. Bạn cần khởi động lại trò chơi để áp dụng thay đổi. Tiến độ nông trại đã được lưu.", "Khởi động lại", "Để sau", "Thử lại", "Không thể lưu tiến độ. Ngôn ngữ và phiên chơi hiện tại của bạn vẫn được giữ nguyên. Vui lòng thử lại.", "Tiến độ của bạn đã được lưu, nhưng không thể khởi động lại trò chơi. Vui lòng thử lại.", "Tiến độ và lựa chọn ngôn ngữ đã được lưu, nhưng chưa tải được font của ngôn ngữ mới. Vui lòng thử tải lại tài nguyên.", "Chưa lưu được những thay đổi đang chờ. Đã tạm dừng khởi động lại để bảo vệ tiến độ. Nhấn Khởi động lại để thử lại.")
+            20 -> arrayOf("Cambiar idioma", "El idioma se guardó. Reinicia el juego para aplicarlo. Tu progreso está guardado.", "Reiniciar", "Más tarde", "Reintentar", "No se pudo guardar el progreso. El idioma y la sesión actual se conservaron. Inténtalo de nuevo.", "Tu progreso se guardó, pero no se pudo reiniciar el juego. Inténtalo de nuevo.", "El progreso y el idioma están guardados, pero no se pudieron cargar las fuentes elegidas. Inténtalo de nuevo.", "No se pudieron guardar los cambios pendientes. Se detuvo el reinicio para proteger tu progreso. Inténtalo de nuevo.")
+            else -> arrayOf("Change language", "The language setting has been saved. Restart the game to apply it. Your farm progress has been saved.", "Restart now", "Later", "Retry", "Could not save progress. Your language and current session have been kept. Try again.", "Your progress has been saved, but the game could not restart. Try again.", "Your progress and language choice are saved, but the selected language fonts could not be loaded. Retry loading resources.", "Pending changes could not be saved. Restart is paused to protect your progress. Press Restart to retry.")
         }
     }
 }

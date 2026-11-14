@@ -41631,6 +41631,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void qR() {
+        resetResourceLoadRetry();
         asm = false;
         asl = true;
         asj = 0;
@@ -41653,6 +41654,110 @@ public final class FarmGameEngine extends GameRuntime implements av {
         }
         qB();
         return true;
+    }
+
+    private static a[] languageNotificationFonts;
+    private static a[] languageNotificationPreviousFonts;
+    private static String languageNotificationFontPack;
+
+    static String languageNotificationFontPack(int language) {
+        switch (language) {
+            case 15: return "/3";
+            case 16: return "/4";
+            case 9: return "/5";
+            case 7: return "/6";
+            default: return "/2";
+        }
+    }
+
+    private static boolean languageNotificationFontsReady(a[] fonts) {
+        if (fonts == null || fonts.length < 7) return false;
+        for (int index : new int[]{0, 1, 2, 4, 6}) {
+            if (fonts[index] == null || fonts[index].GM == null || fonts[index].hw() <= 0) return false;
+        }
+        return true;
+    }
+
+    /** Stage only the selected font pack; farm/text state and old font owners stay intact. */
+    static boolean prepareLanguageNotificationFonts(int language) {
+        if (asA == null || asA.length < 3) return false;
+        String targetPack = languageNotificationFontPack(language);
+        if (languageNotificationFontsReady(aZh) &&
+                ((aZh == languageNotificationFonts && targetPack.equals(languageNotificationFontPack)) ||
+                 (languageNotificationFonts == null && targetPack.equals(languageNotificationFontPack(aYU))))) {
+            asA[2] = aZh;
+            return true;
+        }
+        for (int attempt = 1; attempt <= 2; attempt++) {
+            a[] staged = new a[8];
+            try {
+                synchronized (GameRuntime.class) {
+                    String previousPack = GameRuntime.RI;
+                    try {
+                        GameRuntime.bk(targetPack);
+                        int[] indices = language == 15 ? new int[]{0, 1, 2, 4} :
+                                (language == 7 || language == 9) ? new int[]{0, 1} : new int[]{0, 1, 2, 4, 6};
+                        for (int index : indices) {
+                            GameRuntime.ai(true);
+                            staged[index] = a(index, language == 7 && index == 0 ? 0 : 1,
+                                    0, 0, true, language == 16, language != 16, 0, -1);
+                        }
+                        Object mapping = GameRuntime.de(language == 15 ? 5 : (language == 7 || language == 9) ? 3 : 7);
+                        if (!(mapping instanceof int[]) || ((int[]) mapping).length == 0) {
+                            throw new IllegalStateException("Selected font character map is unavailable");
+                        }
+                        if (language == 15) staged[6] = staged[2];
+                        else if (language == 7 || language == 9) {
+                            staged[6] = staged[1]; staged[4] = staged[1]; staged[2] = staged[1]; staged[1] = staged[0];
+                        }
+                        for (int index : new int[]{0, 1, 2, 4, 6}) {
+                            if (staged[index] == null) throw new IllegalStateException("Selected font is unavailable");
+                            staged[index].e((int[]) mapping);
+                        }
+                        if (language == 7 || language == 9) {
+                            // The original fM(8) supplies the Latin small-font slot for CJK UI.
+                            GameRuntime.bk("/2");
+                            staged[0] = b(0, 0, true, false);
+                            Object latinMapping = GameRuntime.de(7);
+                            if (!(latinMapping instanceof int[]) || ((int[]) latinMapping).length == 0) {
+                                throw new IllegalStateException("Latin notification character map is unavailable");
+                            }
+                            staged[0].e((int[]) latinMapping);
+                        }
+                    } finally {
+                        GameRuntime.ke();
+                        if (previousPack != null) GameRuntime.bk(previousPack);
+                    }
+                }
+                if (!languageNotificationFontsReady(staged)) throw new IllegalStateException("Selected font did not decode");
+                if (languageNotificationPreviousFonts == null) languageNotificationPreviousFonts = aZh;
+                languageNotificationFonts = staged;
+                languageNotificationFontPack = targetPack;
+                // One atomic group switch at the blocked modal boundary; no hs() on fonts still in use.
+                aZh = staged;
+                asA[2] = staged;
+                return true;
+            } catch (RuntimeException failure) {
+                java.util.Set<a> released = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<a, Boolean>());
+                for (a font : staged) {
+                    if (font != null && released.add(font)) {
+                        try { font.hs(); }
+                        catch (RuntimeException cleanupFailure) {
+                            android.util.Log.w("GreenFarmLanguage", "staged_font_cleanup_failed", cleanupFailure);
+                        }
+                    }
+                }
+                android.util.Log.e("GreenFarmLanguage", "font_prepare_failed pack=" + targetPack + " attempt=" + attempt, failure);
+            }
+        }
+        if (!languageNotificationFontsReady(aZh) && languageNotificationFontsReady(languageNotificationPreviousFonts)) {
+            // A released target cache must not be used to draw its resource error.
+            aZh = languageNotificationPreviousFonts;
+            asA[2] = aZh;
+            languageNotificationFonts = null;
+            languageNotificationFontPack = null;
+        }
+        return false;
     }
 
     static void qT() {
@@ -41712,8 +41817,53 @@ public final class FarmGameEngine extends GameRuntime implements av {
         aZh[6].e(iArr);
     }
 
+    private static int resourceFailureIndex = -1;
+    private static int resourceFailureAttempts;
+    private static long resourceRetryAt;
+    private static boolean resourceLoadBlocked;
+    private static volatile boolean resourceRetryRequested;
+
+    private static void resetResourceLoadRetry() {
+        resourceFailureIndex = -1;
+        resourceFailureAttempts = 0;
+        resourceRetryAt = 0L;
+        resourceLoadBlocked = false;
+        resourceRetryRequested = false;
+    }
+
+    static void requestResourceLoadRetry() {
+        resourceRetryRequested = true;
+    }
+
+    private static boolean allowResourceLoadStep() {
+        if (resourceRetryRequested) {
+            resetResourceLoadRetry();
+        }
+        if (resourceLoadBlocked) return false;
+        return SystemClock.uptimeMillis() >= resourceRetryAt;
+    }
+
+    private static void resourceLoadFailed(int step, Exception failure, boolean temporary) {
+        if (resourceFailureIndex != asj) {
+            resourceFailureIndex = asj;
+            resourceFailureAttempts = 0;
+        }
+        resourceFailureAttempts++;
+        android.util.Log.e("GreenFarmResources", "load_failed step=" + step + " index=" + asj +
+                " attempt=" + resourceFailureAttempts, failure);
+        // Retry the same resource step, not the whole startup or saved world.
+        // Completed sprite slots retain their existing loaded flags.
+        if (temporary && resourceFailureAttempts < 3) {
+            resourceRetryAt = SystemClock.uptimeMillis() + (250L << (resourceFailureAttempts - 1));
+        } else {
+            resourceLoadBlocked = true;
+            ProgressSaveController.showResourceLoadError(step, failure);
+        }
+    }
+
     static void qV() {
         if (!ProgressSaveController.allowLoadStep()) return;
+        if (!allowResourceLoadStep()) return;
         try {
             if (!GameSaveStore.isLoading()) GameSaveStore.beginLoading();
             if (asj >= 0 && ash != null && ash.length > 0 && asj < ash.length) {
@@ -41722,11 +41872,25 @@ public final class FarmGameEngine extends GameRuntime implements av {
         } catch (Exception e) {
             String str = "Exception during loading at step " + asj;
             int failedStep = ash != null && asj >= 0 && asj < ash.length ? ash[asj] : -1;
+            if (e instanceof GameRuntime.ResourceFailure) {
+                resourceLoadFailed(failedStep, e, true);
+                return;
+            }
             if (ProgressSaveController.isCriticalLoadFailure(failedStep, e)) {
                 ProgressSaveController.loadingFailed(failedStep, e);
                 return;
             }
+            // These existing SDK-only phases are optional: preserve their
+            // logged-and-continue behavior. Actual resource failures above
+            // never enter this allowlist, even in an optional SDK phase.
+            if (failedStep == 48 || failedStep == 127) {
+                android.util.Log.w("GreenFarmResources", "optional_sdk_phase_failed step=" + failedStep, e);
+            } else {
+                resourceLoadFailed(failedStep, e, false);
+                return;
+            }
         }
+        resetResourceLoadRetry();
         if (asm) {
             return;
         }

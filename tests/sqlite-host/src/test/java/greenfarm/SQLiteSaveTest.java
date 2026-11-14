@@ -67,6 +67,32 @@ public class SQLiteSaveTest {
             assertEquals(count, read("test_planted"));
         }
     }
+    private static GameSaveStore.Snapshot deletion(String name) {
+        GameSaveStore.beginAuxCapture();
+        GameSaveStore.delete(name);
+        return GameSaveStore.finishCapture();
+    }
+    @Test public void repeatedAsyncDeletesDoNotRewriteDurableTombstones() {
+        long initial = GameSaveStore.generation();
+        GameSaveStore.applySnapshot(deletion("test_deleted"));
+        long deleted = GameSaveStore.generation();
+        assertEquals("first delete must retain a tombstone against legacy reimport", initial + 1, deleted);
+        for (int i = 0; i < 100; i++) GameSaveStore.applySnapshot(deletion("test_deleted"));
+        assertEquals("repeated deletes generated unchanged commits", deleted, GameSaveStore.generation());
+        GameSaveStore.reopen();
+        GameSaveStore.applySnapshot(deletion("test_deleted"));
+        assertEquals("reopen lost durable deletion identity", deleted, GameSaveStore.generation());
+        assertNull(GameSaveStore.read("test_deleted"));
+        GameSaveStore.beginAuxCapture();
+        byte[] restored = value(21);
+        GameSaveStore.write("test_deleted", restored, 0, restored.length);
+        GameSaveStore.applySnapshot(GameSaveStore.finishCapture());
+        assertEquals(21, read("test_deleted"));
+        GameSaveStore.applySnapshot(deletion("test_deleted"));
+        assertEquals(deleted + 2, GameSaveStore.generation());
+        GameSaveStore.reopen();
+        assertNull(GameSaveStore.read("test_deleted"));
+    }
     @Test public void walAndSchemaThreeUpgradeKeepRecords() {
         GameSaveStore.applySnapshot(snapshot(37));
         GameSaveStore.close();

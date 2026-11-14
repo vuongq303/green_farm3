@@ -76,6 +76,8 @@ và hướng sprite. Snapshot tại cuối frame được gom500/2000ms (debounc
 worker SQLite; lỗi đọc dừng tải, lỗi ghi giữ snapshot chờ và retry có kiểm soát. Đặt/di chuyển có ✓/✕, preview không được lưu như vị trí đã
 xác nhận. Chưa triển khai cloud farm save hoặc Facebook Connect mới.
 
+[Báo cáo ổn định tải tài nguyên và bắt buộc restart ngôn ngữ](docs/REOPEN_STABILITY_REPORT.md).
+
 [Báo cáo dọn dẹp, SQLite, icon và ngôn ngữ](docs/MAINTENANCE_REPORT.md).
 
 [Checkpoint hiện tại: Kotlin, package và chuyển save](docs/KOTLIN_MIGRATION_CHECKPOINT.md).
@@ -88,11 +90,11 @@ Toàn bộ 110 lớp lõi có bản biên dịch từ source (82 Kotlin/28 Java)
 
 [Checkpoint lưu nền trước Kotlin](docs/ASYNC_GAMEPLAY_CHECKPOINT.md).
 Đã bỏ nhãn lưu thông thường và phần đề cử Trò chơi+/Welcome cross-promotion.
-Đổi ngôn ngữ chờ lưu thành công rồi hiện popup game bằng ngôn ngữ hiện tại; chọn khởi động lại hoặc để sau;
+Đổi ngôn ngữ chờ lưu thành công rồi hiện popup game với nội dung/font theo ngôn ngữ vừa chọn và chỉ có nút Khởi động lại;
 trong tutorial, phím Menu Android mở màn hình Options hiện có. Không reset farm.
-154 test host và20 test công cụ/ngôn ngữ đã đạt; regression cold receiver được
-kiểm tra riêng sau lỗi UI thực tế. 30 ca Android SQLite cho migration đã đạt
-trên fixture source; phạm vi APK/UI hiện tại được ghi rõ trong checkpoint.
+Lần kiểm tra hiện tại: 138/153 bài host đạt (15 bỏ qua), 20 bài công cụ và 9 bài
+SQLite host đạt; APK debug build, chữ ký và alignment đều hợp lệ. Chưa xác minh
+UI/gameplay trên Android thực tế; xem báo cáo ổn định mới để biết phạm vi.
 Bài tải cùng100snapshot tổng hợp giảm100→6commit; đây không phải100thu hoạch/FPS.
 Các mốc UI và phần chưa xác minh ghi rõ trong checkpoint, không coi unit/build là
 kiểm thử gameplay toàn bộ. [Lịch sử SQLite](docs/SQLITE_PROGRESS_RECOVERY.md).

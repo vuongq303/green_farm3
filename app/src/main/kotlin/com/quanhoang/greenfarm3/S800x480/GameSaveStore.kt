@@ -745,8 +745,16 @@ object GameSaveStore {
                 (deleted || !Arrays.equals(current, payload))) {
                 throw failed("A visited-farm save cannot replace the saved own farm or its orientation", null)
             }
-            if ((deleted && !(if (cached) confirmedRecords.containsKey(name) && current == null else isDeletedLocked(name))) ||
-                (!deleted && !Arrays.equals(current, payload))) {
+            // Logical caches intentionally omit deleted names. A missing cached
+            // value is therefore not evidence that SQLite already has a tombstone.
+            // Query only its deleted bit, preserving first-delete/legacy-import
+            // protection while avoiding duplicate INSERTs and metadata commits.
+            val alreadyDeleted = deleted && if (cached && RECORD_CHANGES.containsKey(name)) {
+                RECORD_CHANGES[name] == null
+            } else if (cached && current != null) {
+                false
+            } else isDeletedLocked(name)
+            if ((deleted && !alreadyDeleted) || (!deleted && !Arrays.equals(current, payload))) {
                 putLocked(name, payload, deleted, nextGeneration)
                 RECORD_CHANGES[name] = if (deleted) null else payload
                 writes++

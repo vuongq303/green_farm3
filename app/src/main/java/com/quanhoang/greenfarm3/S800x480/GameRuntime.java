@@ -2,6 +2,7 @@ package com.quanhoang.greenfarm3.S800x480;
 
 import android.opengl.GLES20;
 import android.os.SystemClock;
+import android.util.Log;
 import com.facebook.appevents.AppEventsConstants;
 import com.facebook.appevents.codeless.internal.Constants;
 import com.facebook.internal.FacebookRequestErrorClassification;
@@ -42,6 +43,50 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
     @SuppressWarnings("unchecked")
     private static <Failure extends Throwable> RuntimeException propagateChecked(Throwable failure) throws Failure {
         throw (Failure) failure;
+    }
+
+    /** Identifies the failed asset without treating a half-open pack as usable. */
+    public static final class ResourceFailure extends RuntimeException {
+        public final String resourcePath;
+        public final String stage;
+        public final int resourceIndex;
+        public final int offset;
+
+        ResourceFailure(String path, String stage, int index, int offset, Throwable cause) {
+            super("resource_failure path=" + path + " stage=" + stage + " index=" + index + " offset=" + offset, cause);
+            this.resourcePath = path;
+            this.stage = stage;
+            this.resourceIndex = index;
+            this.offset = offset;
+            Log.e("GreenFarmResource", getMessage(), cause);
+        }
+    }
+
+    private static ResourceFailure packFailure(String stage, Throwable cause) {
+        ResourceFailure failure = new ResourceFailure(RI != null ? RI : UM, stage, UN, RN, cause);
+        kb();
+        RI = null;
+        RP = null;
+        RR = null;
+        RO = 0;
+        RQ = 0;
+        RN = 0;
+        return failure;
+    }
+
+    private volatile boolean initializationFailed;
+    private volatile boolean initializationReady;
+
+    /** A failed candidate may still have queued GL callbacks after a startup retry. */
+    public final void markInitializationFailed() {
+        synchronized (GameRuntime.class) {
+            initializationFailed = true;
+            initializationReady = false;
+            if (QD == this) {
+                Qn = -1;
+                ke();
+            }
+        }
     }
 
     public static int QA;
@@ -425,11 +470,14 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
             kG();
             Qt = false;
             aa.lV();
+            initializationReady = true;
         }
     }
 
     protected void jE() {
+        initializationReady = false;
         be("GLLib.deInit");
+        ke();
         RW = (byte[][]) null;
         if (w.Vf) {
         }
@@ -608,6 +656,7 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
 
     @Override // javax.microedition.lcdui.f, javax.microedition.lcdui.t
     public void onDrawFrame(GL10 gl10) {
+        if (!initializationReady || initializationFailed || QD != this) return;
         if (Qn >= 0) {
             try {
                 if (w.Vy) {
@@ -632,12 +681,14 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
 
     @Override // javax.microedition.lcdui.f, javax.microedition.lcdui.t
     public void onSurfaceCreated(GL10 gl10, EGLConfig eGLConfig) {
+        if (initializationFailed || QD != this) return;
         b("-----------------------onSurfaceCreated--------------------------", "OPEN_GL", 3);
         a(gl10);
     }
 
     @Override // javax.microedition.lcdui.f, javax.microedition.lcdui.t
     public void onSurfaceChanged(GL10 gl10, int i, int i2) {
+        if (initializationFailed || QD != this) return;
         b("-----------------------onSurfaceChanged--------------------------", "OPEN_GL", 3);
         ku();
     }
@@ -1357,16 +1408,18 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
     }
 
     private static void ka() {
-        int i;
-        if (RS == RQ - 1) {
-            i = RO - RR[RS];
-        } else {
-            i = RR[RS + 1] - RR[RS];
+        if (RR == null || RS < 0 || RS >= RQ || RJ == null) throw packFailure("offset-table", null);
+        int count = (RS == RQ - 1 ? RO : RR[RS + 1]) - RR[RS];
+        int[] offsets = new int[count + 1];
+        int previous = -1;
+        for (int index = 0; index <= count; index++) {
+            int offset = ki();
+            if (offset < 0 || offset < previous) throw packFailure("offset-table", null);
+            offsets[index] = offset;
+            previous = offset;
         }
-        RP = new int[i + 1];
-        for (int i2 = 0; i2 < i + 1; i2++) {
-            RP[i2] = ki();
-        }
+        if (offsets[0] < RN) throw packFailure("offset-table-overlap", null);
+        RP = offsets;
     }
 
     private static void bg(String str) {
@@ -1854,6 +1907,7 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
     }
 
     public static final void bk(String str) {
+        synchronized (GameRuntime.class) {
         UM = str;
         if (w.Wl) {
             bh(str);
@@ -1862,24 +1916,41 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
         } else {
             bf(str);
         }
+
+        }
     }
 
     private static void a(String str, byte[] bArr, int i, boolean z) {
-        if (RI == null || str == null || str.compareTo(RI) != 0) {
-            ke();
-            RI = str;
-            RL = bArr;
-            RM = i;
-            RJ = bl(RI);
-            c(RJ != null, "Pack_Open.unable to find file");
-            RO = (short) kh();
-            RQ = (short) kh();
-            RR = new short[RQ];
-            for (int i2 = 0; i2 < RQ; i2++) {
-                RR[i2] = (short) kh();
+        if (str == null) throw packFailure("open-name", null);
+        if (str.equals(RI) && RJ != null && RP != null && RR != null && RQ > 0) return;
+        ke();
+        RI = str;
+        RL = bArr;
+        RM = i;
+        try {
+            RJ = bl(str);
+            if (RJ == null) throw packFailure("open-stream", null);
+            int entries = kh();
+            int parts = kh();
+            if (entries > Short.MAX_VALUE || parts < 1 || parts > Math.max(1, entries) || parts > Short.MAX_VALUE) {
+                throw packFailure("open-header", null);
+            }
+            RO = (short) entries;
+            RQ = (short) parts;
+            RR = new short[parts];
+            int previous = -1;
+            for (int index = 0; index < parts; index++) {
+                int first = kh();
+                if (first > entries || first <= previous || (index == 0 && first != 0)) throw packFailure("open-parts", null);
+                RR[index] = (short) first;
+                previous = first;
             }
             RS = 0;
             ka();
+        } catch (ResourceFailure failure) {
+            throw failure;
+        } catch (RuntimeException failure) {
+            throw packFailure("open-header", failure);
         }
     }
 
@@ -1902,7 +1973,10 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
     }
 
     public static final void ke() {
+        synchronized (GameRuntime.class) {
         ag(true);
+
+        }
     }
 
     private static final void ag(boolean z) {
@@ -1930,6 +2004,7 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
     }
 
     public static int da(int i) {
+        synchronized (GameRuntime.class) {
         int iAvailable;
         if (w.Wl) {
             return cZ(i);
@@ -1947,8 +2022,7 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
             be("Pack_PositionAtData: partially available (" + iAvailable + '/' + iCV + ") when pack_use_CORE_ResourceManager is TRUE!");
             return iAvailable;
         }
-        c(i >= 0, "Pack_PositionAtData.idx is invalid");
-        c(i < RO, "Pack_PositionAtData.idx is invalid");
+        if (i < 0 || i >= RO || RR == null || RQ <= 0 || RI == null) throw packFailure("entry-index", null);
         int i2 = RQ - 1;
         while (i2 >= 0 && RR[i2] > i) {
             i2--;
@@ -1962,6 +2036,7 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
                 bk(str);
             } else {
                 RJ = bl(RI + "." + RS);
+                if (RJ == null) throw packFailure("open-part", null);
                 ka();
             }
         } else if (RJ == null) {
@@ -1971,6 +2046,7 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
                 bk(str2);
             } else {
                 RJ = bl(RI + "." + RS);
+                if (RJ == null) throw packFailure("reopen-part", null);
             }
         }
         int i3 = i - RR[RS];
@@ -1987,9 +2063,12 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
             RU = true;
         }
         return iCX2 - 1;
+
+        }
     }
 
     public static final byte[] db(int i) {
+        synchronized (GameRuntime.class) {
         UN = i;
         if (w.Wl) {
             return cY(i);
@@ -1998,9 +2077,12 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
             return cW(i);
         }
         return cT(i);
+
+        }
     }
 
     public static void dc(int i) {
+        synchronized (GameRuntime.class) {
         if (RN != i) {
             if (RN > i) {
                 kb();
@@ -2016,102 +2098,150 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
             }
             dd(i);
         }
+
+        }
     }
 
     public static void dd(int i) {
-        if (i != 0) {
-            if (w.Wh == 0 || RK == 2) {
-                RN += i;
+        synchronized (GameRuntime.class) {
+        if (i < 0) throw packFailure("skip-backwards", null);
+        if (i == 0) return;
+        if (RJ == null) throw packFailure("skip-no-stream", null);
+        if (w.Wh == 0 || RK == 2) {
+            try {
                 while (i > 0) {
-                    try {
-                        i = (int) (((long) i) - RJ.skip(i));
-                    } catch (Exception e) {
-                        c(false, "Pack_Skip.IO exception occured");
-                        return;
+                    long skipped = RJ.skip(i);
+                    if (skipped < 0 || skipped > i) throw packFailure("skip-range", null);
+                    if (skipped == 0) {
+                        if (RJ.read() < 0) throw packFailure("skip-eof", null);
+                        skipped = 1;
                     }
+                    i -= (int) skipped;
+                    RN += (int) skipped;
                 }
-                return;
+            } catch (ResourceFailure failure) {
+                throw failure;
+            } catch (IOException | RuntimeException failure) {
+                throw packFailure("skip", failure);
             }
-            if (RV == null) {
-                RV = new byte[w.Wh];
-            }
-            while (i > w.Wh) {
-                c(RV, 0, w.Wh);
-                i -= w.Wh;
-            }
-            if (i > 0) {
-                c(RV, 0, i);
-            }
+            return;
+        }
+        if (RV == null || RV.length != w.Wh) RV = new byte[w.Wh];
+        while (i > 0) {
+            int count = Math.min(i, RV.length);
+            c(RV, 0, count);
+            i -= count;
+        }
+
         }
     }
 
     public static int kg() {
-        int i;
+        synchronized (GameRuntime.class) {
         try {
-            i = RJ.read();
-        } catch (Exception e) {
-            c(false, "Pack_Read.IO exception occured");
-            i = 0;
+            if (RJ == null) throw packFailure("read-byte-no-stream", null);
+            int value = RJ.read();
+            if (value < 0) throw packFailure("read-byte-eof", null);
+            RN++;
+            return value;
+        } catch (ResourceFailure failure) {
+            throw failure;
+        } catch (IOException | RuntimeException failure) {
+            throw packFailure("read-byte", failure);
         }
-        c(i >= 0, "Pack_Read.EOF");
-        RN++;
-        return i;
+
+        }
     }
 
     public static int kh() {
+        synchronized (GameRuntime.class) {
         return (kg() & 255) | ((kg() & 255) << 8);
+
+        }
     }
 
     public static int ki() {
+        synchronized (GameRuntime.class) {
         return (kg() & 255) | ((kg() & 255) << 8) | ((kg() & 255) << 16) | ((kg() & 255) << 24);
+
+        }
     }
 
     public static int c(byte[] bArr, int i, int i2) {
-        c(bArr != null, "Pack_ReadFully.array is null");
-        c(i >= 0, "Pack_ReadFully.offset is negative");
-        c(i2 >= 0, "Pack_ReadFully.length is negative");
-        c(i + i2 <= bArr.length, "Pack_ReadFully.offset+length is bigger than array size");
-        int i3 = i2;
-        while (i3 > 0) {
-            try {
-                int i4 = RJ.read(bArr, i, i3);
-                c(i4 >= 0, "Pack_ReadFully.EOF");
-                i += i4;
-                i3 -= i4;
-            } catch (Exception e) {
-                c(false, "Pack_Read.IO exception occured");
+        synchronized (GameRuntime.class) {
+        if (bArr == null || i < 0 || i2 < 0 || i > bArr.length - i2) throw packFailure("read-bounds", null);
+        int remaining = i2;
+        try {
+            if (RJ == null) throw packFailure("read-no-stream", null);
+            while (remaining > 0) {
+                int count = RJ.read(bArr, i, remaining);
+                if (count < 0) throw packFailure("read-eof", null);
+                if (count == 0) {
+                    int value = RJ.read();
+                    if (value < 0) throw packFailure("read-eof", null);
+                    bArr[i] = (byte) value;
+                    count = 1;
+                }
+                i += count;
+                remaining -= count;
+                RN += count;
             }
+            return i2;
+        } catch (ResourceFailure failure) {
+            throw failure;
+        } catch (IOException | RuntimeException failure) {
+            throw packFailure("read", failure);
         }
-        RN += i2;
-        return i2;
+
+        }
     }
 
     public static final Object de(int i) {
+        synchronized (GameRuntime.class) {
         if (w.Wk) {
             c(i >= 0, "Pack_ReadArray.idx is invalid");
             return f(new ByteArrayInputStream(db(i)));
         }
         return cU(i);
+
+        }
     }
 
     public static void bm(String str) {
-        c(str != null, "Pack_LoadMIME.filename is null");
-        if (RW == null) {
-            InputStream inputStream = RJ;
-            RJ = bl(str);
-            int iKg = kg();
-            RW = new byte[iKg][];
-            for (int i = 0; i < iKg; i++) {
-                int iKg2 = kg();
-                RW[i] = new byte[iKg2];
-                c(RW[i], 0, iKg2);
+        synchronized (GameRuntime.class) {
+        if (RW != null) {
+            boolean valid = true;
+            for (byte[] mime : RW) if (mime == null) { valid = false; break; }
+            if (valid) return;
+            RW = null;
+        }
+        // MIME loading must not replace the active pack's stream or cursor.
+        try (InputStream stream = bl(str)) {
+            if (stream == null) throw new IOException("MIME resource is unavailable");
+            int count = stream.read();
+            if (count < 0) throw new IOException("Missing MIME entry count");
+            byte[][] mime = new byte[count][];
+            for (int index = 0; index < count; index++) {
+                int length = stream.read();
+                if (length < 0) throw new IOException("Missing MIME entry length");
+                byte[] value = new byte[length];
+                int offset = 0;
+                while (offset < length) {
+                    int read = stream.read(value, offset, length - offset);
+                    if (read < 0) throw new IOException("Truncated MIME entry");
+                    if (read == 0) {
+                        int next = stream.read();
+                        if (next < 0) throw new IOException("Truncated MIME entry");
+                        value[offset++] = (byte) next;
+                    } else offset += read;
+                }
+                mime[index] = value;
             }
-            try {
-                RJ.close();
-            } catch (Exception e) {
-                c(false, "Pack_LoadMIME.IO Error");
-            }
-            RJ = inputStream;
+            RW = mime;
+        } catch (IOException | RuntimeException failure) {
+            throw new ResourceFailure(str, "mime", -1, -1, failure);
+        }
+
         }
     }
 

@@ -1,3 +1,5 @@
+> Báo cáo checkpoint trước. Luồng ngôn ngữ hiện tại chỉ có Khởi động lại; xem [báo cáo ổn định mới](REOPEN_STABILITY_REPORT.md).
+
 # Báo cáo dọn dẹp và sửa lỗi Green Farm 3 — 14/11/2026
 
 ## 1. Kiến trúc thực tế và phạm vi
