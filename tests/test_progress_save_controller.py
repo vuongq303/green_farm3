@@ -112,6 +112,8 @@ class GameSaveStore {
  static boolean isCaptureAvailable(){return ready&&!loading;}static int status(){return 0;}
  static void beginCapture(boolean farm){if(!isCaptureAvailable())throw new IllegalStateException("not loaded");capturing=true;serialized=false;whole=farm;}
  static void record(){serialized=true;captured=new Snapshot(ci.aYU,ch.credits,ch.pending,true,whole);}
+ static void setLanguageWriteOverride(Integer language){}
+ static void overrideCapturedLanguage(int language){captured=new Snapshot(language,captured.credits,captured.pending,captured.gameplay,captured.whole);}
  static Snapshot finishCapture(){capturing=false;if(!serialized)throw new IllegalStateException("incomplete");logicalLanguage=captured.language;return captured;}
  static void abortCapture(){capturing=false;}
  static Snapshot captureLanguageSetting(int language){if(!ready)throw new IllegalStateException("no header");logicalLanguage=language;return new Snapshot(language,0,0,false,false);}
@@ -134,6 +136,7 @@ class AsyncSaveQueue {
   if(!fail){GameSaveStore.apply(t.snapshot);durable=Math.max(durable,t.sequence);}
   else if(t.checkpoint==null||t.checkpoint instanceof RetryableCheckpoint)pending.add(0,t);
   listener.completed(new Result(t,fail));}
+ boolean retryPaused;boolean isRetryPaused(){return retryPaused;}void retryPending(){retryPaused=false;}
  boolean isIdle(){return pending.isEmpty();}long durableSequence(){return durable;}
  boolean awaitIdle(long timeout){if(awaitCompletes)while(!pending.isEmpty())complete(false);return isIdle();}void close(){}
 }
@@ -162,6 +165,14 @@ class ci {
  static void gD(int state){}static void gE(int state){}
  static void progressSaveCommitted(){committedCallbacks++;}
  static void fE(int next){apz=next;apA=0;}
+ static void qB(){state(18);apA=-1;}
+ static void showGameNotification(String title,String message){
+  state(20);apA=-1;
+  new android.app.AlertDialog.Builder(new android.app.Activity()).setTitle(title).setMessage(message)
+   .setPositiveButton(GameNotification.positiveLabel(),(d,w)->GameNotification.choose(true))
+   .setNegativeButton(GameNotification.negativeLabel(),(d,w)->GameNotification.choose(false))
+   .setOnCancelListener(d->GameNotification.choose(false)).show();
+ }
 '''
 
 RUNNER = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
@@ -185,17 +196,42 @@ public class ProgressSaveChecks {
   AlarmManager.failAll=AlarmManager.exactDenied=false;android.content.pm.PackageManager.unavailable=false;
   set(LanguageRestartController.class,"restartState",0);set(LanguageRestartController.class,"restartPromptVisible",false);set(LanguageRestartController.class,"restartHandoff",null);
   set(LanguageRestartController.class,"menuKeyHeld",false);set(LanguageRestartController.class,"menuOpenRequested",false);
+  set(GameNotification.class,"decision",null);
   ProgressSaveController.initialize();
  }
  static void ready(){ProgressSaveController.globalLoadFinished(false,false);ProgressSaveController.farmLoadFinished();ProgressSaveController.enterWorld();}
  static void frame(long elapsed){SystemClock.now+=elapsed;ProgressSaveController.frameFinished();}
  static void complete(boolean fail){queue().complete(fail);ProgressSaveController.frameFinished();}
- static void readySaved()throws Exception{reset();ready();frame(0);frame(200);check(queue().pending.size()==1,"initial batch not captured");complete(false);}
+ static void readySaved()throws Exception{reset();ready();frame(0);frame(500);check(queue().pending.size()==1,"initial batch not captured");complete(false);}
  static void finishPending(){for(int i=0;i<20&&!queue().isIdle();i++)complete(false);check(queue().isIdle(),"writer failed to quiesce");}
+ static void actionMatrixAndCriticalFlush()throws Exception{
+  for(int count:new int[]{1,10,50,100}){
+   readySaved();int before=ci.attempts;
+   for(int i=1;i<=count;i++){ch.credits=i;ProgressSaveController.requestSave();frame(10);}
+   frame(500);finishPending();
+   check(GameSaveStore.durableCredits==count,"accepted action state lost");
+   check(ci.attempts-before<=(count+49)/50+1,"continuous actions serialized once per operation");
+  }
+  readySaved();ch.credits=83;ProgressSaveController.requestCriticalSave();frame(0);
+  check(!queue().isIdle()&&GameSaveStore.durableCredits!=83,"critical save waited for debounce or wrote on game thread");
+  finishPending();check(GameSaveStore.durableCredits==83,"critical checkpoint lost");
+  ch.credits=91;ProgressSaveController.requestSave();int applied=GameSaveStore.applies;
+  ProgressSaveController.requestLifecycleFlush();
+  check(!queue().isIdle()&&GameSaveStore.applies==applied,"Android lifecycle waited for SQLite");
+  finishPending();check(GameSaveStore.durableCredits==91,"lifecycle snapshot lost");
+  System.out.println("PASS 1/10/50/100 accepted-state batches, critical debit bypass and nonblocking lifecycle capture");
+ }
+ static void retryNoticePreservesExistingQuestDialog()throws Exception{
+  readySaved();queue().retryPaused=true;ci.state(20);frame(0);
+  check(!GameNotification.isVisible(),"storage notice replaced the existing quest/tutorial dialog");
+  ci.state(18);frame(0);
+  check(GameNotification.isVisible(),"storage notice did not appear after the quest closed");
+  GameNotification.choose(true);check(!queue().retryPaused,"explicit retry did not resume the writer");
+ }
  static void loaderBatchAndTimer()throws Exception{
   reset();ProgressSaveController.requestSave();frame(500);check(ci.attempts==0,"saved before global load");
   ProgressSaveController.globalLoadFinished(false,false);ProgressSaveController.enterWorld();frame(500);check(ci.attempts==0,"farm load barrier bypassed");
-  ProgressSaveController.farmLoadFinished();ProgressSaveController.enterWorld();frame(0);frame(199);
+  ProgressSaveController.farmLoadFinished();ProgressSaveController.enterWorld();frame(0);frame(499);
   check(ci.attempts==0,"batch wrote before debounce");frame(1);check(ci.attempts==1&&GameSaveStore.applies==0,"capture did SQLite synchronously or was missing");
   check(ci.committedCallbacks==0,"legacy save effects ran before durable ack");
   check(ProgressSaveController.hasPendingChanges(),"pending writer invisible");complete(false);check(!ProgressSaveController.hasPendingChanges(),"durable ack not consumed");
@@ -204,17 +240,17 @@ public class ProgressSaveChecks {
   ci.avD=-1;ci.state(4);frame(1);check(ci.attempts==2,"captured partial loader");ci.state(18);frame(1);check(ci.attempts==3,"dirty save lost behind barrier");finishPending();
  }
  static void continuousBatchAndNewMutation()throws Exception{
-  readySaved();int before=ci.attempts;for(int i=0;i<6;i++){ci.baa=true;frame(100);}
-  check(ci.attempts==before+1,"continuous operations exceeded 500ms maximum wait");finishPending();
-  ProgressSaveController.requestSave();frame(0);frame(200);int captured=ci.attempts;int callbacks=ci.committedCallbacks;
+  readySaved();int before=ci.attempts;for(int i=0;i<21;i++){ci.baa=true;frame(100);}
+  check(ci.attempts==before+1,"continuous operations exceeded 2000ms maximum wait");finishPending();
+  ProgressSaveController.requestSave();frame(0);frame(500);int captured=ci.attempts;int callbacks=ci.committedCallbacks;
   ci.bab=true;frame(1);complete(false);check(ProgressSaveController.hasPendingChanges(),"new mutation acknowledged by older commit");
   check(ci.committedCallbacks==callbacks,"legacy callback ignored newer dirty gameplay");
-  frame(200);check(ci.attempts==captured+1,"new mutation not captured after older ack");finishPending();
+  frame(500);check(ci.attempts==captured+1,"new mutation not captured after older ack");finishPending();
  }
  static void immutableSnapshotAndFailure()throws Exception{
-  readySaved();ch.credits=7;ch.pending=3;ci.baa=true;frame(0);frame(200);ch.credits=19;ch.pending=5;complete(false);
+  readySaved();ch.credits=7;ch.pending=3;ci.baa=true;frame(0);frame(500);ch.credits=19;ch.pending=5;complete(false);
   check(GameSaveStore.durableCredits==7&&GameSaveStore.durablePending==3,"writer observed live RAM");
-  ci.baa=true;frame(0);frame(200);int captures=ci.attempts;complete(true);
+  ci.baa=true;frame(0);frame(500);int captures=ci.attempts;complete(true);
   for(int i=0;i<20;i++)frame(10);check(ci.attempts==captures,"SQLite failure caused per-frame serialization");
   complete(false);check(GameSaveStore.durableCredits==19,"absolute retry lost detached values");
   ci.skipWrite=true;check(!ProgressSaveController.flushForLifecycle(),"declined serializer became durable save");
@@ -222,14 +258,14 @@ public class ProgressSaveChecks {
  }
  static void loadRetry()throws Exception{
   reset();GameSaveStore.failFinish=true;ready();check(ProgressSaveController.isLoadBlocked(),"load completion failure unblocked");
-  set(ProgressSaveController.class,"retryLoad",true);GameSaveStore.failFinish=false;frame(0);frame(200);finishPending();check(!ProgressSaveController.isLoadBlocked(),"load retry deadlocked");
+  set(ProgressSaveController.class,"retryLoad",true);GameSaveStore.failFinish=false;frame(0);frame(500);finishPending();check(!ProgressSaveController.isLoadBlocked(),"load retry deadlocked");
   reset();ProgressSaveController.loadingFailed(47,new Exception("decode"));ch.entities=5;ci.aZi=new ch();ci.aZj=new ch();ci.queued=3;
   GameSaveStore.failInitialize=true;set(ProgressSaveController.class,"retryLoad",true);check(!ProgressSaveController.allowLoadStep()&&ch.entities==5&&ch.loadClears==0,"failed reopen discarded RAM");
   GameSaveStore.failInitialize=false;set(ProgressSaveController.class,"retryLoad",true);int resets=EntityPoseState.resets;
   check(ProgressSaveController.allowLoadStep()&&EntityPoseState.resets==resets+1,"loader retry did not reset decoder");check(ch.entities==0&&ci.aZi==null&&ci.aZj==null&&ci.queued==0,"retained partial entities");
  }
  static void loadRetryWaitsForWriter()throws Exception{
-  readySaved();ProgressSaveController.requestSave();frame(0);frame(200);
+  readySaved();ProgressSaveController.requestSave();frame(0);frame(500);
   ProgressSaveController.loadingFailed(-1,new Exception("finish"));set(ProgressSaveController.class,"retryLoad",true);frame(0);
   check(ProgressSaveController.isLoadBlocked(),"load retry bypassed pending writer");complete(false);
   check(!ProgressSaveController.isLoadBlocked(),"retry click was discarded while writer was busy");
@@ -244,34 +280,49 @@ public class ProgressSaveChecks {
   check(ci.qD()==18&&ci.apA==0&&ci.clears==0,"settlement callback did not wait");complete(false);ci.qG();
   check(ci.qD()==14&&ci.apC[0]==18&&ci.clears==0,"level-up callback discarded or world cleaned");check(GameSaveStore.durableCredits==7&&GameSaveStore.durablePending==2,"level-up snapshot incomplete");
  }
- static void choose(int language){MIDlet.cnz=new Activity();LanguageRestartController.select(language);check(AlertDialog.latest!=null,"confirmation missing");}
- static void accept(){AlertDialog.latest.positive.onClick(null,1);}
- static void startLanguage(int language){choose(language);accept();check(LanguageRestartController.frameStarted(),"accepted choice did not freeze frame");}
+ static void startLanguage(int language){MIDlet.cnz=new Activity();LanguageRestartController.select(language);
+  check(LanguageRestartController.frameStarted(),"accepted choice did not freeze frame");}
+ static void accept(){AlertDialog.latest.positive.onClick(null,1);LanguageRestartController.frameStarted();}
  static void languageCancelAndRestart()throws Exception{
-  readySaved();choose(16);check(AlertDialog.latest.message.startsWith("Changing the language"),"confirmation used target language");
-  AlertDialog.latest.negative.onClick(null,-1);check(!LanguageRestartController.blocksGameplay()&&ci.aYU==0,"cancel changed session");
-  int before=ci.attempts;choose(16);accept();accept();check(ci.attempts==before&&queue().isIdle(),"UI confirmation serialized");
-  LanguageRestartController.frameStarted();check(ci.aYU==0&&GameSaveStore.durableLanguage==0,"language applied before durable commit");
-  check(AlarmManager.exact==0&&android.os.Process.kills==0,"restarted before SQLite ack");finishPending();
-  check(ci.aYU==16&&GameSaveStore.durableLanguage==16&&android.os.Process.kills==1,"checkpoint did not restart exactly once");
-  check(AlarmManager.exact==1&&PendingIntent.last.component.name.endsWith(".Start"),"restart target invalid");check((PendingIntent.flags&PendingIntent.FLAG_IMMUTABLE)!=0,"pending intent mutable");
-  frame(1);check(android.os.Process.kills==1,"completion replayed restart");
+  readySaved();int before=ci.attempts;startLanguage(16);
+  check(AlertDialog.latest==null,"success popup shown before durability");
+  check(ci.aYU==0&&android.os.Process.kills==0,"language changed before SQLite ack");finishPending();
+  check(AlertDialog.latest.message.startsWith("The language setting has been saved"),"popup not in current language");
+  check(GameSaveStore.durableLanguage==16&&ci.aYU==0&&android.os.Process.kills==0,"deferred locale or progress lost");
+  AlertDialog.latest.negative.onClick(null,-1);
+  check(!LanguageRestartController.blocksGameplay()&&ci.aYU==0,"Later changed live assets or froze session");
+  ch.credits=31;ci.baa=true;frame(0);frame(500);finishPending();
+  check(GameSaveStore.durableLanguage==16&&GameSaveStore.durableCredits==31,"later gameplay overwrote selected language");
+  startLanguage(0);finishPending();
+  check(GameSaveStore.durableLanguage==0&&ci.aYU==0&&!LanguageRestartController.blocksGameplay()
+    &&!GameNotification.isVisible()&&android.os.Process.kills==0,"choosing current locale failed to cancel deferred language");
+  startLanguage(16);finishPending();accept();accept();
+  check(GameSaveStore.durableLanguage==16&&android.os.Process.kills==1,"restart did not happen once");
+  check(AlarmManager.exact==1&&PendingIntent.last.component.name.endsWith(".Start"),"restart target invalid");
+  check((PendingIntent.flags&PendingIntent.FLAG_IMMUTABLE)!=0,"pending intent mutable");
  }
  static void languageFailureRetry()throws Exception{
   readySaved();int epoch=TutorialFlowController.invalidations;startLanguage(16);complete(true);finishPending();
-  check(ci.aYU==0&&!LanguageRestartController.blocksGameplay()&&android.os.Process.kills==0,"failure changed language or session");check(TutorialFlowController.invalidations==epoch,"failure invalidated tutorial modal");
-  check(AlertDialog.latest.message.startsWith("Could not save progress"),"save error not in old language");accept();LanguageRestartController.frameStarted();AlarmManager.exactDenied=true;finishPending();
-  check(GameSaveStore.durableLanguage==16&&AlarmManager.ordinary==1&&android.os.Process.kills==1,"retry or exact alarm fallback failed");
+  check(ci.aYU==0&&!LanguageRestartController.blocksGameplay()&&android.os.Process.kills==0,"failure changed session");
+  check(TutorialFlowController.invalidations==epoch,"failure invalidated tutorial modal");
+  check(AlertDialog.latest.message.startsWith("Could not save progress"),"save error not in old language");
+  accept();finishPending();AlarmManager.exactDenied=true;accept();
+  check(GameSaveStore.durableLanguage==16&&AlarmManager.ordinary==1&&android.os.Process.kills==1,"retry/alarm fallback failed");
  }
  static void languageLateMutation()throws Exception{
   readySaved();startLanguage(16);ch.credits=17;ci.baa=true;complete(false);
-  check(ci.aYU==0&&android.os.Process.kills==0&&!queue().isIdle(),"restart skipped late mutation");finishPending();check(GameSaveStore.durableCredits==17&&ci.aYU==16&&android.os.Process.kills==1,"pending gameplay not durable before restart");
+  check(ci.aYU==0&&android.os.Process.kills==0&&!queue().isIdle(),"late mutation skipped");finishPending();
+  check(GameSaveStore.durableCredits==17&&GameSaveStore.durableLanguage==16,"late gameplay not durable");accept();
+  check(android.os.Process.kills==1,"restart missing after acknowledgement");
  }
  static void languageHeaderAndHandoff()throws Exception{
   reset();ci.state(26);GameSaveStore.durableCredits=91;startLanguage(16);
-  check(!queue().pending.get(0).snapshot.gameplay&&ci.attempts==0,"pre-world language invented gameplay");finishPending();check(ci.aYU==16&&GameSaveStore.durableCredits==91,"header-only change reset gameplay");
-  readySaved();startLanguage(16);AlarmManager.failAll=true;finishPending();check(ci.aYU==16&&GameSaveStore.durableLanguage==16&&LanguageRestartController.blocksGameplay(),"handoff failure unfroze mismatched resources");
-  check(AlertDialog.latest.message.startsWith("Your progress has been saved"),"handoff error reported save failure");int captures=ci.attempts;AlarmManager.failAll=false;accept();LanguageRestartController.frameStarted();
+  check(!queue().pending.get(0).snapshot.gameplay&&ci.attempts==0,"pre-world language invented gameplay");finishPending();
+  check(ci.aYU==0&&GameSaveStore.durableLanguage==16&&GameSaveStore.durableCredits==91,"header-only change reset gameplay");
+  accept();readySaved();startLanguage(16);finishPending();AlarmManager.failAll=true;accept();
+  check(ci.aYU==0&&GameSaveStore.durableLanguage==16&&android.os.Process.kills==0,"handoff failure damaged saved/live setting");
+  check(AlertDialog.latest.message.startsWith("Your progress has been saved"),"handoff error reported save failure");
+  int captures=ci.attempts;AlarmManager.failAll=false;accept();
   check(ci.attempts==captures&&android.os.Process.kills==1,"handoff retry repeated gameplay save");
  }
  static void languageLateCaptureFailure()throws Exception{
@@ -350,7 +401,7 @@ public class ProgressSaveChecks {
   if(args.length>0&&args[0].equals("coldNoWriter")){coldNoWriter();return;}
   ColdEngineInitProbe.failInitialization=false;
   loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
-  languageCancelAndRestart();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();saveTransferLongPress();saveTransferFreeze();
+  retryNoticePreservesExistingQuestDialog();actionMatrixAndCriticalFlush();languageCancelAndRestart();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();saveTransferLongPress();saveTransferFreeze();
   System.out.println("PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff");
  }
 }
@@ -389,7 +440,7 @@ class ProgressSaveControllerTest(unittest.TestCase):
                 peer.write_text(adapt_fixture(content).replace('com.gameloft.android.ANMP.GloftGF2F', qualified_package().rsplit('.', 1)[0]), encoding='utf-8')
                 peers.append(peer)
             fixture, runner = folder / 'Fixture.java', folder / 'ProgressSaveChecks.java'
-            actual = [kotlin_source / name for name in ('ProgressSaveController.kt', 'SaveBatchPolicy.kt', 'LanguageRestartController.kt')]
+            actual = [kotlin_source / name for name in ('ProgressSaveController.kt', 'SaveBatchPolicy.kt', 'LanguageRestartController.kt', 'GameNotification.kt')]
             fixture_text = FIXTURE
             if kotlin_midlet.is_file():
                 # Isolate only the two unchanged production override bodies,

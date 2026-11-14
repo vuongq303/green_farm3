@@ -181,6 +181,8 @@ npm run test:mysql
 Remove-Item Env:DB_NAME
 ```
 
+`test:mysql` chạy tuần tự theo file vì hai suite dùng chung schema và cleanup có thể deadlock nếu chạy song song. Ca kiểm tra nhiều authorization đồng thời trong từng suite vẫn được giữ nguyên.
+
 `npm test` kiểm tra HTTP/config bằng repository test double **chỉ trong test**,
 không phải fallback runtime. `test:mysql` yêu cầu MySQL thật, migration thật,
 không skip nếu thiếu DB; kiểm tra restart, account/session/profile/compliance,

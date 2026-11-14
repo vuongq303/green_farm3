@@ -37,6 +37,10 @@ object ProgressSaveController {
     private var promptVisible = false
     private var errorNoticeVisible = false
     private var languageCheckpoint: LanguageCheckpoint? = null
+    private var deferredLanguage: Int? = null
+    private var retryNoticeShown = false
+    private val criticalRequests = AtomicLong()
+    private var capturedCriticalRequests = 0L
     private var captureCount = 0L
     private var totalCaptureNanos = 0L
     private var legacyCallbackSequence = 0L
@@ -45,7 +49,7 @@ object ProgressSaveController {
         val language: Int,
         val completion: LanguageRestartController.SaveCompletion
     ) {
-        val previousLanguage = FarmGameEngine.aYU
+        val previousLanguage = deferredLanguage ?: FarmGameEngine.aYU
         var sequence = 0L
         var preferencePhase = false
         var preferenceCommitted = false
@@ -85,6 +89,8 @@ object ProgressSaveController {
         errorNoticeVisible = false
         saveFailure = false
         languageCheckpoint = null
+        deferredLanguage = null
+        GameSaveStore.setLanguageWriteOverride(null)
         lastObservedRequestSequence = requestedSequence.get()
         durableRequestSequence = lastObservedRequestSequence
         legacyCallbackSequence = durableRequestSequence
@@ -94,6 +100,11 @@ object ProgressSaveController {
     @JvmStatic
     fun requestSave() {
         requestedSequence.incrementAndGet()
+    }
+
+    @JvmStatic fun requestCriticalSave() {
+        requestedSequence.incrementAndGet()
+        criticalRequests.incrementAndGet()
     }
 
     @JvmStatic fun atSnapshotBoundary(): Boolean = snapshotBoundary
@@ -256,11 +267,23 @@ object ProgressSaveController {
             SystemClock.uptimeMillis() - checkpoint.rollbackAttempt >= 1000L) {
             enqueueLanguageRollback(checkpoint)
         }
+        val queue = sqliteWriteQueue
+        if (queue != null && !queue.isRetryPaused()) retryNoticeShown = false
+        if (queue?.isRetryPaused() == true && !retryNoticeShown &&
+            (languageCheckpoint != null || worldEligible()) && !GameNotification.isVisible() &&
+            FarmGameEngine.currentEngineState() != 20 && FarmGameEngine.apA == -1) {
+            retryNoticeShown = true
+            val text = LanguageRestartController.textFor(FarmGameEngine.aYU)
+            val failureText = GameNotification.storageFailure(FarmGameEngine.aYU)
+            GameNotification.show(failureText[0], failureText[1], text[4], text[3], canDismiss = languageCheckpoint == null) { retry ->
+                if (retry) queue.retryPending()
+            }
+        }
         if (!worldReady || languageCheckpoint != null) return
         val now = SystemClock.uptimeMillis()
         observeChanges(now)
         val periodic = !batchPolicy.isDirty() && now - lastCaptureUptimeMillis >= 8000L
-        if (canSerialize() && (batchPolicy.due(now) || periodic) &&
+        if (canSerialize() && (criticalRequests.get() != capturedCriticalRequests || batchPolicy.due(now) || periodic) &&
             (!captureFailed || now - lastCaptureAttemptUptimeMillis >= 1000L)) {
             capture(false, null)
         }
@@ -284,20 +307,20 @@ object ProgressSaveController {
     private fun capture(force: Boolean, checkpoint: Any?): Long {
         if (!canSerialize()) return -1L
         val sequence = requestedSequence.get()
+        val criticalAtCapture = criticalRequests.get()
         val startNanos = System.nanoTime()
         lastCaptureAttemptUptimeMillis = SystemClock.uptimeMillis()
         snapshotBoundary = true
         forcedCheckpoint = force
-        val previousLanguage = FarmGameEngine.aYU
         try {
-            if (checkpoint is LanguageCheckpoint && checkpoint.preferencePhase) {
-                FarmGameEngine.aYU = checkpoint.language
-            }
             GameSaveStore.beginCapture(FarmGameEngine.aZB == 0)
             if (FarmGameEngine.aZB == 0) FarmGameEngine.av(false) else FarmGameEngine.rs()
+            val savedLanguage = if (checkpoint is LanguageCheckpoint && checkpoint.preferencePhase) checkpoint.language else deferredLanguage
+            savedLanguage?.let { GameSaveStore.overrideCapturedLanguage(it) }
             val snapshot = GameSaveStore.finishCapture()
             sqliteWriteQueue!!.submit(snapshot, sequence, checkpoint)
             batchPolicy.captured()
+            capturedCriticalRequests = criticalAtCapture
             captureFailed = false
             lastCaptureUptimeMillis = SystemClock.uptimeMillis()
             captureCount++
@@ -313,7 +336,6 @@ object ProgressSaveController {
             Log.e("GreenFarmSave", "capture_failed", failure)
             return -1L
         } finally {
-            FarmGameEngine.aYU = previousLanguage
             forcedCheckpoint = false
             snapshotBoundary = false
         }
@@ -421,6 +443,24 @@ object ProgressSaveController {
         }
     }
 
+    /** Header choice survives Later; live text/sprites keep their current locale. */
+    @JvmStatic fun deferLanguageUntilRestart(language: Int) {
+        deferredLanguage = language.takeIf { it != FarmGameEngine.aYU }
+        GameSaveStore.setLanguageWriteOverride(deferredLanguage)
+    }
+    @JvmStatic fun hasDeferredLanguage(): Boolean = deferredLanguage != null
+
+    /** Android pause/hide callbacks must not wait for SQLite while holding the UI thread. */
+    @JvmStatic fun requestLifecycleFlush() = synchronized(FarmGameEngine::class.java) {
+        if (sqliteWriteQueue == null) return@synchronized
+        FarmGameEngine.cancelMovePreviewForInterruption()
+        drainCompletions()
+        if (languageCheckpoint == null && worldEligible()) {
+            observeChanges(SystemClock.uptimeMillis())
+            capture(true, null)
+        }
+    }
+
     @JvmStatic
     fun flushForLifecycle(): Boolean = synchronized(FarmGameEngine::class.java) {
         // A cold save-transfer receiver has no MIDlet/world or writer yet.
@@ -473,6 +513,8 @@ object ProgressSaveController {
     @JvmStatic
     fun requestLanguageCheckpoint(language: Int, completion: LanguageRestartController.SaveCompletion): Boolean {
         if (languageCheckpoint != null || loadBlocked || sqliteWriteQueue == null) return false
+        // This entry is an explicit user selection/retry, never a timed loop.
+        sqliteWriteQueue!!.retryPending()
         val request = LanguageCheckpoint(language, completion)
         languageCheckpoint = request
         request.sequence = requestLanguageCapture(request)

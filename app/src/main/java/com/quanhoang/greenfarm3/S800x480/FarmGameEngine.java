@@ -17278,6 +17278,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         }
         aIm = iHF + i3;
         hasUnsavedGameChanges = true;
+        if (i3 < 0) ProgressSaveController.requestCriticalSave();
         return true;
     }
 
@@ -18423,6 +18424,25 @@ public final class FarmGameEngine extends GameRuntime implements av {
         e(4, 13, true);
         e(4, 15, true);
         e(4, 16, true);
+        fE(20);
+    }
+
+    /** Dedicated callback mode on the game's existing two-button dialog. */
+    static void showGameNotification(String title, String message) {
+        Ir();
+        aML = 13;
+        aME = false;
+        aMF = false;
+        aMw = title;
+        aMx = message;
+        aMK = "";
+        e(4, 5, true);
+        e(4, 6, true);
+        e(4, 7, true);
+        e(4, 13, true);
+        e(4, 15, true);
+        e(4, 16, GameNotification.canDismiss());
+        T(7, 0, 10);
         fE(20);
     }
 
@@ -31181,6 +31201,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         }
         hJ(iFA);
         hasUnsavedGameChanges = true;
+        if (i < 0) ProgressSaveController.requestCriticalSave();
         String str = "[player add money]. quest check. :" + i;
         if (i > 0) {
             aa(0, i, 11);
@@ -31202,6 +31223,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         }
         hK(iFB);
         hasUnsavedGameChanges = true;
+        if (i < 0) ProgressSaveController.requestCriticalSave();
     }
 
     static void hU(int i) {
@@ -44411,6 +44433,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void ts() {
+        if (aML == 13 && GameNotification.isVisible()) {
+            GameNotification.choose(false);
+            return;
+        }
         switch (aML) {
             case 2:
                 gX(56);
@@ -49949,7 +49975,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
 
     @Override // com.quanhoang.greenfarm3.S800x480.GLLib
     protected void Pause() {
-        ProgressSaveController.flushForLifecycle();
+        ProgressSaveController.requestLifecycleFlush();
         if (aYY) {
             aYY = false;
         }
@@ -51770,6 +51796,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void tH() {
+        if (aML == 13 && GameNotification.isVisible()) {
+            GameNotification.choose(false);
+            return;
+        }
         boolean z;
         boolean z2;
         if (aML == 2 || aML == 3 || aML == 4) {
@@ -64083,7 +64113,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
 
     @Override // com.quanhoang.greenfarm3.S800x480.GLLib, javax.microedition.lcdui.f
     public void jF() {
-        ProgressSaveController.flushForLifecycle();
+        ProgressSaveController.requestLifecycleFlush();
         baF = true;
         super.jF();
         rE();
@@ -64168,7 +64198,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         aOO = false;
         // Hide callbacks above can settle pending rewards after Pause().
         // Persist that completed state before Android can kill the process.
-        ProgressSaveController.flushForLifecycle();
+        ProgressSaveController.requestLifecycleFlush();
     }
 
     static void DK() {
@@ -67475,7 +67505,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if (i == 39 && lN(298)) {
             return;
         }
-        if ((i == 20 || i == 27) && apB < 15
+        if ((i == 20 || i == 27) && !(i == 20 && aML == 13) && apB < 15
                 && !TutorialFlowController.openModal(i, currentTutorialStepIndex, aYS, awV)) return;
         if (i == 20 && aML != 10) {
             e(4, 47, false);
@@ -69049,6 +69079,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void tq() {
+        if (aML == 13 && GameNotification.isVisible()) {
+            GameNotification.choose(true);
+            return;
+        }
         switch (aML) {
             case 2:
                 gX(48);
@@ -69571,7 +69605,25 @@ public final class FarmGameEngine extends GameRuntime implements av {
     /* JADX WARN: Code duplicated, block: B:329:0x0750  */
     /* JADX WARN: Code duplicated, block: B:32:0x0070  */
     /* JADX WARN: Code duplicated, block: B:331:0x0764  */
+    /** GUI4 input for callback notifications is independent of tutorial dialog rules. */
+    static boolean updateGameNotification(int phase) {
+        if (aML != 13 || !GameNotification.isVisible()) return false;
+        if (phase == 2) {
+            int key = GameRuntime.jO();
+            if (key == 19 || key == 11) GameNotification.choose(false);
+            aMH += Qy;
+            fT(1);
+            return true;
+        }
+        if (phase == 8) {
+            if (aMH > 700 && GameRuntime.dA(0)) GameNotification.choose(false);
+            return true;
+        }
+        return false;
+    }
+
     static boolean jO(int i) {
+        if (updateGameNotification(i)) return false;
         String strDt;
         String str;
         String strDt2;
@@ -69987,6 +70039,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
             }
             if (atc[4][15][10] == 1) {
                 switch (aML) {
+                    case 13:
+                        a(GameNotification.positiveLabel(), 4, 18, 0, 0);
+                        if (GameNotification.canDismiss()) a(GameNotification.negativeLabel(), 4, 19, 0, 0);
+                        break;
                     case 2:
                         String strDt16 = dt(45);
                         if (strDt16 == null) {

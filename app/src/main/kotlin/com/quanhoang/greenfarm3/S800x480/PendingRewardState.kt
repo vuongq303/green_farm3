@@ -116,6 +116,10 @@ object PendingRewardState {
         effect.anN = (words[19] and 1) != 0; effect.anO = (words[19] and 2) != 0
         effect.anP = words[20]; effect.anQ = words[21]; effect.anR = words[22]; effect.anS = words[23]
         effect.anT = words[24]; effect.anU = words[25]; effect.anV = words[26]; effect.anW = words[27]
+        // Older snapshots may contain a sign-extended Short.MIN_VALUE atlas
+        // flag. Normalize only the handle; keep the exact item sprite/frame,
+        // amount and settlement state from the saved effect.
+        if (effect.anG == 59) effect.aoG = (effect.aoG and 0x7fff) or 0x8000
         effect.anX = true
     }
     private fun requireWorldList() {

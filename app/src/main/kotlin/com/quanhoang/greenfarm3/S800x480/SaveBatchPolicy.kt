@@ -30,8 +30,12 @@ class SaveBatchPolicy {
     }
 
     companion object {
-        const val DEBOUNCE_MILLIS = 200L
-        const val MAX_WAIT_MILLIS = 500L
+        const val DEBOUNCE_MILLIS = 500L
+        const val MAX_WAIT_MILLIS = 2000L
         const val MAX_OPERATIONS = 50
+        const val MAX_WRITE_ATTEMPTS = 5
+        const val RETRY_INITIAL_MILLIS = 250L
+        const val RETRY_MAX_MILLIS = 2000L
+        const val BUSY_TIMEOUT_MILLIS = 1000L
     }
 }

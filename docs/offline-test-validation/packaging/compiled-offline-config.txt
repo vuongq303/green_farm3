@@ -1,8 +1,0 @@
-Compiled from "OfflineTestConfig.kt"
-public final class com.quanhoang.greenfarm3.S800x480.OfflineTestConfig {
-  public static final com.quanhoang.greenfarm3.S800x480.OfflineTestConfig$Companion Companion;
-  public static final boolean ENABLED = true;
-  private com.quanhoang.greenfarm3.S800x480.OfflineTestConfig();
-  public static final boolean enabled();
-  static {};
-}

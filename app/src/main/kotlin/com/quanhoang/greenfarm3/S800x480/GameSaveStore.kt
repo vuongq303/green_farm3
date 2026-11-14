@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.DatabaseErrorHandler
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteStatement
 import android.database.sqlite.SQLiteOpenHelper
 import java.io.DataInputStream
 import java.io.File
@@ -45,9 +46,11 @@ object GameSaveStore {
     @Volatile private var logicalReady = false
     @Volatile private var writeDispatcher: WriteDispatcher? = null
     private var acceptedVersion = 0L
+    @Volatile private var languageWriteOverride: Int? = null
     private var helper: Helper? = null
     // Keep this field name: the isolated Android durability probe inspects the live connection.
     private var database: SQLiteDatabase? = null
+    private var recordWriter: SQLiteStatement? = null
     private var context: Context? = null
     private var depth = 0
     private var poisoned = false
@@ -128,6 +131,24 @@ object GameSaveStore {
             publishLogicalSnapshot(snapshot)
             return snapshot
         } finally { CAPTURE.remove() }
+    }
+
+    /** Patch only the detached header; never swap live locale/font state during a frame. */
+    @JvmStatic fun overrideCapturedLanguage(language: Int) {
+        val capture = CAPTURE.get() ?: throw Failure("No active game capture", null)
+        val header = capture.records["RMSHeader"]
+        if (language !in 0..255 || header == null || header.size < 35) {
+            throw captureFailed(capture, "Cannot update an incomplete language header")
+        }
+        val updated = header.copyOf()
+        updated[4] = language.toByte()
+        captureMutation(capture, "RMSHeader", updated)
+    }
+
+    /** Deferred selection also covers direct SDK/options RMSHeader writes. */
+    @JvmStatic fun setLanguageWriteOverride(language: Int?) {
+        require(language == null || language in 0..255)
+        languageWriteOverride = language
     }
 
     @JvmStatic fun abortCapture() { CAPTURE.remove() }
@@ -293,6 +314,7 @@ object GameSaveStore {
             logicalVersions = Collections.emptyMap()
             logicalReady = false
             writeDispatcher = null
+            languageWriteOverride = null
             APPLIED_VERSIONS.clear()
             loading = false
             protectExistingSnapshot = false
@@ -300,6 +322,8 @@ object GameSaveStore {
     }
 
     private fun closeLocked() {
+        recordWriter?.close()
+        recordWriter = null
         helper?.close()
         helper = null
         database = null
@@ -315,6 +339,8 @@ object GameSaveStore {
         }
         try {
             if (database?.isOpen != true) {
+                recordWriter?.close()
+                recordWriter = null
                 val newHelper = Helper(context!!)
                 helper = newHelper
                 newHelper.setWriteAheadLoggingEnabled(true)
@@ -472,16 +498,16 @@ object GameSaveStore {
                     poisoned = true
                     error = "Game snapshot is incomplete; existing progress was retained"
                 }
-                if (readLocked("RMSHeader") == null || readLocked("save_gameplay") == null || readLocked("pending_rewards_v1") == null ||
-                    (requireWholeFarm && (readLocked("save_farm0") == null || readLocked("entity_pose_v1") == null))) {
+                if (transactionRecordLocked("RMSHeader") == null || transactionRecordLocked("save_gameplay") == null || transactionRecordLocked("pending_rewards_v1") == null ||
+                    (requireWholeFarm && (transactionRecordLocked("save_farm0") == null || transactionRecordLocked("entity_pose_v1") == null))) {
                     poisoned = true
                     error = "Game snapshot records are missing; existing progress was retained"
                 }
-                if (!requireWholeFarm && readLocked("save_farm0") == null) {
+                if (!requireWholeFarm && transactionRecordLocked("save_farm0") == null) {
                     poisoned = true
                     error = "Own farm must be saved before saving a visited farm"
                 }
-                if (!requireWholeFarm && slotNumber("pose_snapshot") >= 1 && readLocked("entity_pose_v1") == null) {
+                if (!requireWholeFarm && slotNumber("pose_snapshot") >= 1 && transactionRecordLocked("entity_pose_v1") == null) {
                     poisoned = true
                     error = "Own-farm orientation must be retained while visiting another farm"
                 }
@@ -619,6 +645,15 @@ object GameSaveStore {
     }
 
     @JvmStatic fun write(storeName: String?, payload: ByteArray?, offset: Int, length: Int) {
+        val language = languageWriteOverride
+        if (storeName == "RMSHeader" && language != null && validPayload(payload, offset, length) && length >= 35) {
+            val header = Arrays.copyOfRange(payload!!, offset, offset + length)
+            header[4] = language.toByte()
+            writeRecord(storeName, header, 0, header.size)
+        } else writeRecord(storeName, payload, offset, length)
+    }
+
+    private fun writeRecord(storeName: String?, payload: ByteArray?, offset: Int, length: Int) {
         val capture = CAPTURE.get()
         if (capture != null) {
             if (!validPayload(payload, offset, length)) throw captureFailed(capture, "Invalid game record payload")
@@ -700,12 +735,18 @@ object GameSaveStore {
                 currentStatus = STATUS_SAVING
             }
             TOUCHED.add(name)
-            val current = readLocked(name)
+            // Confirmed cache is published only after COMMIT under this same lock.
+            // Captured saves need no SELECT + SHA-256 of every unchanged blob.
+            val cached = !own && APPLYING_SNAPSHOT.get() == true && logicalReady
+            val current = if (cached) {
+                if (RECORD_CHANGES.containsKey(name)) RECORD_CHANGES[name] else confirmedRecords[name]
+            } else readLocked(name)
             if (!own && !requireWholeFarm && (name == "save_farm0" || name == "entity_pose_v1") &&
                 (deleted || !Arrays.equals(current, payload))) {
                 throw failed("A visited-farm save cannot replace the saved own farm or its orientation", null)
             }
-            if ((deleted && !isDeletedLocked(name)) || (!deleted && !Arrays.equals(current, payload))) {
+            if ((deleted && !(if (cached) confirmedRecords.containsKey(name) && current == null else isDeletedLocked(name))) ||
+                (!deleted && !Arrays.equals(current, payload))) {
                 putLocked(name, payload, deleted, nextGeneration)
                 RECORD_CHANGES[name] = if (deleted) null else payload
                 writes++
@@ -721,6 +762,14 @@ object GameSaveStore {
         } finally { LOCK.unlock() }
     }
 
+    /** One writer owns LOCK; its transaction overlay is authoritative after each checked INSERT. */
+    private fun transactionRecordLocked(name: String): ByteArray? {
+        if (APPLYING_SNAPSHOT.get() == true && logicalReady) {
+            return if (RECORD_CHANGES.containsKey(name)) RECORD_CHANGES[name] else confirmedRecords[name]
+        }
+        return readLocked(name)
+    }
+
     private fun isDeletedLocked(name: String): Boolean {
         val cursor = db.query("save_records", arrayOf("deleted"), "slot_id=? AND store_name=? AND record_id=1", arrayOf(SLOT, name), null, null, null)
         try { return cursor.moveToFirst() && cursor.getInt(0) != 0 }
@@ -728,15 +777,23 @@ object GameSaveStore {
     }
 
     private fun putLocked(name: String, payload: ByteArray?, deleted: Boolean, generation: Long) {
-        val row = ContentValues()
-        row.put("slot_id", SLOT)
-        row.put("store_name", name)
-        row.put("record_id", 1)
-        if (deleted) { row.putNull("payload"); row.putNull("checksum") }
-        else { row.put("payload", payload); row.put("checksum", digest(payload!!)) }
-        row.put("deleted", if (deleted) 1 else 0)
-        row.put("generation", generation)
-        if (db.insertWithOnConflict("save_records", null, row, SQLiteDatabase.CONFLICT_REPLACE) < 0) throw failed("SQLite did not write the game record", null)
+        val statement = recordWriter ?: db.compileStatement(
+            "INSERT OR REPLACE INTO save_records " +
+                "(slot_id,store_name,record_id,payload,checksum,deleted,generation) VALUES (?,?,1,?,?,?,?)"
+        ).also { recordWriter = it }
+        statement.clearBindings()
+        statement.bindString(1, SLOT)
+        statement.bindString(2, name)
+        if (deleted) {
+            statement.bindNull(3)
+            statement.bindNull(4)
+        } else {
+            statement.bindBlob(3, payload!!)
+            statement.bindBlob(4, digest(payload))
+        }
+        statement.bindLong(5, if (deleted) 1L else 0L)
+        statement.bindLong(6, generation)
+        if (statement.executeInsert() < 0) throw failed("SQLite did not write the game record", null)
     }
 
     @JvmStatic fun hasGameplaySave(): Boolean {
@@ -924,6 +981,7 @@ object GameSaveStore {
         override fun onConfigure(db: SQLiteDatabase) {
             db.setForeignKeyConstraintsEnabled(true)
             db.execSQL("PRAGMA synchronous=FULL")
+            db.rawQuery("PRAGMA busy_timeout=" + SaveBatchPolicy.BUSY_TIMEOUT_MILLIS, null).use { it.moveToFirst() }
         }
         override fun onCreate(db: SQLiteDatabase) {
             createVersionOne(db)

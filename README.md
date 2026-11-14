@@ -72,9 +72,11 @@ Tài khoản anonymous, access/refresh session và compliance hiện được l�
 MySQL. Gameplay/save nông trại chuyển sang SQLite bền vững trên thiết bị
 (`greenfarm-progress.db`, schema 4), tự tạo/migration và nhập RMS cũ có CRC hợp lệ.
 Snapshot giữ codec gốc, gồm tutorial, quest, kho, farm, timestamp, thưởng đang chờ
-và hướng sprite. Snapshot tại cuối frame được gom200/500ms rồi ghi bằng một
+và hướng sprite. Snapshot tại cuối frame được gom500/2000ms (debounce/max wait, tối đa50 dấu thay đổi) rồi ghi bằng một
 worker SQLite; lỗi đọc dừng tải, lỗi ghi giữ snapshot chờ và retry có kiểm soát. Đặt/di chuyển có ✓/✕, preview không được lưu như vị trí đã
 xác nhận. Chưa triển khai cloud farm save hoặc Facebook Connect mới.
+
+[Báo cáo dọn dẹp, SQLite, icon và ngôn ngữ](docs/MAINTENANCE_REPORT.md).
 
 [Checkpoint hiện tại: Kotlin, package và chuyển save](docs/KOTLIN_MIGRATION_CHECKPOINT.md).
 Đã chuyển **99 file Kotlin**, trong đó 83 lớp thuộc namespace game gốc;
@@ -86,7 +88,7 @@ Toàn bộ 110 lớp lõi có bản biên dịch từ source (82 Kotlin/28 Java)
 
 [Checkpoint lưu nền trước Kotlin](docs/ASYNC_GAMEPLAY_CHECKPOINT.md).
 Đã bỏ nhãn lưu thông thường và phần đề cử Trò chơi+/Welcome cross-promotion.
-Đổi ngôn ngữ có xác nhận bằng ngôn ngữ hiện tại, chờ lưu trước khi tự khởi động lại;
+Đổi ngôn ngữ chờ lưu thành công rồi hiện popup game bằng ngôn ngữ hiện tại; chọn khởi động lại hoặc để sau;
 trong tutorial, phím Menu Android mở màn hình Options hiện có. Không reset farm.
 154 test host và20 test công cụ/ngôn ngữ đã đạt; regression cold receiver được
 kiểm tra riêng sau lỗi UI thực tế. 30 ca Android SQLite cho migration đã đạt

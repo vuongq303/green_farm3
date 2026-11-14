@@ -46,9 +46,8 @@ class LanguageRestartSourceTests(unittest.TestCase):
         self.assertNotRegex(select, r"ci\.aYU\s*=")
         self.assertIn("language == ci.aYU", select)
         self.assertNotIn("requestLanguageCheckpoint", select)
-        cancel = method(CONTROLLER, "private fun cancel(selectionTicket: Int)")
-        self.assertIn("restartState = IDLE", cancel)
-        self.assertNotIn("ci.", cancel)
+        self.assertIn("restartState = ACCEPTED", select)
+        self.assertNotIn("AlertDialog", CONTROLLER)
 
     def test_translations_match_shipped_text_packs(self):
         text = method(CONTROLLER, "fun textFor(language: Int)")
@@ -64,21 +63,25 @@ class LanguageRestartSourceTests(unittest.TestCase):
                 self.assertTrue(all(value.strip() for value in values))
                 self.assertNotEqual(values[3], values[4])
 
-    def test_success_is_the_only_place_that_changes_live_language(self):
+    def test_success_defers_locale_without_replacing_live_assets(self):
         finished = method(CONTROLLER, "private fun checkpointFinished(selectionTicket: Int, language: Int, success: Boolean)")
-        before_success, success = finished.split("} else {", 1)
-        self.assertNotRegex(before_success, r"ci\.aYU\s*=")
-        self.assertNotIn("TutorialFlowController.invalidateSession", before_success)
-        self.assertIn("restartState = IDLE", before_success)
-        self.assertIn("ci.aYU = language", success)
-        self.assertIn("TutorialFlowController.invalidateSession", success)
-        self.assertIn("if (success) restart(selectionTicket) else showFailure(selectionTicket, false)", finished)
-        self.assertEqual(len(re.findall(r"ci\.aYU\s*=(?!=)", CONTROLLER)), 1)
+        self.assertNotRegex(CONTROLLER, r"ci\.aYU\s*=(?!=)")
+        self.assertIn("ProgressSaveController.deferLanguageUntilRestart(language)", finished)
+        self.assertIn("if (restartState == CONFIRMING) showSaved(selectionTicket)", finished)
+        self.assertIn("IDLE else CONFIRMING", finished)
+        show = method(CONTROLLER, "private fun showSaved(selectionTicket: Int)")
+        self.assertIn("GameNotification.show", show)
+        self.assertIn("if (restartNow) RETRY_RESTART else IDLE", show)
+        popup = method(GAME, "static void showGameNotification(String title, String message)")
+        for call in ("Ir();", "aML = 13", "T(7, 0, 10)", "fE(20)"):
+            self.assertIn(call, popup)
+        self.assertIn("GameNotification.positiveLabel()", GAME)
+        self.assertIn("GameNotification.negativeLabel()", GAME)
 
     def test_only_game_thread_consumes_accept_and_retries(self):
         frame = method(CONTROLLER, "fun frameStarted(): Boolean")
         self.assertIn("if (action == ACCEPTED) restartState = SAVING", frame)
-        self.assertLess(frame.index("RestartHandoff.prepare"), frame.index("requestLanguageCheckpoint"))
+        self.assertNotIn("RestartHandoff.prepare", frame)
         self.assertIn("checkpointFinished(selectionTicket, language, success)", frame)
         self.assertIn("RETRY_RESTART -> restart(selectionTicket)", frame)
         self.assertNotIn("requestLanguageCheckpoint", method(CONTROLLER, "private fun restart(selectionTicket: Int)"))

@@ -36,12 +36,13 @@ class AsyncSaveQueue(private val listener: Listener) {
     private var closed = false
     private var consecutiveFailureCount = 0
     private var lastDurableSequence = 0L
+    private var retryPaused = false
 
     @Synchronized
     fun submit(snapshot: GameSaveStore.Snapshot, sequence: Long, checkpoint: Any?) {
         check(!closed) { "Save writer is closed" }
         pendingTicket = mergeTickets(pendingTicket, Ticket(snapshot, sequence, checkpoint))
-        if (!writeScheduledOrRunning) {
+        if (!writeScheduledOrRunning && !retryPaused) {
             writeScheduledOrRunning = true
             executor.execute { writeNext() }
         }
@@ -71,8 +72,10 @@ class AsyncSaveQueue(private val listener: Listener) {
             if (failure == null) {
                 lastDurableSequence = maxOf(lastDurableSequence, ticket.sequence)
                 consecutiveFailureCount = 0
+                retryPaused = false
             } else {
                 consecutiveFailureCount++
+                retryPaused = consecutiveFailureCount >= SaveBatchPolicy.MAX_WRITE_ATTEMPTS
                 // Cancelled language selections cannot be applied later by an
                 // automatic retry. Durable compensation checkpoints can retry.
                 if (ticket.checkpoint == null || ticket.checkpoint is RetryableCheckpoint) {
@@ -82,22 +85,39 @@ class AsyncSaveQueue(private val listener: Listener) {
         }
         listener.completed(Result(ticket, failure, durationNanos))
         synchronized(this) {
-            if (pendingTicket == null || closed) {
+            if (pendingTicket == null || closed || retryPaused) {
                 writeScheduledOrRunning = false
                 signalIdleWaiters()
             } else {
                 val retryDelayMillis = if (failure == null) 0L else
-                    minOf(8000L, 1000L shl minOf(consecutiveFailureCount - 1, 3))
+                    minOf(SaveBatchPolicy.RETRY_MAX_MILLIS,
+                        SaveBatchPolicy.RETRY_INITIAL_MILLIS shl minOf(consecutiveFailureCount - 1, 3))
                 executor.schedule({ writeNext() }, retryDelayMillis, TimeUnit.MILLISECONDS)
             }
         }
     }
+
+    /** Explicit retry starts a fresh bounded attempt window, retaining accepted data. */
+    @Synchronized
+    fun retryPending() {
+        if (closed || !retryPaused) return
+        retryPaused = false
+        consecutiveFailureCount = 0
+        if (pendingTicket != null && !writeScheduledOrRunning) {
+            writeScheduledOrRunning = true
+            executor.execute { writeNext() }
+        }
+    }
+
+    @Synchronized
+    fun isRetryPaused(): Boolean = retryPaused
 
     /** Used only at lifecycle boundaries; normal game frames never wait here. */
     @Synchronized
     fun awaitIdle(timeoutMillis: Long): Boolean {
         val deadlineNanos = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis)
         while (writeScheduledOrRunning || pendingTicket != null) {
+            if (retryPaused && !writeScheduledOrRunning) return false
             val remainingNanos = deadlineNanos - System.nanoTime()
             if (remainingNanos <= 0L) return false
             try {

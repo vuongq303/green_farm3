@@ -29,6 +29,7 @@ class GLLib {
 }
 class FacebookRequestErrorClassification {static final int EC_INVALID_SESSION=102;}
 class Sprite {int by(int i){return 0;}}
+class ProgressSaveController {static void requestSave(){}}
 class ci {
  static int xp,coins,cash,energy,chest,items,objectiveEvents,selectedReward,resourceLoads;
  static boolean axd,aCk,axW; static int aYP=100,aYS;static long avC;
@@ -72,6 +73,9 @@ public class PendingRewardChecks {
   // A cold load of the same atomic pre-credit snapshot resumes the same amounts.
   ci.xp=0;ci.coins=0;GLLib.record=saved;clear();PendingRewardState.restoreSnapshot();tick();check(ci.xp==19&&ci.coins==31,"cold-load award mismatch");
   clear();pickup(59,110|(2<<16));PendingRewardState.writeSnapshot();clear();PendingRewardState.restoreSnapshot();tick();check(ci.energy==2&&ci.objectiveEvents==3,"item settlement omitted original objective events");
+  clear();ch legacyIcon=pickup(59,110|(1<<16));legacyIcon.aoG=14|Short.MIN_VALUE;
+  PendingRewardState.writeSnapshot();clear();PendingRewardState.restoreSnapshot();
+  check(ch.als[3].aoG==(14|32768)&&ch.als[3].aoH==59&&ch.als[3].anM==(110|(1<<16)),"legacy icon handle repair changed reward");
   clear();ch chest=pickup(60,1);chest.aoG=32768|112;chest.aoH=2;chest.anN=false;chest.anV=3;PendingRewardState.writeSnapshot();clear();PendingRewardState.restoreSnapshot();check(ci.resourceLoads==1,"resolved chest sprite not loaded");tick();check(ci.chest==1&&ci.selectedReward==14,"chest reward selection changed");PendingRewardState.writeSnapshot();clear();PendingRewardState.restoreSnapshot();tick();check(ci.chest==1,"chest awarded twice after bounce-stage restore");
   byte[]bad=saved.clone();intAt(bad,0,0);failRestore(bad);bad=saved.clone();intAt(bad,4,2);failRestore(bad);bad=saved.clone();intAt(bad,8,-1);failRestore(bad);bad=saved.clone();intAt(bad,8,20000);failRestore(bad);failRestore(Arrays.copyOf(saved,saved.length-1));bad=Arrays.copyOf(saved,saved.length+1);failRestore(bad);bad=saved.clone();intAt(bad,12+19*4,4);failRestore(bad);
   clear();GLLib.record=saved;ch marker=ch.b(46,3,new int[]{0,0,0});ch.failFactory=1;boolean failed=false;try{PendingRewardState.restoreSnapshot();}catch(IllegalStateException expected){failed=true;}check(failed&&ch.als[3]==marker&&count()==1,"partial restore was not rolled back");ch.failFactory=-1;PendingRewardState.restoreSnapshot();check(count()==3,"retry restore did not recover");
