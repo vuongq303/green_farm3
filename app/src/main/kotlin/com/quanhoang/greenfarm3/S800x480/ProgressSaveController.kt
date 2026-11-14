@@ -14,6 +14,13 @@ object ProgressSaveController {
     private val requestedSequence = AtomicLong()
     private val completedWrites = ConcurrentLinkedQueue<AsyncSaveQueue.Result>()
     private val batchPolicy = SaveBatchPolicy()
+    private val backendSavePolicy = BackendSavePolicy()
+    private val backendLevelPolicy = BackendSavePolicy("farm-level-autosave")
+    private val backendManorPolicy = BackendSavePolicy("farm-manor-autosave")
+    private var backendCapturePayload: String? = null
+    private var backendCaptureLevel: String? = null
+    private var backendCaptureManor: String? = null
+    private var backendBaselineSequence = 0L
     private var sqliteWriteQueue: AsyncSaveQueue? = null
     private var lastObservedRequestSequence = 0L
     private var durableRequestSequence = 0L
@@ -95,6 +102,8 @@ object ProgressSaveController {
         durableRequestSequence = lastObservedRequestSequence
         legacyCallbackSequence = durableRequestSequence
         batchPolicy.captured()
+        resetBackendSave()
+        backendBaselineSequence = lastObservedRequestSequence
     }
 
     @JvmStatic
@@ -150,6 +159,11 @@ object ProgressSaveController {
             }
         })
         requestSave()
+        backendBaselineSequence = requestedSequence.get()
+        if (!LocalDevelopmentMode.isEnabled()) {
+            backendLevelPolicy.baseline(FarmGameEngine.FC().toString())
+            backendManorPolicy.baseline(FarmGameEngine.aZD.toString())
+        }
     }
 
     @JvmStatic
@@ -326,6 +340,11 @@ object ProgressSaveController {
         val current = requestedSequence.get()
         if (current != lastObservedRequestSequence) {
             batchPolicy.changed(now, current - lastObservedRequestSequence)
+            if (!LocalDevelopmentMode.isEnabled() && current > backendBaselineSequence) {
+                backendSavePolicy.changed(current, now)
+                backendLevelPolicy.changed(current, now)
+                backendManorPolicy.changed(current, now)
+            }
             lastObservedRequestSequence = current
         }
     }
@@ -337,6 +356,9 @@ object ProgressSaveController {
         val startNanos = System.nanoTime()
         lastCaptureAttemptUptimeMillis = SystemClock.uptimeMillis()
         snapshotBoundary = true
+        backendCapturePayload = null
+        backendCaptureLevel = null
+        backendCaptureManor = null
         forcedCheckpoint = force
         try {
             GameSaveStore.beginCapture(FarmGameEngine.aZB == 0)
@@ -344,6 +366,11 @@ object ProgressSaveController {
             val savedLanguage = if (checkpoint is LanguageCheckpoint && checkpoint.preferencePhase) checkpoint.language else deferredLanguage
             savedLanguage?.let { GameSaveStore.overrideCapturedLanguage(it) }
             val snapshot = GameSaveStore.finishCapture()
+            if (!LocalDevelopmentMode.isEnabled() && FarmGameEngine.aZB == 0) {
+                backendSavePolicy.captured(sequence, backendCapturePayload)
+                backendLevelPolicy.captured(sequence, backendCaptureLevel)
+                backendManorPolicy.captured(sequence, backendCaptureManor)
+            }
             sqliteWriteQueue!!.submit(snapshot, sequence, checkpoint)
             batchPolicy.captured()
             capturedCriticalRequests = criticalAtCapture
@@ -364,6 +391,9 @@ object ProgressSaveController {
         } finally {
             forcedCheckpoint = false
             snapshotBoundary = false
+            backendCapturePayload = null
+            backendCaptureLevel = null
+            backendCaptureManor = null
         }
     }
 
@@ -374,6 +404,9 @@ object ProgressSaveController {
                 " ok=${result.failure == null}")
             if (result.failure == null) {
                 durableRequestSequence = maxOf(durableRequestSequence, result.sequence)
+                backendSavePolicy.durable(result.sequence)
+                backendLevelPolicy.durable(result.sequence)
+                backendManorPolicy.durable(result.sequence)
                 errorNoticeVisible = false
                 saveFailure = false
             } else {
@@ -414,6 +447,41 @@ object ProgressSaveController {
                 }
             }
         }
+    }
+
+    @JvmStatic fun capturedBackendFarm(payload: String, level: Int, manor: Int) {
+        if (snapshotBoundary && !LocalDevelopmentMode.isEnabled()) {
+            backendCapturePayload = payload
+            backendCaptureLevel = level.toString()
+            backendCaptureManor = manor.toString()
+        }
+    }
+
+    /** The existing legacy Farm request consumes only a current, durable capture. */
+    private fun backendCanUpload(): Boolean = !LocalDevelopmentMode.isEnabled() && worldReady && !loadBlocked &&
+        languageCheckpoint == null && !FarmGameEngine.hasUnsavedGameChanges && !FarmGameEngine.bab &&
+        requestedSequence.get() <= durableRequestSequence
+
+    @JvmStatic fun beginBackendSave(): BackendSavePolicy.Upload? =
+        if (backendCanUpload()) backendSavePolicy.begin(SystemClock.uptimeMillis()) else null
+
+    @JvmStatic fun beginBackendLevelSave(): BackendSavePolicy.Upload? =
+        if (backendCanUpload()) backendLevelPolicy.begin(SystemClock.uptimeMillis()) else null
+
+    @JvmStatic fun beginBackendManorSave(): BackendSavePolicy.Upload? =
+        if (backendCanUpload()) backendManorPolicy.begin(SystemClock.uptimeMillis()) else null
+
+    @JvmStatic fun backendSaveCompleted(tag: String?, success: Boolean): Boolean {
+        val now = SystemClock.uptimeMillis()
+        return backendSavePolicy.completed(tag, success, now) ||
+            backendLevelPolicy.completed(tag, success, now) || backendManorPolicy.completed(tag, success, now)
+    }
+
+    @JvmStatic fun resetBackendSave() {
+        backendSavePolicy.reset()
+        backendLevelPolicy.reset()
+        backendManorPolicy.reset()
+        backendBaselineSequence = requestedSequence.get()
     }
 
     private fun failLanguageCheckpoint(language: LanguageCheckpoint) {

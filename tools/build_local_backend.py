@@ -21,7 +21,7 @@ TARGET_METHOD = 'aL(Ljava/lang/String;)Ljava/lang/String;'
 ORIGINAL_URL = 'https://eve.gameloft.com/'
 
 
-def prepare(original, base, patched_dex, output, relocated_dex=None):
+def prepare(original, base, patched_dex, output, relocated_dex=None, require_local_startup_guard=False):
     original, base, patched_dex, output = map(Path, (original, base, patched_dex, output))
     base_report = base.with_suffix('.provenance.json')
     patch_report = patched_dex.with_suffix(patched_dex.suffix + '.json')
@@ -63,6 +63,20 @@ def prepare(original, base, patched_dex, output, relocated_dex=None):
             or patch.get('reverse_patch_semantics_verified') is not True
             or patch.get('output_dex_sha256') != sha256(patched_dex.read_bytes())):
         raise ValueError('Endpoint patch provenance mismatch')
+    guard = patch.get('local_startup_guard')
+    expected_guard = {
+        'owner': 'Lcom/gameloft/android/wrapper/au;',
+        'method': 'Qh()V',
+        'predicate': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;->isEnabled()Z',
+        'original_false_branch_preserved': True,
+        'reverse_patch_semantics_verified': True,
+    }
+    guard_verified = (guard == expected_guard and isinstance(guard, dict)
+                      and guard.get('original_false_branch_preserved') is True
+                      and guard.get('reverse_patch_semantics_verified') is True)
+    if ((require_local_startup_guard and not guard_verified)
+            or (guard is not None and not guard_verified)):
+        raise ValueError('Local development startup guard provenance mismatch')
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(base) as before:
         names = before.namelist()
         if len(names) != len(set(names)) or any(
@@ -98,6 +112,7 @@ def main():
     for name in ('original', 'base', 'patched-dex', 'output', 'sdk', 'keystore'):
         parser.add_argument('--' + name, required=True, type=Path)
     parser.add_argument('--relocated-dex', type=Path)
+    parser.add_argument('--require-local-startup-guard', action='store_true')
     args = parser.parse_args()
     output = args.output.resolve()
     inputs = (args.original, args.base, args.patched_dex, args.keystore,
@@ -111,7 +126,8 @@ def main():
     with tempfile.TemporaryDirectory(prefix='local-backend-', dir=output.parent) as directory:
         temp = Path(directory)
         unsigned, aligned, signed = [temp / n for n in ('unsigned.apk', 'aligned.apk', 'signed.apk')]
-        baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned, args.relocated_dex)
+        baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned, args.relocated_dex,
+                                  args.require_local_startup_guard)
         if args.relocated_dex is not None:
             from verify_runtime_apk import manifest
             relocation = json.loads(args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json').read_text())
@@ -143,7 +159,7 @@ def main():
                                if args.relocated_dex else None),
         'build_revision_metadata': revision,
         'unchanged_assets_native_sha256': payload,
-        'scope': 'SDK and game Janus discovery constructors; unrelated legacy service clients are not migrated.',
+        'scope': 'SDK and game Janus discovery constructors and optional local startup guard; unrelated legacy service clients are not migrated.',
     }
     output.with_suffix('.provenance.json').write_text(json.dumps(report, indent=2) + '\n')
     print('Built complete debug APK with configured backend:', output)

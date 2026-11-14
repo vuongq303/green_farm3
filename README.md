@@ -22,6 +22,14 @@ gian nằm riêng trong `intermediates`, không dùng để cài.
 
 APK chuẩn: `app/build/outputs/apk/debug/app-debug.apk`.
 Bản APK debug đã build để tải nằm trong [artifacts/](artifacts/README.md).
+
+Chạy độc lập backend để phát triển: build với
+`./gradlew :app:assembleDebug -PgreenfarmLocalDevelopment=true`
+(Windows dùng `gradlew.bat`). Mặc định cờ này là `false`; build lại với `false`
+để dùng luồng backend cũ. Chế độ local giữ màn hình Accept/loading, dùng SQLite
+và không tạo token xác thực. Chỉ người chơi local mới được khởi tạo
+99.999.999 xu / 3.000.000 cash; số dư đã lưu được giữ nguyên.
+Xem [phạm vi sửa lỗi và kiểm chứng](docs/LOCAL_DEVELOPMENT_FIXES.md).
 Không cần module `core-source`, task recovered riêng, cấu hình Run recovered
 hoặc cài APK thủ công. Không sửa file trong `app/build/generated`; sửa code
 gốc ở `app/src/main/java/com/quanhoang/greenfarm3` và

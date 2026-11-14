@@ -1,10 +1,12 @@
 package greenfarm;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import com.quanhoang.greenfarm3.S800x480.AsyncSaveQueue;
 import com.quanhoang.greenfarm3.S800x480.GameSaveStore;
 import java.nio.ByteBuffer;
+import java.io.File;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
@@ -30,7 +32,10 @@ public class SQLiteSaveTest {
         context.deleteDatabase(GameSaveStore.DATABASE_NAME);
         GameSaveStore.initialize(context);
     }
-    @After public void close() { GameSaveStore.close(); }
+    @After public void close() {
+        GameSaveStore.close();
+        com.gameloft.android.wrapper.d.bfb = false;
+    }
     private static byte[] value(int n) { return ByteBuffer.allocate(4).putInt(n).array(); }
     private static int read(String name) { return ByteBuffer.wrap(GameSaveStore.read(name)).getInt(); }
     private static GameSaveStore.Snapshot snapshot(int n) {
@@ -145,6 +150,99 @@ public class SQLiteSaveTest {
         GameSaveStore.reopen();
         assertEquals(16, GameSaveStore.read("RMSHeader")[4]);
         for (String name : new String[] {"RMSHeader", "save_gameplay", "save_farm0", "pending_rewards_v1", "entity_pose_v1"}) assertEquals(71, read(name));
+    }
+    private static GameSaveStore.Snapshot fullSnapshot(int n) {
+        GameSaveStore.beginCapture(true);
+        for (String name : new String[] {"RMSHeader", "save_gameplay", "save_farm0", "pending_rewards_v1", "entity_pose_v1"}) {
+            byte[] data = new byte[35]; ByteBuffer.wrap(data).putInt(n);
+            GameSaveStore.write(name, data, 0, data.length);
+        }
+        return GameSaveStore.finishCapture();
+    }
+    @Test public void coldReopensRestoreSQLiteWithoutUnavailableLegacyMedia() {
+        final boolean[] mediaAvailable = {true};
+        Context removable = new ContextWrapper(context) {
+            @Override public Context getApplicationContext() { return this; }
+            @Override public File getExternalFilesDir(String type) {
+                return mediaAvailable[0] ? context.getFilesDir() : null;
+            }
+        };
+        GameSaveStore.close();
+        com.gameloft.android.wrapper.d.bfb = true;
+        GameSaveStore.initialize(removable);
+        GameSaveStore.applySnapshot(fullSnapshot(1));
+        // Native SQLite writes have no legacy_imports marker. Neither a live
+        // record nor its tombstone may need access to removable RMS storage.
+        GameSaveStore.write("test_native_record", value(12), 0, 4);
+        GameSaveStore.delete("test_native_deleted");
+        for (int run = 1; run <= 10; run++) {
+            long generation = GameSaveStore.generation();
+            GameSaveStore.close();
+            mediaAvailable[0] = false;
+            GameSaveStore.initialize(removable);
+            GameSaveStore.beginLoading();
+            assertEquals(generation, GameSaveStore.generation());
+            for (String name : new String[] {"RMSHeader", "save_gameplay", "save_farm0", "pending_rewards_v1", "entity_pose_v1"}) {
+                assertEquals(run, read(name));
+            }
+            assertEquals(12, read("test_native_record"));
+            assertNull(GameSaveStore.read("test_native_deleted"));
+            assertNull("missing primary state must not be reimported", GameSaveStore.read("online_gameplay"));
+            GameSaveStore.finishLoading();
+            GameSaveStore.applySnapshot(fullSnapshot(run + 1));
+        }
+    }
+    @Test public void unavailableMediaDuringFirstImportRetainsTheDatabase() {
+        Context missingMedia = new ContextWrapper(context) {
+            @Override public Context getApplicationContext() { return this; }
+            @Override public File getExternalFilesDir(String type) { return null; }
+        };
+        GameSaveStore.close();
+        com.gameloft.android.wrapper.d.bfb = true;
+        try {
+            GameSaveStore.initialize(missingMedia);
+            fail("a genuine first import must not silently replace unavailable legacy data");
+        } catch (GameSaveStore.Failure expected) {
+            assertTrue(context.getDatabasePath(GameSaveStore.DATABASE_NAME).isFile());
+        }
+        GameSaveStore.close();
+        com.gameloft.android.wrapper.d.bfb = false;
+        GameSaveStore.initialize(context);
+        assertEquals(0, GameSaveStore.generation());
+    }
+    @Test public void repeatedInitializationDoesNotAcquireAnotherSQLiteWriteTransaction() {
+        GameSaveStore.applySnapshot(fullSnapshot(31));
+        long generation = GameSaveStore.generation();
+        SQLiteDatabase external = SQLiteDatabase.openDatabase(context.getDatabasePath(GameSaveStore.DATABASE_NAME).getPath(), null, SQLiteDatabase.OPEN_READWRITE);
+        external.beginTransactionNonExclusive();
+        try {
+            for (int i = 0; i < 20; i++) GameSaveStore.initialize(context);
+            assertTrue(GameSaveStore.isReady());
+            assertEquals(generation, GameSaveStore.generation());
+            assertEquals(31, read("save_gameplay"));
+        } finally { external.endTransaction(); external.close(); }
+    }
+    @Test public void maximumLocalCurrencyCodecBytesSurviveColdReopens() {
+        // Component fixture: the unchanged currency wire codec, not a playable
+        // farm save or a substitute for the production-code codec regression.
+        int shift = 9, mask = -1413816336;
+        long coins = 99_999_999L;
+        int cash = 3_000_000;
+        byte[] encoded = ByteBuffer.allocate(12)
+            .putLong(((coins << shift) | (coins >> (64 - shift))) ^ (long) mask)
+            .putInt(((cash << shift) | (cash >> (32 - shift))) ^ mask).array();
+        GameSaveStore.write("test_currency_codec", encoded, 0, encoded.length);
+        for (int run = 0; run < 5; run++) {
+            GameSaveStore.close();
+            GameSaveStore.initialize(context);
+            byte[] restored = GameSaveStore.read("test_currency_codec");
+            assertArrayEquals(encoded, restored);
+            ByteBuffer input = ByteBuffer.wrap(restored);
+            long coinBits = input.getLong() ^ (long) mask;
+            int cashBits = input.getInt() ^ mask;
+            assertEquals(coins, (coinBits << (64 - shift)) | (coinBits >> shift));
+            assertEquals(cash, (cashBits << (32 - shift)) | (cashBits >> shift));
+        }
     }
     @Test public void deferredLanguageSurvivesDirectOptionsHeaderWrites() throws Exception {
         byte[] oldHeader = new byte[35]; oldHeader[4] = 0;

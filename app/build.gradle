@@ -25,6 +25,31 @@ if (providers.gradleProperty('localBackendUrl').isPresent()) {
 def backendBaseUrl = providers.gradleProperty('BACKEND_BASE_URL').orElse('')
         .map { BackendBaseUrl.normalize(it) }
 def gameNamespace = 'com.quanhoang.greenfarm3'
+// Opt-in only: ordinary debug builds retain the original network workflow.
+def localDevelopment = providers.gradleProperty('greenfarmLocalDevelopment').map { value ->
+    switch (value.toLowerCase(Locale.ROOT)) {
+        case 'true': return true
+        case 'false': return false
+        default: throw new GradleException('greenfarmLocalDevelopment must be true or false')
+    }
+}.orElse(false)
+def generateLocalDevelopmentConfig = tasks.register('generateLocalDevelopmentConfig') {
+    inputs.property('enabled', localDevelopment)
+    def directory = layout.buildDirectory.dir('generated/local-development-config')
+    outputs.dir(directory)
+    doLast {
+        def source = new File(directory.get().asFile,
+                'com/quanhoang/greenfarm3/S800x480/LocalDevelopmentConfig.java')
+        source.parentFile.mkdirs()
+        source.setText("""package com.quanhoang.greenfarm3.S800x480;
+/** Generated for this debug build; never read from player data or network. */
+public final class LocalDevelopmentConfig {
+    private LocalDevelopmentConfig() {}
+    public static final boolean ENABLED = ${localDevelopment.get()};
+}
+""", 'UTF-8')
+    }
+}
 def legacyApplicationId = 'com.gameloft.android.ANMP.GloftGF2F'
 def legacyExport = providers.gradleProperty('greenfarmLegacyExport').map { value ->
     switch (value.toLowerCase(Locale.ROOT)) {
@@ -67,7 +92,8 @@ android {
             // Compile the remaining recovered Java sources and SDK R aliases;
             // Kotlin implementations compile directly from src/main/kotlin.
             // Unrecovered SDK/runtime classes still come from original DEX.
-            java.srcDirs = [layout.buildDirectory.dir('generated/core-java')]
+            java.srcDirs = [layout.buildDirectory.dir('generated/core-java'),
+                           layout.buildDirectory.dir('generated/local-development-config')]
             // Keep JADX's unselected Java files out of the Kotlin source lookup.
             kotlin.srcDirs = ['src/main/kotlin']
             res.srcDirs = [layout.buildDirectory.dir('generated/restored-res')]
@@ -199,13 +225,15 @@ dependencies {
 }
 
 tasks.named('preBuild') {
-    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds
+    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds,
+            generateLocalDevelopmentConfig
 }
 
 // Android Studio executes this native setup task after model sync. Populate
 // its generated source/resource roots and lookup-only jar on a clean checkout.
 tasks.matching { it.name == 'generateDebugSources' }.configureEach {
-    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds
+    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds,
+            generateLocalDevelopmentConfig
 }
 
 tasks.matching { it.name == 'validateSigningDebug' }.configureEach {

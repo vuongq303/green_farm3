@@ -288,7 +288,10 @@ object GameSaveStore {
         if (suppliedContext == null) throw failed("Android context is not ready for game storage", null)
         LOCK.lock()
         try {
-            if (context == null) context = suppliedContext
+            if (context == null) context = suppliedContext.applicationContext ?: suppliedContext
+            // A repeated bootstrap must not rescan legacy files or hash every
+            // saved blob while the same validated connection is still ready.
+            if (depth == 0 && ready && database?.isOpen == true) return
             openLocked()
         } finally { LOCK.unlock() }
     }
@@ -377,7 +380,12 @@ object GameSaveStore {
                         }
                     } finally { snapshots.close() }
                 }
-                importLegacyLocked()
+                // Once a complete SQLite save exists, removable legacy storage
+                // is no longer a startup prerequisite. In particular, Android
+                // can return null for getExternalFilesDir() after a restart.
+                // A genuine first import still fails visibly if it cannot be
+                // inspected; an invalid SQLite snapshot is rejected below.
+                if (slotNumber("complete_snapshot_generation") == 0L) importLegacyLocked()
                 val recordCount = db.rawQuery("SELECT COUNT(*) FROM save_records WHERE slot_id=?", arrayOf(SLOT))
                 try {
                     recordCount.moveToFirst()
@@ -623,6 +631,16 @@ object GameSaveStore {
 
     @Throws(IOException::class)
     private fun importRequestedLegacyLocked(name: String) {
+        // SQLite records (including durable tombstones) are authoritative.
+        // Native writes intentionally need no legacy_imports marker; checking
+        // the directory first made a valid reopened save depend on old media.
+        val existing = db.query("save_records", arrayOf("record_id"),
+            "slot_id=? AND store_name=? AND record_id=1", arrayOf(SLOT, name), null, null, null)
+        try { if (existing.moveToFirst()) return } finally { existing.close() }
+        // Importing primary state after the first generation was already
+        // forbidden by importLegacyStoreLocked. Avoid touching legacy storage
+        // merely to rediscover that prohibition for optional primary records.
+        if (isPrimaryStateRecord(name) && slotNumber("generation") > 0L) return
         val known = db.query("legacy_imports", arrayOf("store_name"), "slot_id=? AND store_name=?", arrayOf(SLOT, name), null, null, null)
         try { if (known.moveToFirst()) return } finally { known.close() }
         val own = depth == 0

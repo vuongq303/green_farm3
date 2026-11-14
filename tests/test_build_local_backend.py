@@ -207,6 +207,33 @@ class LocalBackendPackagingTest(unittest.TestCase):
                 self.assert_rejected_before_output("differs from the verified base DEX")
                 report[field] = valid
 
+    def test_required_startup_guard_must_prove_original_sdk_branch_is_retained(self):
+        def prepare_guarded():
+            return build.prepare(self.original, self.base, self.dex, self.output,
+                                 require_local_startup_guard=True)
+        with self.assertRaisesRegex(ValueError, 'startup guard provenance'):
+            prepare_guarded()
+        valid = {
+            'owner': 'Lcom/gameloft/android/wrapper/au;',
+            'method': 'Qh()V',
+            'predicate': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;->isEnabled()Z',
+            'original_false_branch_preserved': True,
+            'reverse_patch_semantics_verified': True,
+        }
+        for field, bad in [('owner', 'Lwrong/Owner;'), ('method', 'Qh(I)V'),
+                           ('original_false_branch_preserved', False),
+                           ('original_false_branch_preserved', 1),
+                           ('reverse_patch_semantics_verified', False)]:
+            self.patch['local_startup_guard'] = dict(valid, **{field: bad})
+            self.write_reports()
+            with self.subTest(field=field, value=bad), self.assertRaisesRegex(ValueError, 'startup guard provenance'):
+                prepare_guarded()
+            self.assertFalse(self.output.exists())
+        self.patch['local_startup_guard'] = valid
+        self.write_reports()
+        prepare_guarded()
+        self.assertTrue(self.output.exists())
+
     def test_rejects_unverified_or_unbound_generated_revision_metadata(self):
         revision = self.baseline["build_revision_metadata"]
         for field, invalid in (("original_guard_accepts_generated_revision", False),
