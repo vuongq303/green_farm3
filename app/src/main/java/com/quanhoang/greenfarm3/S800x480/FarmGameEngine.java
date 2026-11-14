@@ -20643,7 +20643,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
         int iL;
         int i6;
         int i7;
-        GameRuntime.B("greenfarm3", (!asM || asL >= 300) ? rv() : "");
         if (aCw != null) {
             byte[] bArr = new byte[aCw.length];
             a(aCw, 0, bArr, 0, aCw.length);
@@ -20676,15 +20675,22 @@ public final class FarmGameEngine extends GameRuntime implements av {
             iL2 = iL2 + l(bArrB, iL2) + 4;
             String str2 = "GetString after pos = " + iL2;
             String str3 = "deviceId @@@@@@@@@@@@@@@= " + strO;
-            String str4 = "Federation.GetDeviceId() @@@@@@@@@@@@@@@= " + rl();
-            String str5 = "Federation.GetDeviceId() @@@@@@@@@@@@@@@= " + rl();
-            String strOs = com.gameloft.android.wrapper.au.Os();
-            if (!com.quanhoang.greenfarm3.migration.SaveTransferIdentity.matches(strO, "" + rl()) && !asP && strO.length() == strOs.length()) {
-                aPg = false;
-                aOM = false;
-                ro();
-                asq = true;
-                return false;
+            // Local progress came from the app-private, checksum-checked store.
+            // The legacy SDK's cross-app HDIDFV is not its owner: DataSharing
+            // only discovers com.gameloft providers, so our renamed app can get
+            // a new SDK UUID after process death. Rejecting that UUID would
+            // prevent restoring an intact local save. Cloud buffers and the
+            // ordinary backend workflow retain their existing identity checks.
+            if (!LocalDevelopmentMode.isEnabled() || aCw != null) {
+                String currentBinding = rl();
+                if (!com.quanhoang.greenfarm3.migration.SaveTransferIdentity.matches(strO, "" + currentBinding)
+                        && !asP && strO.length() == currentBinding.length()) {
+                    aPg = false;
+                    aOM = false;
+                    ro();
+                    asq = true;
+                    return false;
+                }
             }
         }
         int i8 = iL2;
