@@ -110,18 +110,18 @@ public class AsyncSaveQueueProbe {
   SaveBatchPolicy batch=new SaveBatchPolicy();
   check(!batch.isDirty()&&!batch.due(100000),"empty policy is due");
   batch.changed(0,0);batch.changed(0,-1);check(!batch.isDirty(),"nonchanges started batch");
-  batch.changed(0,1);check(batch.isDirty()&&!batch.due(199),"debounce fired early");
-  check(batch.due(200),"200ms debounce missing");batch.captured();
+  batch.changed(0,1);check(batch.isDirty()&&!batch.due(499),"debounce fired early");
+  check(batch.due(500),"500ms debounce missing");batch.captured();
   check(!batch.isDirty()&&!batch.due(100000),"capture did not reset batch");
   batch.changed(1000,1);batch.changed(1150,1);
-  check(!batch.due(1349)&&batch.due(1350),"debounce did not follow newest change");batch.captured();
-  for(int now=2000;now<2500;now+=50){batch.changed(now,1);check(!batch.due(now),"continuous changes flushed early");}
-  batch.changed(2499,1);check(!batch.due(2499)&&batch.due(2500),"continuous changes postponed 500ms max wait");
+  check(!batch.due(1649)&&batch.due(1650),"debounce did not follow newest change");batch.captured();
+  for(int now=2000;now<4000;now+=50){batch.changed(now,1);check(!batch.due(now),"continuous changes flushed early");}
+  batch.changed(3999,1);check(!batch.due(3999)&&batch.due(4000),"continuous changes postponed 2000ms max wait");
   batch.captured();batch.changed(3000,49);check(!batch.due(3000),"49 operations flushed early");
   batch.changed(3000,1);check(batch.due(3000),"50th operation did not flush immediately");
   batch.captured();batch.changed(4000,Long.MAX_VALUE);check(batch.due(4000),"large batch overflowed threshold");
-  batch.captured();batch.changed(5000,1);check(!batch.due(5199)&&batch.due(5200),"old max wait leaked into new batch");
-  System.out.println("PASS policy: 200ms debounce, 500ms continuous-change cap, 50 operations and reset");
+  batch.captured();batch.changed(5000,1);check(!batch.due(5499)&&batch.due(5500),"old max wait leaked into new batch");
+  System.out.println("PASS policy: 500ms debounce, 2000ms continuous-change cap, 50 operations and reset");
  }
  static void coalescing(){
   GameSaveStore.reset();Results results=new Results();AsyncSaveQueue queue=new AsyncSaveQueue(results);
@@ -166,6 +166,22 @@ public class AsyncSaveQueueProbe {
     &&GameSaveStore.commits==1&&GameSaveStore.maxActive==1&&GameSaveStore.value("coins")==15,"absolute retry double-applied/dropped data");
   queue.close();System.out.println("PASS retry: first failure retained, no partial publish, newer absolute values survive one atomic retry");
  }
+ static void boundedRetry()throws Exception{
+  GameSaveStore.reset();Results results=new Results();AsyncSaveQueue queue=new AsyncSaveQueue(results);
+  for(int i=0;i<SaveBatchPolicy.MAX_WRITE_ATTEMPTS;i++)GameSaveStore.step(true,false);
+  queue.submit(GameSaveStore.snapshot(1,"coins",10),1,null);
+  for(int i=0;i<SaveBatchPolicy.MAX_WRITE_ATTEMPTS;i++)check(results.next().failure!=null,"failure missing");
+  long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(2);
+  while(!queue.isRetryPaused()&&System.nanoTime()<deadline)Thread.yield();
+  check(queue.isRetryPaused()&&!queue.awaitIdle(0),"retry limit discarded pending work");
+  queue.submit(GameSaveStore.snapshot(2,"coins",17),2,null);
+  Thread.sleep(350);
+  check(GameSaveStore.calls()==SaveBatchPolicy.MAX_WRITE_ATTEMPTS,"new actions restarted unlimited automatic retries");
+  rejects(queue::close,"paused writer discarded unsaved changes");
+  GameSaveStore.step(false,false);queue.retryPending();check(queue.awaitIdle(5000),"explicit retry did not drain");
+  check(GameSaveStore.value("coins")==17&&queue.durableSequence()==2,"retry lost newer absolute state");queue.close();
+  System.out.println("PASS bounded retry: five attempts, retained snapshot, no automatic retry loop, explicit recovery");
+ }
  static void checkpoint(){
   GameSaveStore.reset();Results results=new Results();AsyncSaveQueue queue=new AsyncSaveQueue(results);Object language=new Object();
   GameSaveStore.Step failure=GameSaveStore.step(true,true);
@@ -194,7 +210,7 @@ public class AsyncSaveQueueProbe {
   System.out.println("PASS lifecycle: interrupted/timeout wait preserves pending data; close only succeeds after completion");
  }
  public static void main(String[] args)throws Exception{
-  switch(args[0]){case "policy":policy();break;case "coalescing":coalescing();break;
+  switch(args[0]){case "bounded":boundedRetry();break;case "policy":policy();break;case "coalescing":coalescing();break;
    case "retry":retry();break;case "checkpoint":checkpoint();break;case "interrupt":interruptWait();break;
    default:throw new AssertionError(args[0]);}
  }
@@ -225,8 +241,11 @@ class AsyncSaveQueueTest(unittest.TestCase):
         self.assertIn('PASS ', result.stdout)
         print(result.stdout.strip())
 
-    def test_200ms_debounce_500ms_max_wait_and_50_operations(self):
+    def test_500ms_debounce_2000ms_max_wait_and_50_operations(self):
         self.run_case('policy')
+
+    def test_bounded_retry_retains_state_until_explicit_recovery(self):
+        self.run_case('bounded')
 
     def test_one_writer_bounded_pending_and_acknowledgement(self):
         self.run_case('coalescing')

@@ -196,6 +196,10 @@ class FarmEntity {
     int anK = 0;
     int anL = 0;
     int anM = 0;
+    // Presentation cache only; reward ownership stays in anX/anM and the save codec.
+    private String rewardAmountText;
+    private int rewardTextAmount;
+    private int rewardTextLanguage = -1;
     boolean anN = false;
     boolean anO = false;
     int anP = 0;
@@ -1396,7 +1400,7 @@ class FarmEntity {
         if (i3 == 59) {
             int i6 = this.anM & 65535;
             String str = "itemIndex : " + i6;
-            this.aoG = FarmGameEngine.aZM[i6] | Short.MIN_VALUE;
+            this.aoG = FarmGameEngine.aZM[i6] | 0x8000;
             this.aoH = FarmGameEngine.aZN[i6];
             String str2 = "sprite id :" + this.aoG + ",frame:" + this.aoH;
         } else if (i3 == 60) {
@@ -1418,6 +1422,7 @@ class FarmEntity {
         this.anS = 0;
         this.anR = 4;
         this.anV = 1;
+        ProgressSaveController.requestSave();
     }
 
     void b(FarmEntity chVar) {
@@ -2871,6 +2876,7 @@ class FarmEntity {
                     oN();
                     FarmGameEngine.axd = false;
                     this.anX = false;
+                    ProgressSaveController.requestSave();
                     if (this.anG == 37) {
                         FarmGameEngine.hX(this.anM);
                     } else if (this.anG == 36) {
@@ -5560,7 +5566,12 @@ class FarmEntity {
             } else {
                 i3 = ((float) (((this.aom + this.aox) - FarmGameEngine.aZj.aom) * FarmGameEngine.aYP)) / 100.0f < 0.0f ? (int) (((((this.aom + this.aox) - FarmGameEngine.aZj.aom) * FarmGameEngine.aYP) / 100.0f) - 0.5f) : 0;
             }
-            FarmGameEngine.a((i > 0 ? "+" : "") + FarmGameEngine.a(i, FarmGameEngine.aYU, " "), i2 + 10, i3 + 10, 0, 0, 0, 0, 2, 1, false, false);
+            if (rewardAmountText == null || rewardTextAmount != i || rewardTextLanguage != FarmGameEngine.aYU) {
+                rewardAmountText = (i > 0 ? "+" : "") + FarmGameEngine.a(i, FarmGameEngine.aYU, " ");
+                rewardTextAmount = i;
+                rewardTextLanguage = FarmGameEngine.aYU;
+            }
+            FarmGameEngine.a(rewardAmountText, i2 + 10, i3 + 10, 0, 0, 0, 0, 2, 1, false, false);
             GameRuntime.l(18, 5, 0);
         }
     }

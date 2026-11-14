@@ -1,0 +1,71 @@
+{
+  "baseline_commit": "a86db0f1f358487cc457427f0ff53e8e28ec7693",
+  "modified_worktree": true,
+  "storage_sample": {
+    "runtime": "Robolectric 4.16.1, API35, native SQLite; opaque auxiliary test records; five warmups",
+    "before": {
+      "transactions": 100,
+      "changed_rows": 300,
+      "payload_bytes_per_batch": 98304,
+      "capture_p50_ms": 0.102,
+      "capture_p95_ms": 0.194,
+      "writer_p50_ms": 4.886,
+      "writer_p95_ms": 9.211
+    },
+    "after": {
+      "transactions": 100,
+      "changed_rows": 300,
+      "payload_bytes_per_batch": 98304,
+      "capture_p50_ms": 0.082,
+      "capture_p95_ms": 0.167,
+      "writer_p50_ms": 1.718,
+      "writer_p95_ms": 6.167
+    },
+    "gameplay_fps_measured": false,
+    "sql_statement_trace_measured": false
+  },
+  "validation": {
+    "host_suite": {
+      "run": 142,
+      "passed": 127,
+      "skipped": 15,
+      "failures": 0,
+      "run_seconds": 146.386
+    },
+    "tools_suite": {
+      "passed": 20
+    },
+    "native_sqlite_suite": {
+      "passed": 8,
+      "skipped": 0,
+      "coverage": "Includes deferred locale protection for direct Options/SDK header writes."
+    },
+    "current_controller_regression_rerun": {
+      "passed": 1
+    },
+    "android_ui_verified": false,
+    "latest_popup_and_controller_reruns": {
+      "passed": 2,
+      "coverage": "includes tutorial modal ownership bypass and completing a pending pop before next prompt"
+    },
+    "backend_unit_suite": {
+      "passed": 25,
+      "failures": 0
+    },
+    "mysql_integration_suite": {
+      "passed": 10,
+      "failures": 0,
+      "runner": "npm run test:mysql, serialized files; internal concurrency scenarios unchanged"
+    },
+    "apk": {
+      "build": "assembleDebug succeeded",
+      "signature_schemes": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "alignment_bytes": 16384,
+      "sha256": "33b9dc2dff07592920043794305c62b467d3ae7a876a3a4916e4ae45334d8799"
+    }
+  }
+}

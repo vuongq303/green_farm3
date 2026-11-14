@@ -1,4 +1,4 @@
-"""Offline packaging bindings for the separate local-backend research variant.
+"""Production packaging bindings for the main APK and its configured backend endpoint.
 
 Small ZIP/DEX fixtures model already verified reports. These tests check that
 prepare() binds those reports to its exact inputs and preserves the base
