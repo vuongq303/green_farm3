@@ -29,23 +29,43 @@ open class GloftGF2F : MIDlet() {
 
     @Synchronized
     public override fun mj() {
-        if (acw != null) return
-        try {
-            val context = MIDlet.cnA ?: WrapperDeviceContext.getContext()
-            if (context != null && !SaveTransferGate.enterGame(context)) {
+        synchronized(GloftGF2F::class.java) {
+            if (acw != null) return
+            try {
+                val context = MIDlet.cnA ?: WrapperDeviceContext.getContext()
+                if (context != null && !SaveTransferGate.enterGame(context)) {
+                    ProgressSaveController.showStartupError()
+                    return
+                }
+                ProgressSaveController.initialize()
+            } catch (failure: RuntimeException) {
                 ProgressSaveController.showStartupError()
                 return
             }
-            ProgressSaveController.initialize()
-        } catch (failure: RuntimeException) {
-            ProgressSaveController.showStartupError()
-            return
-        }
-        val game = FarmGameEngine(this, javax.microedition.lcdui.r.b(this))
-        acw = game
-        game.Init()
-        try { acx!!.jf("MIDlet://stayAwake") } catch (unavailableKeepAwake: Exception) {
-            // The original wrapper treats this optional command as best effort.
+            try {
+                synchronized(FarmGameEngine::class.java) {
+                    try {
+                        val game = FarmGameEngine(this, javax.microedition.lcdui.r.b(this))
+                        // Binary bootstrap reads acw during Init. Frame callbacks
+                        // share this monitor, so they cannot see half an Init.
+                        acw = game
+                        game.Init()
+                    } catch (failure: RuntimeException) {
+                        // Constructor can fail after the base canvas installed QD.
+                        // Stop only that failed instance, before releasing frames.
+                        GameRuntime.QD?.markInitializationFailed()
+                        acw = null
+                        throw failure
+                    }
+                }
+            } catch (failure: RuntimeException) {
+                android.util.Log.e("GreenFarmResources", "engine_initialize_failed", failure)
+                ProgressSaveController.showEngineStartupError()
+                return
+            }
+            try { acx!!.jf("MIDlet://stayAwake") } catch (unavailableKeepAwake: Exception) {
+                // The original wrapper treats this optional command as best effort.
+            }
         }
     }
 

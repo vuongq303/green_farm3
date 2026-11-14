@@ -169,9 +169,9 @@ open class Start : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        try { Thread.sleep(1000L) } catch (interrupted: Exception) {
-            // Preserve the original startup/lifecycle behavior in this conversion.
-        }
+        // Dimensions arrive through startupView.post(bt) on this same UI
+        // queue. Sleeping here cannot make that callback ready; bt/bu already
+        // handle cold startup, while a resumed surface has dimensions below.
         if (bcT != 0 && bcU != 0 && MIDlet.coi && !isFinishing) {
             com.gameloft.android.wrapper.ae.bfS = 800
             com.gameloft.android.wrapper.ae.bfT = 480

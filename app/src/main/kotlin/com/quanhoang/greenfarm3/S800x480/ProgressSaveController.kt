@@ -200,17 +200,43 @@ object ProgressSaveController {
 
     @JvmStatic
     fun showStartupError() {
+        showBootstrapError("Không thể mở dữ liệu trò chơi", "Không thể đọc bản lưu. Dữ liệu không bị đặt lại.")
+    }
+
+    @JvmStatic fun showEngineStartupError() {
+        showBootstrapError("Không thể khởi tạo trò chơi", "Không thể khởi tạo tài nguyên. Tiến độ được giữ nguyên. Hãy thử lại.")
+    }
+
+    private fun showBootstrapError(title: String, message: String) {
         val activity = foregroundActivity() ?: return
         activity.runOnUiThread {
             if (activity.isFinishing || promptVisible) return@runOnUiThread
             promptVisible = true
             AlertDialog.Builder(activity)
-                .setTitle("Không thể mở dữ liệu trò chơi")
-                .setMessage("Không thể đọc bản lưu. Dữ liệu không bị đặt lại.")
+                .setTitle(title)
+                .setMessage(message)
                 .setCancelable(false)
                 .setPositiveButton("Thử lại") { _, _ ->
                     promptVisible = false
                     GloftGF2F.acx?.mj()
+                }.show()
+        }
+    }
+
+    /** Bootstrap may not have fonts/GUI4 yet; reuse the existing startup error surface. */
+    @JvmStatic fun showResourceLoadError(step: Int, failure: Exception) {
+        val activity = foregroundActivity() ?: return
+        activity.runOnUiThread {
+            if (activity.isFinishing || promptVisible) return@runOnUiThread
+            promptVisible = true
+            AlertDialog.Builder(activity)
+                .setTitle("Không thể tải tài nguyên")
+                .setMessage("Không thể hoàn tất bước tải $step. Tiến độ được giữ nguyên. Hãy thử lại.\n" +
+                    if (failure is GameRuntime.ResourceFailure) failure.message else failure.javaClass.simpleName)
+                .setCancelable(false)
+                .setPositiveButton("Thử lại") { _, _ ->
+                    promptVisible = false
+                    FarmGameEngine.requestResourceLoadRetry()
                 }.show()
         }
     }
