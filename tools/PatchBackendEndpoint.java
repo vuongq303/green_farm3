@@ -15,6 +15,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import org.jf.dexlib2.AccessFlags;
+import org.jf.dexlib2.builder.MutableMethodImplementation;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction10x;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction11x;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction21t;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction35c;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
@@ -24,6 +29,9 @@ import org.jf.dexlib2.iface.MethodImplementation;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
+import org.jf.dexlib2.iface.instruction.OffsetInstruction;
+import org.jf.dexlib2.iface.instruction.VariableRegisterInstruction;
+import org.jf.dexlib2.iface.reference.MethodReference;
 import org.jf.dexlib2.iface.reference.StringReference;
 import org.jf.dexlib2.immutable.ImmutableClassDef;
 import org.jf.dexlib2.immutable.ImmutableMethod;
@@ -31,6 +39,7 @@ import org.jf.dexlib2.immutable.ImmutableMethodImplementation;
 import org.jf.dexlib2.immutable.instruction.ImmutableInstruction21c;
 import org.jf.dexlib2.immutable.instruction.ImmutableInstruction31c;
 import org.jf.dexlib2.immutable.reference.ImmutableStringReference;
+import org.jf.dexlib2.immutable.reference.ImmutableMethodReference;
 import org.jf.dexlib2.writer.io.MemoryDataStore;
 import org.jf.dexlib2.writer.pool.DexPool;
 
@@ -42,7 +51,74 @@ public final class PatchBackendEndpoint {
     static { TARGETS.put(OWNER, 1); TARGETS.put(CORE_OWNER, 2); }
     static final String METHOD = "aL(Ljava/lang/String;)Ljava/lang/String;";
     static final String ORIGINAL = "https://eve.gameloft.com/";
+    static final String STARTUP_OWNER = "Lcom/gameloft/android/wrapper/au;";
+    static final String LOCAL_MODE = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;";
     private PatchBackendEndpoint() {}
+
+    private static boolean startup(Method method) {
+        return method.getDefiningClass().equals(STARTUP_OWNER) && method.getName().equals("Qh")
+                && method.getParameterTypes().isEmpty() && method.getReturnType().equals("V");
+    }
+
+    /** Add a conditional early return; the complete SDK path remains after it. */
+    private static ClassDef guardStartup(ClassDef definition, boolean reverse) throws IOException {
+        int found = 0;
+        List<Method> methods = new ArrayList<>();
+        for (Method method : definition.getMethods()) {
+            if (!startup(method)) { methods.add(method); continue; }
+            found++;
+            MethodImplementation implementation = method.getImplementation();
+            if (method.getAccessFlags() != (AccessFlags.PUBLIC.getValue() | AccessFlags.STATIC.getValue())
+                    || implementation == null || implementation.getRegisterCount() < 1) {
+                throw new IOException("Unexpected SDK startup method shape");
+            }
+            MutableMethodImplementation code = new MutableMethodImplementation(implementation);
+            if (reverse) {
+                List<? extends Instruction> instructions = code.getInstructions();
+                if (instructions.size() < 5 || instructions.get(0).getOpcode() != Opcode.INVOKE_STATIC
+                        || instructions.get(1).getOpcode() != Opcode.MOVE_RESULT
+                        || instructions.get(2).getOpcode() != Opcode.IF_EQZ
+                        || instructions.get(3).getOpcode() != Opcode.RETURN_VOID) {
+                    throw new IOException("SDK startup guard is missing or malformed");
+                }
+                MethodReference predicate = (MethodReference) ((ReferenceInstruction) instructions.get(0)).getReference();
+                if (!predicate.getDefiningClass().equals(LOCAL_MODE) || !predicate.getName().equals("isEnabled")
+                        || !predicate.getParameterTypes().isEmpty() || !predicate.getReturnType().equals("Z")
+                        || ((VariableRegisterInstruction) instructions.get(0)).getRegisterCount() != 0
+                        || ((OneRegisterInstruction) instructions.get(1)).getRegisterA() != 0
+                        || ((OneRegisterInstruction) instructions.get(2)).getRegisterA() != 0
+                        || ((OffsetInstruction) instructions.get(2)).getCodeOffset() != 3) {
+                    throw new IOException("SDK startup guard does not preserve the false branch");
+                }
+                for (int index = 0; index < 4; index++) code.removeInstruction(0);
+            } else {
+                code.addInstruction(0, new BuilderInstruction35c(Opcode.INVOKE_STATIC, 0, 0, 0, 0, 0, 0,
+                        new ImmutableMethodReference(LOCAL_MODE, "isEnabled", Collections.emptyList(), "Z")));
+                code.addInstruction(1, new BuilderInstruction11x(Opcode.MOVE_RESULT, 0));
+                // The return is outside the SDK's original try regions. Builder
+                // labels preserve every original branch/debug/handler address.
+                code.addInstruction(2, new BuilderInstruction10x(Opcode.RETURN_VOID));
+                code.addInstruction(2, new BuilderInstruction21t(Opcode.IF_EQZ, 0, code.newLabelForIndex(3)));
+            }
+            methods.add(new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
+                    method.getReturnType(), method.getAccessFlags(), method.getAnnotations(),
+                    method.getHiddenApiRestrictions(), code));
+        }
+        if (found != 1) throw new IOException("Expected exactly one SDK Qh()V startup entry");
+        return new ImmutableClassDef(definition.getType(), definition.getAccessFlags(), definition.getSuperclass(),
+                definition.getInterfaces(), definition.getSourceFile(), definition.getAnnotations(), definition.getFields(), methods);
+    }
+
+    private static void requireLocalMode(Map<String, ClassDef> definitions) throws IOException {
+        ClassDef helper = definitions.get(LOCAL_MODE);
+        if (helper != null) for (Method method : helper.getMethods()) {
+            if (method.getName().equals("isEnabled") && method.getParameterTypes().isEmpty()
+                    && method.getReturnType().equals("Z") && method.getImplementation() != null
+                    && AccessFlags.STATIC.isSet(method.getAccessFlags())
+                    && AccessFlags.PUBLIC.isSet(method.getAccessFlags())) return;
+        }
+        throw new IOException("The compiled local development mode helper is missing");
+    }
 
     static String validateUrl(String value) throws Exception {
         String message = "Set BACKEND_BASE_URL in root gradle.properties to an HTTP(S) IPv4 LAN origin, "
@@ -179,7 +255,10 @@ public final class PatchBackendEndpoint {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 3) throw new IllegalArgumentException("Usage: PatchBackendEndpoint input.dex output.dex baseURL");
+        if (args.length != 3 && !(args.length == 4 && args[3].equals("--guard-local-startup"))) {
+            throw new IllegalArgumentException("Usage: PatchBackendEndpoint input.dex output.dex baseURL [--guard-local-startup]");
+        }
+        boolean localStartupGuard = args.length == 4;
         String replacement = validateUrl(args[2]);
         Path input = Paths.get(args[0]).toRealPath();
         Path output = Paths.get(args[1]).toAbsolutePath().normalize();
@@ -199,6 +278,11 @@ public final class PatchBackendEndpoint {
             if (!original.containsKey(owner)) throw new IOException("Missing target class " + owner);
             modified.put(owner, replace(original.get(owner), ORIGINAL, replacement));
         }
+        if (localStartupGuard) {
+            requireLocalMode(original);
+            if (!original.containsKey(STARTUP_OWNER)) throw new IOException("Missing SDK startup owner");
+            modified.put(STARTUP_OWNER, guardStartup(original.get(STARTUP_OWNER), false));
+        }
         byte[] outputBytes = serialize(modified.values(), opcodes);
         Map<String, ClassDef> actual = classes(outputBytes, opcodes);
         if (!original.keySet().equals(actual.keySet())) throw new IOException("Class set changed");
@@ -209,8 +293,16 @@ public final class PatchBackendEndpoint {
                 throw new IOException("Reverse-patched target semantics changed: " + owner);
             }
         }
+        if (localStartupGuard) {
+            ClassDef restored = guardStartup(actual.get(STARTUP_OWNER), true);
+            if (!Arrays.equals(serialize(Collections.singletonList(original.get(STARTUP_OWNER)), opcodes),
+                    serialize(Collections.singletonList(restored), opcodes))) {
+                throw new IOException("Reverse-patched SDK startup semantics changed");
+            }
+        }
         Map<String, ClassDef> beforeOthers = new TreeMap<>(original), afterOthers = new TreeMap<>(actual);
         for (String owner : TARGETS.keySet()) { beforeOthers.remove(owner); afterOthers.remove(owner); }
+        if (localStartupGuard) { beforeOthers.remove(STARTUP_OWNER); afterOthers.remove(STARTUP_OWNER); }
         byte[] beforeCanonical = serialize(beforeOthers.values(), opcodes);
         if (!Arrays.equals(beforeCanonical, serialize(afterOthers.values(), opcodes))) throw new IOException("Other class semantics changed");
         String json = "{\n"
@@ -225,6 +317,11 @@ public final class PatchBackendEndpoint {
                 + "  \"replacement_counts\": {" + quote(OWNER) + ": 1, " + quote(CORE_OWNER) + ": 2},\n"
                 + "  \"unchanged_other_classes_verified\": true,\n"
                 + "  \"reverse_patch_semantics_verified\": true,\n"
+                + "  \"local_startup_guard\": " + (localStartupGuard
+                    ? "{\"owner\":" + quote(STARTUP_OWNER) + ",\"method\":\"Qh()V\",\"predicate\":"
+                        + quote(LOCAL_MODE + "->isEnabled()Z")
+                        + ",\"original_false_branch_preserved\":true,\"reverse_patch_semantics_verified\":true}"
+                    : "null") + ",\n"
                 + "  \"unchanged_classes_canonical_sha256\": " + quote(sha256(beforeCanonical)) + "\n}\n";
         // Publish only after read-back verification. Both files use same-directory atomic rename.
         Path stagedOutput = stage(output, outputBytes), stagedReport = null;

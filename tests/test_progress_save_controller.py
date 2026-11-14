@@ -152,14 +152,15 @@ class ColdEngineInitProbe {static int initializations;static boolean failInitial
 class ci {
  static {ColdEngineInitProbe.initializations++;if(ColdEngineInitProbe.failInitialization)
   throw new IllegalStateException("Engine initialized without its MIDlet");}
- static int avD=-1,aZB,attempts,visitorWrites,cancels,clears,queued,aYU,aOD,auy,committedCallbacks,aYR=-1,aYS=-1;
+ static int avD=-1,aZB,aZD,level,attempts,visitorWrites,cancels,clears,queued,aYU,aOD,auy,committedCallbacks,aYR=-1,aYS=-1;
  static int aAG,aAH,aAI,aAJ,aAK,aZp;static Object avE,baf,aZn;static ch aZi,aZj;
  static boolean baa,bab,skipWrite,throwCapture,forcedSeen,aAi,aAj,awV;
  static int apA=-1,apz=-1,apB=-1,auN,asi;static int[]apC=new int[32],apV=new int[128];
  static void state(int...stack){apB=stack.length-1;System.arraycopy(stack,0,apC,0,stack.length);}
  static void FN(){queued=0;}static void cancelMovePreviewForInterruption(){cancels++;avD=-1;avE=null;}
+ static int FC(){return level;}
  static void av(boolean ignored){attempts++;forcedSeen=ProgressSaveController.isForcedCheckpoint();
-  if(throwCapture)throw new IllegalStateException("serializer");if(!skipWrite)GameSaveStore.record();}
+  if(throwCapture)throw new IllegalStateException("serializer");if(!skipWrite){GameSaveStore.record();ProgressSaveController.capturedBackendFarm("farm:"+ch.credits,level,aZD);}}
  static void rs(){visitorWrites++;av(false);}
  static boolean fJ(int action){if(action==5&&isPersistedWorldState(qD())){ch.oM();clears++;}return false;}
  static void gD(int state){}static void gE(int state){}
@@ -192,7 +193,7 @@ public class ProgressSaveChecks {
   GameSaveStore.logicalLanguage=GameSaveStore.durableLanguage=GameSaveStore.durableCredits=GameSaveStore.durablePending=0;
   ci.attempts=ci.visitorWrites=ci.cancels=ci.clears=ci.committedCallbacks=0;ci.baa=ci.bab=ci.skipWrite=ci.throwCapture=ci.forcedSeen=false;
   ci.fontFailure=false;ci.fontPrepares=0;ci.lastFontLanguage=-1;
-  ci.avD=-1;ci.aZB=0;ci.aYU=ci.aOD=ci.auy=0;ci.avE=null;ci.aZi=ci.aZj=null;ci.queued=0;ci.apA=ci.apz=-1;ci.state(18);
+  ci.avD=-1;ci.aZB=ci.aZD=ci.level=0;ci.aYU=ci.aOD=ci.auy=0;ci.avE=null;ci.aZi=ci.aZj=null;ci.queued=0;ci.apA=ci.apz=-1;ci.state(18);
   ci.aYR=ci.aYS=-1;ci.awV=false;GloftGF2F.acw=new ci();MIDlet.keyDowns=MIDlet.keyUps=0;
   ch.pending=ch.credits=ch.settles=ch.entities=ch.loadClears=0;ch.levelUpOnSettle=false;SystemClock.now=10000;
   MIDlet.cnz=MIDlet.cnA=null;AlertDialog.latest=null;AlarmManager.exact=AlarmManager.ordinary=android.os.Process.kills=0;
@@ -202,7 +203,7 @@ public class ProgressSaveChecks {
   set(LanguageRestartController.class,"restartState",0);set(LanguageRestartController.class,"restartPromptVisible",false);set(LanguageRestartController.class,"restartHandoff",null);
   set(LanguageRestartController.class,"menuKeyHeld",false);set(LanguageRestartController.class,"menuOpenRequested",false);
   set(GameNotification.class,"decision",null);
-  ProgressSaveController.initialize();
+  LocalDevelopmentMode.enabled=false;ProgressSaveController.initialize();
  }
  static void ready(){ProgressSaveController.globalLoadFinished(false,false);ProgressSaveController.farmLoadFinished();ProgressSaveController.enterWorld();}
  static void frame(long elapsed){SystemClock.now+=elapsed;ProgressSaveController.frameFinished();}
@@ -225,6 +226,32 @@ public class ProgressSaveChecks {
   check(!queue().isIdle()&&GameSaveStore.applies==applied,"Android lifecycle waited for SQLite");
   finishPending();check(GameSaveStore.durableCredits==91,"lifecycle snapshot lost");
   System.out.println("PASS 1/10/50/100 accepted-state batches, critical debit bypass and nonblocking lifecycle capture");
+ }
+ static void backendSnapshotDurability()throws Exception{
+  reset();ready();frame(0);frame(500);
+  check(ProgressSaveController.beginBackendSave()==null,"upload preceded local durability");
+  complete(false);check(ProgressSaveController.beginBackendSave()==null,"entering loaded world uploaded historical local state");
+  check(ProgressSaveController.beginBackendLevelSave()==null&&ProgressSaveController.beginBackendManorSave()==null,"loaded profile metadata uploaded");
+  ch.credits=10;ProgressSaveController.requestSave();frame(0);frame(500);
+  check(ProgressSaveController.beginBackendSave()==null,"pending SQLite capture uploaded");
+  ch.credits=20;ProgressSaveController.requestSave();frame(0);complete(false);
+  check(ProgressSaveController.beginBackendSave()==null,"older ack acknowledged newer change");
+  frame(500);complete(false);BackendSavePolicy.Upload newest=ProgressSaveController.beginBackendSave();
+  check(ProgressSaveController.beginBackendLevelSave()==null&&ProgressSaveController.beginBackendManorSave()==null,"unchanged metadata uploaded on farm change");
+  check(newest!=null&&newest.getPayload().equals("farm:20"),"latest immutable capture lost");
+  ProgressSaveController.backendSaveCompleted(newest.getTag(),true);
+  ci.level=3;ci.aZD=5;ProgressSaveController.requestSave();frame(0);frame(499);
+  check(ProgressSaveController.beginBackendLevelSave()==null,"profile metadata debounce fired early");
+  frame(1);check(ProgressSaveController.beginBackendLevelSave()==null,"profile metadata preceded local durability");complete(false);
+  BackendSavePolicy.Upload level=ProgressSaveController.beginBackendLevelSave(),manor=ProgressSaveController.beginBackendManorSave();
+  check(level!=null&&level.getPayload().equals("3")&&manor!=null&&manor.getPayload().equals("5"),"changed metadata lost durable captured values");
+  check(ProgressSaveController.beginBackendLevelSave()==null,"duplicate profile upload");
+  ProgressSaveController.backendSaveCompleted(level.getTag(),true);ProgressSaveController.backendSaveCompleted(manor.getTag(),true);
+  LocalDevelopmentMode.enabled=true;ch.credits=30;ProgressSaveController.requestSave();frame(0);frame(500);complete(false);
+  check(ProgressSaveController.beginBackendSave()==null&&GameSaveStore.durableCredits==30,"local mode uploaded or failed local durability");
+  LocalDevelopmentMode.enabled=false;frame(10000);finishPending();
+  check(ProgressSaveController.beginBackendSave()==null,"enabling remote mode uploaded historical local data");
+  System.out.println("PASS backend/controller integration: matching durable capture, late mutation barrier, local-mode persistence and no historical upload");
  }
  static void retryNoticePreservesExistingQuestDialog()throws Exception{
   readySaved();queue().retryPaused=true;ci.state(20);frame(0);
@@ -427,7 +454,7 @@ public class ProgressSaveChecks {
  public static void main(String[]args)throws Exception{
   if(args.length>0&&args[0].equals("coldNoWriter")){coldNoWriter();return;}
   ColdEngineInitProbe.failInitialization=false;
-  loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
+  backendSnapshotDurability();loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
   retryNoticePreservesExistingQuestDialog();actionMatrixAndCriticalFlush();languageMandatoryTargetRestart();languageFontFailureRetriesOnlyOnUserChoice();languageFinalSaveRetainsLateWrites();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();saveTransferLongPress();saveTransferFreeze();
   System.out.println("PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff");
  }
@@ -467,8 +494,8 @@ class ProgressSaveControllerTest(unittest.TestCase):
                 peer.write_text(adapt_fixture(content).replace('com.gameloft.android.ANMP.GloftGF2F', qualified_package().rsplit('.', 1)[0]), encoding='utf-8')
                 peers.append(peer)
             fixture, runner = folder / 'Fixture.java', folder / 'ProgressSaveChecks.java'
-            actual = [kotlin_source / name for name in ('ProgressSaveController.kt', 'SaveBatchPolicy.kt', 'LanguageRestartController.kt', 'GameNotification.kt')]
-            fixture_text = FIXTURE
+            actual = [kotlin_source / name for name in ('ProgressSaveController.kt', 'SaveBatchPolicy.kt', 'BackendSavePolicy.kt', 'LanguageRestartController.kt', 'GameNotification.kt')]
+            fixture_text = FIXTURE.replace('class ci {', 'class LocalDevelopmentMode { static boolean enabled; public static boolean isEnabled(){return enabled;} }\nclass ci {')
             if kotlin_midlet.is_file():
                 # Isolate only the two unchanged production override bodies,
                 # just as the previous Java fixture did; peers are not gameplay.

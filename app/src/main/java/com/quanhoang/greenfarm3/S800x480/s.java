@@ -757,6 +757,7 @@ public class s {
     }
 
     public static void aK(String str) {
+        if (LocalDevelopmentMode.isEnabled()) return;
         Mz = str;
         Mw = 0;
         My = new am(false);
@@ -948,6 +949,16 @@ public class s {
         a(t.Ou, new String[]{str}, str2);
     }
 
+    /** Unlike legacy void helpers, report a full pool without losing the pending save. */
+    public static synchronized boolean tryEnqueueFarmSave(String credential, String payload, String tag) {
+        if (LocalDevelopmentMode.isEnabled() || !w.YB) return false;
+        aI("storage");
+        if (jf() == -1) return false;
+        a(t.Ot, new String[]{credential, "Farm", payload, "public"},
+                (String[]) null, (String[]) null, (String) null, tag);
+        return true;
+    }
+
     public static void d(String str, String str2, String str3, String str4, String str5) {
         GameRuntime.c(w.YB, "You need to enable federation_useSeshat_Storage in GLLibConfig!");
         aI("storage");
@@ -962,6 +973,15 @@ public class s {
         GameRuntime.c(w.YB, "You need to enable federation_useSeshat_Storage in GLLibConfig!");
         aI("storage");
         a(t.Os, new String[]{str, str2}, (String[]) null, (String[]) null, str3, str4);
+    }
+
+    public static synchronized boolean tryEnqueueProfileSave(String credential, String field, String payload, String tag) {
+        if (LocalDevelopmentMode.isEnabled() || !w.YC) return false;
+        aI("storage");
+        if (jf() == -1) return false;
+        a(t.Ov, new String[]{credential, field, payload, "{\"*\":\"public\"}", "set"},
+                (String[]) null, (String[]) null, (String) null, tag);
+        return true;
     }
 
     public static void f(String str, String str2, String str3, String str4, String str5, String str6) {
@@ -2083,6 +2103,7 @@ public class s {
     }
 
     public static void ae(boolean z) {
+        if (LocalDevelopmentMode.isEnabled()) return;
         byte[] bArrOj;
         String strIT;
         if (Mw != -1 && (strIT = iT()) != null) {
@@ -2597,6 +2618,8 @@ public class s {
     }
 
     public static void aS(String str) {
+        // No discovery, credential refresh or pending callbacks in local builds.
+        if (LocalDevelopmentMode.isEnabled()) return;
         if (!fZ()) {
             if (!jb()) {
                 jc();
@@ -2640,7 +2663,7 @@ public class s {
     }
 
     public static boolean jp() {
-        return w.XY;
+        return !LocalDevelopmentMode.isEnabled() && w.XY;
     }
 
     public static void jq() {

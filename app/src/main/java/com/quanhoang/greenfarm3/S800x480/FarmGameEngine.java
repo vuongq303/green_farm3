@@ -16888,6 +16888,8 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void Ml() {
+        // Local saves need no CRM profile/config worker or polling loop.
+        if (LocalDevelopmentMode.isEnabled()) return;
         String lowerCase = GloftGF2F.acw.dr(aYU).toLowerCase();
         if (lowerCase.indexOf("kr") != -1) {
             lowerCase = "ko";
@@ -16960,6 +16962,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void Mn() {
+        if (LocalDevelopmentMode.isEnabled()) return;
         if (!com.gameloft.a.a.o.VW().VY()) {
             try {
                 Ml();
@@ -16975,6 +16978,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void Mo() {
+        if (LocalDevelopmentMode.isEnabled()) return;
         if (com.gameloft.a.a.k.VR().fZ() && aYx) {
             if (com.gameloft.a.a.o.VW().VY() && b.Jn) {
                 aYF = true;
@@ -20523,8 +20527,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
         hL(1);
         hM(0);
         if (z) {
-            hJ(aZw[0]);
-            hK(aZw[1]);
+            // Defaults only: the existing gameplay record restores its own balances.
+            hJ(LocalDevelopmentMode.isEnabled() ? aBe : aZw[0]);
+            hK(LocalDevelopmentMode.isEnabled() ? aBg : aZw[1]);
         }
         aBv = new int[99];
         aBw = new int[99];
@@ -31189,10 +31194,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void hS(int i) {
-        int iFA = -99999999;
-        if (FA() + i >= -99999999) {
-            iFA = FA() + i > aBe ? aBe : FA() + i;
-        }
+        // Add before narrowing so rewards at the local cap cannot wrap negative.
+        long balance = (long) FA() + i;
+        int iFA = (int) Math.max(-99999999L, Math.min((long) aBe, balance));
         if (iFA < 0) {
             aBI = true;
             iFA *= -1;
@@ -31209,10 +31213,8 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void hT(int i) {
-        int iFB = -3000000;
-        if (FB() + i >= -3000000) {
-            iFB = FB() + i > aBg ? aBg : FB() + i;
-        }
+        long balance = (long) FB() + i;
+        int iFB = (int) Math.max(-3000000L, Math.min((long) aBg, balance));
         if (iFB < 0) {
             aBH = true;
             if (iFB < 0) {
@@ -35297,6 +35299,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void jn() {
+        if (LocalDevelopmentMode.isEnabled()) return;
         if (aps) {
             return;
         }
@@ -41114,6 +41117,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
 
     static void qH() {
         s.jq();
+        ProgressSaveController.resetBackendSave();
         arv = false;
         arw = false;
         arx = false;
@@ -41547,11 +41551,11 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static boolean qN() {
-        return s.jp();
+        return !LocalDevelopmentMode.isEnabled() && s.jp();
     }
 
     public static boolean qO() {
-        return bx("isConnectedMobile") || bx("isConnectedWifi");
+        return !LocalDevelopmentMode.isEnabled() && (bx("isConnectedMobile") || bx("isConnectedWifi"));
     }
 
     public static final void qP() {
@@ -43077,7 +43081,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             int iP = p(bArr, iA);
             if (qN() && bt.nY() && arg) {
                 aLJ = e(bArr, 0, iP);
-                String str2 = "farm_data = " + aLJ;
+                ProgressSaveController.capturedBackendFarm(aLJ, FC(), aZD);
             }
             if (aTz && aTA != -1 && ayK[aTA]) {
                 aTz = false;
@@ -51702,46 +51706,57 @@ public final class FarmGameEngine extends GameRuntime implements av {
             kp(777);
             return;
         }
-        if (!qO() || !com.gameloft.a.b.a.fZ()) {
-            E(currentEngineState(), true);
-            return;
-        }
-        com.gameloft.a.b.i iVarWv = com.gameloft.a.b.i.Wv();
-        baQ = MF();
-        String str = "JW_PrivacyPolicy ::current_age: " + aTL;
-        String str2 = "JW_PrivacyPolicy :: country: " + baQ;
-        if (iVarWv.hv(baQ)) {
-            com.gameloft.a.b.m mVarWw = iVarWv.Ww();
-            String str3 = mVarWw.bxA;
-            String str4 = "JW_PrivacyPolicy ::GetCachedPrivacyPolicy: " + mVarWw.bxA;
-            String str5 = "JW_PrivacyPolicy ::ppData.age: " + mVarWw.bxy;
-            if (str3.equals("{}")) {
-                bbi = false;
-                bbj = true;
-                bbk = false;
-                bbl = false;
-                bbm = false;
-                bbr = true;
-            } else {
-                bbj = false;
-                if (str3.indexOf("COPPA") < 0) {
-                    if (str3.indexOf("ITALY") >= 0) {
-                        bbl = true;
-                    } else if (str3.indexOf("OFT") < 0 || (baQ.toUpperCase().indexOf("AU") < 0 && baQ.toUpperCase().indexOf("NZ") < 0)) {
-                        bbi = true;
-                    } else {
-                        bbm = true;
-                    }
-                    bbk = false;
-                } else {
+        if (LocalDevelopmentMode.isEnabled()) {
+            // This is a local research policy, never a server compliance answer.
+            // Keep the original Accept UI and the shared save/loading continuation.
+            bbi = true;
+            bbj = false;
+            bbk = false;
+            bbl = false;
+            bbm = false;
+            bbr = false;
+        } else {
+            if (!qO() || !com.gameloft.a.b.a.fZ()) {
+                E(currentEngineState(), true);
+                return;
+            }
+            com.gameloft.a.b.i iVarWv = com.gameloft.a.b.i.Wv();
+            baQ = MF();
+            String str = "JW_PrivacyPolicy ::current_age: " + aTL;
+            String str2 = "JW_PrivacyPolicy :: country: " + baQ;
+            if (iVarWv.hv(baQ)) {
+                com.gameloft.a.b.m mVarWw = iVarWv.Ww();
+                String str3 = mVarWw.bxA;
+                String str4 = "JW_PrivacyPolicy ::GetCachedPrivacyPolicy: " + mVarWw.bxA;
+                String str5 = "JW_PrivacyPolicy ::ppData.age: " + mVarWw.bxy;
+                if (str3.equals("{}")) {
                     bbi = false;
-                    bbk = true;
+                    bbj = true;
+                    bbk = false;
                     bbl = false;
                     bbm = false;
+                    bbr = true;
+                } else {
+                    bbj = false;
+                    if (str3.indexOf("COPPA") < 0) {
+                        if (str3.indexOf("ITALY") >= 0) {
+                            bbl = true;
+                        } else if (str3.indexOf("OFT") < 0 || (baQ.toUpperCase().indexOf("AU") < 0 && baQ.toUpperCase().indexOf("NZ") < 0)) {
+                            bbi = true;
+                        } else {
+                            bbm = true;
+                        }
+                        bbk = false;
+                    } else {
+                        bbi = false;
+                        bbk = true;
+                        bbl = false;
+                        bbm = false;
+                    }
                 }
+            } else {
+                iVarWv.a(aTL, baQ, new cn());
             }
-        } else {
-            iVarWv.a(aTL, baQ, new cn());
         }
         aUb = true;
         ro();
@@ -52761,14 +52776,16 @@ public final class FarmGameEngine extends GameRuntime implements av {
         } else {
             GameRuntime.Rm.setSeed(j);
         }
-        jn();
-        s.aK("eveListDataCenters");
-        if (baf == null && rj() != null) {
-            String strBY = GloftGF2F.acx.bY("IAP-GameCodeIGP");
-            String str = "Tam debug============================" + rj() + "hhhhh";
-            baf = com.gameloft.android2d.d.b.i("1557:53118:4.4.2:android:googleplay", strBY, "anonymous:" + s.iY(), m.iy(), rj());
-            com.gameloft.android.wrapper.ag.OnResume();
-            Kv();
+        if (!LocalDevelopmentMode.isEnabled()) {
+            jn();
+            s.aK("eveListDataCenters");
+            if (baf == null && rj() != null) {
+                String strBY = GloftGF2F.acx.bY("IAP-GameCodeIGP");
+                String str = "Tam debug============================" + rj() + "hhhhh";
+                baf = com.gameloft.android2d.d.b.i("1557:53118:4.4.2:android:googleplay", strBY, "anonymous:" + s.iY(), m.iy(), rj());
+                com.gameloft.android.wrapper.ag.OnResume();
+                Kv();
+            }
         }
         bas = 0;
         as.Init();
@@ -59797,14 +59814,19 @@ public final class FarmGameEngine extends GameRuntime implements av {
             if (awV) {
                 Ei();
             }
-            if (qN() && bt.nY() && arg && !aLG) {
-                long jCurrentTimeMillis13 = System.currentTimeMillis();
-                if (w.Vl) {
-                    jCurrentTimeMillis13 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
-                }
-                if (jCurrentTimeMillis13 - aLI > aLH && !aLJ.equals("")) {
-                    s.e(s.js(), "Farm", aLJ, "public");
+            if (!LocalDevelopmentMode.isEnabled() && qN() && bt.nY() && arg && !aLG) {
+                BackendSavePolicy.Upload upload = ProgressSaveController.beginBackendSave();
+                if (upload != null) {
                     aLG = true;
+                    try {
+                        if (!s.tryEnqueueFarmSave(s.js(), upload.getPayload(), upload.getTag())) {
+                            aLG = false;
+                            ProgressSaveController.backendSaveCompleted(upload.getTag(), false);
+                        }
+                    } catch (RuntimeException failure) {
+                        aLG = false;
+                        ProgressSaveController.backendSaveCompleted(upload.getTag(), false);
+                    }
                 }
             }
         }
@@ -63507,21 +63529,14 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 O(ShareConstants.WEB_DIALOG_PARAM_DATA, "Success");
             }
         }
-        if (qN() && bt.nY() && ark && bt.nW() && arg && !ary) {
-            long jCurrentTimeMillis4 = System.currentTimeMillis();
-            if (w.Vl) {
-                jCurrentTimeMillis4 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
-            }
-            if (jCurrentTimeMillis4 - arq > arp) {
-                String str13 = "== Saving Profile to Seshat every " + arp + " ==> FED ";
-                String str14 = "== Credentials : " + s.js();
-                s.e(s.js(), "_level", Integer.toString(FC()), "{\"*\":\"public\"}", "set");
-                s.e(s.js(), "_manor", Integer.toString(aZD), "{\"*\":\"public\"}", "set");
-                if (!arR) {
-                    s.aQ("{\"_level\":\"public\",\"_manor\":\"public\",\"credential\":\"public\"}");
-                    arR = true;
-                }
-                ary = true;
+        if (!LocalDevelopmentMode.isEnabled() && qN() && bt.nY() && ark && bt.nW() && arg) {
+            BackendSavePolicy.Upload level = ProgressSaveController.beginBackendLevelSave();
+            BackendSavePolicy.Upload manor = ProgressSaveController.beginBackendManorSave();
+            if (level != null) enqueueProfileAutosave("_level", level);
+            if (manor != null) enqueueProfileAutosave("_manor", manor);
+            if ((level != null || manor != null) && !arR) {
+                s.aQ("{\"_level\":\"public\",\"_manor\":\"public\",\"credential\":\"public\"}");
+                arR = true;
             }
         }
         if (qN() && arg && !arB) {
@@ -63846,6 +63861,16 @@ public final class FarmGameEngine extends GameRuntime implements av {
         gX(60);
     }
 
+    private static void enqueueProfileAutosave(String field, BackendSavePolicy.Upload upload) {
+        try {
+            if (!s.tryEnqueueProfileSave(s.js(), field, upload.getPayload(), upload.getTag())) {
+                ProgressSaveController.backendSaveCompleted(upload.getTag(), false);
+            }
+        } catch (RuntimeException failure) {
+            ProgressSaveController.backendSaveCompleted(upload.getTag(), false);
+        }
+    }
+
     public void a(int i, String str, String str2, int i2, String str3, Exception exc) {
         b(i, str, str2, i2, str3, exc);
         String str4 = "#quy== FED CALLBACK CALLED : ID" + i + " result" + str + "tag " + str2 + " httpResponseCode" + i2 + "httpResponseMessage " + str3 + " federationInit " + t.ND;
@@ -63916,7 +63941,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 ard = true;
                 com.gameloft.android2d.b.a.an("anonymous:" + iY());
             }
-            if (i == t.Ov) {
+            if (i == t.Ov && str2 != null &&
+                    (str2.startsWith("farm-level-autosave:") || str2.startsWith("farm-manor-autosave:"))) {
+                ProgressSaveController.backendSaveCompleted(str2, exc == null && i2 >= 200 && i2 < 300);
+            } else if (i == t.Ov) {
                 long jCurrentTimeMillis = System.currentTimeMillis();
                 if (w.Vl) {
                     jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
@@ -63930,7 +63958,11 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 }
                 aru = jCurrentTimeMillis2;
                 arA = false;
-            } else if (i == t.Ot && !str2.startsWith("cloud")) {
+            } else if (i == t.Ot && str2 != null && str2.startsWith("farm-autosave:")) {
+                if (ProgressSaveController.backendSaveCompleted(str2, exc == null && i2 >= 200 && i2 < 300)) {
+                    aLG = false;
+                }
+            } else if (i == t.Ot && (str2 == null || !str2.startsWith("cloud"))) {
                 long jCurrentTimeMillis3 = System.currentTimeMillis();
                 if (w.Vl) {
                     jCurrentTimeMillis3 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
@@ -64174,7 +64206,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         }
         GameRuntime.r(sbAppend2.append(jCurrentTimeMillis7 - jCurrentTimeMillis2).append(" ms").toString());
         int iQD = currentEngineState();
-        if (com.gameloft.a.b.a.fZ() && Lc() && aTY && iQD != 4 && iQD != 2 && aUb) {
+        if (!LocalDevelopmentMode.isEnabled() && com.gameloft.a.b.a.fZ() && Lc() && aTY && iQD != 4 && iQD != 2 && aUb) {
             com.gameloft.a.b.i iVarWv = com.gameloft.a.b.i.Wv();
             baQ = MF();
             String str = "JW_PrivacyPolicy ::current_age111: " + aTL;
@@ -64227,40 +64259,42 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if (currentEngineState() > 7 && aUb) {
             this.aYC = true;
         }
-        if (com.gameloft.a.a.k.VR().fZ()) {
-            com.gameloft.a.a.k.VR().h(GameRuntime.Qy);
-        }
-        if (this.aYC) {
-            if (this.aYD != 0) {
-                long jCurrentTimeMillis8 = System.currentTimeMillis();
-                if (w.Vl) {
-                    jCurrentTimeMillis8 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
-                }
-                if (jCurrentTimeMillis8 - this.aYD > 600000) {
-                    if (!this.aYE && !arD) {
-                        new cs(this, null).start();
-                        jCurrentTimeMillis = System.currentTimeMillis();
-                        if (w.Vl) {
-                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
-                        }
-                        this.aYD = jCurrentTimeMillis;
-                    }
-                }
-            } else if (!this.aYE) {
-                new cs(this, null).start();
-                jCurrentTimeMillis = System.currentTimeMillis();
-                if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
-                }
-                this.aYD = jCurrentTimeMillis;
+        if (!LocalDevelopmentMode.isEnabled()) {
+            if (com.gameloft.a.a.k.VR().fZ()) {
+                com.gameloft.a.a.k.VR().h(GameRuntime.Qy);
             }
-        }
-        if (com.gameloft.a.a.o.VW().VY() && !b.Jn && aUb && com.gameloft.android2d.d.b.Qm().ga() != null && !com.gameloft.android2d.d.b.Qm().ga().equals("")) {
-            b.hL().Init();
-        }
-        com.gameloft.a.a.k.VR().a(new ck(this));
-        if (currentEngineState() > 7 && aUb && !aYF) {
-            Mo();
+            if (this.aYC) {
+                if (this.aYD != 0) {
+                    long jCurrentTimeMillis8 = System.currentTimeMillis();
+                    if (w.Vl) {
+                        jCurrentTimeMillis8 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
+                    }
+                    if (jCurrentTimeMillis8 - this.aYD > 600000) {
+                        if (!this.aYE && !arD) {
+                            new cs(this, null).start();
+                            jCurrentTimeMillis = System.currentTimeMillis();
+                            if (w.Vl) {
+                                jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
+                            }
+                            this.aYD = jCurrentTimeMillis;
+                        }
+                    }
+                } else if (!this.aYE) {
+                    new cs(this, null).start();
+                    jCurrentTimeMillis = System.currentTimeMillis();
+                    if (w.Vl) {
+                        jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
+                    }
+                    this.aYD = jCurrentTimeMillis;
+                }
+            }
+            if (com.gameloft.a.a.o.VW().VY() && !b.Jn && aUb && com.gameloft.android2d.d.b.Qm().ga() != null && !com.gameloft.android2d.d.b.Qm().ga().equals("")) {
+                b.hL().Init();
+            }
+            com.gameloft.a.a.k.VR().a(new ck(this));
+            if (currentEngineState() > 7 && aUb && !aYF) {
+                Mo();
+            }
         }
         if (FC() >= 3 && currentEngineState() == 18 && !aYu) {
             fE(65);
