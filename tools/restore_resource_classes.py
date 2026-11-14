@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import re
+import shutil
 import xml.etree.ElementTree as ET
 
 
@@ -20,7 +21,6 @@ SDK_PACKAGES = (
     "com.facebook",
     "com.google.android.gms.ads",
     "com.google.android.gms.ads.impl",
-    "com.google.firebase.messaging",
 )
 RESOURCE_LITERAL = re.compile(r"\b0[xX]7[fF][0-9a-fA-F]{6}\b")
 
@@ -88,6 +88,11 @@ def generate(project_root: Path, output: Path) -> list[Path]:
         relative = Path(*package.split(".")) / "R.java"
         source = project_root / "app/src/main/java" / relative
         rendered.append((output / relative, render_alias(source.read_text(), resources, package, app_package)))
+    # Incremental builds must not compile aliases for the retired Firebase SDK
+    # that an older generator left in this owned output directory.
+    obsolete = output / 'com/google/firebase'
+    if obsolete.exists():
+        shutil.rmtree(obsolete)
     for path, content in rendered:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content)

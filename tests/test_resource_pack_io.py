@@ -219,6 +219,7 @@ class ResourcePackIOTest(unittest.TestCase):
         ))
         fixture = r'''package PACKAGE;
 class GL10 {} class EGLConfig {}
+class Log {static void e(String a,String b,Throwable c){}}
 class GLES20 {static void glClear(int flags){}}
 class w {static boolean Vy,Vw,VA;}
 class Midlet {int quits;void akD(){quits++;}}

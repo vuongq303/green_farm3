@@ -13,7 +13,6 @@ import struct
 import subprocess
 import zipfile
 import zlib
-from urllib.parse import urlsplit
 
 from android_build_tools import BUILD_TOOLS_VERSION, executable_name
 
@@ -172,32 +171,6 @@ def manifest(apk, sdk):
     return package, qualify(application['attributes']['name']), qualify(launchers[0])
 
 
-def network_policy(apk, sdk, backend_base_url):
-    """Inspect the installed artifact's binary manifest, not just source XML."""
-    root = manifest_tree(apk, sdk)
-    application = next((n for n in root['children'] if n['tag'] == 'application'), None)
-    if application is None:
-        raise ValueError('Packaged manifest application is missing')
-    attributes = application['attributes']
-    internet = any(n['tag'] == 'uses-permission'
-                   and n['attributes'].get('name') == 'android.permission.INTERNET'
-                   and 'maxSdkVersion' not in n['attributes'] for n in root['children'])
-    if not internet:
-        raise ValueError('Final APK lacks unrestricted android.permission.INTERNET')
-    if attributes.get('debuggable') != 'true':
-        raise ValueError('Configured backend pipeline must publish a debug APK manifest')
-    if attributes.get('networkSecurityConfig') is not None:
-        raise ValueError('Final APK has an unreviewed networkSecurityConfig override')
-    scheme = urlsplit(backend_base_url).scheme.lower()
-    if scheme not in ('http', 'https'):
-        raise ValueError('BACKEND_BASE_URL must use HTTP(S)')
-    cleartext = attributes.get('usesCleartextTraffic') == 'true'
-    if scheme == 'http' and not cleartext:
-        raise ValueError('Final debug APK blocks HTTP traffic to BACKEND_BASE_URL')
-    return {'internet_permission': internet, 'debuggable': True,
-            'uses_cleartext_traffic': cleartext, 'network_security_config': None}
-
-
 def verify_game_components(root, classes, application_id, original_missing_components=()):
     """Component class names follow code, while authorities follow the app ID.
 
@@ -247,8 +220,7 @@ def missing_original_components(root, definitions, target_game_package):
     return sorted(result)
 
 
-def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
-               application_id=None, game_package=None):
+def verify_apk(apk, original, sdk, metadata=None, application_id=None, game_package=None):
     apk, original = Path(apk), Path(original)
     classes, dex_count = {}, 0
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(apk) as output:
@@ -310,8 +282,7 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
               'dex_count': dex_count, 'class_count': len(classes), 'payload_count': len(names),
               'game_package': detected_package,
               'legacy_game_class_definitions_remaining': sum(name.startswith(GAME) for name in classes)}
-    if backend_base_url:
-        result['network_policy'] = network_policy(apk, sdk, backend_base_url)
+    if application_id or game_package:
         with zipfile.ZipFile(original) as reference:
             original_definitions = {name for entry in reference.namelist() if DEX_NAME.fullmatch(entry)
                                     for name in dex_classes(reference.read(entry))}
@@ -326,12 +297,10 @@ def main():
     for name in ('apk', 'original', 'sdk'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--metadata', type=Path)
-    parser.add_argument('--backend-base-url')
     parser.add_argument('--application-id', choices=(LEGACY_PACKAGE, APPLICATION_PACKAGE))
     parser.add_argument('--game-package', choices=(LEGACY_PACKAGE, APPLICATION_PACKAGE))
     args = parser.parse_args()
-    print(json.dumps(verify_apk(args.apk, args.original, args.sdk, args.metadata, args.backend_base_url,
-                              args.application_id, args.game_package), indent=2))
+    print(json.dumps(verify_apk(args.apk, args.original, args.sdk, args.metadata, args.application_id, args.game_package), indent=2))
 
 
 if __name__ == '__main__':

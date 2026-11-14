@@ -343,7 +343,26 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
     private static int TS = 0;
 
     public static final InputStream a(Class cls, String str) {
-        return com.gameloft.android.wrapper.au.getResourceAsStream(str);
+        // All shipped game packs live in this APK directory. The old wrapper
+        // uses a mutable resolution/expansion prefix (au.bhM), which can survive
+        // an Activity/surface recreation and point at a different resource set.
+        // Open through the application AssetManager, independent of that cache.
+        String name = str.startsWith("/") ? str.substring(1) : str;
+        if (name.contains("..") || name.contains("\\")) {
+            throw new ResourceFailure(str, "asset-path", -1, -1, null);
+        }
+        android.content.Context context = com.gameloft.android.wrapper.au.getContext();
+        if (context == null) throw new ResourceFailure(str, "asset-context", -1, -1, null);
+        context = context.getApplicationContext();
+        String path = name.startsWith("800x480/") ? name : "800x480/" + name;
+        try {
+            return context.getAssets().open(path);
+        } catch (IOException missingGamePack) {
+            // Only non-pack root assets (e.g. the bundled legacy metadata) may
+            // use the root directory. There is no network/OBB/cache fallback.
+            try { return context.getAssets().open(name); }
+            catch (IOException failure) { throw new ResourceFailure("assets/" + path, "asset-open", -1, -1, failure); }
+        }
     }
 
     public abstract void jC();
@@ -670,7 +689,7 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
                     be("OpenGL GPU paint calls count: " + Tk);
                 }
             } catch (Exception e) {
-                d(e);
+                Log.e("GreenFarmRuntime", "draw_failed", e);
             }
             Qp = false;
             return;
@@ -730,7 +749,7 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
                     jW();
                 }
             } catch (Exception e) {
-                be("!!FATAL ERROR!! in Game_paint()." + e);
+                Log.e("GreenFarmRuntime", "frame_failed; last durable snapshot retained", e);
                 Qn = -1;
             }
             Qt = false;
@@ -1456,15 +1475,19 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
                     }
                 }
                 InputStream inputStreamBl = bl(str);
+                if (inputStreamBl == null) throw packFailure("open-segment", null);
+                RJ = inputStreamBl; // Failure cleanup owns the stream before header parsing.
                 RC = i;
                 if (i == 0) {
                     RD = inputStreamBl.available();
-                    int i3 = (inputStreamBl.read() & 255) + ((inputStreamBl.read() & 255) << 8);
+                    int i3 = b(inputStreamBl);
+                    if (i3 == 0 || i3 * 4L > RD - 2L) throw packFailure("segment-header-count", null);
                     RO = (short) i3;
                     int i4 = i3 << 2;
                     RP = new int[i3];
                     for (int i5 = 0; i5 < i3; i5++) {
-                        RP[i5] = (inputStreamBl.read() & 255) + ((inputStreamBl.read() & 255) << 8) + ((inputStreamBl.read() & 255) << 16) + ((inputStreamBl.read() & 255) << 24);
+                        RP[i5] = c(inputStreamBl);
+                        if (RP[i5] < 2 + i3 * 4 || (i5 > 0 && RP[i5] < RP[i5 - 1])) throw packFailure("segment-offset", null);
                     }
                     RN = RP[0];
                 } else {
@@ -1474,8 +1497,9 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
             }
             return RJ;
 
-        } catch (IOException failure) {
-            throw GameRuntime.<RuntimeException>propagateChecked(failure);
+        } catch (ResourceFailure failure) { throw failure;
+        } catch (Exception failure) {
+            throw packFailure("segment-header", failure);
         }
     }
 
@@ -1711,6 +1735,8 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
                     }
                 }
                 InputStream inputStreamBl = bl(str);
+                if (inputStreamBl == null) throw packFailure("open-named-segment", null);
+                RJ = inputStreamBl;
                 RC = i;
                 if (w.Wi) {
                     be("Stream Id = " + RI);
@@ -1725,11 +1751,13 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
                     if (w.Wi) {
                         be("read iniex count: " + iB2);
                     }
+                    if (iB2 <= 0 || iB2 > 32767) throw packFailure("named-count", null);
                     RO = (short) iB2;
                     int iB3 = b(inputStreamBl);
                     if (w.Wi) {
                         be("read iniex subpackCount: " + iB3);
                     }
+                    if (iB3 <= 0 || iB3 > iB2) throw packFailure("named-segments", null);
                     RQ = (short) iB3;
                     if (iB3 > 0) {
                         RR = new short[iB3];
@@ -1753,12 +1781,15 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
                 short s = i + 1 < RR.length ? RR[i + 1] : RO;
                 for (int i4 = RR[i]; i4 < s; i4++) {
                     int i5 = inputStreamBl.read();
+                    if (i5 < 0) throw packFailure("named-entry", null);
                     if (w.Wi) {
                         be("read iniex nameLength: " + i5);
                     }
                     byte[] bArr2 = new byte[i5];
                     for (int i6 = 0; i6 < i5; i6++) {
-                        bArr2[i6] = (byte) inputStreamBl.read();
+                        int next = inputStreamBl.read();
+                        if (next < 0) throw packFailure("named-entry", null);
+                        bArr2[i6] = (byte) next;
                     }
                     String str2 = new String(bArr2);
                     RE[RH][i4] = str2;
@@ -1784,27 +1815,28 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
             }
             return RJ;
 
-        } catch (IOException | InterruptedException failure) {
-            throw GameRuntime.<RuntimeException>propagateChecked(failure);
+        } catch (ResourceFailure failure) { throw failure;
+        } catch (Exception failure) {
+            if (failure instanceof InterruptedException) Thread.currentThread().interrupt();
+            throw packFailure("named-header", failure);
         }
     }
 
     static int b(InputStream inputStream) {
         try {
-            return (inputStream.read() & 255) + ((inputStream.read() & 255) << 8);
-
+            int lo = inputStream.read(), hi = inputStream.read();
+            if ((lo | hi) < 0) throw packFailure("header-eof", null);
+            return lo | (hi << 8);
         } catch (IOException failure) {
+            // Callers outside the pack loader also use this endian primitive.
+            // Preserve their checked exception identity; the pack openers add
+            // the resource path and invalidate their cache at their boundary.
             throw GameRuntime.<RuntimeException>propagateChecked(failure);
         }
     }
 
     static int c(InputStream inputStream) {
-        try {
-            return (inputStream.read() & 255) + ((inputStream.read() & 255) << 8) + ((inputStream.read() & 255) << 16) + ((inputStream.read() & 255) << 24);
-
-        } catch (IOException failure) {
-            throw GameRuntime.<RuntimeException>propagateChecked(failure);
-        }
+        return b(inputStream) | (b(inputStream) << 16);
     }
 
     public static int bi(String str) {

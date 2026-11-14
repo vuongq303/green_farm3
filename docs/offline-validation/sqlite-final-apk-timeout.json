@@ -1,0 +1,115 @@
+{
+  "started_at": "2026-11-14T19:58:41+07:00",
+  "report_timezone": "Asia/Saigon",
+  "required_schema": 4,
+  "device": "emulator-5554",
+  "application_id": "com.quanhoang.greenfarm3",
+  "storage_code_package": "com.quanhoang.greenfarm3.S800x480",
+  "installed_apk_sha256": "be44d2eff2992bb450d303b9c2f3ce22176dd476c817c5f6d8356da55b5c0a40",
+  "probe_dex_sha256": "c837c888fba474562e70385e4fc11a6f819da19089fabf3f54aaf4d4c7297f4c",
+  "probe_dex_classes": [
+    "LGameSaveStoreProbe$$ExternalSyntheticBackport0;",
+    "LGameSaveStoreProbe$1;",
+    "LGameSaveStoreProbe$2;",
+    "LGameSaveStoreProbe$3;",
+    "LGameSaveStoreProbe$4;",
+    "LGameSaveStoreProbe$IsolatedContext;",
+    "LGameSaveStoreProbe;"
+  ],
+  "storage_implementation": "GameSaveStore from installed complete APK",
+  "sqlite_implementation": "Android platform SQLite; no mock database",
+  "isolated_fixture_prefix": "s4_1794661096_644705",
+  "normal_player_database_opened": false,
+  "passed": false,
+  "cases": [
+    {
+      "number": 1,
+      "command": "seed",
+      "fixture": "s4_1794661096_644705_main",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 29.171
+    },
+    {
+      "number": 2,
+      "command": "verify",
+      "fixture": "s4_1794661096_644705_main",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 23.502
+    },
+    {
+      "number": 3,
+      "command": "crash-uncommitted",
+      "fixture": "s4_1794661096_644705_main",
+      "expected_exit": 17,
+      "actual_exit": 17,
+      "passed": true,
+      "seconds": 24.336
+    },
+    {
+      "number": 4,
+      "command": "verify",
+      "fixture": "s4_1794661096_644705_main",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 13.909
+    },
+    {
+      "number": 5,
+      "command": "crash-committed",
+      "fixture": "s4_1794661096_644705_main",
+      "expected_exit": 18,
+      "actual_exit": 18,
+      "passed": true,
+      "seconds": 12.142
+    },
+    {
+      "number": 6,
+      "command": "verify-committed",
+      "fixture": "s4_1794661096_644705_main",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 17.594
+    },
+    {
+      "number": 7,
+      "command": "legacy",
+      "fixture": "s4_1794661096_644705_legacy",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 12.178
+    },
+    {
+      "number": 8,
+      "command": "legacy-no-header",
+      "fixture": "s4_1794661096_644705_noheader",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 11.504
+    },
+    {
+      "number": 9,
+      "command": "missing-records-and-imports",
+      "fixture": "s4_1794661096_644705_legacydamage",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "passed": true,
+      "seconds": 8.041
+    },
+    {
+      "number": 10,
+      "command": "missing-critical-legacy",
+      "fixture": "s4_1794661096_644705_criticalmissing",
+      "passed": false,
+      "error": "owned probe command timed out",
+      "seconds": 60.06
+    }
+  ]
+}

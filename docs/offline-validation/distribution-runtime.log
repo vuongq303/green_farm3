@@ -1,0 +1,19 @@
+--------- beginning of main
+--------- beginning of system
+D/GreenFarmSave( 3617): write seq=2 us=48132 ok=true
+D/GreenFarmSave( 3617): capture seq=3 us=622497 records=9 bytes=307588
+D/GreenFarmSave( 3617): write seq=3 us=3907051 ok=true
+D/GreenFarmSave( 3617): capture seq=3 us=807721 records=9 bytes=307588
+D/GreenFarmSave( 3617): write seq=3 us=1060331 ok=true
+D/GreenFarmSave( 3617): capture seq=3 us=1375416 records=9 bytes=307588
+D/GreenFarmSave( 3617): write seq=3 us=1397800 ok=true
+D/GreenFarmSave( 3617): capture seq=3 us=355909 records=9 bytes=307588
+D/GreenFarmSave( 3617): write seq=3 us=573453 ok=true
+D/GreenFarmSave( 3617): capture seq=3 us=85853 records=9 bytes=307588
+D/GreenFarmSave( 3617): write seq=3 us=158297 ok=true
+D/GreenFarmSave( 3617): capture seq=3 us=89939 records=9 bytes=307588
+D/GreenFarmSave( 3617): write seq=3 us=245881 ok=true
+D/GreenFarmSave( 3617): capture seq=3 us=95498 records=9 bytes=307588
+D/GreenFarmSave( 3617): write seq=3 us=196621 ok=true
+D/GreenFarmSave( 3617): capture seq=3 us=221324 records=9 bytes=307588
+D/GreenFarmSave( 3617): write seq=3 us=249433 ok=true

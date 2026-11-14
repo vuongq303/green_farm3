@@ -1,154 +1,64 @@
-# Môi trường cloud đã thiết lập
+# Môi trường cloud hiện tại
 
-Ngày kiểm tra: 2026-11-12. Dùng checkout hiện có tại
-`/workspace/green_farm3`; không tạo worktree mới nếu người dùng chưa yêu cầu.
-Project chỉ có module Android `app`. Task chuẩn biên dịch 108 lớp Java lõi,
-ghép dependency từ DEX gốc và cung cấp cùng APK hoàn chỉnh cho assemble, install
-và Android Studio Run. Không cần module hoặc task recovered/baseline riêng.
+Cập nhật14/11/2026, checkout `/workspace/green_farm3`. Dùng skill
+`cloud-environment-onboarding:setup`; draft install/start đã lưu nhưng chưa
+publish. Không cần Firebase credential, Node, npm hoặc MySQL để build/chơi.
+Các hướng dẫn backend trong lịch sử repository đã hết hiệu lực.
 
-## Công cụ và dữ liệu được giữ lại
+## Công cụ
 
-| Thành phần | Đường dẫn/phiên bản |
-| --- | --- |
-| JDK | `/workspace/tooling/jdk-25` → `/workspace/tooling/jdk-25-install/jdk-25.0.5.0.3`, Oracle JDK25 |
-| Gradle Wrapper | 9.7.1, daemon criteria JVM25; Android Gradle Plugin 8.10.1 |
-| Android SDK | `/workspace/tooling/android-sdk`, Platform28 revision6, Build Tools35.0.0 |
-| Platform Tools | 37.0.3 |
-| Emulator | 37.2.13, build16740729; API28 default x86 image revision4 |
-| AVD hiện có | `/workspace/tooling/avds/GreenFarm28.avd`, 800x480, 160dpi |
-| Cache Gradle | `/workspace/tooling/gradle-home` |
-| Archive và công cụ bytecode | `/workspace/tooling/recovery-bytecode`; cache dependency trong `.local/bytecode-tools` |
-| Installer đầy đủ | `/workspace/tooling/setup-greenfarm.sh` |
-| Hướng dẫn khởi động đầy đủ | `/workspace/tooling/START.md` |
-| Backend hiện tại | Node v24.22.1, JavaScript ES Modules, mysql2/promise và MySQL 8.4.13 đã kiểm thử |
-
-Installer mới thay thế vai trò của `/workspace/tooling/install.sh` cũ, vốn thiếu
-JDK, emulator, system image và công cụ bytecode. Nó kiểm tra SHA-256 cho từng
-archive; các archive Google còn được đối chiếu SHA-1 do Google công bố. Tải qua
-HTTPS sử dụng proxy và CA được cấp, không tắt kiểm tra TLS. Không ghi token hoặc
-mật khẩu proxy vào cấu hình; chỉ cập nhật hostname/port Gradle cần sử dụng.
-
-Pin Wrapper/daemon do người dùng đưa lên được giữ nguyên byte. SHA-256 của
-Gradle9.7.1 là
-`acd53f1edaf02f1a8ff99879f8a34b302661a057d9b063ae9e35b552f804d20a`.
-Installer kiểm tra các pin này rồi dùng Wrapper/cache hiện có; không ghi lại
-file pin hoặc cài đè bản Gradle cũ.
-
-Archive JDK được giữ tại
-`/workspace/tooling/oracle-jdk-25-linux-x64.tar.gz`, SHA-256:
-`6deafad80454d1f968105b1f582d89b8c2e88a5dfc98116a8226e0ec2fd5df8e`.
-URL cố định để tái lập là
-`https://download.oracle.com/java/25/archive/jdk-25.0.5.0.3_linux-x64_bin.tar.gz`;
-file `.sha256` chính thức tại URL đó đã được đọc qua HTTPS và khớp archive.
-Provenance lần tải ban đầu từ Oracle `latest` nằm tại
-`/workspace/tooling/jdk-25-provenance.json`. Installer mới dùng cache đã xác minh
-hoặc URL cố định, không dựa vào nội dung thay đổi của `latest`.
-
-Installer giữ nguyên AVD đã có và dữ liệu game; không chạy/dừng emulator hay ADB.
-Nếu AVD chưa tồn tại, nó tạo cấu hình mới; không dùng `-wipe-data`. Snapshot có
-thể giữ file và cache, nhưng tiến trình emulator cần được khởi động lại khi một
-phiên mới thực sự cần kiểm thử Android.
-
-## Lệnh cho instance hiện tại
-
-Làm mới và kiểm tra công cụ:
+* JDK25: `/workspace/.greenfarm/jdk-25` (Temurin từ image checksum-pinned).
+* Android SDK: `/workspace/.greenfarm/android-sdk`, platform28,
+  build-tools35.0.0, platform-tools, emulator37.2.13.
+* Gradle9.7.1, AGP8.10.1, Kotlin2.4.21 theo pin repository.
+* Cache: `/workspace/.cache/gradle`; JRE21 cho host test bytecode.
+* Installer: `/workspace/.greenfarm/install.sh`; đã chạy thành công sau khi
+  bỏ các bước backend. File bootstrap/môi trường nằm ngoài repository.
 
 ```bash
-bash /workspace/tooling/setup-greenfarm.sh
-```
-
-Mỗi phiên lệnh cần kích hoạt môi trường:
-
-```bash
-export JAVA_HOME=/workspace/tooling/jdk-25
-export ANDROID_HOME=/workspace/tooling/android-sdk
-export ANDROID_USER_HOME=/workspace/tooling/android-user
-export ANDROID_AVD_HOME=/workspace/tooling/avds
-export GRADLE_USER_HOME=/workspace/tooling/gradle-home
-export GREENFARM_ORIGINAL_JAR=/workspace/green_farm3/.local/bytecode-tools/greenfarm-original.jar
-export GRADLE_OPTS="${GRADLE_OPTS:+$GRADLE_OPTS }-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
-export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
+source /workspace/.greenfarm/activate.sh
+export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
 cd /workspace/green_farm3
-./gradlew --no-daemon --project-cache-dir /workspace/tooling/project-cache :app:assembleDebug
+./gradlew :app:assembleDebug --no-daemon
+python3 -m unittest discover -s tests
+python3 -m unittest discover -s tools -p 'test_*.py'
 ```
 
-APK đích duy nhất là `app/build/outputs/apk/debug/app-debug.apk`. Pipeline chuẩn
-kiểm tra provenance, ghép DEX, chữ ký, zip alignment, resource ID, assets/native
-và metadata kích thước build. Không cài APK carrier trong `intermediates`.
+Cài APK cuối `app/build/outputs/apk/debug/app-debug.apk` bằng cập nhật (`adb
+install -r` hoặc `:app:installDebug`), giữ đúng khóa ký. Không cài carrier APK
+trong intermediates. Không uninstall/clear data/wipe AVD để vượt lỗi.
+Pipeline kiểm provenance, namespace, metadata revision, policy offline,
+chữ ký/alignment và toàn bộ asset/native payload.
 
-Sau khi thiết bị đích sẵn sàng và đã bảo toàn dữ liệu/chữ ký, cài bằng task chuẩn:
+## Android và SQLite
+
+AVD `greenfarm-aosp28`, API28 AOSP x86, landscape800x480, density160,
+`ANDROID_AVD_HOME=/workspace/.greenfarm/avd`. Chỉ khởi động khi cần kiểm thử,
+không tạo lại AVD đã tồn tại. Giả lập không có KVM, rất chậm; phải đợi cả
+`sys.boot_completed=1` và package service trước cài APK. Không chạy nhiều AVD.
+Ví dụ:
 
 ```bash
-./gradlew --no-daemon --project-cache-dir /workspace/tooling/project-cache :app:installDebug
+export ANDROID_AVD_HOME=/workspace/.greenfarm/avd
+export ANDROID_EMULATOR_HOME=/workspace/.greenfarm/android-user
+"$ANDROID_HOME/emulator/emulator" -avd greenfarm-aosp28 -no-window -no-audio \
+  -no-boot-anim -accel off -gpu swiftshader_indirect -memory 2048 -cores 1 \
+  -no-snapshot -camera-back none -camera-front none -grpc-use-token
 ```
 
-Không uninstall hoặc wipe-data để vượt lỗi khác chữ ký. Hướng dẫn `start_skill`
-giữ quy trình backup app/AVD, tái sử dụng emulator hiện có và kiểm tra
-`sys.boot_completed`. Android Studio dùng JVM25 và cấu hình Android App `app`
-chuẩn; không thêm before-run task tùy chỉnh.
-
-Backend JavaScript/MySQL chạy trong phiên terminal bền vững riêng. Cấu hình
-URL chung nằm ở `gradle.properties`, biến `BACKEND_BASE_URL`; giá trị hiện tại
-là IPv4 Windows người dùng cung cấp. Không dùng biến M0 `PUBLIC_BASE_URL` cũ.
-Đặt `backend/.env` và tạo database/user MySQL theo [README backend](../backend/README.md):
+Sau khi APK đã cài xong và không cài/cập nhật lại trong lúc probe chạy:
 
 ```bash
-cd /workspace/green_farm3/backend
-npm ci
-npm run migrate
-npm start
+python3 tools/run_game_save_probe.py --serial emulator-5554 --timeout 60 \
+  --output /workspace/.greenfarm/sqlite-probe.json
 ```
 
-Kiểm tra `/health` từ host và emulator bằng cùng IPv4 cấu hình. Listener mặc
-định `0.0.0.0:8787`; kiểm tra MySQL/schema trước khi listen, lỗi thì thoát mã1.
-Nếu DB mất sẵn sàng sau khi đã chạy, trả503 và không fallback RAM. Đổi URL phải
-build/cài lại APK. Accounts, access/refresh session và compliance lưu MySQL;
-farm vẫn lưu RMS gốc trên thiết bị. Facebook, cloud farm save và các dịch vụ
-phụ legacy chưa hoàn tất, nên chưa khẳng định toàn bộ game độc lập khỏi Gameloft.
-APK hoàn chỉnh không tự khởi động backend. Installer/start_skill revision4 dưới
-đây được lưu trước mốc MySQL; dùng hướng dẫn backend trong repository cho bước
-database/server mới, không lặp lại lệnh PUBLIC_BASE_URL cũ trong snapshot.
+Probe dùng SQLite Android thật, fixture riêng, không mở database người chơi.
+Robolectric host test cần Maven mirror `gcp.mirrors.maven.org`; rule đã lưu vào
+network draft nhưng runtime chưa áp dụng, dependency đó nhận403. Không coi host
+SQLite suite đã chạy thành công; dùng native probe và ghi kết quả riêng.
 
-Trong lượt kiểm thử LAN/MySQL trên cloud, database dùng container MySQL riêng,
-named volume giữ dữ liệu và credential ở `.local/` không commit. Endpoint test
-cloud được override bằng chính `BACKEND_BASE_URL`; không ghi IP cloud vào cấu
-hình Windows của người dùng. Xem [checkpoint LAN/MySQL](backend/LAN_MYSQL_CHECKPOINT.md).
-
-## Kiểm chứng và giới hạn
-
-Installer JDK25 chạy lại hai lần thành công. Wrapper báo Gradle9.7.1,
-launcher JVM25 và daemon criteria25; APK/DEX gốc khớp pin, thư viện host emulator
-được phân giải bằng đường dẫn thư viện đi kèm launcher. Hash của file Wrapper,
-daemon criteria, khóa debug và cấu hình AVD không đổi sau lượt chạy lặp lại.
-Log/proof được giữ tại:
-
-- `/workspace/tooling/setup-greenfarm-jdk25-repeat.log`
-- `/workspace/tooling/setup-greenfarm-jdk25-verification.json`
-
-Kiểm chứng ứng dụng là phần riêng: **117 test đạt, không skip** (104 test phục
-hồi/đóng gói/runtime và13 test resource); assemble/install thực tế thành công và
-APK chuẩn đã khởi động tới UI game trên API28. Xem
-[APP_BUILD_AND_STARTUP.md](APP_BUILD_AND_STARTUP.md) cùng artifact/log được dẫn
-ở đó. Phần cập nhật cấu hình môi trường không chạy lại build hoặc GUI; không có
-tuyên bố đã bấm Run trực tiếp trong Android Studio Windows. Chưa xác nhận toàn
-bộ gameplay/save-load, đăng nhập Facebook, âm thanh hoặc Android mới.
-
-## Cấu hình nháp đã lưu, runtime chưa áp dụng
-
-Tool `update_environment_config_draft` trả `status: saved` và
-`requires_publish: true`. Đọc lại xác nhận **revision4** chứa đúng toàn bộ nội dung
-`install_script` và `start_skill` đã chuẩn bị. Danh sách repository hiện có được
-giữ nguyên; secrets/runtime requirements không đổi. Network vẫn `restricted`,
-giữ preset `package_managers`, không có custom rule. Rule truy cập vendor từ
-workflow cũ đã được gỡ ở revision3; workflow local hiện tại không cần rule đó.
-
-Đây là kết quả lưu cấu hình thành công, thay cho lỗi `INVALID_ARGUMENT` ở lần
-onboarding trước. Không có kết quả chứng minh đã publish hoặc khôi phục một máy
-mới. Người dùng cần review và save thay đổi trong environment settings, sau đó
-publish môi trường khi giao diện cho phép.
-
-Runtime quản lý vẫn báo spec/observed revision1, policy `enforced`,
-`observations_current: true`, danh sách host tùy chỉnh rỗng. Trạng thái này khác
-với việc file/toolchain trong instance đã được chuẩn bị và kiểm tra trực tiếp;
-nó không xác nhận đã áp dụng hoặc publish draft revision4. Các tiến trình đang
-chạy không được bảo đảm tồn tại khi khôi phục snapshot.
+Các tiến trình không được bảo đảm tồn tại sau restore cloud. MySQL/backend cũ
+đã dừng; volume/credential riêng không bị xóa. Xem
+[OFFLINE_IMPLEMENTATION.md](OFFLINE_IMPLEMENTATION.md) để biết sửa lỗi và giới
+hạn kiểm thử hiện tại.

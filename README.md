@@ -1,111 +1,82 @@
-# Green Farm 3
+# Green Farm 3 — lưu cục bộ
 
-Project hiện có một module ứng dụng Android: **`app`**. Mở thư mục project
-(`D:\green_farm3` trên Windows), Sync Gradle, chọn cấu hình **Android App `app`**,
-chọn máy ảo/điện thoại rồi bấm **Run**.
+Ứng dụng Android có một module `app`, namespace/application ID
+`com.quanhoang.greenfarm3`. Tiến trình nông trại được lưu bằng SQLite trên thiết
+bị; không cần tài khoản, Firebase, MySQL, Node.js hoặc backend để chạy game.
+APK chính không có quyền Internet, truy cập trạng thái mạng hoặc billing.
 
-Application ID và namespace chính hiện là **`com.quanhoang.greenfarm3`**.
-Ứng dụng mới có bộ nhớ riêng; chuyển tiến trình từ bản cũ theo
-[hướng dẫn xuất/nhập save](docs/SAVE_TRANSFER_KOTLIN.md), dùng đúng khóa ký của bản
-cũ cho APK cầu nối. Không gỡ bản cũ trước khi kiểm tra bản nhập.
+## Build và chạy
 
-Pipeline chuẩn khôi phục resource, biên dịch Java/Kotlin được chọn và các helper,
-ghép runtime DEX còn lại, đổi package/symbol có kiểm chứng, cập nhật metadata
-kích thước DEX, ký và kiểm tra APK. AGP cung cấp đúng
-APK hoàn chỉnh cho `assembleDebug`, `installDebug` và Android Studio; APK trung
-gian nằm riêng trong `intermediates`, không dùng để cài.
+Giữ toolchain đã ghim: Gradle 9.7.1 (checksum trong wrapper), JDK 25, AGP 8.10.1,
+Kotlin 2.4.21, Android SDK Platform 28, Build Tools 35.0.0, Python 3.10+.
 
-```powershell
-.\gradlew.bat :app:assembleDebug
-.\gradlew.bat :app:installDebug
+```sh
+./gradlew :app:assembleDebug -PpythonExecutable=python3
+./gradlew :app:installDebug
 ```
 
-APK chuẩn: `app/build/outputs/apk/debug/app-debug.apk`.
-Bản APK debug đã build để tải nằm trong [artifacts/](artifacts/README.md).
-Không cần module `core-source`, task recovered riêng, cấu hình Run recovered
-hoặc cài APK thủ công. Không sửa file trong `app/build/generated`; sửa code
-gốc ở `app/src/main/java/com/quanhoang/greenfarm3` và
-`app/src/main/kotlin/com/quanhoang/greenfarm3`.
+Trên Windows dùng `gradlew.bat`. Android Studio dùng cấu hình Android App `app`.
+APK hoàn chỉnh duy nhất là `app/build/outputs/apk/debug/app-debug.apk`.
+Không cài APK carrier trong `intermediates`; không có variant APK offline riêng.
 
-Giữ các phiên bản bạn đã cập nhật: Gradle9.7.1 có checksum, JDK25 theo daemon
-criteria, AGP8.10.1; thêm Kotlin2.4.21/JVM8. Cần SDK Platform28,
-Build Tools35.0.0 và Python3.10+.
-Trên Windows mặc định dùng `python`; có thể đặt `pythonExecutable` trong Gradle
-properties nếu Python nằm ở đường dẫn khác. Script chạy UTF-8 và gọi JDK/SDK
-bằng argument array, hỗ trợ đường dẫn có khoảng trắng. Khóa debug nằm trong
-`.local/`, không commit và không bị `clean` xóa. Release chưa bật trong pipeline
-nghiên cứu này.
+Pipeline hiện tại biên dịch source, ghép phần runtime gốc chưa khôi phục,
+đổi namespace, loại Firebase/measurement và vô hiệu các cầu nối online còn cần
+cho ABI của wrapper, cập nhật metadata kích thước DEX rồi ký/xác minh APK.
+`tools/package_game.py` từ chối đóng gói nếu còn quyền Internet, Firebase provider,
+Firebase class/cấu hình. Toàn bộ asset và native library được đối chiếu byte/hash
+với APK gốc; bước loại SDK kiểm tra lại semantics của gameplay/storage đã ghép.
 
-Địa chỉ backend của app và các URL discovery dùng chung **một biến** trong
-`gradle.properties` ở thư mục gốc:
+`green-farm-3.apk` là đầu vào nghiên cứu bất biến, được kiểm SHA-256; nó không
+phải bản APK để phân phối. SDK online trong archive gốc không được đưa nguyên
+vẹn vào sản phẩm cuối. Không sửa `app/build/generated`; sửa source gốc trong
+`app/src/main/java/com/quanhoang/greenfarm3` và `app/src/main/kotlin/com/quanhoang/greenfarm3`.
 
-```properties
-BACKEND_BASE_URL=http://10.37.233.55:8787/
+## Dữ liệu và tài nguyên
+
+SQLite `greenfarm-progress.db`, schema 4, nằm ở đường dẫn Android do application
+context cấp (`getDatabasePath`). Không đổi application ID, codec hay tên bản lưu;
+không xóa/reset database cũ. Header, gameplay, farm, reward và pose được ghi trong
+snapshot transaction; settings và các record RMS khác dùng cùng writer.
+
+Writer tuần tự giữ snapshot tuyệt đối, debounce 500 ms, giới hạn chờ 2 giây/50
+thay đổi, retry có giới hạn, WAL và synchronous FULL. Pause gửi checkpoint trước
+khi renderer dừng; thoát có kiểm soát phải đợi ghi bền vững trước khi dọn world
+hoặc kết thúc process. OS force-stop vẫn có thể mất những thay đổi chưa commit;
+không có callback Android nào bảo đảm cứu RAM sau khi process đã bị kill.
+Lỗi đọc giữ nguyên bản lưu và chặn tạo farm mới; lỗi ghi giữ snapshot để thử lại.
+
+Pack thiết yếu và 14 locale có trong `assets/800x480/`. Loader mở trực tiếp từ
+APK bằng application AssetManager, không phụ thuộc tiền tố độ phân giải/cache
+wrapper, OBB hoặc máy chủ. Lỗi ghi rõ path/stage/index, giữ bước tải để retry.
+
+Chuyển save giữa hai application ID bằng [hướng dẫn xuất/nhập](docs/SAVE_TRANSFER_KOTLIN.md).
+Không gỡ bản cũ trước khi kiểm tra bản nhập. Bản cầu nối phải dùng khóa ký cũ.
+
+## Kiểm thử
+
+```sh
+python3 -m unittest discover -v -s tests
+python3 -m unittest discover -s tools -p 'test_*.py'
+./gradlew :app:assembleDebug
+./gradlew -p tests/sqlite-host test
 ```
 
-Đây là IPv4 Windows bạn đã cung cấp. Đổi IP/port phải sửa biến này, khởi động
-lại backend, **build và cài lại APK**. Không có fallback localhost/`10.0.2.2`;
-không dùng `localBackendUrl` nữa. Backend đọc trực tiếp cùng file properties.
+Host SQLite dùng JDK/JRE 21 launcher; có thể đặt `GREENFARM_TEST_JAVA`.
+Nếu cần, đặt `GREENFARM_ORIGINAL_JAR` đến
+`.local/bytecode-tools/greenfarm-original.jar` do `prepareCoreDependencies` tạo
+để bật các differential test. Kiểm thử native SQLite trực tiếp với APK debug
+đã cài trên Android:
 
-Backend dùng JavaScript ES Modules, Node.js 24+ và MySQL 8.0/8.4. Tạo database/
-user MySQL và cấu hình mật khẩu riêng theo [hướng dẫn backend](backend/README.md),
-sau đó chạy trong PowerShell:
-
-```powershell
-cd backend
-npm ci
-Copy-Item .env.example .env
-# Sửa .env: DB_* và RESEARCH_SESSION_SECRET riêng, ổn định qua restart.
-npm run migrate
-npm start
-# Khi phát triển: npm run dev
+```sh
+python3 tools/run_game_save_probe.py --serial emulator-5554 --timeout 60
 ```
 
-Listener mặc định `HOST=0.0.0.0`, `PORT=8787`. App chỉ gọi HTTP; tài khoản MySQL
-chỉ ở `backend/.env`, không nằm trong APK. Kiểm tra từ Windows **và** emulator:
-`http://10.37.233.55:8787/health`. Backend kiểm tra MySQL/schema trước khi mở
-cổng; lỗi thì báo rõ và thoát mã 1. Nếu DB mất kết nối sau khi đã chạy, endpoint
-trả 503, không chuyển sang RAM/JSON. Hướng dẫn lấy IPv4, migration
-và rule Windows Firewall đúng cổng nằm trong README backend.
+Probe chỉ dùng `files/sqlite-probe-<fixture>`, không mở database người chơi;
+không tạo variant game hoặc thay helper trong APK bằng implementation test.
+Bộ kiểm tra này không thay thế thao tác trồng/thu hoạch trên UI.
 
-Tài khoản anonymous, access/refresh session và compliance hiện được lưu vào
-MySQL. Gameplay/save nông trại chuyển sang SQLite bền vững trên thiết bị
-(`greenfarm-progress.db`, schema 4), tự tạo/migration và nhập RMS cũ có CRC hợp lệ.
-Snapshot giữ codec gốc, gồm tutorial, quest, kho, farm, timestamp, thưởng đang chờ
-và hướng sprite. Snapshot tại cuối frame được gom500/2000ms (debounce/max wait, tối đa50 dấu thay đổi) rồi ghi bằng một
-worker SQLite; lỗi đọc dừng tải, lỗi ghi giữ snapshot chờ và retry có kiểm soát. Đặt/di chuyển có ✓/✕, preview không được lưu như vị trí đã
-xác nhận. Chưa triển khai cloud farm save hoặc Facebook Connect mới.
-
-[Báo cáo ổn định tải tài nguyên và bắt buộc restart ngôn ngữ](docs/REOPEN_STABILITY_REPORT.md).
-
-[Báo cáo dọn dẹp, SQLite, icon và ngôn ngữ](docs/MAINTENANCE_REPORT.md).
-
-[Checkpoint hiện tại: Kotlin, package và chuyển save](docs/KOTLIN_MIGRATION_CHECKPOINT.md).
-Đã chuyển **99 file Kotlin**, trong đó 83 lớp thuộc namespace game gốc;
-**28 lớp Java** vẫn chứa logic thật và **125 lớp tích hợp** còn lấy từ DEX gốc.
-Toàn bộ 110 lớp lõi có bản biên dịch từ source (82 Kotlin/28 Java).
-Đây chưa phải toàn bộ game Kotlin hoặc build độc lập hoàn toàn khỏi APK gốc.
-[Kiểm kê từng lớp/native](docs/KOTLIN_DEPENDENCY_INVENTORY.md) và
-[bảng đổi tên có bằng chứng](docs/VERIFIED_GAME_NAMES.md).
-
-[Checkpoint lưu nền trước Kotlin](docs/ASYNC_GAMEPLAY_CHECKPOINT.md).
-Đã bỏ nhãn lưu thông thường và phần đề cử Trò chơi+/Welcome cross-promotion.
-Đổi ngôn ngữ chờ lưu thành công rồi hiện popup game với nội dung/font theo ngôn ngữ vừa chọn và chỉ có nút Khởi động lại;
-trong tutorial, phím Menu Android mở màn hình Options hiện có. Không reset farm.
-Lần kiểm tra hiện tại: 138/153 bài host đạt (15 bỏ qua), 20 bài công cụ và 9 bài
-SQLite host đạt; APK debug build, chữ ký và alignment đều hợp lệ. Chưa xác minh
-UI/gameplay trên Android thực tế; xem báo cáo ổn định mới để biết phạm vi.
-Bài tải cùng100snapshot tổng hợp giảm100→6commit; đây không phải100thu hoạch/FPS.
-Các mốc UI và phần chưa xác minh ghi rõ trong checkpoint, không coi unit/build là
-kiểm thử gameplay toàn bộ. [Lịch sử SQLite](docs/SQLITE_PROGRESS_RECOVERY.md).
-
-[Kết quả hợp nhất và sửa crash khởi động](docs/APP_BUILD_AND_STARTUP.md).
-[Thư mục ghép APK và chẩn đoán lỗi build Windows](docs/WINDOWS_APK_MERGE_PATHS.md).
-[Kiểm kê giao thức LAN/MySQL](docs/backend/LAN_PROTOCOL_AUDIT.md).
-M0 từng vượt Accept và mở farm tutorial; chưa xác nhận đầy đủ thao tác farm,
-save/load, đăng nhập Facebook, âm thanh hoặc Android mới. Các báo cáo recovered
-cũ được giữ làm lịch sử checkpoint, không còn là hướng dẫn build hiện tại.
-
-[Kiến trúc backend](docs/backend/ARCHITECTURE.md) ·
-[Mốc M0](docs/backend/M0_CHECKPOINT.md) ·
-[Dữ liệu gốc](docs/original-payload.sha256).
+Phạm vi thay đổi, nguyên nhân lỗi và kết quả thực chạy được ghi tại
+[OFFLINE_IMPLEMENTATION.md](docs/OFFLINE_IMPLEMENTATION.md).
+Tài liệu trong `docs/backend/` và các checkpoint cũ là lịch sử kiến trúc trước
+chuyển đổi, không phải hướng dẫn khởi động hiện tại. Mã backend, cấu hình URL
+backend và bước patch endpoint đã được loại khỏi workflow chính.

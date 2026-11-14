@@ -147,13 +147,11 @@
     <public type="layout" name="progress_dialog" id="0x7f04001a" />
     <public type="layout" name="softkeyboardactivity" id="0x7f04001b" />
     <public type="layout" name="webview" id="0x7f04001c" />
-    <public type="xml" name="network_security_config" id="0x7f050000" />
     <public type="xml" name="provider_paths" id="0x7f050001" />
     <public type="raw" name="adsmanager_revision" id="0x7f060000" />
     <public type="raw" name="color_profile" id="0x7f060001" />
     <public type="raw" name="content" id="0x7f060002" />
     <public type="raw" name="crc" id="0x7f060003" />
-    <public type="raw" name="google_services" id="0x7f060004" />
     <public type="raw" name="pbkey" id="0x7f060005" />
     <public type="raw" name="serialkey" id="0x7f060006" />
     <public type="string" name="cs_title" id="0x7f070000" />
@@ -1388,16 +1386,6 @@
     <public type="string" name="GP_DESCRIPTION_ALLOW_NEW_SC" id="0x7f0704cd" />
     <public type="string" name="GP_DESCRIPTION_ALLOW_NEW_ES_LATAM" id="0x7f0704ce" />
     <public type="string" name="GP_DESCRIPTION_ALLOW_NEW_CN" id="0x7f0704cf" />
-    <public type="string" name="default_web_client_id" id="0x7f0704d0" />
-    <public type="string" name="firebase_database_url" id="0x7f0704d1" />
-    <public type="string" name="gcm_defaultSenderId" id="0x7f0704d2" />
-    <public type="string" name="google_api_key" id="0x7f0704d3" />
-    <public type="string" name="google_app_id" id="0x7f0704d4" />
-    <public type="string" name="google_crash_reporting_api_key" id="0x7f0704d5" />
-    <public type="string" name="google_storage_bucket" id="0x7f0704d6" />
-    <public type="string" name="project_id" id="0x7f0704d7" />
-    <public type="string" name="game_api_app_id" id="0x7f0704d8" />
-    <public type="string" name="game_api_server_client_id" id="0x7f0704d9" />
     <public type="string" name="gamehelper_sign_in_failed" id="0x7f0704da" />
     <public type="string" name="gamehelper_app_misconfigured" id="0x7f0704db" />
     <public type="string" name="gamehelper_license_failed" id="0x7f0704dc" />

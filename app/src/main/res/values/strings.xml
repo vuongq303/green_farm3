@@ -1232,16 +1232,6 @@
     <string name="GP_DESCRIPTION_ALLOW_NEW_SC">请开启此权限，以便使游戏正常运行。</string>
     <string name="GP_DESCRIPTION_ALLOW_NEW_ES_LATAM">Por favor, activa el permiso para que el juego funcione correctamente.</string>
     <string name="GP_DESCRIPTION_ALLOW_NEW_CN">請開放此權限以確保遊戲能正常運作。</string>
-    <string name="default_web_client_id">387391152443-v1d8o2d5imlcu3etqo2uqr9qlc0fkbb9.apps.googleusercontent.com</string>
-    <string name="firebase_database_url">https://green-farm-3.firebaseio.com</string>
-    <string name="gcm_defaultSenderId">387391152443</string>
-    <string name="google_api_key">AIzaSyCecq8WYRVNxMldj5_Jv9poVRKZWquLfMc</string>
-    <string name="google_app_id">1:387391152443:android:27ab5963c70b5bc531971e</string>
-    <string name="google_crash_reporting_api_key">AIzaSyCecq8WYRVNxMldj5_Jv9poVRKZWquLfMc</string>
-    <string name="google_storage_bucket">green-farm-3.appspot.com</string>
-    <string name="project_id">green-farm-3</string>
-    <string name="game_api_app_id">900066602434</string>
-    <string name="game_api_server_client_id">900066602434-2paa223tce4lbgoim20o0ll881lfdn7g.apps.googleusercontent.com</string>
     <string name="gamehelper_sign_in_failed">Failed to sign in. Please check your network connection and try again.</string>
     <string name="gamehelper_app_misconfigured">The application is incorrectly configured. Check that the package name and signing certificate match the client ID created in Developer Console. Also, if the application is not yet published, check that the account you are trying to sign in with is listed as a tester account. See logs for more information.</string>
     <string name="gamehelper_license_failed">License check failed.</string>

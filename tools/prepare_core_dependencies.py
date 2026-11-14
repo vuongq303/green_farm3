@@ -41,7 +41,6 @@ SYMBOL_CLASS_NAMES = {'FarmGameEngine': 'ci', 'FarmEntity': 'ch', 'GameRuntime':
 RESOURCE_CLASSES = (
     'com/gameloft/android/ANMP/GloftGF2F/R', 'com/facebook/R',
     'com/google/android/gms/ads/R', 'com/google/android/gms/ads/impl/R',
-    'com/google/firebase/messaging/R',
 )
 CONVERSION_ERROR = re.compile(r'\b(?:errors?|exceptions?|failed|failure)\b|[\w.$]+(?:Exception|Error)\b', re.I)
 

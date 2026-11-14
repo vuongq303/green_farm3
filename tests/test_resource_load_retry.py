@@ -50,6 +50,7 @@ public class LoadRetryProbe {
   reset();FarmGameEngine.failures=1;FarmGameEngine.qV();SystemClock.now=250;FarmGameEngine.qV();check(FarmGameEngine.asj==1,"temporary failure could not recover");
   reset();FarmGameEngine.ash[0]=48;FarmGameEngine.failures=1;FarmGameEngine.unknown=true;FarmGameEngine.qV();check(FarmGameEngine.asj==1,"optional tracking failure blocked game");
   reset();FarmGameEngine.ash[0]=127;FarmGameEngine.failures=1;FarmGameEngine.qV();check(FarmGameEngine.asj==0,"optional SDK phase swallowed real resource error");
+  reset();FarmGameEngine.ash[0]=50;FarmGameEngine.aND="";FarmGameEngine.qV();check(FarmGameEngine.asj==1,"offline loader waited for a server payload");
   for(int reopen=0;reopen<5;reopen++){reset();FarmGameEngine.qV();FarmGameEngine.qV();check(FarmGameEngine.asm,"subsequent startup inherited blocked state");}
   System.out.println("PASS resource-step gating: no false readiness, backoff/3 attempts, manual retry, SQLite isolation, five new pipelines");
  }

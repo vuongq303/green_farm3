@@ -1,0 +1,66 @@
+.............................................................................s......................................................{
+  "property": "REVISION-2408",
+  "original_dex_bytes": 7655124,
+  "rebuilt_dex_bytes": 7655247,
+  "original_revision": 7792744,
+  "rebuilt_revision": 7793139,
+  "size_xor": 140988,
+  "original_metadata_sha256": "58defca307864d420d0f7a32029407a7f56aebe7d1dce26bbe9c93602a082d9e",
+  "generated_metadata_sha256": "128e6345fd982c5060e5c7acb43c171d2d239e81bc57b2db871c23a5fdbc3e00",
+  "other_definition_bytes_preserved": true,
+  "original_guard_accepts_generated_revision": true
+}
+.......Resolved 4 Java source files; dry-run only
+Resolved 4 Java source files; applied
+..............
+----------------------------------------------------------------------
+Ran 153 tests in 353.633s
+
+OK (skipped=1)
+800 decoder cases across 13 formats and row strides; 1200 text layout cases; 12 IO exception checks match original bytecode.
+PASS policy: 500ms debounce, 2000ms continuous-change cap, 50 operations and reset
+PASS lifecycle: interrupted/timeout wait preserves pending data; close only succeeds after completion
+PASS bounded retry: five attempts, retained snapshot, no automatic retry loop, explicit recovery
+PASS checkpoint: failure completes once, no automatic canceled-language retry, explicit old-language recovery persists
+PASS retry: first failure retained, no partial publish, newer absolute values survive one atomic retry
+PASS coalescing: blocked A, one pending B/C, one active writer, A cannot acknowledge B/C, close retains work
+Built binary baseline: /tmp/tmpq14x7g9b/debug output/app-debug.apk; 4 DEX/assets/native entries unchanged.
+PASS 20000 objective predicates, 10000 progress traces, 1000 completion traces match original bytecode
+5000 CI numeric-prefix cases and 2000 CI Arabic cases match original bytecode.
+PASS: 576 original/recovered selection, first-match continuation and failure outcomes match
+PASS: 432 original/recovered startup continuation traces, values and throwable identities match
+PASS: 31 rendering overload pairs across six current classes preserve original float targets and exclude conflicting integer targets
+PASS entity transforms, original reversed allocation/grid codec, duplicate occurrences, aaN vs aaR, malformed/mismatch atomicity and retry
+PASS original FarmGameEngine.c/FarmGameEngine.s building codec, FarmEntity.d initializer, periodic FarmEntity.pf allocation and FarmEntity.mg restore hook
+PASS native GUI4 setup/input, idle frames, exactly-once decisions, Back/Later, durable compensation barrier, 14 locales
+PASS: both compiled draw paths match original texture descriptors; lost-cast mutations select the pointer overload
+PASS 1/10/50/100 mixed item effects: original atlas/frame, icon + quantity render, no fallback
+PASS accepted inventory debit bypasses debounce; ordinary pickups batch; rejected operations do not save
+PASS 37276 original-bytecode comparisons: hash/RNG, guarded values, linked hash, arrays/nulls, reward dispatch, callbacks/privacy/event queue, constants and fixedpoint
+PASS medium Kotlin differential matrix ed3e72037f28b8c54fb865d048bef2f293ffdb60a088d75fec147cf12591c8f7
+PASS medium Kotlin differential random b35f9ef5f2b8487d3ad0f46ef36fd02484ff8408b6d4cb8da3107e7e34dcb055
+PASS medium Kotlin differential cloud f8ca7cb4f26c37fd7736af7020451e02db13fca88895bdc31dd90277111cafd7
+PASS medium Kotlin differential profiler d175c7dfe28c7f27dbc2cfcd85e4da2bb5f4fefedfd0102bd92f5ad761ace8da
+PASS medium Kotlin differential tables 118e1f38c49cfd8dc33e706bfb2ebce4e2e6988ef11db58e5bbbd16e83a3b6ca
+PASS medium Kotlin differential ads ecf46938b228574ba3ab504cd4eec3f1e620b56a66d24fce02269d5bd4b6bc30
+PASS selected VI/TH/JP/KR and Latin fonts, atomic publication, retained owners, valid cache reuse, released-cache reload, bounded retry and pack restoration
+PASS: 8091 identity/reset/render/listener checks; hitboxes, currency controls and stale states verified
+PASS: 336 actual resume/farm entry neighborhoods; no Welcome promotion, shared calls retained
+PASS pending reward snapshots, original settlement once, cold load, chest stage, malformed records, rollback and retry
+PASS cold no-writer lifecycle flush: engine class was not initialized without MIDlet
+PASS 1/10/50/100 accepted-state batches, critical debit bypass and nonblocking lifecycle capture
+PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff
+PASS resource-step gating: no false readiness, backoff/3 attempts, manual retry, SQLite isolation, five new pipelines
+PASS EOF and stream errors fail without partial payload or infinite read loop
+PASS failed/stale GL callbacks cannot tear down retry; normal active-owner lifecycle preserved
+PASS MIME cache publishes atomically, retains valid entries and preserves unrelated pack cursor
+PASS missing/partial header failures invalidate only the failed open and allow same-name recovery
+PASS shared pack operations respect the session monitor
+PASS 1504 forward/reverse shipped records, segmented packs, repeat-open cache and reopen
+PASS zero-progress bulk read and skip complete without spinning
+PASS: 18432 original/recovered animation and module transform/effect call traces match
+PASS: 7392 original/recovered multiline anchor, clipping, range and style outcomes match
+PASS: 5760 original/recovered grayscale, tint, base-color, alpha and target outcomes match
+PASS bootstrap: SQLite barrier, constructor/Init rollback, fresh retry, repeated resume, concurrent MIDlets
+PASS layout-ready resume; cold callback elapsed_us=2
+PASS tutorial condition, modal ownership, stale callback, rapid gesture and speech input checks

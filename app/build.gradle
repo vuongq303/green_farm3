@@ -1,7 +1,6 @@
 import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.ScopedArtifacts
-import greenfarm.BackendBaseUrl
 import greenfarm.MergeOriginalSdkApk
 import greenfarm.PrepareDebugSigningKey
 
@@ -19,11 +18,6 @@ def greenFarmExecServices = objects.newInstance(GreenFarmExecServices)
 def windows = System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')
 def pythonCommand = providers.gradleProperty('pythonExecutable').orElse(windows ? 'python' : 'python3')
 def debugKeystore = rootProject.layout.projectDirectory.file('.local/baseline-debug.keystore')
-if (providers.gradleProperty('localBackendUrl').isPresent()) {
-    throw new GradleException('localBackendUrl is no longer supported. Set only BACKEND_BASE_URL in the root gradle.properties.')
-}
-def backendBaseUrl = providers.gradleProperty('BACKEND_BASE_URL').orElse('')
-        .map { BackendBaseUrl.normalize(it) }
 def gameNamespace = 'com.quanhoang.greenfarm3'
 def legacyApplicationId = 'com.gameloft.android.ANMP.GloftGF2F'
 def legacyExport = providers.gradleProperty('greenfarmLegacyExport').map { value ->
@@ -214,7 +208,7 @@ tasks.matching { it.name == 'validateSigningDebug' }.configureEach {
 
 def compileDexMergeTool = tasks.register('compileDexMergeTool', JavaCompile) {
     source rootProject.file('tools/MergeCoreDex.java')
-    source rootProject.file('tools/PatchBackendEndpoint.java')
+    source rootProject.file('tools/RemoveOnlineServices.java')
     source rootProject.file('tools/RelocateGamePackage.java')
     classpath = configurations.dexMergeTool
     destinationDirectory = layout.buildDirectory.dir('dex-merge-tool')
@@ -238,7 +232,6 @@ androidComponents {
             sdkDirectory.set(android.sdkDirectory)
             workDirectory.set(layout.buildDirectory.dir("intermediates/original-sdk-merge/${variant.name}"))
             pythonExecutable.set(pythonCommand)
-            backendUrl.set(backendBaseUrl)
             applicationId.set(variant.applicationId)
             gamePackage.set(gameNamespace)
             mergeToolClasspath.from(configurations.dexMergeTool,
@@ -255,7 +248,8 @@ androidComponents {
                     "build-tools/35.0.0/${windows ? 'zipalign.exe' : 'zipalign'}"))
             packagingSources.from(rootProject.files('tools/build_core_source.py',
                     'tools/prepare_core_dependencies.py',
-                    'tools/build_binary_baseline.py', 'tools/build_local_backend.py',
+                    'tools/build_binary_baseline.py', 'tools/package_game.py',
+                    'tools/RemoveOnlineServices.java',
                     'tools/UpdateBuildRevision.java', 'tools/verify_runtime_apk.py'))
             packagingSources.from(rootProject.fileTree('tools') { include '*build_tools.py' })
             buildToolsFiles.from(new File(android.sdkDirectory, "build-tools/35.0.0/${windows ? 'zipalign.exe' : 'zipalign'}"),

@@ -8,6 +8,7 @@ import com.gameloft.android.wrapper.au as WrapperDeviceContext
 
 /** Original MIDlet entry points; JVM names are required by the wrapper runtime. */
 open class GloftGF2F : MIDlet() {
+    @Volatile private var shutdownComplete = false
     init { acx = this }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -72,14 +73,22 @@ open class GloftGF2F : MIDlet() {
     public override fun mk() { acw?.Pause() }
 
     public override fun al(unconditional: Boolean) {
-        if (acw == null) return
-        FarmGameEngine.HH()
-        FarmGameEngine.EZ()
-        FarmGameEngine.Ms()
-        FarmGameEngine.rE()
-        if (!ProgressSaveController.flushForLifecycle()) return
-        GameRuntime.be("GLLib.quit")
-        GameRuntime.Qn = -1
+        if (shutdownComplete || acx !== this || acw == null) return
+        synchronized(FarmGameEngine::class.java) {
+            if (shutdownComplete || acx !== this || acw == null) return
+            // Capture while actors/commands still exist. Teardown before this
+            // barrier can serialize an already-cleared world on normal exit.
+            FarmGameEngine.rE()
+            if (!ProgressSaveController.flushForLifecycle()) return
+            // MIDlet can call destroyApp from both quit and onDestroy. Once
+            // committed, no later callback may capture the cleared world.
+            ProgressSaveController.worldUnloaded()
+            FarmGameEngine.EZ()
+            GameRuntime.be("GLLib.quit")
+            GameRuntime.Qn = -1
+            shutdownComplete = true
+            acw = null
+        }
     }
 
     companion object {

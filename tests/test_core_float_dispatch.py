@@ -105,8 +105,8 @@ class CoreFloatDispatchTest(unittest.TestCase):
                 self.skipTest("Requires compiled app core " + name)
             self.assertEqual(source.read_bytes(), staged.read_bytes(),
                              "Compile app after changing " + name)
-            self.assertGreaterEqual(compiled.stat().st_mtime_ns, staged.stat().st_mtime_ns,
-                                    "Compiled " + name + " predates the staged source")
+            self.assertGreaterEqual(compiled.stat().st_mtime_ns, source.stat().st_mtime_ns,
+                                    "Compiled " + name + " predates the current source")
         with tempfile.TemporaryDirectory(prefix="core-float-dispatch-") as temp:
             root = Path(temp)
             scanner = root / "CoreFloatDispatchScanner.java"

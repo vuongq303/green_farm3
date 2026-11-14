@@ -18,6 +18,7 @@ import com.quanhoang.greenfarm3.migration.SaveTransferActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import com.quanhoang.greenfarm3.S800x480.ProgressSaveController
 
 /** Android launcher configuration recovered from the original Start bytecode. */
 open class Start : BaseActivity() {
@@ -55,7 +56,7 @@ open class Start : BaseActivity() {
         MIDlet.coq = true
         MIDlet.cnH = true
         MIDlet.cnJ = false
-        MIDlet.cnR = false
+        MIDlet.cnR = true
         MIDlet.coL = 5
         com.gameloft.android.wrapper.d.beL = false
         com.gameloft.android.wrapper.d.beF = false
@@ -151,7 +152,12 @@ open class Start : BaseActivity() {
         startupView.post(bt(this))
     }
 
-    override fun onPause() = super.onPause()
+    override fun onPause() {
+        // Queue the final immutable snapshot before the wrapper pauses frames.
+        // SQLite remains on its single writer; no awaitIdle on the UI thread.
+        ProgressSaveController.requestLifecycleFlush()
+        super.onPause()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
@@ -194,12 +200,9 @@ open class Start : BaseActivity() {
     }
 
     override fun onDestroy() {
-        if (MIDlet.coi && MIDlet.cos) {
-            setResult(274)
-            finishActivity(274)
-            bx.ND()?.NF()
-            System.exit(0)
-        }
+        // The launcher may be destroyed while its MIDlet Activity is already
+        // running. Activity destruction is not a request to kill that game.
+        ProgressSaveController.requestLifecycleFlush()
         super.onDestroy()
     }
 

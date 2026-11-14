@@ -16,7 +16,6 @@ import com.gameloft.glads.AndroidWebView;
 import com.gameloft.glads.GLURLConnection;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.NativeContentAd;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.util.Calendar;
@@ -12561,6 +12560,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void Iq() {
+        // Reset the shared GUI layout before each dialog to avoid leaking the
+        // language dialog's single-action position into purchase/reward dialogs.
+        atc[4][15][2] = atd[4][15][2];
+        atc[4][18][2] = atd[4][18][2];
         int i;
         rb();
         aMM = 0;
@@ -12614,6 +12617,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         e(4, 0, (iQE == 18 || iQE == 19 || iQE == 36 || iQE == 37) ? false : true);
         e(1, 54, false);
         e(1, 55, false);
+        configureGameNotificationLayout();
     }
 
     static void Ir() {
@@ -16888,101 +16892,19 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void Ml() {
-        String lowerCase = GloftGF2F.acw.dr(aYU).toLowerCase();
-        if (lowerCase.indexOf("kr") != -1) {
-            lowerCase = "ko";
-        } else if (lowerCase.indexOf("jp") != -1) {
-            lowerCase = "ja";
-        } else if (lowerCase.indexOf("pt") != -1) {
-            lowerCase = "br";
-        } else if (lowerCase.indexOf("es") != -1 && aYU == 20) {
-            lowerCase = "le";
-        }
-        com.gameloft.a.a.o.VW().m(NativeContentAd.ASSET_HEADLINE, "InitialFeed.bin", lowerCase);
-        Mm();
+        // Retired CRM/advertising configuration; bundled gameplay needs no remote feed.
     }
 
     private static void Mm() {
-        int iMy = com.gameloft.a.a.o.VW().my();
-        while (iMy != 0 && iMy != 1) {
-            try {
-                iMy = com.gameloft.a.a.o.VW().my();
-                Thread.sleep(100L);
-            } catch (InterruptedException e) {
-            } catch (Exception e2) {
-            }
-        }
-        String str = "DEBUG CRM :: CRM Config: " + com.gameloft.a.a.o.VW().VX();
-        JSONObject jSONObjectVX = com.gameloft.a.a.o.VW().VX();
-        try {
-            JSONObject jSONObject = jSONObjectVX.getJSONObject("game_config");
-            String str2 = "DEBUG CRM :: check location==========================CRM game config==" + jSONObjectVX;
-            if (jSONObject != null) {
-                try {
-                    if (jSONObject.has("usePurpleButtonAds")) {
-                        String str3 = "DEBUG CRM :: usePurpleButtonAds :" + jSONObject.getBoolean("usePurpleButtonAds");
-                        aYy = jSONObject.getBoolean("usePurpleButtonAds");
-                    }
-                } catch (Exception e3) {
-                    e3.printStackTrace();
-                }
-                String str4 = "DEBUG CRM :: s_isPurpleAdsButton : " + aYy;
-            }
-        } catch (Exception e4) {
-            e4.printStackTrace();
-        }
-        try {
-            JSONObject jSONObject2 = new JSONObject(ao.ms().mI());
-            String str5 = "DEBUG CRM :: currentConfig...==" + jSONObject2;
-            if (jSONObject2 != null) {
-                try {
-                    String string = jSONObject2.has(aYA) ? jSONObject2.getJSONObject(aYA).toString() : "";
-                    String string2 = jSONObject2.has(aYB) ? jSONObject2.getJSONObject(aYB).toString() : "";
-                    if (AdsManager.IsAdsManagerInitialized() && !string.equals("") && !string2.equals("")) {
-                        String str6 = "#UpdateSettings AdsManager adsStr" + string;
-                        String str7 = "#UpdateSettings AdsManager gameStr" + string2;
-                        AdsManager.UpdateSettings(string, string2);
-                    } else if (!aYz && !AdsManager.IsAdsManagerInitialized() && !string.equals("") && !string2.equals("")) {
-                        String str8 = "#IsAdsManagerInitialized AdsManager adsStr" + string;
-                        String str9 = "#IsAdsManagerInitialized AdsManager gameStr" + string2;
-                        AdsManager.InitializeAdsManager(string, string2);
-                        aYz = true;
-                    }
-                } catch (Exception e5) {
-                    e5.printStackTrace();
-                }
-                String str10 = "DEBUG CRM :: s_isPurpleAdsButton : " + aYy;
-            }
-        } catch (Exception e6) {
-            e6.printStackTrace();
-        }
-        aYw = true;
+        // Retired CRM/advertising configuration; bundled gameplay needs no remote feed.
     }
 
     public static void Mn() {
-        if (!com.gameloft.a.a.o.VW().VY()) {
-            try {
-                Ml();
-            } catch (Exception e) {
-            }
-        }
-        boolean zEv = com.gameloft.a.a.o.VW().ev(2);
-        String str = "DEBUG CRM :: CRM refresh request add result: " + zEv;
-        Mm();
-        if (zEv) {
-            aYx = true;
-        }
+        // Retired CRM/advertising configuration; bundled gameplay needs no remote feed.
     }
 
     public static void Mo() {
-        if (com.gameloft.a.a.k.VR().fZ() && aYx) {
-            if (com.gameloft.a.a.o.VW().VY() && b.Jn) {
-                aYF = true;
-                String str = "THO DEBUG ADS :: check location==========================isCheckLocation" + aYF;
-                aYH = new Thread(new cp());
-                aYH.start();
-            }
-        }
+        // Retired CRM/advertising configuration; bundled gameplay needs no remote feed.
     }
 
     public static int Mp() {
@@ -18436,14 +18358,30 @@ public final class FarmGameEngine extends GameRuntime implements av {
         aMw = title;
         aMx = message;
         aMK = "";
-        e(4, 5, true);
-        e(4, 6, true);
-        e(4, 7, true);
+        e(4, 5, false);
+        e(4, 6, false);
+        e(4, 7, false);
         e(4, 13, true);
         e(4, 15, true);
         e(4, 16, GameNotification.canDismiss());
         T(7, 0, 10);
+        configureGameNotificationLayout();
         fE(20);
+    }
+
+    static void configureGameNotificationLayout() {
+        atc[4][15][2] = atd[4][15][2];
+        atc[4][18][2] = atd[4][18][2];
+        if (aML == 13 && GameNotification.negativeLabel().length() == 0) {
+            atc[4][15][2] = (short) ((atd[4][15][2] + atd[4][16][2]) / 2);
+            atc[4][18][2] = (short) ((atd[4][18][2] + atd[4][19][2]) / 2);
+            e(4, 16, false);
+            e(4, 19, false);
+            // GUI4's price/reward widgets are not part of a text notification.
+            e(4, 5, false);
+            e(4, 6, false);
+            e(4, 7, false);
+        }
     }
 
     static void a(String str, String str2, int i, int i2, boolean z) {
@@ -20628,6 +20566,23 @@ public final class FarmGameEngine extends GameRuntime implements av {
         return zAz;
     }
 
+    static String readLocalSaveBinding(byte[] payload, int offset) {
+        if (payload == null || offset < 0 || offset > payload.length - 4) {
+            throw new IllegalStateException("Saved gameplay binding header is truncated; original retained");
+        }
+        int length = l(payload, offset);
+        if (length < 0 || length > 1024 || offset + 4L + length > payload.length) {
+            throw new IllegalStateException("Saved gameplay binding length is invalid; original retained");
+        }
+        return new String(payload, offset + 4, length, java.nio.charset.Charset.forName("UTF-8"));
+    }
+
+    static String localSaveBindingForWrite() {
+        // Keep an imported/legacy binding as opaque codec metadata. New farms
+        // use a local marker, not a network account or hardware identifier.
+        return aCL == null || aCL.length() == 0 ? "device-local" : aCL;
+    }
+
     static boolean ax(boolean z) {
         byte[] bArrB;
         int i;
@@ -20667,20 +20622,11 @@ public final class FarmGameEngine extends GameRuntime implements av {
         int iL2 = (asM && asL == 100) ? 0 : 1;
         String str = "-------------------------------------------------------" + asM;
         if (!asM || asL >= 300) {
-            String strO = o(bArrB, iL2);
+            // This record has already passed the SQLite checksum and belongs
+            // to this app's local slot. SDK HDIDFV can change between process
+            // launches; it is not authority to reject/reset a local farm.
+            aCL = readLocalSaveBinding(bArrB, iL2);
             iL2 = iL2 + l(bArrB, iL2) + 4;
-            String str2 = "GetString after pos = " + iL2;
-            String str3 = "deviceId @@@@@@@@@@@@@@@= " + strO;
-            String str4 = "Federation.GetDeviceId() @@@@@@@@@@@@@@@= " + rl();
-            String str5 = "Federation.GetDeviceId() @@@@@@@@@@@@@@@= " + rl();
-            String strOs = com.gameloft.android.wrapper.au.Os();
-            if (!com.quanhoang.greenfarm3.migration.SaveTransferIdentity.matches(strO, "" + rl()) && !asP && strO.length() == strOs.length()) {
-                aPg = false;
-                aOM = false;
-                ro();
-                asq = true;
-                return false;
-            }
         }
         int i8 = iL2;
         boolean z2 = (z || j(bArrB, i8) == 0) ? false : true;
@@ -35297,13 +35243,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void jn() {
-        if (aps) {
-            return;
-        }
-        if (!s.jp()) {
-            String str = "#--------Federation ERROR: IsOnlineEnabled= " + s.jp();
-        }
-        new Thread(new cj()).start();
+        // The farm has a local identity/save. No Federation authorization job.
+        w.XY = false;
+        w.XZ = false;
     }
 
     static boolean jn(int i) {
@@ -41547,11 +41489,11 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static boolean qN() {
-        return s.jp();
+        return false;
     }
 
     public static boolean qO() {
-        return bx("isConnectedMobile") || bx("isConnectedWifi");
+        return false;
     }
 
     public static final void qP() {
@@ -41897,9 +41839,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if (asn) {
             String str2 = "s_loadingCurrentMultiStep :" + aso;
             aso++;
-            return;
-        }
-        if (ash[asj] == 50 && aND.equals("")) {
             return;
         }
         if (apC[apB] == 2 && apF <= 5000 && ash[asj + 1] == 45) {
@@ -52762,16 +52701,8 @@ public final class FarmGameEngine extends GameRuntime implements av {
             GameRuntime.Rm.setSeed(j);
         }
         jn();
-        s.aK("eveListDataCenters");
-        if (baf == null && rj() != null) {
-            String strBY = GloftGF2F.acx.bY("IAP-GameCodeIGP");
-            String str = "Tam debug============================" + rj() + "hhhhh";
-            baf = com.gameloft.android2d.d.b.i("1557:53118:4.4.2:android:googleplay", strBY, "anonymous:" + s.iY(), m.iy(), rj());
-            com.gameloft.android.wrapper.ag.OnResume();
-            Kv();
-        }
+        baf = null;
         bas = 0;
-        as.Init();
         aZZ = 0;
     }
 
@@ -64132,7 +64063,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if (w.Vl) {
             jCurrentTimeMillis2 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
         }
-        as.dV(Qy);
+        // No online transport polling in the simulation loop.
         wL();
         // Dirty state is retained until the frame's complete SQLite commit.
         // The former cq worker could observe halfway-applied gameplay actions.
@@ -64224,44 +64155,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
             if (bbr || aTK || bbm || bbi || bbl) {
             }
         }
-        if (currentEngineState() > 7 && aUb) {
-            this.aYC = true;
-        }
-        if (com.gameloft.a.a.k.VR().fZ()) {
-            com.gameloft.a.a.k.VR().h(GameRuntime.Qy);
-        }
-        if (this.aYC) {
-            if (this.aYD != 0) {
-                long jCurrentTimeMillis8 = System.currentTimeMillis();
-                if (w.Vl) {
-                    jCurrentTimeMillis8 = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
-                }
-                if (jCurrentTimeMillis8 - this.aYD > 600000) {
-                    if (!this.aYE && !arD) {
-                        new cs(this, null).start();
-                        jCurrentTimeMillis = System.currentTimeMillis();
-                        if (w.Vl) {
-                            jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
-                        }
-                        this.aYD = jCurrentTimeMillis;
-                    }
-                }
-            } else if (!this.aYE) {
-                new cs(this, null).start();
-                jCurrentTimeMillis = System.currentTimeMillis();
-                if (w.Vl) {
-                    jCurrentTimeMillis = (SystemClock.elapsedRealtime() + GameRuntime.Tn) - GameRuntime.To;
-                }
-                this.aYD = jCurrentTimeMillis;
-            }
-        }
-        if (com.gameloft.a.a.o.VW().VY() && !b.Jn && aUb && com.gameloft.android2d.d.b.Qm().ga() != null && !com.gameloft.android2d.d.b.Qm().ga().equals("")) {
-            b.hL().Init();
-        }
-        com.gameloft.a.a.k.VR().a(new ck(this));
-        if (currentEngineState() > 7 && aUb && !aYF) {
-            Mo();
-        }
+        // No CRM refresh, tracking-manager dereferences or ad callbacks.
+        // Qm() has no online manager in this build; dereferencing it here used
+        // to terminate the first playable frame after the local save completed.
+        this.aYC = false;
         if (FC() >= 3 && currentEngineState() == 18 && !aYu) {
             fE(65);
         }
@@ -68280,6 +68177,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 break;
             case 46:
                 cK("LOADING TILESETS");
+                // Online friend farms (>10) have no local world to restore.
+                // Keep all bundled AI farms (1..10); return to the owned farm
+                // instead of waiting for a server payload that cannot arrive.
+                if (aZC > 10) aZC = 0;
                 aZB = aZC;
                 qW();
                 break;
@@ -68435,14 +68336,8 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 }
                 break;
             case 50:
-                if (asn) {
-                    cK("READING ONLINE DATA");
-                } else {
-                    asn = true;
-                    asp = 2000;
-                    cK("[0/" + asp + "] - READING ONLINE DATA");
-                }
-                asn = aND.equals("");
+                // No remote farm payload is part of the offline load pipeline.
+                asn = false;
                 break;
             case 125:
                 ES();
@@ -68451,25 +68346,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 Id();
                 break;
             case 127:
-                if (aYU == 20) {
-                    GloftGF2F gloftGF2F = GloftGF2F.acx;
-                    FarmGameEngine ciVar = GloftGF2F.acw;
-                    bK("le");
-                } else {
-                    GloftGF2F gloftGF2F2 = GloftGF2F.acx;
-                    FarmGameEngine ciVar2 = GloftGF2F.acw;
-                    bK(GloftGF2F.acw.dr(aYU));
-                }
-                StringBuilder sbAppend = new StringBuilder().append("[IAP] set lang. :").append(aYU).append(",iap lang:");
-                GloftGF2F gloftGF2F3 = GloftGF2F.acx;
-                sbAppend.append(GloftGF2F.acw.ln()).append(",iap set lang:").append(GloftGF2F.acw.dr(aYU)).toString();
+                // The real-money purchase SDK is retired. Local coin/resource
+                // shop transactions remain in the gameplay/save pipeline.
                 aRH = false;
-                if (aqZ) {
-                    GloftGF2F gloftGF2F4 = GloftGF2F.acx;
-                    GloftGF2F.acw.lm();
-                    ly();
-                }
-                du((String) null);
+                aqZ = false;
                 break;
             case 140:
                 if (asn) {
@@ -69064,7 +68944,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             }
             if (asM) {
             }
-            int iA = a(bArr, a(bArr, a(bArr, a(bArr, b(bArr, a(bArr, 0, aCB), "" + rv()), (byte) (!aKo ? 0 : 1)), (byte) (!auT ? 0 : 1)), (byte) (!auU ? 0 : 1)), (byte) (!aKr ? 0 : 1));
+            int iA = a(bArr, a(bArr, a(bArr, a(bArr, b(bArr, a(bArr, 0, aCB), localSaveBindingForWrite()), (byte) (!aKo ? 0 : 1)), (byte) (!auT ? 0 : 1)), (byte) (!auU ? 0 : 1)), (byte) (!aKr ? 0 : 1));
             String str2 = "Save cur tutorial:" + currentTutorialStepIndex;
             int iA2 = a(bArr, d(bArr, d(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, a(bArr, iA, (byte) currentTutorialStepIndex), (byte) (!awM ? 0 : 1)), (byte) (!awN ? 0 : 1)), (byte) (!awO ? 0 : 1)), (byte) (!awP ? 0 : 1)), (byte) (!awT ? 0 : 1)), (byte) (!awU ? 0 : 1)), awW), bas), axp);
             for (int i = 0; i < aVG; i++) {

@@ -1,0 +1,37 @@
+{
+  "host_suite": {
+    "tests": 153,
+    "passed": 152,
+    "skipped": 1,
+    "skip_reason": "Legacy relocation test hardcodes uncached /workspace/tooling/dexmerge dependencies"
+  },
+  "tool_suite": {
+    "tests": 20,
+    "passed": 20
+  },
+  "after_final_resource_cleanup": {
+    "artifact_policy_tests": 1,
+    "resource_identity_tests": 5,
+    "passed": true
+  },
+  "native_sqlite": {
+    "tests": 27,
+    "passed": 27,
+    "installed_apk_sha256": "be44d2eff2992bb450d303b9c2f3ce22176dd476c817c5f6d8356da55b5c0a40"
+  },
+  "distribution_apk": "cc3609fc3170ed964829edbbe6fb9ed8e47be50f6e394d8f1d0c2893969c0776",
+  "normal_player_data_reset": false,
+  "manual_100_crop_animal_operations": "not verified",
+  "full_manual_language_restart": "not verified",
+  "hardware_fps_audio_other_android_versions": "not verified",
+  "distribution_cold_reopen": {
+    "airplane_mode_on": true,
+    "installed_update_without_reset": true,
+    "farm_rendered": true,
+    "level": 1,
+    "xp": 0,
+    "coins": 2000,
+    "cash": 50,
+    "runtime_snapshot_write_ok": true
+  }
+}

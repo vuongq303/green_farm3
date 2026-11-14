@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabaseCorruptException
 import java.security.MessageDigest
 
-/** A user-approved imported record may retain its original binding without changing SDK authentication. */
+/** Validate legacy archive binding metadata; normal local SQLite restore has no device/account gate. */
 object SaveTransferIdentity {
     @Volatile private var context: Context? = null
     @Volatile private var checked = false

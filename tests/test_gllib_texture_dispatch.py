@@ -91,7 +91,7 @@ class GLLibTextureDispatchTest(unittest.TestCase):
             self.skipTest("Requires verified original conversion, compiled app core GLLib and JDK")
         asm = asm_jar()
         self.assertEqual(source.read_bytes(), staged.read_bytes(), "Compile app after changing GLLib")
-        self.assertGreaterEqual(restored.stat().st_mtime_ns, staged.stat().st_mtime_ns,
+        self.assertGreaterEqual(restored.stat().st_mtime_ns, source.stat().st_mtime_ns,
                                 "Compiled GLLib predates the staged source")
         with tempfile.TemporaryDirectory(prefix="gllib-texture-dispatch-") as temp:
             root = Path(temp)

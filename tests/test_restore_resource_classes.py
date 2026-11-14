@@ -22,7 +22,8 @@ class ResourceAliasesTest(unittest.TestCase):
         app_package = restore.selected_app_package(ROOT)
         with tempfile.TemporaryDirectory() as temp:
             paths = restore.generate(ROOT, Path(temp))
-            self.assertEqual(len(paths), 4)
+            self.assertEqual(len(paths), 3)
+            self.assertFalse((Path(temp) / "com/google/firebase").exists())
             self.assertFalse((Path(temp) / Path(*restore.APP_PACKAGE.split(".")) / "R.java").exists())
             for package, output in zip(restore.SDK_PACKAGES, paths):
                 source = (ROOT / "app/src/main/java" / Path(*package.split(".")) / "R.java").read_text()

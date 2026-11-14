@@ -214,7 +214,7 @@ class GLLibRecoveredAlgorithmsTest(unittest.TestCase):
             classes = root / "compiled"
             sources = core_source_directory()
             kotlin_sources = kotlin_source_directory()
-            selected_kotlin = [kotlin_sources / "GameSaveStore.kt"]
+            selected_kotlin = [kotlin_sources / "GameSaveStore.kt", kotlin_sources / "SaveBatchPolicy.kt"]
             selected_java = [sources / (type_name('GLLib') + '.java')]
             for name in ('bm', 'bl'):
                 kotlin = kotlin_sources / (name + '.kt')
@@ -228,6 +228,12 @@ class GLLibRecoveredAlgorithmsTest(unittest.TestCase):
                 output = root / label / CLASS
                 output.parent.mkdir(parents=True)
                 output.write_bytes(method_fixture(data))
+            # Include the production nested error type referenced by the asset
+            # opener; normalize identity without changing its implementation.
+            for nested in restored.parent.glob(restored.stem + '$*.class'):
+                data = rewrite_class(nested.read_bytes(), reverse=True, rename_symbols=uses_verified_names())
+                target = root / 'restored' / Path(CLASS).parent / ('GLLib' + nested.name[len(restored.stem):])
+                target.write_bytes(data)
             vectors = root / "vectors"; vectors.mkdir()
             rng = random.Random(1984)
             samples = [b"", b"a", b"a" * 20000, b"abca" * 4096,

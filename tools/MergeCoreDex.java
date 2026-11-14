@@ -41,8 +41,7 @@ public final class MergeCoreDex {
             "Lcom/gameloft/android/ANMP/GloftGF2F/R",
             "Lcom/facebook/R",
             "Lcom/google/android/gms/ads/R",
-            "Lcom/google/android/gms/ads/impl/R",
-            "Lcom/google/firebase/messaging/R");
+            "Lcom/google/android/gms/ads/impl/R");
     private static final Set<String> REQUIRED_CORE = new HashSet<>(Arrays.asList(
             CORE + "GLLib;", CORE + "ci;", CORE + "GloftGF2F;", CORE + "l;", CORE + "g;"));
     // l (endian asset input) and g (empty marker) now have verified Kotlin

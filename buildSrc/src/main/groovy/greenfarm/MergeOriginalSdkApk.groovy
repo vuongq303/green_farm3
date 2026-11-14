@@ -102,9 +102,6 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
     abstract Property<String> getPythonExecutable()
 
     @Input
-    abstract Property<String> getBackendUrl()
-
-    @Input
     abstract Property<String> getApplicationId()
 
     @Input
@@ -128,7 +125,6 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
     @TaskAction
     void merge() {
         // Validate before any output/work cleanup, including direct task use.
-        String endpoint = BackendBaseUrl.normalize(backendUrl.get())
         File incoming = inputApks.get().asFile.canonicalFile
         File outgoing = outputApks.get().asFile.canonicalFile
         File workspace = workDirectory.get().asFile.canonicalFile
@@ -175,32 +171,21 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
                     '--sdk', sdkDirectory.get().asFile, '--keystore', keystore.get().asFile,
                     '--output', base)
 
-            File patchedDex = new File(work, 'backend/classes.dex')
-            runJava('PatchBackendEndpoint', mergedDex, patchedDex, endpoint)
-            List<Object> packageArguments = ['--original', original,
-                    '--base', base, '--patched-dex', patchedDex,
-                    '--sdk', sdkDirectory.get().asFile, '--keystore', keystore.get().asFile,
-                    '--output', output]
-            if (gamePackage.get() == 'com.quanhoang.greenfarm3') {
-                Map mergeReport = (Map) new JsonSlurper().parse(new File(mergedDex.absolutePath + '.json'))
-                if (!(mergeReport.game_symbols_renamed instanceof Boolean)) {
-                    throw new GradleException('Merger report must explicitly verify the symbol-renaming mode')
-                }
-                File relocatedDex = new File(work, 'relocated/classes.dex')
-                List<Object> relocationArguments = [patchedDex, relocatedDex,
-                                                   '--application-id', applicationId.get()]
-                if (mergeReport.game_symbols_renamed) relocationArguments.add('--rename-symbols')
-                runJava('RelocateGamePackage', *relocationArguments)
-                packageArguments.addAll(['--relocated-dex', relocatedDex])
-            }
-            runPython('build_local_backend.py', *packageArguments)
-            if (!output.isFile()) {
-                throw new GradleException('The complete APK was not produced: ' + output)
-            }
+            Map mergeReport = (Map) new JsonSlurper().parse(new File(mergedDex.absolutePath + '.json'))
+            File relocatedDex = new File(work, 'relocated/classes.dex')
+            List<Object> relocationArguments = [mergedDex, relocatedDex,
+                                               '--application-id', applicationId.get()]
+            if (mergeReport.game_symbols_renamed) relocationArguments.add('--rename-symbols')
+            runJava('RelocateGamePackage', *relocationArguments)
+            File localDex = new File(work, 'local/classes.dex')
+            runJava('RemoveOnlineServices', relocatedDex, localDex)
+            runPython('package_game.py', '--original', original, '--base', base,
+                    '--dex', localDex, '--sdk', sdkDirectory.get().asFile,
+                    '--keystore', keystore.get().asFile, '--output', output)
+            if (!output.isFile()) throw new GradleException('The complete APK was not produced: ' + output)
             runPython('verify_runtime_apk.py', '--apk', output,
                     '--original', original, '--sdk', sdkDirectory.get().asFile,
-                    '--backend-base-url', endpoint, '--application-id', applicationId.get(),
-                    '--game-package', gamePackage.get())
+                    '--application-id', applicationId.get(), '--game-package', gamePackage.get())
             return output
         }
     }

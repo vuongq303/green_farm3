@@ -1,0 +1,42 @@
+[
+  {
+    "stage": "device-before-reopen",
+    "integrity_check": "ok",
+    "generations": [
+      [
+        15,
+        15
+      ]
+    ],
+    "record_count": 11,
+    "gameplay_format": 4,
+    "binding_bytes": 36,
+    "binding_preserved_sha256": "7ad9b297e1cd551da4944c66d59404ba0d49a53d54a2b8cbee6b9f14b7376c0e",
+    "tutorial_step": 1,
+    "codec_wallet_offset": 1376,
+    "level": 1,
+    "xp": 0,
+    "coins": 2000,
+    "cash": 50
+  },
+  {
+    "stage": "device-after-identity-fix",
+    "integrity_check": "ok",
+    "generations": [
+      [
+        21,
+        21
+      ]
+    ],
+    "record_count": 11,
+    "gameplay_format": 4,
+    "binding_bytes": 36,
+    "binding_preserved_sha256": "7ad9b297e1cd551da4944c66d59404ba0d49a53d54a2b8cbee6b9f14b7376c0e",
+    "tutorial_step": 2,
+    "codec_wallet_offset": 1376,
+    "level": 1,
+    "xp": 0,
+    "coins": 2000,
+    "cash": 50
+  }
+]

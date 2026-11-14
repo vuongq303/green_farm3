@@ -16,7 +16,7 @@ from kotlin_test_tools import compile_mixed, runtime_classpath
 class GameNotificationTest(unittest.TestCase):
     def test_native_component_decisions_back_and_compensation_barrier(self):
         engine = (core_source_directory() / 'FarmGameEngine.java').read_text()
-        setup = extract_method(engine, 'static void showGameNotification(String title, String message)')
+        setup = extract_method(engine, 'static void showGameNotification(String title, String message)') + '\n' + extract_method(engine, 'static void configureGameNotificationLayout()')
         update = extract_method(engine, 'static boolean updateGameNotification(int phase)')
         push = extract_method(engine, 'static void fE(int i)')
         source = '''package PACKAGE;
@@ -30,6 +30,8 @@ class FarmGameEngine {
  static long bap;static boolean awV;static boolean lN(int i){return false;}
  static int currentEngineState(){return state;}
  static void Ff(){state=apz;apA=-1;}static boolean aME,aMF;static String aMw,aMx,aMK;
+ static short[][][] atc=new short[5][80][16],atd=new short[5][80][16];
+ static {atd[4][15][2]=100;atd[4][16][2]=300;atd[4][18][2]=100;atd[4][19][2]=300;}
  static boolean[] visible=new boolean[80];
  static void Ir(){java.util.Arrays.fill(visible,false);}
  static void e(int gui,int element,boolean show){if(gui!=4)throw new AssertionError("wrong GUI");visible[element]=show;}
@@ -59,6 +61,11 @@ public class NotificationProbe {
   show(false);GameNotification.choose(false);
   check(GameNotification.isVisible()&&decisions==2&&!FarmGameEngine.visible[16],"compensation barrier canceled before durability");
   GameNotification.choose(true);check(decisions==3&&choice,"explicit retry missing");
+  GameNotification.show("title","body","restart","",false,positive->{decisions++;return kotlin.Unit.INSTANCE;});
+  check(FarmGameEngine.atc[4][15][2]==200&&FarmGameEngine.atc[4][18][2]==200,"single action is not centered");
+  check(!FarmGameEngine.visible[5]&&!FarmGameEngine.visible[6]&&!FarmGameEngine.visible[7]&&!FarmGameEngine.visible[16],"price or second action leaked into language dialog");
+  GameNotification.choose(true);show(true);
+  check(FarmGameEngine.atc[4][15][2]==100&&FarmGameEngine.atc[4][18][2]==100,"single-action layout leaked to next dialog");GameNotification.choose(true);
   for(int language:new int[]{0,1,2,3,4,5,7,9,10,11,12,15,16,20}){
    String[] text=GameNotification.storageFailure(language);check(text.length==2&&!text[0].isEmpty()&&!text[1].isEmpty(),"missing storage translation");
   }
