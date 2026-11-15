@@ -39,6 +39,7 @@ open class GloftGF2F : MIDlet() {
                 }
                 ProgressSaveController.initialize()
             } catch (failure: RuntimeException) {
+                android.util.Log.e("GreenFarmSave", "storage_initialize_failed", failure)
                 ProgressSaveController.showStartupError()
                 return
             }

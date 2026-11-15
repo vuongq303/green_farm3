@@ -32,6 +32,7 @@ ANDROID = {
         public static final int KEYCODE_MENU=82;public boolean longPress;public boolean isLongPress(){return longPress;} }''',
     'android/util/Log.java': '''package android.util;public class Log {
         public static int d(String a,String b){return 0;}
+        public static int i(String a,String b){return 0;}
         public static int w(String a,String b,Throwable c){return 0;}
         public static int e(String a,String b,Throwable c){return 0;} }''',
     'android/content/Context.java': '''package android.content;public class Context {
@@ -97,7 +98,8 @@ import java.util.*;import android.view.KeyEvent;
 class GameSaveStore {
  static final int STATUS_FAILED=3;static boolean ready,loading,failFinish,failInitialize,failReopen;
  static int initializes,reopens,begins,logicalLanguage,durableLanguage,durableCredits,durablePending,applies;
- static boolean capturing,serialized,whole;static Snapshot captured;static WriteDispatcher dispatcher;
+ static Throwable loadCause;
+ static boolean capturing,serialized,whole,restoreFailed;static Snapshot captured;static WriteDispatcher dispatcher;
  interface WriteDispatcher {void changed(Snapshot snapshot);}
  static final class Snapshot {
   final int language,credits,pending;final boolean gameplay,whole;
@@ -105,8 +107,10 @@ class GameSaveStore {
   int recordCount(){return gameplay?(whole?5:3):1;}long byteCount(){return 35;}
  }
  static void initialize(){initializes++;if(failInitialize)throw new IllegalStateException("open");ready=true;}
- static void beginLoading(){loading=true;begins++;}
- static void finishLoading(){if(failFinish)throw new IllegalStateException("finish");loading=false;}
+ static void beginLoading(){loading=true;restoreFailed=false;begins++;}
+ static void failLoad(String message,Throwable cause){loading=true;restoreFailed=true;loadCause=cause;}
+ static long generation(){return 1;}
+ static void finishLoading(){if(restoreFailed)throw new IllegalStateException("restore barrier");if(failFinish)throw new IllegalStateException("finish");loading=false;}
  static void close(){ready=false;}static void reopen(){reopens++;if(failReopen)throw new IllegalStateException("reopen");ready=true;}
  static void setWriteDispatcher(WriteDispatcher d){dispatcher=d;}
  static boolean isCaptureAvailable(){return ready&&!loading;}static int status(){return 0;}
@@ -203,6 +207,11 @@ public class ProgressSaveChecks {
   set(LanguageRestartController.class,"restartState",0);set(LanguageRestartController.class,"restartPromptVisible",false);set(LanguageRestartController.class,"restartHandoff",null);
   set(LanguageRestartController.class,"menuKeyHeld",false);set(LanguageRestartController.class,"menuOpenRequested",false);
   set(GameNotification.class,"decision",null);
+  // Independent scenarios must not inherit critical request counters from a
+  // prior simulated session that intentionally never reached a capture.
+  Field critical=ProgressSaveController.class.getDeclaredField("criticalRequests");critical.setAccessible(true);
+  ((java.util.concurrent.atomic.AtomicLong)critical.get(null)).set(0);
+  set(ProgressSaveController.class,"capturedCriticalRequests",0L);
   LocalDevelopmentMode.enabled=false;ProgressSaveController.initialize();
  }
  static void ready(){ProgressSaveController.globalLoadFinished(false,false);ProgressSaveController.farmLoadFinished();ProgressSaveController.enterWorld();}
@@ -259,6 +268,20 @@ public class ProgressSaveChecks {
   ci.state(18);frame(0);
   check(GameNotification.isVisible(),"storage notice did not appear after the quest closed");
   GameNotification.choose(true);check(!queue().retryPaused,"explicit retry did not resume the writer");
+ }
+ static void failedRestoreCannotAutosave()throws Exception{
+  reset();GameSaveStore.durableCredits=917;GameSaveStore.durablePending=13;
+  SaveRestoreException missing=null;
+  try{ProgressSaveController.globalLoadFinished(true,false);throw new AssertionError("missing old progress accepted");}
+  catch(SaveRestoreException expected){missing=expected;check(expected.getCode()==SaveRestoreException.Code.SAVE_NOT_FOUND,"missing result lost");}
+  ProgressSaveController.loadingFailed(44,missing);
+  check(GameSaveStore.loadCause==missing,"original restore cause lost at write barrier");
+  ProgressSaveController.farmLoadFinished();ProgressSaveController.enterWorld();
+  ci.baa=true;ch.credits=0;ProgressSaveController.requestCriticalSave();
+  frame(20000);ProgressSaveController.requestLifecycleFlush();
+  check(ProgressSaveController.isLoadBlocked()&&!ProgressSaveController.canSerialize(),"failed restore unblocked save");
+  check(ci.attempts==0&&GameSaveStore.applies==0&&queue().isIdle(),"failed restore serialized default farm");
+  check(GameSaveStore.durableCredits==917&&GameSaveStore.durablePending==13,"failed restore replaced durable progress");
  }
  static void loaderBatchAndTimer()throws Exception{
   reset();ProgressSaveController.requestSave();frame(500);check(ci.attempts==0,"saved before global load");
@@ -454,7 +477,7 @@ public class ProgressSaveChecks {
  public static void main(String[]args)throws Exception{
   if(args.length>0&&args[0].equals("coldNoWriter")){coldNoWriter();return;}
   ColdEngineInitProbe.failInitialization=false;
-  backendSnapshotDurability();loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
+  backendSnapshotDurability();failedRestoreCannotAutosave();loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
   retryNoticePreservesExistingQuestDialog();actionMatrixAndCriticalFlush();languageMandatoryTargetRestart();languageFontFailureRetriesOnlyOnUserChoice();languageFinalSaveRetainsLateWrites();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();saveTransferLongPress();saveTransferFreeze();
   System.out.println("PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff");
  }
@@ -518,7 +541,9 @@ class ProgressSaveControllerTest(unittest.TestCase):
                 fixture_text = fixture_text.replace('/* ACTUAL_KEY_OVERRIDES */', key_methods) + methods + '\n}'
             fixture.write_text(adapt_fixture(fixture_text), encoding='utf-8')
             runner.write_text(adapt_fixture(RUNNER), encoding='utf-8')
-            compile_mixed(actual, [*peers, fixture, runner], folder)
+            restore_error = folder / 'SaveRestoreException.java'
+            restore_error.write_text(adapt_fixture((source / 'SaveRestoreException.java').read_text()), encoding='utf-8')
+            compile_mixed(actual, [*peers, fixture, runner, restore_error], folder)
             cold = subprocess.run([str(java), '-cp', runtime_classpath(folder),
                                    PACKAGE.replace('/', '.') + '.ProgressSaveChecks', 'coldNoWriter'],
                                   capture_output=True, text=True, timeout=20)

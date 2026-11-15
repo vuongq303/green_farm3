@@ -214,8 +214,8 @@ class GLLibRecoveredAlgorithmsTest(unittest.TestCase):
             classes = root / "compiled"
             sources = core_source_directory()
             kotlin_sources = kotlin_source_directory()
-            selected_kotlin = [kotlin_sources / "GameSaveStore.kt"]
-            selected_java = [sources / (type_name('GLLib') + '.java')]
+            selected_kotlin = [kotlin_sources / "GameSaveStore.kt", kotlin_sources / "SaveBatchPolicy.kt"]
+            selected_java = [sources / (type_name('GLLib') + '.java'), sources / 'SaveRestoreException.java']
             for name in ('bm', 'bl'):
                 kotlin = kotlin_sources / (name + '.kt')
                 (selected_kotlin if kotlin.is_file() else selected_java).append(kotlin if kotlin.is_file() else sources / (name + '.java'))

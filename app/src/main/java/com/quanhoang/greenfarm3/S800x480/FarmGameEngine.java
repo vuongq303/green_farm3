@@ -20634,6 +20634,20 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static boolean ax(boolean z) {
+        try {
+            return restoreGlobalGameplay(z);
+        } catch (SaveRestoreException failure) {
+            throw failure;
+        } catch (IndexOutOfBoundsException | NegativeArraySizeException failure) {
+            throw new SaveRestoreException(SaveRestoreException.Code.SAVE_DECODE_FAILED,
+                    "Gameplay record is truncated or contains an invalid length; original save retained", failure);
+        } catch (RuntimeException failure) {
+            throw new SaveRestoreException(SaveRestoreException.Code.ENGINE_RESTORE_FAILED,
+                    "Gameplay restore failed; original save retained", failure);
+        }
+    }
+
+    static boolean restoreGlobalGameplay(boolean z) {
         byte[] bArrB;
         int i;
         int i2;
@@ -20655,6 +20669,16 @@ public final class FarmGameEngine extends GameRuntime implements av {
             return false;
         }
         byte bJ = z ? aCB : j(bArrB, 0);
+        // Versions 0/1 use the original unversioned/legacy layout. Do not
+        // reinterpret a future or negative version as the current layout.
+        if (bJ < 0 || bJ > aCB) {
+            throw new SaveRestoreException(SaveRestoreException.Code.SAVE_VERSION_UNSUPPORTED,
+                    "Unsupported gameplay record version: " + (bJ & 255), null);
+        }
+        if (aCw != null && bJ < 3) {
+            throw new SaveRestoreException(SaveRestoreException.Code.IDENTITY_MISMATCH,
+                    "Legacy buffered gameplay has no verifiable identity; original save retained", null);
+        }
         if (bJ == aCB) {
             asM = false;
         } else if (bJ < aCB) {
@@ -20675,21 +20699,16 @@ public final class FarmGameEngine extends GameRuntime implements av {
             iL2 = iL2 + l(bArrB, iL2) + 4;
             String str2 = "GetString after pos = " + iL2;
             String str3 = "deviceId @@@@@@@@@@@@@@@= " + strO;
-            // Local progress came from the app-private, checksum-checked store.
-            // The legacy SDK's cross-app HDIDFV is not its owner: DataSharing
-            // only discovers com.gameloft providers, so our renamed app can get
-            // a new SDK UUID after process death. Rejecting that UUID would
-            // prevent restoring an intact local save. Cloud buffers and the
-            // ordinary backend workflow retain their existing identity checks.
-            if (!LocalDevelopmentMode.isEnabled() || aCw != null) {
+            // Source, not the build flag, determines this boundary. A direct
+            // read above came from our private SQLite device-local slot and has
+            // passed its checksum. The volatile cross-app SDK UUID is not its
+            // owner. Buffer data can come from the legacy cloud path and must
+            // never use this local exemption or an imported-local identity.
+            if (aCw != null) {
                 String currentBinding = rl();
-                if (!com.quanhoang.greenfarm3.migration.SaveTransferIdentity.matches(strO, "" + currentBinding)
-                        && !asP && strO.length() == currentBinding.length()) {
-                    aPg = false;
-                    aOM = false;
-                    ro();
-                    asq = true;
-                    return false;
+                if (currentBinding == null || currentBinding.isEmpty() || !strO.equals(currentBinding)) {
+                    throw new SaveRestoreException(SaveRestoreException.Code.IDENTITY_MISMATCH,
+                            "Buffered gameplay identity does not match; original save retained", null);
                 }
             }
         }
@@ -40613,8 +40632,14 @@ public final class FarmGameEngine extends GameRuntime implements av {
 
     static String o(byte[] bArr, int i) {
         String str = "Before pos = " + i;
+        if (i < 0 || i > bArr.length - 4) {
+            throw new IndexOutOfBoundsException("Saved string length is truncated");
+        }
         int iL = l(bArr, i);
         int i2 = i + 4;
+        if (iL < 0 || iL > bArr.length - i2) {
+            throw new IndexOutOfBoundsException("Saved string exceeds record bounds");
+        }
         String str2 = "After size pos = " + i2;
         if (iL == 0) {
             return "";

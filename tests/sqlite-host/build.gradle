@@ -7,6 +7,8 @@ dependencies {
     testImplementation 'org.robolectric:android-all:9-robolectric-4913185-2'
     testImplementation 'org.jetbrains.kotlin:kotlin-stdlib:2.4.21'
     testImplementation files(providers.gradleProperty('storageClasses').getOrElse('../../app/build/tmp/kotlin-classes/debug'))
+    // Kotlin storage failures retain the production Java restore diagnosis.
+    testImplementation files('../../app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes')
 }
 configurations { androidAars }
 dependencies {

@@ -5,6 +5,7 @@ import android.content.ContextWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import com.quanhoang.greenfarm3.S800x480.AsyncSaveQueue;
 import com.quanhoang.greenfarm3.S800x480.GameSaveStore;
+import com.quanhoang.greenfarm3.S800x480.SaveRestoreException;
 import java.nio.ByteBuffer;
 import java.io.File;
 import java.util.ArrayList;
@@ -181,6 +182,80 @@ public class SQLiteSaveTest {
         GameSaveStore.reopen();
         assertEquals(84, read("save_gameplay"));
         assertEquals(83, read("test_coins"));
+    }
+    @Test public void failedRestoreBlocksPreviouslyCapturedLanguageAndPreservesHealthyDatabase() {
+        GameSaveStore.applySnapshot(fullSnapshot(83));
+        long generation = GameSaveStore.generation();
+        List<String> original = persistedRecords();
+        GameSaveStore.Snapshot language = GameSaveStore.captureLanguageSetting(16);
+        GameSaveStore.beginLoading();
+        IllegalArgumentException decoder = new IllegalArgumentException("injected engine decode failure");
+        GameSaveStore.failLoad("injected restore rejection", decoder);
+        assertTrue("engine restore failure must not label an open SQLite database unready", GameSaveStore.isReady());
+        try {
+            GameSaveStore.applySnapshot(language);
+            fail("a captured language snapshot must not bypass the failed-restore barrier");
+        } catch (GameSaveStore.Failure expected) {
+            assertEquals(SaveRestoreException.Code.ENGINE_RESTORE_FAILED, expected.getCode());
+            Throwable root = expected;
+            while (root.getCause() != null) root = root.getCause();
+            assertSame("retain the original decode exception", decoder, root);
+        }
+        try {
+            GameSaveStore.captureLanguageSetting(17);
+            fail("new language captures must also remain blocked after restore fails");
+        } catch (GameSaveStore.Failure expected) { /* expected explicit barrier */ }
+        try {
+            GameSaveStore.finishLoading();
+            fail("finishLoading alone must not clear a failed restore");
+        } catch (GameSaveStore.Failure expected) { /* an explicit new load is required */ }
+        assertTrue(GameSaveStore.isReady());
+        assertTrue(GameSaveStore.isLoading());
+        assertEquals(generation, GameSaveStore.generation());
+        assertEquals("failed restore changed original payload/checksum/generation", original, persistedRecords());
+        GameSaveStore.beginLoading();
+        assertEquals(83, read("save_gameplay"));
+        GameSaveStore.finishLoading();
+        GameSaveStore.applySnapshot(GameSaveStore.captureLanguageSetting(16));
+        assertEquals(16, GameSaveStore.read("RMSHeader")[4]);
+        assertEquals(generation + 1, GameSaveStore.generation());
+    }
+    @Test public void checksumFailureRemainsSpecificAndDoesNotRewriteRecords() {
+        GameSaveStore.applySnapshot(fullSnapshot(56));
+        GameSaveStore.close();
+        try (SQLiteDatabase external = SQLiteDatabase.openDatabase(
+                context.getDatabasePath(GameSaveStore.DATABASE_NAME).getPath(), null, SQLiteDatabase.OPEN_READWRITE)) {
+            external.execSQL("UPDATE save_records SET checksum=zeroblob(32) WHERE store_name='save_gameplay'");
+        }
+        List<String> corrupted = persistedRecords();
+        try {
+            GameSaveStore.initialize(context);
+            fail("a mismatched checksum must not be accepted as saved progress");
+        } catch (GameSaveStore.Failure expected) {
+            assertEquals(SaveRestoreException.Code.CHECKSUM_MISMATCH, expected.getCode());
+            assertNotNull("storage wrapping must retain the original failure", expected.getCause());
+        }
+        assertEquals("read failure rewrote original records", corrupted, persistedRecords());
+    }
+    @Test public void unsupportedDatabaseVersionRemainsSpecificAndPreservesRecords() {
+        GameSaveStore.applySnapshot(fullSnapshot(57));
+        GameSaveStore.close();
+        try (SQLiteDatabase external = SQLiteDatabase.openDatabase(
+                context.getDatabasePath(GameSaveStore.DATABASE_NAME).getPath(), null, SQLiteDatabase.OPEN_READWRITE)) {
+            external.setVersion(5);
+        }
+        List<String> original = persistedRecords();
+        try {
+            GameSaveStore.initialize(context);
+            fail("a future schema must not be downgraded or reset");
+        } catch (GameSaveStore.Failure expected) {
+            assertEquals(SaveRestoreException.Code.SAVE_VERSION_UNSUPPORTED, expected.getCode());
+        }
+        assertEquals(original, persistedRecords());
+        try (SQLiteDatabase external = SQLiteDatabase.openDatabase(
+                context.getDatabasePath(GameSaveStore.DATABASE_NAME).getPath(), null, SQLiteDatabase.OPEN_READONLY)) {
+            assertEquals(5, external.getVersion());
+        }
     }
     @Test public void lockedWriterRetriesWithoutPartialState() throws Exception {
         GameSaveStore.applySnapshot(snapshot(7));

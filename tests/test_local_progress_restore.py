@@ -1,6 +1,7 @@
 """Exercise the production restore binding decision across fresh JVM processes.
 
-Only ax's prefix up to the first gameplay-field decode is selected: the real
+Only restoreGlobalGameplay's prefix before gameplay-field decode is selected;
+ax's complete production error wrapper executes around it. The real
 byte/string codec and Kotlin globalLoadFinished guard execute from source. Storage
 and SDK boundaries are peers. This isolates the cold-start identity regression;
 it does not claim to restore a whole farm or replace real SQLite/device tests.
@@ -37,49 +38,55 @@ public class RestorePrefixChecks {
   Path file=Paths.get(args[1]);
   byte[] before=Files.exists(file)?Files.readAllBytes(file):null;
   GameRuntime.record=before;
-  GameRuntime.allowLegacy=scenario.equals("legacy");
-  com.gameloft.android.wrapper.au.identity=args[2];
+  com.gameloft.android.wrapper.au.identity=args[2].equals("<null>")?null:args[2];
   System.setProperty("HDIDFV",args[2]);
   LocalDevelopmentMode.enabled=!scenario.startsWith("normal");
   boolean cloud=scenario.startsWith("cloud");
   FarmGameEngine.aCw=cloud?before:null;
-  boolean localPrivate=LocalDevelopmentMode.enabled&&!cloud&&!scenario.equals("legacy");
+  boolean localPrivate=!cloud;
   com.gameloft.android.wrapper.au.forbidden=localPrivate;
-  com.quanhoang.greenfarm3.migration.SaveTransferIdentity.forbidden=localPrivate;
+  // A previous import's local alias must never authorize a cloud buffer.
+  com.quanhoang.greenfarm3.migration.SaveTransferIdentity.acceptImported=scenario.equals("cloud-imported");
+  FarmGameEngine.asP=scenario.equals("cloud-asP");
+  boolean originalAsP=FarmGameEngine.asP;
+  boolean originalAsM=FarmGameEngine.asM,originalAsO=FarmGameEngine.asO;
+  int originalAsL=FarmGameEngine.asL;
   FarmGameEngine.aPg=FarmGameEngine.aOM=true;
+  String expectedCode=scenario.startsWith("cloud")&&!scenario.equals("cloud-match")
+    ?"IDENTITY_MISMATCH":scenario.startsWith("unsupported")?"SAVE_VERSION_UNSUPPORTED"
+    :scenario.startsWith("corrupt")?"SAVE_DECODE_FAILED":null;
   try {
    boolean loaded=FarmGameEngine.ax(false);
+   if(expectedCode!=null)throw new AssertionError("invalid record accepted: "+scenario);
    if(scenario.equals("missing")) {
     check(!loaded,"missing record reported loaded");
     ProgressSaveController.globalLoadFinished(false,loaded);
-   } else if(scenario.equals("normal")||scenario.equals("cloud")||scenario.equals("legacy")) {
-    check(!loaded,"SDK identity mismatch was bypassed");
-    try {
-     ProgressSaveController.globalLoadFinished(true,loaded);
-     throw new AssertionError("existing failed record was accepted");
-    } catch(IllegalStateException expected) {
-     check(expected.getMessage().equals("Existing progress could not be restored; original save retained"),"wrong guard");
-     if(scenario.equals("legacy"))System.out.println("REPRODUCED "+expected.getClass().getName()+": "+expected.getMessage());
-    }
-    check(com.quanhoang.greenfarm3.migration.SaveTransferIdentity.calls>0,"normal/import identity check skipped");
-    check(com.gameloft.android.wrapper.au.calls>0,"SDK path unexpectedly bypassed");
-   } else if(scenario.equals("corrupt")) {
-    throw new AssertionError("truncated binding was accepted");
    } else {
     ProgressSaveController.globalLoadFinished(true,loaded);
     check(loaded&&ProgressSaveController.globalLoaded,"local progress rejected after cold restart");
     check(!FarmGameEngine.asq,"new player was requested for an existing record");
-    check(FarmGameEngine.aPg&&FarmGameEngine.aOM,"saved player flags reset");
-    if(!localPrivate)check(com.quanhoang.greenfarm3.migration.SaveTransferIdentity.calls>0,"matching identity bypassed normal verification");
    }
-  } catch(IndexOutOfBoundsException expected) {
-   if(!scenario.equals("corrupt"))throw expected;
+  } catch(SaveRestoreException expected) {
+   if(expectedCode==null)throw expected;
+   check(expected.getCode().name().equals(expectedCode),"wrong diagnostic: "+expected.getCode());
+   if(expectedCode.equals("SAVE_DECODE_FAILED"))
+    check(expected.getCause() instanceof IndexOutOfBoundsException
+      ||expected.getCause() instanceof NegativeArraySizeException,"original decode cause lost");
+   check(!ProgressSaveController.globalLoaded,"failed restore opened load gate");
+   check(!FarmGameEngine.asq,"failed existing restore requested a default farm");
   }
-  if(localPrivate) {
-   check(com.gameloft.android.wrapper.au.calls==0,"local restore called unavailable SDK");
-   check(com.quanhoang.greenfarm3.migration.SaveTransferIdentity.calls==0,"local restore called imported/cloud binding boundary");
-   check(FarmGameEngine.headerWrites==0,"load attempted to overwrite the original save");
-  }
+  check(FarmGameEngine.aPg&&FarmGameEngine.aOM,"restore changed player/account flags");
+  check(FarmGameEngine.asP==originalAsP,"restore changed cloud consent flag");
+  if(scenario.startsWith("cloud-legacy"))check(FarmGameEngine.asM==originalAsM
+    &&FarmGameEngine.asO==originalAsO&&FarmGameEngine.asL==originalAsL,
+    "unverifiable legacy buffer changed engine version flags");
+  check(FarmGameEngine.headerWrites==0,"restore attempted to overwrite the original save");
+  check(com.quanhoang.greenfarm3.migration.SaveTransferIdentity.calls==0,"imported-local alias consulted during restore");
+  if(localPrivate)check(com.gameloft.android.wrapper.au.calls==0,"private restore called unavailable SDK");
+  else if(scenario.startsWith("cloud-legacy"))
+   check(com.gameloft.android.wrapper.au.calls==0,"legacy buffer reached SDK before rejection");
+  else if(expectedCode==null||expectedCode.equals("IDENTITY_MISMATCH"))
+   check(com.gameloft.android.wrapper.au.calls==1,"buffer restore did not verify SDK binding exactly once");
   check(GameRuntime.reads==(cloud?0:1),"restore performed duplicate or unrelated storage reads: "+GameRuntime.reads);
   byte[] after=Files.exists(file)?Files.readAllBytes(file):null;
   check(Arrays.equals(before,after),"saved bytes changed during restore");
@@ -88,12 +95,12 @@ public class RestorePrefixChecks {
  }
  static void check(boolean passed,String message){if(!passed)throw new AssertionError(message);}
 }
+class Log {static int i(String tag,String message){return 0;}}
 class LocalDevelopmentMode {static boolean enabled;static boolean isEnabled(){return enabled;}}
 class GameRuntime {
- static byte[] record;static int reads;static boolean allowLegacy;
+ static byte[] record;static int reads;
  static byte[] B(String name,String key){
   if(!name.equals("save_gameplay")){
-   if(allowLegacy&&name.equals("greenfarm3"))return null;
    throw new IllegalStateException("Unrelated legacy media unavailable: "+name);
   }
   reads++;return record;
@@ -106,6 +113,7 @@ class FarmGameEngine extends GameRuntime {
  static void ro(){headerWrites++;}
  %IDENTITY%
  %STRING_CODEC%
+ %WRAPPER%
  %RESTORE_PREFIX%
 }
 '''
@@ -123,7 +131,8 @@ class LocalProgressRestoreTest(unittest.TestCase):
         cls.directory = Path(cls.temporary.name)
         engine = (JAVA / 'FarmGameEngine.java').read_text()
         runtime = (JAVA / 'GameRuntime.java').read_text()
-        restore = extract_method(engine, 'static boolean ax(boolean z)')
+        wrapper = extract_method(engine, 'static boolean ax(boolean z)')
+        restore = extract_method(engine, 'static boolean restoreGlobalGameplay(boolean z)')
         # Stop just after the binding decision, before unrelated mutable world
         # fields. The prefix itself is neither reconstructed nor simplified.
         restore = restore[:restore.index('        int i8 = iL2;')] + '        return true;\n    }'
@@ -137,6 +146,7 @@ class LocalProgressRestoreTest(unittest.TestCase):
                    .replace('%IDENTITY%', '\n'.join(extract_method(engine, sig) for sig in
                             ('static String rl()', 'static String rv()')))
                    .replace('%STRING_CODEC%', extract_method(engine, 'static String o(byte[] bArr, int i)'))
+                   .replace('%WRAPPER%', wrapper)
                    .replace('%RESTORE_PREFIX%', restore))
         sources = cls.directory / 'sources'
         target = sources / PACKAGE.replace('.', '/') / 'RestorePrefixChecks.java'
@@ -153,9 +163,11 @@ public class au {
         identity.parent.mkdir(parents=True)
         identity.write_text('''package com.quanhoang.greenfarm3.migration;
 public class SaveTransferIdentity {
- public static boolean forbidden;public static int calls;
- public static boolean matches(String saved,String current){calls++;if(forbidden)throw new AssertionError("identity service unavailable offline");return saved.equals(current);}
+ public static int calls;public static boolean acceptImported;
+ public static boolean matches(String saved,String current){calls++;return acceptImported||saved.equals(current);}
 }''')
+        diagnostic = sources / PACKAGE.replace('.', '/') / 'SaveRestoreException.java'
+        diagnostic.write_text((JAVA / 'SaveRestoreException.java').read_text())
         cls.classes = cls.directory / 'classes'
         controller_source = cls.directory / 'ProgressSaveController.kt'
         controller_source.write_text('package ' + PACKAGE + '\nobject ProgressSaveController {\n'
@@ -164,7 +176,7 @@ public class SaveTransferIdentity {
 
     def run_scenario(self, scenario, file, identity=None):
         result = subprocess.run([str(self.java), '-cp', runtime_classpath(self.classes), PACKAGE + '.RestorePrefixChecks',
-                                 scenario, str(file), identity or str(uuid.uuid4())],
+                                 scenario, str(file), str(uuid.uuid4()) if identity is None else identity],
                                 capture_output=True, text=True, timeout=30)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn('PASS ' + scenario, result.stdout)
@@ -178,31 +190,66 @@ public class SaveTransferIdentity {
         file.write_bytes(payload)
         return file
 
-    def test_private_local_save_survives_ten_cold_processes_without_sdk_or_legacy_media(self):
-        file = self.saved_record('cold-save.bin')
-        digest = hashlib.sha256(file.read_bytes()).digest()
-        for attempt in range(10):
-            with self.subTest(cold_start=attempt + 1):
-                self.run_scenario('local', file)
-                self.assertEqual(hashlib.sha256(file.read_bytes()).digest(), digest)
+    def test_private_save_survives_twenty_cold_jvms_with_uuid_changes_for_each_build_mode(self):
+        # A/B boundary coverage only: each invocation creates a fresh JVM and
+        # receives a new UUID. It does not claim Android or full-farm restore.
+        for mode in ('local', 'normal'):
+            file = self.saved_record(mode + '-cold-save.bin')
+            digest = hashlib.sha256(file.read_bytes()).digest()
+            for attempt in range(20):
+                with self.subTest(mode=mode, cold_start=attempt + 1):
+                    self.run_scenario(mode, file)
+                    self.assertEqual(hashlib.sha256(file.read_bytes()).digest(), digest)
 
-    def test_missing_and_truncated_progress_do_not_write_or_reset(self):
+    def test_missing_and_malformed_progress_do_not_write_or_reset(self):
         self.run_scenario('missing', self.directory / 'missing.bin')
-        truncated = self.directory / 'truncated.bin'
-        truncated.write_bytes(b'\x04' + struct.pack('<I', 36) + b'abc')
-        self.run_scenario('corrupt', truncated)
+        cases = {
+            'empty': b'',
+            'length-prefix': b'\x04\x24',
+            'truncated-binding': b'\x04' + struct.pack('<I', 36) + b'abc',
+            'negative-length': b'\x04' + struct.pack('<i', -1),
+        }
+        for name, payload in cases.items():
+            with self.subTest(malformed=name):
+                file = self.directory / (name + '.bin')
+                file.write_bytes(payload)
+                self.run_scenario('corrupt-' + name, file)
 
-    def test_normal_and_cloud_payloads_still_require_identity(self):
+    def test_unsupported_versions_are_rejected_before_restore(self):
+        file = self.saved_record('unsupported.bin')
+        original = file.read_bytes()
+        for version in (5, 127, 128, 255):
+            with self.subTest(version=version):
+                file.write_bytes(bytes([version]) + original[1:])
+                self.run_scenario('unsupported-' + str(version), file)
+
+    def test_cloud_mismatch_cannot_use_length_consent_or_imported_alias_bypasses(self):
         file = self.saved_record('bound-save.bin')
-        self.run_scenario('normal', file)
         self.run_scenario('cloud', file)
+        self.run_scenario('cloud-asP', file)
+        self.run_scenario('cloud-imported', file)
+        self.run_scenario('cloud-short-identity', file, 'different-length')
+        self.run_scenario('cloud-null-identity', file, '<null>')
 
+    def test_unbound_legacy_cloud_buffers_are_rejected_before_engine_mutation(self):
+        # Versions 0/1/2 have no binding field on their old decode branch.
+        file = self.saved_record('legacy-cloud.bin')
+        original = file.read_bytes()
+        for version in (0, 1, 2):
+            with self.subTest(version=version):
+                file.write_bytes(bytes([version]) + original[1:])
+                self.run_scenario('cloud-legacy-' + str(version), file)
 
-    def test_matching_normal_and_cloud_binding_is_still_accepted(self):
+    def test_empty_cloud_bindings_cannot_authorize_a_buffer(self):
+        file = self.directory / 'empty-binding.bin'
+        file.write_bytes(b'\x04' + struct.pack('<I', 0) + bytes(range(256)))
+        self.run_scenario('cloud-empty-saved-binding', file)
+        self.run_scenario('cloud-empty-saved-and-current-binding', file, '')
+
+    def test_matching_cloud_binding_is_still_accepted(self):
         file = self.saved_record('same-bound-save.bin')
         payload = file.read_bytes()
         binding = payload[5:5 + struct.unpack('<I', payload[1:5])[0]].decode('utf-8')
-        self.run_scenario('normal-match', file, binding)
         self.run_scenario('cloud-match', file, binding)
 
 

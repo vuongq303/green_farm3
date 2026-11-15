@@ -133,8 +133,13 @@ object ProgressSaveController {
 
     @JvmStatic
     fun globalLoadFinished(existed: Boolean, loaded: Boolean) {
-        check(!existed || loaded) { "Existing progress could not be restored; original save retained" }
+        if (existed && !loaded) {
+            throw SaveRestoreException(SaveRestoreException.Code.SAVE_NOT_FOUND,
+                "Previously present gameplay record was not restored; original save retained", null)
+        }
         globalLoaded = true
+        Log.i("GreenFarmSave", "global_restore result=" +
+            if (loaded) SaveRestoreException.Code.RESTORE_SUCCESS else SaveRestoreException.Code.SAVE_NOT_FOUND)
     }
 
     @JvmStatic fun farmLoadFinished() { ownFarmLoaded = true }
@@ -207,8 +212,15 @@ object ProgressSaveController {
         failedLoadStep = step
         loadBlocked = true
         worldReady = false
+        // A decoder/engine failure is not proof of SQLite corruption. Keep the
+        // database available for diagnosis, but reject every subsequent write,
+        // including header-only snapshots captured before this failure.
+        GameSaveStore.failLoad("Restore failed; original save retained", failure)
         loadError = "Không thể đọc tiến độ. Bản lưu cũ được giữ nguyên."
-        Log.e("GreenFarmSave", "load_failed step=$step", failure)
+        val code = SaveRestoreException.classify(failure, SaveRestoreException.Code.ENGINE_RESTORE_FAILED)
+        Log.e("GreenFarmSave", "load_failed step=$step result=$code" +
+            " db_status=${GameSaveStore.status()} generation=${GameSaveStore.generation()}" +
+            " local_mode=${LocalDevelopmentMode.isEnabled()}", failure)
         showLoadError()
     }
 
@@ -289,6 +301,10 @@ object ProgressSaveController {
                 if (!sqliteWriteQueue!!.isIdle()) return
                 retryLoad = false
                 GameSaveStore.reopen()
+                // This explicit retry has already decoded global/farm state.
+                // Revalidate storage and clear the failed-restore barrier
+                // before completing loading; reopening alone cannot do so.
+                GameSaveStore.beginLoading()
                 GameSaveStore.finishLoading()
                 loadBlocked = false
                 loadError = null

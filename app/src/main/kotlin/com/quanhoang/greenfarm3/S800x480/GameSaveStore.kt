@@ -60,12 +60,18 @@ object GameSaveStore {
     @Volatile private var ready = false
     @Volatile private var loading = false
     @Volatile private var protectExistingSnapshot = false
+    // Engine decode failure is separate from SQLite readiness. Even a header
+    // snapshot captured before that failure must not commit until an explicit
+    // retry starts a new load and restores the saved world successfully.
+    @Volatile private var restoreFailure: Throwable? = null
     @Volatile private var currentStatus = STATUS_IDLE
     @Volatile private var error = ""
     @Volatile private var currentGeneration = 0L
     private val db: SQLiteDatabase get() = database!!
 
-    class Failure(message: String, cause: Throwable?) : RuntimeException(message, cause)
+    class Failure @JvmOverloads constructor(message: String, cause: Throwable?,
+        code: SaveRestoreException.Code = SaveRestoreException.classify(cause, SaveRestoreException.Code.ENGINE_RESTORE_FAILED)) :
+        SaveRestoreException(code, message, cause)
 
     /** Detached absolute values, including null tombstones; safe to retry on one writer. */
     class Snapshot internal constructor(
@@ -95,10 +101,12 @@ object GameSaveStore {
 
     /** Only byte4 changes; decoding is not allowed to synthesize a fresh header. */
     @JvmStatic fun captureLanguageSetting(language: Int): Snapshot {
+        rejectFailedRestore()
         if (language < 0 || language > 255 || !logicalReady) {
             throw Failure("Language settings cannot be captured before storage is ready", null)
         }
         synchronized(CACHE_LOCK) {
+            rejectFailedRestore()
             val existing = logicalRecords["RMSHeader"]
             if (existing == null || existing.size < 35) throw Failure("The saved language header is missing or truncated", null)
             val header = Arrays.copyOf(existing, existing.size)
@@ -108,6 +116,7 @@ object GameSaveStore {
     }
 
     private fun beginCapture(wholeFarm: Boolean, gameplaySnapshot: Boolean) {
+        rejectFailedRestore()
         if (CAPTURE.get() != null) throw Failure("A game snapshot is already being captured", null)
         if (loading) throw Failure("Game progress is still loading", null)
         if (!logicalReady) throw Failure("Game storage is not ready for a snapshot", null)
@@ -117,6 +126,7 @@ object GameSaveStore {
     @JvmStatic fun finishCapture(): Snapshot {
         val capture = CAPTURE.get() ?: throw Failure("No game snapshot is being captured on this thread", null)
         try {
+            rejectFailedRestore()
             if (capture.poisoned) throw Failure("The captured game snapshot has already failed", null)
             if (capture.gameplaySnapshot) {
                 requireCaptured(capture, "RMSHeader")
@@ -280,12 +290,12 @@ object GameSaveStore {
 
     @JvmStatic fun initialize() {
         val activity = com.gameloft.android.wrapper.au.getContext()
-            ?: throw failed("Android context is not ready for game storage", null)
+            ?: throw failed("Android context is not ready for game storage", null, SaveRestoreException.Code.SQLITE_OPEN_FAILED)
         initialize(activity.applicationContext ?: activity)
     }
 
     @JvmStatic fun initialize(suppliedContext: Context?) {
-        if (suppliedContext == null) throw failed("Android context is not ready for game storage", null)
+        if (suppliedContext == null) throw failed("Android context is not ready for game storage", null, SaveRestoreException.Code.SQLITE_OPEN_FAILED)
         LOCK.lock()
         try {
             if (context == null) context = suppliedContext.applicationContext ?: suppliedContext
@@ -301,7 +311,7 @@ object GameSaveStore {
         try {
             if (depth != 0) throw failed("Cannot reopen storage while a save is pending", null)
             closeLocked()
-            if (context == null) throw failed("Android context is not ready for game storage", null)
+            if (context == null) throw failed("Android context is not ready for game storage", null, SaveRestoreException.Code.SQLITE_OPEN_FAILED)
             openLocked()
         } finally { LOCK.unlock() }
     }
@@ -321,6 +331,7 @@ object GameSaveStore {
             APPLIED_VERSIONS.clear()
             loading = false
             protectExistingSnapshot = false
+            restoreFailure = null
         } finally { LOCK.unlock() }
     }
 
@@ -337,7 +348,7 @@ object GameSaveStore {
         if (depth != 0) throw failed("Cannot reopen storage during a pending save", null)
         if (context == null) {
             val activity = com.gameloft.android.wrapper.au.getContext()
-                ?: throw failed("Android context is not ready for game storage", null)
+                ?: throw failed("Android context is not ready for game storage", null, SaveRestoreException.Code.SQLITE_OPEN_FAILED)
             context = activity.applicationContext ?: activity
         }
         try {
@@ -390,7 +401,7 @@ object GameSaveStore {
                 try {
                     recordCount.moveToFirst()
                     val count = recordCount.getLong(0)
-                    if (slotNumber("generation") > 0 && count == 0L) throw failed("Previously saved records are missing; progress was not reset", null)
+                    if (slotNumber("generation") > 0 && count == 0L) throw failed("Previously saved records are missing; progress was not reset", null, SaveRestoreException.Code.SQLITE_READ_FAILED)
                     if (slotNumber("generation") == 0L && count > 0) {
                         val complete = readLocked("RMSHeader") != null && readLocked("save_gameplay") != null && readLocked("save_farm0") != null
                         val imported = ContentValues()
@@ -412,10 +423,10 @@ object GameSaveStore {
                 } finally { recordCount.close() }
                 if (slotNumber("complete_snapshot_generation") > 0 &&
                     (readLocked("RMSHeader") == null || readLocked("save_gameplay") == null || readLocked("save_farm0") == null)) {
-                    throw failed("The saved snapshot is incomplete; progress was not reset", null)
+                    throw failed("The saved snapshot is incomplete; progress was not reset", null, SaveRestoreException.Code.SQLITE_READ_FAILED)
                 }
-                if (slotNumber("snapshot_format") >= 1 && readLocked("pending_rewards_v1") == null) throw failed("Saved reward state is missing; progress was not reset", null)
-                if (slotNumber("pose_snapshot") >= 1 && readLocked("entity_pose_v1") == null) throw failed("Saved entity orientation is missing; progress was not reset", null)
+                if (slotNumber("snapshot_format") >= 1 && readLocked("pending_rewards_v1") == null) throw failed("Saved reward state is missing; progress was not reset", null, SaveRestoreException.Code.SQLITE_READ_FAILED)
+                if (slotNumber("pose_snapshot") >= 1 && readLocked("entity_pose_v1") == null) throw failed("Saved entity orientation is missing; progress was not reset", null, SaveRestoreException.Code.SQLITE_READ_FAILED)
                 db.setTransactionSuccessful()
             } finally { db.endTransaction() }
             currentGeneration = slotNumber("generation")
@@ -423,7 +434,7 @@ object GameSaveStore {
             ready = true
             if (currentStatus == STATUS_FAILED) currentStatus = STATUS_IDLE
             error = ""
-        } catch (cause: Exception) { throw failed("Cannot open or migrate the game progress database", cause) }
+        } catch (cause: Exception) { throw failed("Cannot open or migrate the game progress database", cause, SaveRestoreException.Code.SQLITE_OPEN_FAILED) }
     }
 
     @JvmStatic fun beginSave() = beginSave(true)
@@ -439,25 +450,38 @@ object GameSaveStore {
                 logicalRecords = confirmedRecords
                 logicalVersions = Collections.emptyMap()
             }
+            restoreFailure = null
         } finally { LOCK.unlock() }
     }
 
     @JvmStatic fun finishLoading() {
         LOCK.lock()
         try {
+            rejectFailedRestore()
             if (!ready) throw failed("Saved game data has not loaded successfully", null)
             loading = false
             protectExistingSnapshot = false
+            if (currentStatus == STATUS_FAILED) currentStatus = STATUS_IDLE
+            error = ""
         } finally { LOCK.unlock() }
     }
 
-    @JvmStatic fun failLoad(message: String?) {
+    @JvmStatic fun failLoad(message: String?) = failLoad(message, null)
+
+    @JvmStatic fun failLoad(message: String?, cause: Throwable?) {
         LOCK.lock()
         try {
             loading = true
             protectExistingSnapshot = true
-            failed(message ?: "Cannot restore saved progress", null)
+            val failure = Failure(message ?: "Cannot restore saved progress", cause)
+            restoreFailure = failure
+            currentStatus = STATUS_FAILED
+            error = failure.message ?: "Cannot restore saved progress"
         } finally { LOCK.unlock() }
+    }
+
+    private fun rejectFailedRestore() {
+        restoreFailure?.let { throw Failure("Saved progress has not been restored; writes remain blocked", it) }
     }
     @JvmStatic fun isLoading(): Boolean = loading
     @JvmStatic fun beginSave(wholeFarm: Boolean) = beginSave(wholeFarm, false)
@@ -468,6 +492,7 @@ object GameSaveStore {
         var acquired = false
         var started = false
         try {
+            rejectFailedRestore()
             if (loading && !loadingHeaderOnly) throw failed("Game progress is still loading", null)
             if (depth == 0) {
                 if (!ready) openLocked()
@@ -489,7 +514,8 @@ object GameSaveStore {
             acquired = true
         } catch (cause: Exception) {
             if (started) db.endTransaction()
-            throw failed("Cannot begin a game save", cause)
+            if (restoreFailure != null) throw Failure("Cannot save while saved progress has failed to restore", cause)
+            throw failed("Cannot begin a game save", cause, SaveRestoreException.Code.SQLITE_WRITE_FAILED)
         } finally {
             // Match the original reentrant ownership across serialization and commit.
             if (!acquired) LOCK.unlock()
@@ -611,7 +637,7 @@ object GameSaveStore {
             val value = readLocked(name)
             if (depth == 0) publishConfirmedRecordLocked(name, value)
             return value
-        } catch (cause: Exception) { throw failed("Cannot load saved game data", cause) }
+        } catch (cause: Exception) { throw failed("Cannot load saved game data", cause, SaveRestoreException.Code.SQLITE_READ_FAILED) }
         finally { LOCK.unlock() }
     }
 
@@ -623,7 +649,7 @@ object GameSaveStore {
             val payload = cursor.getBlob(0)
             val expected = cursor.getBlob(1)
             if (payload == null || payload.size > MAX_RECORD_BYTES || expected == null || !MessageDigest.isEqual(expected, digest(payload))) {
-                throw failed("Saved record checksum is invalid: $name", null)
+                throw failed("Saved record checksum is invalid: $name", null, SaveRestoreException.Code.CHECKSUM_MISMATCH)
             }
             return payload
         } finally { cursor.close() }
@@ -830,7 +856,7 @@ object GameSaveStore {
         try {
             if (!ready) openLocked()
             return readLocked("save_gameplay") != null
-        } catch (cause: Exception) { throw failed("Cannot inspect saved progress", cause) }
+        } catch (cause: Exception) { throw failed("Cannot inspect saved progress", cause, SaveRestoreException.Code.SQLITE_READ_FAILED) }
         finally { LOCK.unlock() }
     }
 
@@ -847,12 +873,12 @@ object GameSaveStore {
         } finally { cursor.close() }
     }
 
-    private fun failed(message: String, cause: Throwable?): Failure {
+    private fun failed(message: String, cause: Throwable?, code: SaveRestoreException.Code = SaveRestoreException.Code.SQLITE_WRITE_FAILED): Failure {
         poisoned = true
         ready = false
         currentStatus = STATUS_FAILED
         error = message
-        return Failure(message, cause)
+        return Failure(message, cause, SaveRestoreException.classify(cause, code))
     }
 
     private fun normalizeName(name: String?): String {
@@ -999,7 +1025,7 @@ object GameSaveStore {
 
     private class CorruptionHandler : DatabaseErrorHandler {
         override fun onCorruption(broken: SQLiteDatabase) {
-            throw failed("Game progress database is corrupt; data was retained", null)
+            throw failed("Game progress database is corrupt; data was retained", null, SaveRestoreException.Code.SQLITE_OPEN_FAILED)
         }
     }
 
@@ -1020,11 +1046,11 @@ object GameSaveStore {
             val records = hasTable(db, "save_records")
             val commits = hasTable(db, "save_commits")
             val imports = hasTable(db, "legacy_imports")
-            if (!slots && !records && !commits && !imports) throw failed("The progress database schema is missing; data was not reset", null)
+            if (!slots && !records && !commits && !imports) throw failed("The progress database schema is missing; data was not reset", null, SaveRestoreException.Code.SQLITE_READ_FAILED)
             var previousGeneration = 0L
             if (slots) previousGeneration = Math.max(previousGeneration, maxGeneration(db, "save_slots"))
             if (commits) previousGeneration = Math.max(previousGeneration, maxGeneration(db, "save_commits"))
-            if (previousGeneration > 0 && (!records || !hasAnyRecords(db))) throw failed("Saved SQLite records are missing; legacy files were not used to reset progress", null)
+            if (previousGeneration > 0 && (!records || !hasAnyRecords(db))) throw failed("Saved SQLite records are missing; legacy files were not used to reset progress", null, SaveRestoreException.Code.SQLITE_READ_FAILED)
             db.beginTransaction()
             try {
                 createVersionOne(db)
@@ -1053,13 +1079,13 @@ object GameSaveStore {
             try { return cursor.moveToFirst() } finally { cursor.close() }
         }
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-            if (oldVersion < 1 || oldVersion > VERSION || newVersion != VERSION) throw failed("Unsupported progress database migration; data was retained", null)
+            if (oldVersion < 1 || oldVersion > VERSION || newVersion != VERSION) throw failed("Unsupported progress database migration; data was retained", null, SaveRestoreException.Code.SAVE_VERSION_UNSUPPORTED)
             if (oldVersion < 2) upgradeOneToTwo(db)
             if (oldVersion < 3) upgradeTwoToThree(db)
             if (oldVersion < 4) upgradeThreeToFour(db)
         }
         override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-            throw failed("Cannot downgrade the progress database; data was retained", null)
+            throw failed("Cannot downgrade the progress database; data was retained", null, SaveRestoreException.Code.SAVE_VERSION_UNSUPPORTED)
         }
         private fun createVersionOne(db: SQLiteDatabase) {
             db.execSQL("CREATE TABLE IF NOT EXISTS save_slots (slot_id TEXT PRIMARY KEY NOT NULL, generation INTEGER NOT NULL DEFAULT 0 CHECK(generation>=0), created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)")
