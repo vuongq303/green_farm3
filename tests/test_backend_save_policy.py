@@ -66,15 +66,15 @@ class BackendSavePolicyTest(unittest.TestCase):
             'public static synchronized boolean tryEnqueueProfileSave(',
             'private static int jf()', 'private static synchronized int cz(',
             'private static synchronized void a(int i, Object[] objArr, String[] strArr, String[] strArr2, String str, String str2)'))
-        fixture = r'''class LocalDevelopmentMode {static boolean enabled;static boolean isEnabled(){return enabled;}}
+        fixture = r'''class LocalDevelopmentMode {static boolean enabled,online;static boolean isEnabled(){return enabled;}static boolean skipLegacyBackend(){return enabled||online;}}
 class w {static boolean YB=true,YC=true;static int Yf=1;}
 class t {static int Ot=1,Ov=2;}
 class GLURLConnection {static final int HTTP_OK=200;}
 class GameRuntime {static void c(boolean ignored,String message){}}
 class s {
  static int[] MQ={-1};static Object[][] MR=new Object[1][];static String[] MU=new String[1],MV=new String[1];
- static String[][] MS=new String[1][],MT=new String[1][];static int ML;static String MO;static boolean MX,fillLocator;
- static void aI(String service){if(!Thread.holdsLock(s.class))throw new AssertionError("unlocked pool");if(fillLocator)MQ[0]=88;}
+ static String[][] MS=new String[1][],MT=new String[1][];static int ML,locates;static String MO;static boolean MX,fillLocator;
+ static void aI(String service){if(!Thread.holdsLock(s.class))throw new AssertionError("unlocked pool");locates++;if(fillLocator)MQ[0]=88;}
  static void cA(int slot){}
  __METHODS__
 }
@@ -94,7 +94,15 @@ public class FarmPoolProbe {
   LocalDevelopmentMode.enabled=false;check(s.tryEnqueueProfileSave("p","_level","3","level-tag"),"profile request rejected free slot");
   check(s.MQ[0]==t.Ov&&s.MR[0][1].equals("_level")&&s.MR[0][2].equals("3")&&s.MU[0].equals("level-tag"),"profile pool fields incorrect");
   check(!s.tryEnqueueProfileSave("p","_manor","4","manor-tag"),"full profile pool accepted request");
-  System.out.println("PASS real request pool: accepted fields/tag, full rejection, locator capacity, policy retry and local isolation");
+  s.MQ[0]=-1;LocalDevelopmentMode.online=true;
+  check(!LocalDevelopmentMode.isEnabled()&&LocalDevelopmentMode.skipLegacyBackend(),"online accounts must skip old services without local bonuses");
+  int locates=s.locates;Object[] previous=s.MR[0];String previousTag=s.MU[0];
+  check(!s.tryEnqueueFarmSave("online-player","online-farm","online-farm-tag"),"online account enqueued legacy gameplay save");
+  check(!s.tryEnqueueProfileSave("online-player","_level","18","online-level-tag"),"online account enqueued legacy level metadata");
+  check(!s.tryEnqueueProfileSave("online-player","_manor","9","online-manor-tag"),"online account enqueued legacy manor metadata");
+  check(s.MQ[0]==-1&&s.MR[0]==previous&&s.MU[0].equals(previousTag)&&s.locates==locates,"online rejection changed pool data or scheduled service discovery");
+  LocalDevelopmentMode.online=false;check(s.tryEnqueueProfileSave("p","_manor","4","restored-tag"),"legacy network mode could not resume normal pool behavior");
+  System.out.println("PASS real request pool: accepted fields/tag, full rejection, locator capacity, policy retry and local/online isolation");
  }
 }
 '''

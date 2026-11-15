@@ -20,6 +20,8 @@ import android.view.MenuItem
 import android.widget.Toast
 import com.quanhoang.greenfarm3.S800x480.LocalDevelopmentConfig
 import com.quanhoang.greenfarm3.S800x480.NetworkDiagnostics
+import com.quanhoang.greenfarm3.S800x480.SocialAccountController
+import com.quanhoang.greenfarm3.S800x480.SocialAccountArtwork
 
 /** Android launcher configuration recovered from the original Start bytecode. */
 open class Start : BaseActivity() {
@@ -30,7 +32,11 @@ open class Start : BaseActivity() {
     @JvmField var bcV: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        NetworkDiagnostics.startup(LocalDevelopmentConfig.BACKEND_BASE_URL, LocalDevelopmentConfig.ENABLED)
+        if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) {
+            NetworkDiagnostics.accountStartup(LocalDevelopmentConfig.AUTH_BASE_URL)
+            SocialAccountController.initialize(applicationContext, LocalDevelopmentConfig.AUTH_BASE_URL)
+            SocialAccountArtwork.initialize(applicationContext)
+        } else NetworkDiagnostics.startup(LocalDevelopmentConfig.BACKEND_BASE_URL, LocalDevelopmentConfig.ENABLED)
         if (!SaveTransferGate.enterGame(this)) {
             super.onCreate(savedInstanceState)
             Toast.makeText(this, "Đang chuyển bản lưu. Hãy hoàn tất hoặc đóng màn hình chuyển dữ liệu rồi mở lại game.", Toast.LENGTH_LONG).show()
@@ -154,7 +160,10 @@ open class Start : BaseActivity() {
         startupView.post(bt(this))
     }
 
-    override fun onPause() = super.onPause()
+    override fun onPause() {
+        if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) SocialAccountController.onHostPaused()
+        super.onPause()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
@@ -172,6 +181,7 @@ open class Start : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) SocialAccountController.onHostResumed()
         // Dimensions arrive through startupView.post(bt) on this same UI
         // queue. Sleeping here cannot make that callback ready; bt/bu already
         // handle cold startup, while a resumed surface has dimensions below.

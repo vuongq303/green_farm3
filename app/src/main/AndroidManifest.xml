@@ -15,6 +15,7 @@
         android:debuggable="false"
         android:hardwareAccelerated="true"
         android:largeHeap="true"
+        android:fullBackupContent="@xml/online_auth_backup_rules"
         android:usesCleartextTraffic="false">
         <activity
             android:name="com.quanhoang.greenfarm3.migration.SaveTransferActivity"
@@ -24,6 +25,18 @@
         <receiver
             android:name="com.quanhoang.greenfarm3.migration.SaveTransferPreparationReceiver"
             android:exported="false"/>
+        <activity
+            android:name="com.quanhoang.greenfarm3.S800x480.SocialAuthCallbackActivity"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:launchMode="singleTop"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="com.quanhoang.greenfarm3" android:host="oauth" android:path="/callback"/>
+            </intent-filter>
+        </activity>
         <activity
             android:label="@string/MIDlet_Name"
             android:name="com.quanhoang.greenfarm3.Start"

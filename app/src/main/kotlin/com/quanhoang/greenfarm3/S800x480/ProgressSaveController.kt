@@ -165,7 +165,7 @@ object ProgressSaveController {
         })
         requestSave()
         backendBaselineSequence = requestedSequence.get()
-        if (!LocalDevelopmentMode.isEnabled()) {
+        if (!LocalDevelopmentMode.skipLegacyBackend()) {
             backendLevelPolicy.baseline(FarmGameEngine.FC().toString())
             backendManorPolicy.baseline(FarmGameEngine.aZD.toString())
         }
@@ -356,7 +356,7 @@ object ProgressSaveController {
         val current = requestedSequence.get()
         if (current != lastObservedRequestSequence) {
             batchPolicy.changed(now, current - lastObservedRequestSequence)
-            if (!LocalDevelopmentMode.isEnabled() && current > backendBaselineSequence) {
+            if (!LocalDevelopmentMode.skipLegacyBackend() && current > backendBaselineSequence) {
                 backendSavePolicy.changed(current, now)
                 backendLevelPolicy.changed(current, now)
                 backendManorPolicy.changed(current, now)
@@ -382,7 +382,7 @@ object ProgressSaveController {
             val savedLanguage = if (checkpoint is LanguageCheckpoint && checkpoint.preferencePhase) checkpoint.language else deferredLanguage
             savedLanguage?.let { GameSaveStore.overrideCapturedLanguage(it) }
             val snapshot = GameSaveStore.finishCapture()
-            if (!LocalDevelopmentMode.isEnabled() && FarmGameEngine.aZB == 0) {
+            if (!LocalDevelopmentMode.skipLegacyBackend() && FarmGameEngine.aZB == 0) {
                 backendSavePolicy.captured(sequence, backendCapturePayload)
                 backendLevelPolicy.captured(sequence, backendCaptureLevel)
                 backendManorPolicy.captured(sequence, backendCaptureManor)
@@ -466,7 +466,7 @@ object ProgressSaveController {
     }
 
     @JvmStatic fun capturedBackendFarm(payload: String, level: Int, manor: Int) {
-        if (snapshotBoundary && !LocalDevelopmentMode.isEnabled()) {
+        if (snapshotBoundary && !LocalDevelopmentMode.skipLegacyBackend()) {
             backendCapturePayload = payload
             backendCaptureLevel = level.toString()
             backendCaptureManor = manor.toString()
@@ -474,7 +474,7 @@ object ProgressSaveController {
     }
 
     /** The existing legacy Farm request consumes only a current, durable capture. */
-    private fun backendCanUpload(): Boolean = !LocalDevelopmentMode.isEnabled() && worldReady && !loadBlocked &&
+    private fun backendCanUpload(): Boolean = !LocalDevelopmentMode.skipLegacyBackend() && worldReady && !loadBlocked &&
         languageCheckpoint == null && !FarmGameEngine.hasUnsavedGameChanges && !FarmGameEngine.bab &&
         requestedSequence.get() <= durableRequestSequence
 

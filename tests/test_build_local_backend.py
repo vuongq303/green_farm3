@@ -216,11 +216,12 @@ class LocalBackendPackagingTest(unittest.TestCase):
         valid = {
             'owner': 'Lcom/gameloft/android/wrapper/au;',
             'method': 'Qh()V',
-            'predicate': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;->isEnabled()Z',
+            'predicate': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;->skipLegacyBackend()Z',
             'original_false_branch_preserved': True,
             'reverse_patch_semantics_verified': True,
         }
         for field, bad in [('owner', 'Lwrong/Owner;'), ('method', 'Qh(I)V'),
+                           ('predicate', 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;->isEnabled()Z'),
                            ('original_false_branch_preserved', False),
                            ('original_false_branch_preserved', 1),
                            ('reverse_patch_semantics_verified', False)]:

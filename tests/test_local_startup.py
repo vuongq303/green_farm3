@@ -75,7 +75,7 @@ class LocalStartupTest(unittest.TestCase):
             engine = target / 'FarmGameEngine.java'
             engine.write_text(SHELL.replace('%PACKAGE%', PACKAGE).replace('%METHOD%', method))
             config = target / 'LocalDevelopmentConfig.java'
-            config.write_text('package '+PACKAGE+'; public class LocalDevelopmentConfig { public static boolean ENABLED; }')
+            config.write_text('package '+PACKAGE+'; public class LocalDevelopmentConfig { public static boolean ENABLED; public static boolean ONLINE_ACCOUNTS=false; }')
             wrapper = sources / 'com/gameloft/android/wrapper/au.java'
             wrapper.parent.mkdir(parents=True)
             wrapper.write_text('package com.gameloft.android.wrapper; public class au { public static void mA(int v){} public static void el(String v){} public static void em(String v){} }')

@@ -42,4 +42,6 @@ test('runtime config rejects split endpoint variables, mismatched port and missi
   assert.throws(() => loadConfig({ ...env, PORT: '8788' }), /PORT must match/u);
   assert.throws(() => loadConfig({ ...env, RESEARCH_SESSION_SECRET: '' }), /RESEARCH_SESSION_SECRET/u);
   assert.throws(() => loadDatabaseConfig({ ...env, DB_PASSWORD: '' }), /DB_PASSWORD/u);
+  assert.equal(loadConfig({ ...env, NODE_ENV: 'production' }).legacyAuthEnabled, false);
+  assert.throws(() => loadConfig({ ...env, NODE_ENV: 'production', LEGACY_AUTH_ENABLED: 'true' }), /cannot be enabled in production/u);
 });

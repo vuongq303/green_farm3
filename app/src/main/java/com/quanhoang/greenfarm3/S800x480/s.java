@@ -757,7 +757,7 @@ public class s {
     }
 
     public static void aK(String str) {
-        if (LocalDevelopmentMode.isEnabled()) return;
+        if (LocalDevelopmentMode.skipLegacyBackend()) return;
         Mz = str;
         Mw = 0;
         My = new am(false);
@@ -951,7 +951,7 @@ public class s {
 
     /** Unlike legacy void helpers, report a full pool without losing the pending save. */
     public static synchronized boolean tryEnqueueFarmSave(String credential, String payload, String tag) {
-        if (LocalDevelopmentMode.isEnabled() || !w.YB) return false;
+        if (LocalDevelopmentMode.skipLegacyBackend() || !w.YB) return false;
         aI("storage");
         if (jf() == -1) return false;
         a(t.Ot, new String[]{credential, "Farm", payload, "public"},
@@ -976,7 +976,7 @@ public class s {
     }
 
     public static synchronized boolean tryEnqueueProfileSave(String credential, String field, String payload, String tag) {
-        if (LocalDevelopmentMode.isEnabled() || !w.YC) return false;
+        if (LocalDevelopmentMode.skipLegacyBackend() || !w.YC) return false;
         aI("storage");
         if (jf() == -1) return false;
         a(t.Ov, new String[]{credential, field, payload, "{\"*\":\"public\"}", "set"},
@@ -2103,7 +2103,7 @@ public class s {
     }
 
     public static void ae(boolean z) {
-        if (LocalDevelopmentMode.isEnabled()) return;
+        if (LocalDevelopmentMode.skipLegacyBackend()) return;
         byte[] bArrOj;
         String strIT;
         if (Mw != -1 && (strIT = iT()) != null) {
@@ -2619,7 +2619,7 @@ public class s {
 
     public static void aS(String str) {
         // No discovery, credential refresh or pending callbacks in local builds.
-        if (LocalDevelopmentMode.isEnabled()) return;
+        if (LocalDevelopmentMode.skipLegacyBackend()) return;
         if (!fZ()) {
             if (!jb()) {
                 jc();
@@ -2663,7 +2663,7 @@ public class s {
     }
 
     public static boolean jp() {
-        return !LocalDevelopmentMode.isEnabled() && w.XY;
+        return !LocalDevelopmentMode.skipLegacyBackend() && w.XY;
     }
 
     public static void jq() {

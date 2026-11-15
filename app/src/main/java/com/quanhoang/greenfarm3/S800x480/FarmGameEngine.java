@@ -3834,6 +3834,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void CL() {
+        if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) {
+            socialAccountRight();
+            return;
+        }
         gX(56);
         auz = true;
         if (aOM) {
@@ -3844,10 +3848,18 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void CM() {
+        if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) {
+            socialAccountLeft();
+            return;
+        }
         CN();
     }
 
     static void CN() {
+        if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) {
+            socialAccountLeft();
+            return;
+        }
         hb(23);
         try {
             Thread.sleep(2000L);
@@ -4620,6 +4632,15 @@ public final class FarmGameEngine extends GameRuntime implements av {
         aAi = false;
         aAj = false;
         cancelMovePreviewForInterruption();
+    }
+
+    @Override
+    public void onSurfaceCreated(javax.microedition.khronos.opengles.GL10 gl10,
+            javax.microedition.khronos.egl.EGLConfig config) {
+        super.onSurfaceCreated(gl10, config);
+        if (LocalDevelopmentConfig.ONLINE_ACCOUNTS && GameRuntime.QD == this) {
+            SocialAccountArtwork.onSurfaceCreated();
+        }
     }
 
     @Override
@@ -16910,7 +16931,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
 
     public static void Ml() {
         // Local saves need no CRM profile/config worker or polling loop.
-        if (LocalDevelopmentMode.isEnabled()) return;
+        if (LocalDevelopmentMode.skipLegacyBackend()) return;
         String lowerCase = GloftGF2F.acw.dr(aYU).toLowerCase();
         if (lowerCase.indexOf("kr") != -1) {
             lowerCase = "ko";
@@ -16983,7 +17004,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void Mn() {
-        if (LocalDevelopmentMode.isEnabled()) return;
+        if (LocalDevelopmentMode.skipLegacyBackend()) return;
         if (!com.gameloft.a.a.o.VW().VY()) {
             try {
                 Ml();
@@ -16999,7 +17020,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void Mo() {
-        if (LocalDevelopmentMode.isEnabled()) return;
+        if (LocalDevelopmentMode.skipLegacyBackend()) return;
         if (com.gameloft.a.a.k.VR().fZ() && aYx) {
             if (com.gameloft.a.a.o.VW().VY() && b.Jn) {
                 aYF = true;
@@ -35352,7 +35373,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void jn() {
-        if (LocalDevelopmentMode.isEnabled()) return;
+        if (LocalDevelopmentMode.skipLegacyBackend()) return;
         if (aps) {
             return;
         }
@@ -38139,7 +38160,148 @@ public final class FarmGameEngine extends GameRuntime implements av {
         }
     }
 
+    private static int socialAccountUiStatus = -1;
+    private static int socialAccountUiLanguage = -1;
+    private static boolean socialAccountUiBusy;
+    private static String socialAccountUiMessage;
+    private static String socialAccountUiGameId;
+
+    private static void enterOnlineAccountGate() {
+        // Keep existing saved preferences; only supply missing runtime defaults.
+        // Do not run the legacy consent/network handlers or write/reset a farm.
+        if (aYU == -1) {
+            int language = GloftGF2F.acw.kR();
+            aYU = (language == 0 || language == 1 || language == 2 || language == 3 ||
+                    language == 4 || language == 5 || language == 7 || language == 9 ||
+                    language == 10 || language == 11 || language == 12 || language == 15 ||
+                    language == 16 || language == 20) ? language : 0;
+        }
+        if (aTL <= 0) aTL = 18;
+        if (aTO <= 0) aTO = aTL;
+        if (auC < 0 || auC > 2) auC = 0;
+        aUb = true;
+        aTK = aTL >= 13;
+        fF(47);
+    }
+
+    private static void socialAccountLeft() {
+        if (SocialAccountController.busy()) return;
+        gX(56);
+        if (SocialAccountController.status() == SocialAccountController.WELCOME) {
+            SocialAccountController.continueSaved();
+        } else {
+            SocialAccountController.choose("facebook");
+        }
+        configureSocialAccountUi();
+    }
+
+    private static void socialAccountRight() {
+        if (SocialAccountController.busy()) return;
+        gX(56);
+        if (SocialAccountController.status() == SocialAccountController.WELCOME) {
+            SocialAccountController.logout();
+        } else {
+            SocialAccountController.choose("google");
+        }
+        configureSocialAccountUi();
+    }
+
+    private static void configureSocialAccountUi() {
+        int status = SocialAccountController.status();
+        boolean welcome = status == SocialAccountController.WELCOME;
+        boolean busy = SocialAccountController.busy();
+        String message = SocialAccountController.message();
+        String gameId = SocialAccountController.gameId();
+        if (socialAccountUiStatus == status && socialAccountUiLanguage == aYU &&
+                socialAccountUiBusy == busy && message.equals(socialAccountUiMessage) &&
+                gameId.equals(socialAccountUiGameId)) {
+            return;
+        }
+        boolean vietnamese = aYU == 16;
+        atc[29][1][5] = (short) (aYU == 7 ? 50 : 49);
+        // Reuse the original Facebook box, button frames, fonts and hitboxes.
+        e(29, 0, true);
+        e(29, 1, true);
+        e(29, 2, true);
+        e(29, 3, true);
+        e(29, 4, false);
+        e(29, 5, false); // Old Facebook coin reward is not an account action.
+        e(29, 6, true);
+        e(29, 7, !welcome);
+        e(29, 8, true);
+        e(29, 9, true);
+        e(29, 10, true);
+        f(29, 6, !busy);
+        f(29, 7, !busy && !welcome);
+        f(29, 8, !busy);
+        ate[29][4] = "";
+        if (welcome) {
+            ate[29][3] = vietnamese ? "Chào mừng " + gameId +
+                    " trở lại!\nNông trại lưu trên thiết bị này." :
+                    "Welcome back, " + gameId + "!\nYour farm is stored on this device.";
+            ate[29][9] = vietnamese ? "Đăng nhập" : "Continue";
+            ate[29][10] = vietnamese ? "Đăng xuất" : "Log out";
+        } else {
+            ate[29][3] = busy ? (vietnamese ? "Đang xác thực tài khoản..." : "Checking your account...") :
+                    (status == SocialAccountController.ERROR ? (vietnamese ? message :
+                    "Sign-in failed. Check the HTTPS backend/OAuth configuration and try again.") :
+                    (vietnamese ? "Vui lòng đăng nhập tài khoản để tiếp tục" : "Please sign in to continue"));
+            ate[29][9] = "Facebook";
+            ate[29][10] = vietnamese ? "Đăng nhập" : "Sign in";
+        }
+        DF();
+        gM(29);
+        socialAccountUiStatus = status;
+        socialAccountUiLanguage = aYU;
+        socialAccountUiBusy = busy;
+        socialAccountUiMessage = message;
+        socialAccountUiGameId = gameId;
+    }
+
+    private static boolean socialAccountScreen(int phase) {
+        if (phase == 0 || phase == 1) {
+            SocialAccountController.startupGate();
+            // Native visibility calls restart sprite animations and DF rebuilds
+            // hitboxes. Refresh on entry/resume, then only when content changes.
+            socialAccountUiStatus = -1;
+            configureSocialAccountUi();
+        }
+        if (phase == 2) {
+            SocialAccountController.tick();
+            if (SocialAccountController.status() == SocialAccountController.READY) {
+                fF(18); // Original loading/world restore, with no account-to-farm rebinding.
+                return false;
+            }
+            if (jO() == 19) {
+                if (SocialAccountController.busy()) SocialAccountController.cancel();
+                else GloftGF2F.acx.jf("MIDlet://minimize");
+            }
+            configureSocialAccountUi();
+        }
+        if (phase == 3) {
+            if (w.screenWidth > 854 || w.screenHeight > 480) {
+                atf[124].a(Qj, 0, (float) ((-(888 - w.screenWidth)) >> 1), (float) ((-(600 - w.screenHeight)) >> 1), 0);
+            }
+            gJ(29);
+            if (SocialAccountController.status() != SocialAccountController.WELCOME) {
+                SocialAccountArtwork.drawGoogleIcon(atc[29][8][2] + 8, atc[29][8][3] + 9, 32);
+            }
+            if (SocialAccountController.busy()) {
+                dl(0x66000000);
+                GameRuntime.b(Qj, 0.0f, 0.0f, (float) kH(), (float) kI(), true);
+                // Original loading-bar artwork and color; this is an indeterminate animation.
+                be(0, 2);
+                int fill = 48 + (int) ((SystemClock.uptimeMillis() / 4L) % 368L);
+                dk(26856);
+                GameRuntime.b(Qj, (float) atc[0][3][2], (float) atc[0][3][3], (float) fill, 20.0f, true);
+                be(0, 4);
+            }
+        }
+        return phase == 8 && SocialAccountController.busy();
+    }
+
     static boolean kx(int i) {
+        if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) return socialAccountScreen(i);
         if (i == 0) {
             DF();
             if (aPg) {
@@ -41610,11 +41772,11 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static boolean qN() {
-        return !LocalDevelopmentMode.isEnabled() && s.jp();
+        return !LocalDevelopmentMode.skipLegacyBackend() && s.jp();
     }
 
     public static boolean qO() {
-        return !LocalDevelopmentMode.isEnabled() && (bx("isConnectedMobile") || bx("isConnectedWifi"));
+        return !LocalDevelopmentMode.skipLegacyBackend() && (bx("isConnectedMobile") || bx("isConnectedWifi"));
     }
 
     public static final void qP() {
@@ -41711,7 +41873,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if (!asl || !asm) {
             return false;
         }
-        if (apq && apx) {
+        if (!LocalDevelopmentMode.skipLegacyBackend() && apq && apx) {
             qt();
             return false;
         }
@@ -51627,6 +51789,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
                     qV();
                 }
             } else {
+                if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) {
+                    enterOnlineAccountGate();
+                    return false;
+                }
                 String upperCase = rh().toUpperCase();
                 if (upperCase != null && !"".equals(upperCase)) {
                     try {
@@ -52862,7 +53028,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         } else {
             GameRuntime.Rm.setSeed(j);
         }
-        if (!LocalDevelopmentMode.isEnabled()) {
+        if (!LocalDevelopmentMode.skipLegacyBackend()) {
             jn();
             s.aK("eveListDataCenters");
             if (baf == null && rj() != null) {
@@ -54255,6 +54421,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static boolean lA(int i) {
+        if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) {
+            if (i == 0 || i == 1) enterOnlineAccountGate();
+            return false;
+        }
         if (i == 0) {
             ro();
             gG(44);
@@ -58999,6 +59169,11 @@ public final class FarmGameEngine extends GameRuntime implements av {
         int i3;
         int i4;
         if (i == 0) {
+            if (LocalDevelopmentConfig.ONLINE_ACCOUNTS &&
+                    SocialAccountController.status() != SocialAccountController.READY) {
+                fF(47);
+                return false;
+            }
             ProgressSaveController.enterWorld();
             if (qO()) {
                 String str = "AdsManager.s_VIDEO_BUBBLE_State enter: " + b.JP;
@@ -59787,7 +59962,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             }
         }
         if (i == 2) {
-            if (apq && (apl == 5 || apl == 2)) {
+            if (!LocalDevelopmentMode.skipLegacyBackend() && apq && (apl == 5 || apl == 2)) {
                 qt();
                 return true;
             }
@@ -59900,7 +60075,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             if (awV) {
                 Ei();
             }
-            if (!LocalDevelopmentMode.isEnabled() && qN() && bt.nY() && arg && !aLG) {
+            if (!LocalDevelopmentMode.skipLegacyBackend() && qN() && bt.nY() && arg && !aLG) {
                 BackendSavePolicy.Upload upload = ProgressSaveController.beginBackendSave();
                 if (upload != null) {
                     aLG = true;
@@ -63615,7 +63790,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 O(ShareConstants.WEB_DIALOG_PARAM_DATA, "Success");
             }
         }
-        if (!LocalDevelopmentMode.isEnabled() && qN() && bt.nY() && ark && bt.nW() && arg) {
+        if (!LocalDevelopmentMode.skipLegacyBackend() && qN() && bt.nY() && ark && bt.nW() && arg) {
             BackendSavePolicy.Upload level = ProgressSaveController.beginBackendLevelSave();
             BackendSavePolicy.Upload manor = ProgressSaveController.beginBackendManorSave();
             if (level != null) enqueueProfileAutosave("_level", level);
@@ -64292,7 +64467,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         }
         GameRuntime.r(sbAppend2.append(jCurrentTimeMillis7 - jCurrentTimeMillis2).append(" ms").toString());
         int iQD = currentEngineState();
-        if (!LocalDevelopmentMode.isEnabled() && com.gameloft.a.b.a.fZ() && Lc() && aTY && iQD != 4 && iQD != 2 && aUb) {
+        if (!LocalDevelopmentMode.skipLegacyBackend() && com.gameloft.a.b.a.fZ() && Lc() && aTY && iQD != 4 && iQD != 2 && aUb) {
             com.gameloft.a.b.i iVarWv = com.gameloft.a.b.i.Wv();
             baQ = MF();
             String str = "JW_PrivacyPolicy ::current_age111: " + aTL;
@@ -64345,7 +64520,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if (currentEngineState() > 7 && aUb) {
             this.aYC = true;
         }
-        if (!LocalDevelopmentMode.isEnabled()) {
+        if (!LocalDevelopmentMode.skipLegacyBackend()) {
             if (com.gameloft.a.a.k.VR().fZ()) {
                 com.gameloft.a.a.k.VR().h(GameRuntime.Qy);
             }

@@ -213,7 +213,7 @@ public class ProgressSaveChecks {
   Field critical=ProgressSaveController.class.getDeclaredField("criticalRequests");critical.setAccessible(true);
   ((java.util.concurrent.atomic.AtomicLong)critical.get(null)).set(0);
   set(ProgressSaveController.class,"capturedCriticalRequests",0L);
-  LocalDevelopmentMode.enabled=false;ProgressSaveController.initialize();
+  LocalDevelopmentMode.enabled=LocalDevelopmentMode.online=false;ProgressSaveController.initialize();
  }
  static void ready(){ProgressSaveController.globalLoadFinished(false,false);ProgressSaveController.farmLoadFinished();ProgressSaveController.enterWorld();}
  static void frame(long elapsed){SystemClock.now+=elapsed;ProgressSaveController.frameFinished();}
@@ -262,6 +262,30 @@ public class ProgressSaveChecks {
   LocalDevelopmentMode.enabled=false;frame(10000);finishPending();
   check(ProgressSaveController.beginBackendSave()==null,"enabling remote mode uploaded historical local data");
   System.out.println("PASS backend/controller integration: matching durable capture, late mutation barrier, local-mode persistence and no historical upload");
+ }
+ static void onlineAccountsKeepLocalProgress()throws Exception{
+  reset();LocalDevelopmentMode.online=true;
+  check(!LocalDevelopmentMode.isEnabled()&&LocalDevelopmentMode.skipLegacyBackend(),"online account enabled isolated-local bonuses");
+  ch.credits=837;ch.pending=11;ch.entities=5;ci.level=6;ci.aZD=9;
+  GameSaveStore.durableCredits=837;GameSaveStore.durablePending=11;
+  int rewardResets=PendingRewardState.resets,poseResets=EntityPoseState.resets;
+  int settlements=ch.settles,loadClears=ch.loadClears;
+  ProgressSaveController.globalLoadFinished(true,true);ProgressSaveController.farmLoadFinished();ProgressSaveController.enterWorld();
+  frame(0);frame(500);
+  check(queue().pending.size()==1&&GameSaveStore.durableCredits==837,"online loaded world lost or prematurely wrote local snapshot");
+  check(ProgressSaveController.beginBackendSave()==null&&ProgressSaveController.beginBackendLevelSave()==null&&ProgressSaveController.beginBackendManorSave()==null,"online loaded progress entered legacy gameplay/profile queues");
+  complete(false);
+  ch.credits=838;ch.pending=12;ci.level=7;ci.aZD=10;
+  ProgressSaveController.requestCriticalSave();frame(0);
+  check(queue().pending.size()==1&&GameSaveStore.durableCredits==837,"online local mutation bypassed the detached writer or was not captured");
+  check(ProgressSaveController.beginBackendSave()==null&&ProgressSaveController.beginBackendLevelSave()==null&&ProgressSaveController.beginBackendManorSave()==null,"online pending local write scheduled legacy uploads");
+  complete(false);frame(10000);finishPending();
+  check(GameSaveStore.durableCredits==838&&GameSaveStore.durablePending==12,"online account prevented durable local gameplay save");
+  check(ProgressSaveController.beginBackendSave()==null&&ProgressSaveController.beginBackendLevelSave()==null&&ProgressSaveController.beginBackendManorSave()==null,"online durable gameplay/profile metadata entered legacy backend queues");
+  check(ch.credits==838&&ch.pending==12&&ch.entities==5&&ch.settles==settlements&&ch.loadClears==loadClears,"online save granted rewards, settled them, or reset farm entities");
+  check(PendingRewardState.resets==rewardResets&&EntityPoseState.resets==poseResets,"online save reset reward or pose state");
+  check(!LocalDevelopmentMode.isEnabled(),"online save changed local bonus mode");
+  System.out.println("PASS online account isolation: no legacy farm/profile upload, unchanged rewards/entities and durable local SQLite snapshots");
  }
  static void retryNoticePreservesExistingQuestDialog()throws Exception{
   readySaved();queue().retryPaused=true;ci.state(20);frame(0);
@@ -480,7 +504,7 @@ public class ProgressSaveChecks {
  public static void main(String[]args)throws Exception{
   if(args.length>0&&args[0].equals("coldNoWriter")){coldNoWriter();return;}
   ColdEngineInitProbe.failInitialization=false;
-  backendSnapshotDurability();failedRestoreCannotAutosave();loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
+  backendSnapshotDurability();onlineAccountsKeepLocalProgress();failedRestoreCannotAutosave();loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
   retryNoticePreservesExistingQuestDialog();actionMatrixAndCriticalFlush();languageMandatoryTargetRestart();languageFontFailureRetriesOnlyOnUserChoice();languageFinalSaveRetainsLateWrites();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();saveTransferLongPress();saveTransferFreeze();
   System.out.println("PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff");
  }
@@ -521,7 +545,7 @@ class ProgressSaveControllerTest(unittest.TestCase):
                 peers.append(peer)
             fixture, runner = folder / 'Fixture.java', folder / 'ProgressSaveChecks.java'
             actual = [kotlin_source / name for name in ('ProgressSaveController.kt', 'SaveBatchPolicy.kt', 'BackendSavePolicy.kt', 'LanguageRestartController.kt', 'GameNotification.kt')]
-            fixture_text = FIXTURE.replace('class ci {', 'class LocalDevelopmentMode { static boolean enabled; public static boolean isEnabled(){return enabled;} }\nclass ci {')
+            fixture_text = FIXTURE.replace('class ci {', 'class LocalDevelopmentMode { static boolean enabled,online; public static boolean isEnabled(){return enabled;} public static boolean skipLegacyBackend(){return enabled||online;} }\nclass ci {')
             if kotlin_midlet.is_file():
                 # Isolate only the two unchanged production override bodies,
                 # just as the previous Java fixture did; peers are not gameplay.

@@ -36,6 +36,8 @@ ADDED_CORE_SOURCES = frozenset({
     'TutorialFlowController', 'MoreGamesRemoval', 'GameNotification',
     'LocalDevelopmentMode', 'BackendSavePolicy', 'SaveRestoreException',
     'NetworkDiagnostics',
+    'SocialAccountFlow', 'SocialAccountController', 'SocialAuthClient',
+    'SecureAccountStore', 'SocialAuthCallbackActivity', 'SocialAccountArtwork',
 })
 CORE_PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480/'
 TARGET_PACKAGE = 'com/quanhoang/greenfarm3/S800x480/'

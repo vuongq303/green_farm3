@@ -1,5 +1,10 @@
 # Green Farm backend: JavaScript và MySQL
 
+Hệ thống tài khoản Facebook/Google mới, cấu hình HTTPS/OAuth, migration và API
+được mô tả trong [SOCIAL_AUTH.md](SOCIAL_AUTH.md). Dữ liệu nông trại vẫn ở SQLite
+trên thiết bị; các API legacy bên dưới chỉ phục vụ tương thích nghiên cứu và
+không thay thế xác thực tài khoản mới.
+
 Backend dùng Node.js 24+, JavaScript ES Modules và `mysql2/promise`. Điểm khởi
 động là `src/main.js`; không cần TypeScript hoặc bước transpile. Một nguồn URL
 chung cho app và backend nằm tại **`../gradle.properties`**, biến
@@ -139,11 +144,15 @@ bỏ qua khóa bổ sung. Core `s.o` thực hiện refresh qua cùng route. Scop
 `leaderboard social storage auth message config` được nhận cùng các scope M0
 `asset transaction`; nhận tên scope không có nghĩa các dịch vụ đó đã hoạt động.
 
-Đăng nhập hiện là **anonymous legacy** (`anonymous:<credential>`), kiểm tra đúng
+Luồng đăng nhập legacy là **anonymous legacy** (`anonymous:<credential>`), kiểm tra đúng
 phép dẫn xuất password UTF-16 của APK rồi kiểm tra hash trong MySQL. Đây là giao
 thức công khai có thể tự dẫn xuất, không phải chứng minh quyền sở hữu tài khoản
-hiện đại. `NODE_ENV=production` vẫn bị từ chối. Không tạo đăng nhập Facebook thành
-công giả; nút Connect qua SDK Facebook cũ chưa có backend độc lập tương đương.
+hiện đại. Trong `NODE_ENV=production`, xác thực anonymous legacy mặc định bị tắt;
+`LEGACY_AUTH_ENABLED=true` bị từ chối. Giữ `LEGACY_AUTH_ENABLED=false` khi triển
+khai hệ thống tài khoản Facebook/Google mới. Nút Connect qua SDK Facebook cũ
+không được coi là xác thực của hệ thống OAuth mới; không tạo kết quả đăng nhập
+thành công giả. Luồng provider chính thức và các cấu hình còn thiếu được mô tả
+trong [SOCIAL_AUTH.md](SOCIAL_AUTH.md).
 
 Session được ký HMAC, sid chỉ lưu SHA-256 trong DB. Access/refresh có thời hạn;
 refresh token chỉ dùng một lần, giao dịch tạo session mới và xóa session cũ nên

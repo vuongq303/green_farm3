@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { isIP } from 'node:net';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadSocialAuthConfig } from './auth/config.js';
 
 const backendDirectory = fileURLToPath(new URL('..', import.meta.url));
 const defaultPropertiesFile = fileURLToPath(new URL('../../gradle.properties', import.meta.url));
@@ -81,9 +82,13 @@ export function loadConfig(env = process.env) {
   if (url.protocol !== 'http:') throw new Error('This direct Node listener uses HTTP; HTTPS requires an explicit TLS/reverse-proxy setup before use');
   const sessionSecret = env.RESEARCH_SESSION_SECRET;
   if (!sessionSecret || Buffer.byteLength(sessionSecret) < 32) throw new Error('Set a stable RESEARCH_SESSION_SECRET of at least 32 bytes in backend/.env');
-  if (env.NODE_ENV === 'production') throw new Error('Legacy anonymous compatibility authentication is not production account ownership');
+  const legacyText = env.LEGACY_AUTH_ENABLED ?? (env.NODE_ENV === 'production' ? 'false' : 'true');
+  if (!['true', 'false'].includes(legacyText)) throw new Error('LEGACY_AUTH_ENABLED must be true or false');
+  const legacyAuthEnabled = legacyText === 'true';
+  if (env.NODE_ENV === 'production' && legacyAuthEnabled) throw new Error('Legacy anonymous authentication cannot be enabled in production');
   const sessionTtlSeconds = integer(env, 'SESSION_TTL_SECONDS', 900, 1, 86400);
   const refreshTtlSeconds = integer(env, 'REFRESH_TTL_SECONDS', 2592000, 1, 7776000);
   if (refreshTtlSeconds < sessionTtlSeconds) throw new Error('REFRESH_TTL_SECONDS must be at least SESSION_TTL_SECONDS');
-  return { host, port, publicBaseUrl, sessionSecret, sessionTtlSeconds, refreshTtlSeconds, database: loadDatabaseConfig(env) };
+  return { host, port, publicBaseUrl, sessionSecret, sessionTtlSeconds, refreshTtlSeconds, database: loadDatabaseConfig(env),
+    legacyAuthEnabled, auth: loadSocialAuthConfig(env) };
 }

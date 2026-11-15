@@ -67,6 +67,8 @@ public class StartupProbe {
         kotlin='''package probe
 open class Base {var resumed=0;open fun onResume(){resumed++}}
 object MIDlet {var coi=true}
+object LocalDevelopmentConfig {@JvmField var ONLINE_ACCOUNTS=false}
+object SocialAccountController {@JvmField var resumed=0;@JvmStatic fun onHostResumed(){resumed++}}
 class Start:Base(){var bcT=0;var bcU=0;var isFinishing=false;val packageManager=Any()
  METHOD
 }
@@ -77,6 +79,9 @@ public class ResumeProbe {
   if(s.getResumed()!=1||com.gameloft.android.wrapper.ae.calls!=0)throw new AssertionError("cold layout gate bypassed");
   s.setBcT(800);s.setBcU(480);s.onResume();if(com.gameloft.android.wrapper.ae.calls!=1)throw new AssertionError("ready warm view was not resumed");
   s.setFinishing(true);s.onResume();if(com.gameloft.android.wrapper.ae.calls!=1)throw new AssertionError("destroyed view relaunched");
+  if(SocialAccountController.resumed!=0)throw new AssertionError("legacy build resumed account flow");
+  LocalDevelopmentConfig.ONLINE_ACCOUNTS=true;s.setFinishing(false);s.onResume();
+  if(SocialAccountController.resumed!=1||com.gameloft.android.wrapper.ae.calls!=2)throw new AssertionError("account resume changed native layout readiness");
   System.out.println("PASS layout-ready resume; cold callback elapsed_us="+(elapsed/1000));
  }
 }'''
