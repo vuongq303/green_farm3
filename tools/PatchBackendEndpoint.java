@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.URI;
+import java.net.IDN;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,6 +43,8 @@ import org.jf.dexlib2.immutable.ImmutableMethod;
 import org.jf.dexlib2.immutable.ImmutableMethodImplementation;
 import org.jf.dexlib2.immutable.instruction.ImmutableInstruction21c;
 import org.jf.dexlib2.immutable.instruction.ImmutableInstruction31c;
+import org.jf.dexlib2.immutable.instruction.ImmutableInstruction35c;
+import org.jf.dexlib2.immutable.instruction.ImmutableInstruction3rc;
 import org.jf.dexlib2.immutable.reference.ImmutableStringReference;
 import org.jf.dexlib2.immutable.reference.ImmutableMethodReference;
 import org.jf.dexlib2.writer.io.MemoryDataStore;
@@ -59,6 +62,118 @@ public final class PatchBackendEndpoint {
     static final String LOCAL_MODE = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;";
     static final String HTTP_OWNER = "Lcom/gameloft/a/b/e;";
     static final String NETWORK_HELPER = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/NetworkDiagnostics;";
+
+    static final String MIDLET_OWNER = "Ljavax/microedition/midlet/MIDlet;";
+    static final String LEGACY_FACEBOOK_OWNER = "Ljavax/microedition/midlet/v;";
+    static final String LIFECYCLE_HELPER = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LegacyFacebookLifecycle;";
+    private static final List<MethodReference> FACEBOOK_LIFECYCLE = Arrays.asList(
+            lifecycle("onCreate", "Landroid/os/Bundle;"), lifecycle("onDestroy"), lifecycle("onPause"),
+            lifecycle("onSaveInstanceState", "Landroid/os/Bundle;"), lifecycle("onRestart"),
+            lifecycle("onResume"), lifecycle("onStart"), lifecycle("onStop"),
+            lifecycle("onNewIntent", "Landroid/content/Intent;"),
+            lifecycle("onActivityResult", "I", "I", "Landroid/content/Intent;"),
+            lifecycle("onWindowFocusChanged", "Z"),
+            lifecycle("onConfigurationChanged", "Landroid/content/res/Configuration;"));
+
+    private static MethodReference lifecycle(String name, String... parameters) {
+        return new ImmutableMethodReference(LEGACY_FACEBOOK_OWNER, name, Arrays.asList(parameters), "V");
+    }
+
+    private static String descriptor(MethodReference reference) {
+        StringBuilder value = new StringBuilder(reference.getName()).append('(');
+        for (CharSequence parameter : reference.getParameterTypes()) value.append(parameter);
+        return value.append(')').append(reference.getReturnType()).toString();
+    }
+
+    private static boolean sameSignature(MethodReference left, MethodReference right) {
+        return left.getName().equals(right.getName()) && left.getParameterTypes().equals(right.getParameterTypes())
+                && left.getReturnType().equals(right.getReturnType());
+    }
+
+    private static MethodReference lifecycleReference(MethodReference original, boolean reverse) {
+        return new ImmutableMethodReference(reverse ? LEGACY_FACEBOOK_OWNER : LIFECYCLE_HELPER,
+                original.getName(), original.getParameterTypes(), original.getReturnType());
+    }
+
+    private static void requireLifecycleHelper(Map<String, ClassDef> definitions) throws IOException {
+        ClassDef helper = definitions.get(LIFECYCLE_HELPER);
+        if (helper == null) throw new IOException("The compiled Facebook lifecycle helper is missing");
+        for (MethodReference expected : FACEBOOK_LIFECYCLE) {
+            int found = 0;
+            for (Method method : helper.getMethods()) {
+                if (sameSignature(method, expected) && method.getImplementation() != null
+                        && AccessFlags.PUBLIC.isSet(method.getAccessFlags()) && AccessFlags.STATIC.isSet(method.getAccessFlags())) found++;
+            }
+            if (found != 1) throw new IOException("The compiled Facebook lifecycle helper method is missing or duplicated: " + descriptor(expected));
+        }
+    }
+
+    /** Rebind only the twelve original child lifecycle calls. Instruction widths,
+     * registers, branches, exceptions, fields and all other child modules stay intact. */
+    private static ClassDef guardFacebookLifecycle(ClassDef definition, boolean reverse) throws IOException {
+        int[] counts = new int[FACEBOOK_LIFECYCLE.size()];
+        List<Method> methods = new ArrayList<>();
+        String expectedOwner = reverse ? LIFECYCLE_HELPER : LEGACY_FACEBOOK_OWNER;
+        for (Method method : definition.getMethods()) {
+            MethodImplementation implementation = method.getImplementation();
+            if (implementation == null) { methods.add(method); continue; }
+            List<Instruction> instructions = new ArrayList<>();
+            for (Instruction instruction : implementation.getInstructions()) {
+                MethodReference reference = methodReference(instruction);
+                if (reference != null && reference.getDefiningClass().equals(expectedOwner)
+                        && reference.getName().startsWith("on")) {
+                    int matched = -1;
+                    for (int index = 0; index < FACEBOOK_LIFECYCLE.size(); index++) {
+                        if (sameSignature(reference, FACEBOOK_LIFECYCLE.get(index))) { matched = index; break; }
+                    }
+                    if (matched < 0 || !sameSignature(method, reference)) {
+                        throw new IOException("Unexpected retained MIDlet Facebook lifecycle call");
+                    }
+                    counts[matched]++;
+                    int registers = reference.getParameterTypes().size();
+                    if (!(instruction instanceof VariableRegisterInstruction)
+                            || ((VariableRegisterInstruction) instruction).getRegisterCount() != registers) {
+                        throw new IOException("Unexpected retained MIDlet Facebook lifecycle registers");
+                    }
+                    MethodReference replacement = lifecycleReference(reference, reverse);
+                    if (instruction.getOpcode() == Opcode.INVOKE_STATIC && instruction instanceof FiveRegisterInstruction) {
+                        FiveRegisterInstruction invoke = (FiveRegisterInstruction) instruction;
+                        instruction = new ImmutableInstruction35c(Opcode.INVOKE_STATIC, registers,
+                                invoke.getRegisterC(), invoke.getRegisterD(), invoke.getRegisterE(),
+                                invoke.getRegisterF(), invoke.getRegisterG(), replacement);
+                    } else if (instruction.getOpcode() == Opcode.INVOKE_STATIC_RANGE && instruction instanceof RegisterRangeInstruction) {
+                        instruction = new ImmutableInstruction3rc(Opcode.INVOKE_STATIC_RANGE,
+                                ((RegisterRangeInstruction) instruction).getStartRegister(), registers, replacement);
+                    } else throw new IOException("Unexpected retained MIDlet Facebook lifecycle opcode");
+                } else if (reference != null && reference.getDefiningClass().equals(reverse ? LEGACY_FACEBOOK_OWNER : LIFECYCLE_HELPER)
+                        && reference.getName().startsWith("on")) {
+                    throw new IOException("Retained MIDlet Facebook lifecycle was already patched or only partially restored");
+                }
+                instructions.add(instruction);
+            }
+            methods.add(new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
+                    method.getReturnType(), method.getAccessFlags(), method.getAnnotations(), method.getHiddenApiRestrictions(),
+                    new ImmutableMethodImplementation(implementation.getRegisterCount(), instructions,
+                            implementation.getTryBlocks(), implementation.getDebugItems())));
+        }
+        for (int count : counts) if (count != 1) {
+            throw new IOException("Expected exactly one retained MIDlet call for each of twelve Facebook lifecycle methods");
+        }
+        return new ImmutableClassDef(definition.getType(), definition.getAccessFlags(), definition.getSuperclass(),
+                definition.getInterfaces(), definition.getSourceFile(), definition.getAnnotations(), definition.getFields(), methods);
+    }
+
+    private static String lifecycleProof() {
+        StringBuilder counts = new StringBuilder("{");
+        for (MethodReference method : FACEBOOK_LIFECYCLE) {
+            if (counts.length() > 1) counts.append(',');
+            counts.append(quote(descriptor(method))).append(":1");
+        }
+        counts.append('}');
+        return "{\"owner\":" + quote(MIDLET_OWNER) + ",\"original_delegate\":" + quote(LEGACY_FACEBOOK_OWNER)
+                + ",\"helper\":" + quote(LIFECYCLE_HELPER) + ",\"call_count\":12,\"method_counts\":" + counts
+                + ",\"helper_methods_verified\":true,\"method_references_only\":true,\"reverse_patch_semantics_verified\":true}";
+    }
 
     private static final class NetworkHook {
         final String owner, name, result, helperName;
@@ -270,13 +385,13 @@ public final class PatchBackendEndpoint {
         throw new IOException("The compiled local development mode helper is missing");
     }
 
-    /** Accept an IPv4 backend over HTTP(S), or a DNS backend over HTTPS. */
+    /** Validate a configured origin without DNS resolution or host allowlists. */
     static String validateUrl(String value) throws Exception {
-        String message = "Set BACKEND_BASE_URL in root gradle.properties to an HTTP(S) IPv4 origin "
-                + "or an HTTPS DNS hostname (such as a Cloudflare Tunnel URL). "
+        String message = "Set BACKEND_BASE_URL in root gradle.properties to an HTTP(S) origin "
+                + "using DNS, localhost, IPv4 or bracketed IPv6. "
                 + "An optional port is allowed; credentials, paths, queries and fragments are not.";
         try {
-            String text = value == null ? "" : value.trim();
+            String text = value == null ? "" : value;
             if (text.isEmpty() || text.indexOf('\\') >= 0) throw new IllegalArgumentException();
             for (int i = 0; i < text.length(); i++) {
                 char c = text.charAt(i);
@@ -287,36 +402,39 @@ public final class PatchBackendEndpoint {
 
             URI uri = new URI(text);
             String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
-            String host = uri.getHost() == null ? null : uri.getHost().toLowerCase(Locale.ROOT);
             String authority = uri.getRawAuthority();
-            int port = uri.getPort();
-            if (!(scheme.equals("http") || scheme.equals("https")) || host == null || authority == null
+            if (!(scheme.equals("http") || scheme.equals("https")) || authority == null
                     || uri.getRawUserInfo() != null || uri.getRawQuery() != null || uri.getRawFragment() != null
                     || !("".equals(uri.getRawPath()) || "/".equals(uri.getRawPath()))
-                    || !authority.matches("[A-Za-z0-9.-]+(?::[0-9]{1,5})?")
-                    || port == 0 || port > 65535 || (authority.indexOf(':') >= 0 && port == -1)) {
+                    || authority.indexOf('%') >= 0 || authority.indexOf('@') >= 0) {
                 throw new IllegalArgumentException();
             }
-
-            if (host.matches("[0-9.]+")) {
-                // Keep the previous LAN IPv4 safety checks unchanged.
-                String[] parts = host.split("\\.", -1);
-                if (parts.length != 4) throw new IllegalArgumentException();
-                int[] octets = new int[4];
-                for (int i = 0; i < parts.length; i++) {
-                    if (!parts[i].matches("0|[1-9][0-9]{0,2}")) throw new IllegalArgumentException();
-                    octets[i] = Integer.parseInt(parts[i]);
-                    if (octets[i] > 255) throw new IllegalArgumentException();
+            String host, portText = null;
+            if (authority.startsWith("[")) {
+                int end = authority.indexOf(']');
+                if (end < 0 || uri.getHost() == null) throw new IllegalArgumentException();
+                String suffix = authority.substring(end + 1);
+                if (!suffix.isEmpty()) {
+                    if (!suffix.startsWith(":")) throw new IllegalArgumentException();
+                    portText = suffix.substring(1);
                 }
-                if (octets[0] == 0 || octets[0] == 127 || octets[0] >= 224
-                        || (octets[0] == 169 && octets[1] == 254) || host.equals("10.0.2.2")) {
-                    throw new IllegalArgumentException();
+                host = "[" + canonicalIpv6(authority.substring(1, end)) + "]";
+            } else {
+                int colon = authority.indexOf(':');
+                String rawHost = authority;
+                if (colon >= 0) {
+                    if (colon != authority.lastIndexOf(':')) throw new IllegalArgumentException();
+                    rawHost = authority.substring(0, colon);
+                    portText = authority.substring(colon + 1);
                 }
-            } else if (!scheme.equals("https") || !isValidHttpsHostname(host)) {
-                // DNS hostnames may only be used over HTTPS.
-                throw new IllegalArgumentException();
+                host = canonicalHostname(rawHost);
             }
-
+            int port = -1;
+            if (portText != null) {
+                if (!portText.matches("[0-9]{1,5}")) throw new IllegalArgumentException();
+                port = Integer.parseInt(portText);
+                if (port < 1 || port > 65535) throw new IllegalArgumentException();
+            }
             return scheme + "://" + host + (port < 0 ? "" : ":" + port) + "/";
         } catch (Exception failure) {
             // Do not echo the input: an invalid URL might contain credentials.
@@ -324,17 +442,69 @@ public final class PatchBackendEndpoint {
         }
     }
 
-    private static boolean isValidHttpsHostname(String host) {
-        if (host.length() > 253 || host.endsWith(".local")
-                || host.endsWith(".localhost") || host.endsWith(".internal")) {
-            return false;
+    private static int[] ipv4Parts(String host) {
+        String[] parts = host.split("\\.", -1);
+        if (parts.length != 4) throw new IllegalArgumentException();
+        int[] result = new int[4];
+        for (int i = 0; i < parts.length; i++) {
+            if (!parts[i].matches("0|[1-9][0-9]{0,2}")) throw new IllegalArgumentException();
+            result[i] = Integer.parseInt(parts[i]);
+            if (result[i] > 255) throw new IllegalArgumentException();
         }
-        String[] labels = host.split("\\.", -1);
-        if (labels.length < 2) return false;
+        return result;
+    }
+
+    private static String canonicalHostname(String value) {
+        String host = IDN.toASCII(value, IDN.USE_STD3_ASCII_RULES).toLowerCase(Locale.ROOT);
+        if (host.isEmpty() || host.length() > 253) throw new IllegalArgumentException();
+        if (host.matches("[0-9.]+")) {
+            if (!host.equals(value)) throw new IllegalArgumentException();
+            ipv4Parts(host);
+            return host;
+        }
+        String name = host.endsWith(".") ? host.substring(0, host.length() - 1) : host;
+        String[] labels = name.split("\\.", -1);
         for (String label : labels) {
-            if (!label.matches("[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?")) return false;
+            if (!label.matches("[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?")) throw new IllegalArgumentException();
         }
-        return !labels[labels.length - 1].matches("[0-9]+");
+        if (labels[labels.length - 1].matches("[0-9]+|0x[0-9a-f]+")) throw new IllegalArgumentException();
+        return host;
+    }
+
+    /** RFC 5952-style literal formatting, without resolving hostnames. */
+    private static String canonicalIpv6(String value) {
+        String text = value.toLowerCase(Locale.ROOT);
+        if (text.indexOf('.') >= 0) {
+            int last = text.lastIndexOf(':');
+            if (last < 0) throw new IllegalArgumentException();
+            int[] v4 = ipv4Parts(text.substring(last + 1));
+            text = text.substring(0, last + 1) + Integer.toHexString(v4[0] * 256 + v4[1])
+                    + ":" + Integer.toHexString(v4[2] * 256 + v4[3]);
+        }
+        String[] sides = text.split("::", -1);
+        if (sides.length > 2) throw new IllegalArgumentException();
+        String[] left = sides[0].isEmpty() ? new String[0] : sides[0].split(":", -1);
+        String[] right = sides.length == 2 && !sides[1].isEmpty() ? sides[1].split(":", -1) : new String[0];
+        int size = left.length + right.length;
+        if ((sides.length == 1 && size != 8) || (sides.length == 2 && size >= 8)) throw new IllegalArgumentException();
+        int[] words = new int[8];
+        for (int i = 0; i < size; i++) {
+            String word = i < left.length ? left[i] : right[i - left.length];
+            if (!word.matches("[0-9a-f]{1,4}")) throw new IllegalArgumentException();
+            words[i < left.length ? i : 8 - size + i] = Integer.parseInt(word, 16);
+        }
+        int start = -1, length = 0;
+        for (int i = 0; i < 8;) {
+            if (words[i] != 0) { i++; continue; }
+            int j = i;
+            while (j < 8 && words[j] == 0) j++;
+            if (j - i > length && j - i >= 2) { start = i; length = j - i; }
+            i = j;
+        }
+        List<String> hex = new ArrayList<>();
+        for (int word : words) hex.add(Integer.toHexString(word));
+        if (start < 0) return String.join(":", hex);
+        return String.join(":", hex.subList(0, start)) + "::" + String.join(":", hex.subList(start + length, 8));
     }
 
     private static boolean target(Method method) {
@@ -440,13 +610,14 @@ public final class PatchBackendEndpoint {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 3 || args.length > 5) {
-            throw new IllegalArgumentException("Usage: PatchBackendEndpoint input.dex output.dex baseURL [--guard-local-startup] [--network-diagnostics]");
+        if (args.length < 3 || args.length > 6) {
+            throw new IllegalArgumentException("Usage: PatchBackendEndpoint input.dex output.dex baseURL [--guard-local-startup] [--network-diagnostics] [--guard-legacy-facebook-lifecycle]");
         }
-        boolean localStartupGuard = false, networkDiagnostics = false;
+        boolean localStartupGuard = false, networkDiagnostics = false, facebookLifecycle = false;
         for (int index = 3; index < args.length; index++) {
             if (args[index].equals("--guard-local-startup") && !localStartupGuard) localStartupGuard = true;
             else if (args[index].equals("--network-diagnostics") && !networkDiagnostics) networkDiagnostics = true;
+            else if (args[index].equals("--guard-legacy-facebook-lifecycle") && !facebookLifecycle) facebookLifecycle = true;
             else throw new IllegalArgumentException("Unknown or duplicate patch option");
         }
         String replacement = validateUrl(args[2]);
@@ -478,6 +649,11 @@ public final class PatchBackendEndpoint {
             if (!original.containsKey(HTTP_OWNER)) throw new IOException("Missing SDK HTTP owner");
             modified.put(HTTP_OWNER, instrumentNetwork(original.get(HTTP_OWNER), false));
         }
+        if (facebookLifecycle) {
+            requireLifecycleHelper(original);
+            if (!original.containsKey(MIDLET_OWNER)) throw new IOException("Missing retained MIDlet owner");
+            modified.put(MIDLET_OWNER, guardFacebookLifecycle(original.get(MIDLET_OWNER), false));
+        }
         byte[] outputBytes = serialize(modified.values(), opcodes);
         Map<String, ClassDef> actual = classes(outputBytes, opcodes);
         if (!original.keySet().equals(actual.keySet())) throw new IOException("Class set changed");
@@ -502,10 +678,18 @@ public final class PatchBackendEndpoint {
                 throw new IOException("Reverse-patched SDK network diagnostics semantics changed");
             }
         }
+        if (facebookLifecycle) {
+            ClassDef restored = guardFacebookLifecycle(actual.get(MIDLET_OWNER), true);
+            if (!Arrays.equals(serialize(Collections.singletonList(original.get(MIDLET_OWNER)), opcodes),
+                    serialize(Collections.singletonList(restored), opcodes))) {
+                throw new IOException("Reverse-patched retained MIDlet Facebook lifecycle semantics changed");
+            }
+        }
         Map<String, ClassDef> beforeOthers = new TreeMap<>(original), afterOthers = new TreeMap<>(actual);
         for (String owner : TARGETS.keySet()) { beforeOthers.remove(owner); afterOthers.remove(owner); }
         if (localStartupGuard) { beforeOthers.remove(STARTUP_OWNER); afterOthers.remove(STARTUP_OWNER); }
         if (networkDiagnostics) { beforeOthers.remove(HTTP_OWNER); afterOthers.remove(HTTP_OWNER); }
+        if (facebookLifecycle) { beforeOthers.remove(MIDLET_OWNER); afterOthers.remove(MIDLET_OWNER); }
         byte[] beforeCanonical = serialize(beforeOthers.values(), opcodes);
         if (!Arrays.equals(beforeCanonical, serialize(afterOthers.values(), opcodes))) throw new IOException("Other class semantics changed");
         String json = "{\n"
@@ -530,6 +714,7 @@ public final class PatchBackendEndpoint {
                         + ",\"begin_calls\":1,\"hook_counts\":{\"open_connection\":1,\"open_connection_proxy\":1,\"response_code\":1,\"failure\":1}"
                         + ",\"reverse_patch_semantics_verified\":true}"
                     : "null") + ",\n"
+                + "  \"legacy_facebook_lifecycle\": " + (facebookLifecycle ? lifecycleProof() : "null") + ",\n"
                 + "  \"unchanged_classes_canonical_sha256\": " + quote(sha256(beforeCanonical)) + "\n}\n";
         // Publish only after read-back verification. Both files use same-directory atomic rename.
         Path stagedOutput = stage(output, outputBytes), stagedReport = null;

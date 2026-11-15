@@ -8,6 +8,7 @@ import { createSocialStore } from '../src/db/social-store.js';
 import { migrate } from '../src/db/migrate.js';
 import { APP_REDIRECT_URI, loadSocialAuthConfig } from '../src/auth/config.js';
 import { createSocialAuthRouter } from '../src/auth/router.js';
+import { ProviderError } from '../src/auth/providers.js';
 
 loadEnvironment();
 const database = loadDatabaseConfig();
@@ -22,12 +23,13 @@ const password = 'actual MySQL password test 123';
 async function fixture(t, extra = {}) {
   await migrate(pool);
   const prefix = 'pw_' + randomBytes(8).toString('hex');
-  const config = loadSocialAuthConfig({ AUTH_PUBLIC_BASE_URL: 'https://accounts.example.test' });
+  const { authEnvironment = {}, ...routerOptions } = extra;
+  const config = loadSocialAuthConfig({ AUTH_PUBLIC_BASE_URL: 'https://accounts.example.test', ...authEnvironment });
   const attempts = [], errors = [];
   let server, origin;
   async function start() {
     const router = createSocialAuthRouter({ config, store: createSocialStore(pool), isSecureRequest: () => true,
-      errorLog: entry => errors.push(entry), ...extra });
+      errorLog: entry => errors.push(entry), ...routerOptions });
     server = createServer((req, res) => { void router.handle(req, res, new URL(req.url, 'http://test.invalid')); });
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     origin = 'http://127.0.0.1:' + server.address().port;
@@ -83,7 +85,71 @@ async function fixture(t, extra = {}) {
     assert.equal((await post('/auth/exchange', { code, code_verifier: form.verifier, redirect_uri: APP_REDIRECT_URI })).status, 400);
     return exchanged.json();
   }
-  return { prefix, config, errors, get, post, form, exchange, restart: async () => { await stop(); await start(); } };
+  return { prefix, config, errors, get, post, form, exchange, attempts, restart: async () => { await stop(); await start(); } };
+}
+
+for (const [description, authEnvironment, facebookConfigured] of [
+  ['incomplete and invalid Facebook/Google configuration', {
+    FACEBOOK_APP_ID: '123456789', GOOGLE_OAUTH_CLIENT_SECRET: 'incomplete-google-test-secret',
+  }, false],
+  ['a Facebook provider API failure', {
+    FACEBOOK_APP_ID: '123456789', FACEBOOK_APP_SECRET: 'valid-facebook-test-secret',
+  }, true],
+]) {
+  test(`website register/login/remembered sessions remain independent of ${description}`, async t => {
+    let providerCalls = 0;
+    const providers = {
+      authorizationUrl(provider, attempt, state) {
+        ++providerCalls;
+        assert.equal(provider, 'facebook');
+        return 'https://www.facebook.com/v24.0/dialog/oauth?state=' + state;
+      },
+      async verifyIdentity() { ++providerCalls; throw new ProviderError(); },
+    };
+    const f = await fixture(t, { authEnvironment, providers });
+    const facebook = await f.post('/auth/attempt', { provider: 'facebook', state: value(),
+      code_challenge: value(), redirect_uri: APP_REDIRECT_URI });
+    if (facebookConfigured) {
+      assert.equal(facebook.status, 201);
+      const attempt = await facebook.json(); f.attempts.push(attempt.attempt_id);
+      const redirect = await f.get('/auth/browser/start?id=' + attempt.attempt_id);
+      assert.equal(redirect.status, 302);
+      const state = new URL(redirect.headers.get('location')).searchParams.get('state');
+      const refused = await f.get('/auth/callback/facebook?state=' + state + '&code=fixture-provider-code');
+      assert.equal(refused.status, 502);
+      assert.ok(!(await refused.text()).includes('valid-facebook-test-secret'));
+      assert.equal(providerCalls, 2);
+    } else {
+      assert.equal(facebook.status, 503);
+      assert.equal((await facebook.json()).error.code, 'oauth_not_configured');
+      assert.equal(providerCalls, 0);
+    }
+    const callsBeforeWebsite = providerCalls;
+    const signup = await f.form();
+    const registration = await f.post('/auth/register', { attempt: signup.attempt, csrf: signup.csrf,
+      username: f.prefix, email: f.prefix + '@example.test', password, password_confirmation: password }, signup.headers);
+    assert.equal(registration.status, 201);
+    const registered = await f.exchange(signup, registration);
+    assert.equal(registered.user.provider, 'password');
+    assert.equal(registered.user.display_name, f.prefix);
+    await f.restart();
+    assert.deepEqual((await (await f.get('/auth/me', { Authorization: 'Bearer ' + registered.access_token })).json()).user,
+      registered.user, 'remembered website account is checked without Facebook');
+    const login = await f.form();
+    const signedIn = await f.post('/auth/login', { attempt: login.attempt, csrf: login.csrf,
+      login: f.prefix + '@EXAMPLE.TEST', password }, login.headers);
+    assert.equal(signedIn.status, 200);
+    const repeated = await f.exchange(login, signedIn);
+    assert.equal(repeated.user.game_id, registered.user.game_id);
+    const refresh = await f.post('/auth/refresh', { refresh_token: repeated.refresh_token });
+    assert.equal(refresh.status, 200);
+    const rotated = await refresh.json();
+    assert.equal(rotated.user.game_id, registered.user.game_id);
+    assert.equal((await f.post('/auth/logout', { refresh_token: rotated.refresh_token },
+      { Authorization: 'Bearer ' + rotated.access_token })).status, 204);
+    assert.equal((await f.get('/auth/me', { Authorization: 'Bearer ' + rotated.access_token })).status, 401);
+    assert.equal(providerCalls, callsBeforeWebsite, 'website routes and sessions never call any OAuth provider');
+  });
 }
 
 test('real password website/HTTP/MySQL register, PKCE exchange, restart, remembered identity, refresh and logout', async t => {

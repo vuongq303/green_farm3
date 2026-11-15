@@ -1,5 +1,7 @@
 # Green Farm backend: JavaScript và MySQL
 
+Luồng Website độc lập với cấu hình/token Facebook; xem bản sửa và kiểm thử tại
+[WEBSITE_AUTH_ISOLATION.md](../docs/WEBSITE_AUTH_ISOLATION.md).
 Đăng ký/đăng nhập tài khoản riêng bằng WebView, migration MySQL và cấu hình HTTPS/
 Cloudflare Tunnel được mô tả trong [EMBEDDED_AUTH.md](EMBEDDED_AUTH.md). Nút Facebook
 giữ OAuth chính thức; dữ liệu và API Google cũ được bảo toàn, xem
@@ -13,10 +15,10 @@ chung cho app và backend nằm tại **`../gradle.properties`**, biến
 `BACKEND_BASE_URL`. Backend đọc trực tiếp file này để tạo mọi URL discovery.
 
 ```properties
-BACKEND_BASE_URL=http://10.37.233.55:8787/
+BACKEND_BASE_URL=https://backend.example.com/
 ```
 
-`10.37.233.55` là IPv4 Windows người dùng cung cấp. Nếu mạng đổi IP, sửa chính
+Đây là URL ví dụ; dùng hostname, IPv4 hoặc IPv6 của backend thật. Nếu URL đổi, sửa
 biến này, khởi động lại backend, **build và cài lại APK**. Đổi file cấu hình không
 đổi được URL đã nhúng trong APK đang cài. Không còn biến `localBackendUrl`,
 `PUBLIC_BASE_URL`, `BIND_HOST` hoặc fallback về localhost/`10.0.2.2`.
@@ -74,8 +76,8 @@ Một schema có checksum không khớp sẽ bị từ chối thay vì tự vi�
 
 | Cấu hình backend | Giá trị/mục đích |
 |---|---|
-| `HOST` | Mặc định `0.0.0.0`, lắng nghe mọi interface IPv4. |
-| `PORT` | Mặc định `8787`; phải khớp port của `BACKEND_BASE_URL`. |
+| `HOST` | Mặc định `0.0.0.0`; có thể dùng địa chỉ bind IPv4/IPv6 hoặc localhost. |
+| `PORT` | Cổng HTTP bind local, mặc định `8787`; độc lập với cổng URL công khai của proxy/tunnel. |
 | `DB_HOST`, `DB_PORT` | Mặc định `127.0.0.1`, `3306`; chỉ backend truy cập MySQL. |
 | `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Bắt buộc, chỉ trong `.env`/môi trường backend. |
 | `DB_POOL_SIZE`, `DB_CONNECT_TIMEOUT_MS` | Pool mặc định 5 kết nối, timeout 5000 ms. |
@@ -86,7 +88,7 @@ Một schema có checksum không khớp sẽ bị từ chối thay vì tự vi�
 
 `.env` được Node tự đọc khi chạy entry point/migration; biến môi trường đã đặt
 có ưu tiên. Listener này dùng HTTP trực tiếp. Validator nhận cấu hình origin
-HTTP(S) IPv4 chuẩn; HTTPS không được mở bởi Node listener này và cần triển khai
+HTTP(S) với hostname, IPv4 hoặc IPv6; HTTPS không được mở bởi Node listener này và cần triển khai
 TLS/reverse proxy rõ ràng trước khi dùng. Không có chứng chỉ/TLS giả.
 
 ## Kiểm tra IPv4 và mạng

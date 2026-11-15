@@ -84,11 +84,13 @@ fun main(){
  val ctx=android.content.Context();val state="s".repeat(43);val verifier="v".repeat(43);val code="c".repeat(43)
  val url="https://auth.example/auth/web/login?attempt="+"a".repeat(43)
  val cb=SocialAccountFlow.REDIRECT_URI+"?state=$state&code=$code"
+ check(SocialAccountController.accountName()=="")
  SecureAccountStore.pending=SocialAttempt("password",state,verifier,url,System.currentTimeMillis()+300000)
  check(!SocialAccountController.recordCallback(ctx,cb)){"Exported callback accepted a password-account handoff"}
  check(SecureAccountStore.returned==null)
  check(!SocialAccountController.recordEmbeddedCallback(ctx,cb.replace(state,"x".repeat(43))))
  check(!SocialAccountController.recordEmbeddedCallback(ctx,cb+"&access_token=private"))
+ check(!SocialAccountController.recordEmbeddedCallback(ctx,cb+"&game_id=GF000999&display_name=Forged"))
  check(SecureAccountStore.returned==null)
  check(SocialAccountController.recordEmbeddedCallback(ctx,cb))
  check(SecureAccountStore.returned==SocialCallback(state,code,null))
@@ -109,13 +111,21 @@ fun main(){
  check(descriptor.first==url&&!descriptor.toString().contains(SecureAccountStore.pending!!.verifier))
  SocialAccountController.closeEmbedded(ctx,url+"x");check(SocialAccountController.status()==SocialAccountController.BROWSER)
  SocialAccountController.closeEmbedded(ctx,url);check(SocialAccountController.status()==SocialAccountController.SIGNED_OUT&&SecureAccountStore.pending==null)
+ SocialAccountController.choose("password");settle(SocialAccountController.BROWSER)
+ check(MIDlet.cnA.launched!!.target==EmbeddedAccountActivity::class.java&&SocialAccountController.accountName()=="")
+ val ownCallback=SocialAccountFlow.REDIRECT_URI+"?state="+SecureAccountStore.pending!!.state+"&code=$code"
+ check(!SocialAccountController.recordCallback(ctx,ownCallback))
+ check(SocialAccountController.recordEmbeddedCallback(ctx,ownCallback));settle(SocialAccountController.READY)
+ check(SocialAccountController.accountName()=="Player"&&SocialAccountController.gameId()=="GF000001")
+ SocialAccountController.logout();settle(SocialAccountController.SIGNED_OUT)
+ check(SocialAccountController.accountName()==""&&SecureAccountStore.saved==null)
  SocialAccountController.choose("facebook");settle(SocialAccountController.BROWSER)
  val facebook=MIDlet.cnA.launched!!
  check(facebook.target==null&&facebook.action==Intent.ACTION_VIEW&&facebook.uri.toString().contains("/auth/browser/start?id="))
  check(!SocialAccountController.recordEmbeddedCallback(ctx,SocialAccountFlow.REDIRECT_URI+"?state="+SecureAccountStore.pending!!.state+"&code=$code"))
  check(SocialAccountController.recordCallback(ctx,SocialAccountFlow.REDIRECT_URI+"?state="+SecureAccountStore.pending!!.state+"&code=$code"))
  settle(SocialAccountController.READY)
- check(SocialAccountController.gameId()=="GF000001")
+ check(SocialAccountController.gameId()=="GF000001"&&SocialAccountController.accountName()=="Player")
  check(!Log.joined().contains(state)&&!Log.joined().contains(code)&&!Log.joined().contains(verifier))
  println("PASS production controller: private embedded launch, official external Facebook, bound callbacks and no credential Intents/logs")
 }

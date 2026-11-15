@@ -38156,6 +38156,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     private static boolean socialAccountUiBusy;
     private static String socialAccountUiMessage;
     private static String socialAccountUiGameId;
+    private static String socialAccountUiName;
 
     private static void enterOnlineAccountGate() {
         // Keep existing saved preferences; only supply missing runtime defaults.
@@ -38203,9 +38204,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
         boolean busy = SocialAccountController.busy();
         String message = SocialAccountController.message();
         String gameId = SocialAccountController.gameId();
+        String accountName = welcome ? SocialAccountController.accountName() : "";
         if (socialAccountUiStatus == status && socialAccountUiLanguage == aYU &&
                 socialAccountUiBusy == busy && message.equals(socialAccountUiMessage) &&
-                gameId.equals(socialAccountUiGameId)) {
+                gameId.equals(socialAccountUiGameId) && accountName.equals(socialAccountUiName)) {
             return;
         }
         boolean vietnamese = aYU == 16;
@@ -38227,9 +38229,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         f(29, 8, !busy);
         ate[29][4] = "";
         if (welcome) {
-            ate[29][3] = vietnamese ? "Chào mừng " + gameId +
-                    " trở lại!\nNông trại lưu trên thiết bị này." :
-                    "Welcome back, " + gameId + "!\nYour farm is stored on this device.";
+            ate[29][3] = socialAccountWelcome(accountName, gameId, vietnamese);
             ate[29][9] = vietnamese ? "Đăng nhập" : "Continue";
             ate[29][10] = vietnamese ? "Đăng xuất" : "Log out";
         } else {
@@ -38247,6 +38247,31 @@ public final class FarmGameEngine extends GameRuntime implements av {
         socialAccountUiBusy = busy;
         socialAccountUiMessage = message;
         socialAccountUiGameId = gameId;
+        socialAccountUiName = accountName;
+    }
+
+    private static String socialAccountWelcome(String accountName, String gameId, boolean vietnamese) {
+        if (accountName.length() == 0) {
+            return vietnamese ? "Chào mừng " + gameId + " trở lại!\nNông trại lưu trên thiết bị này." :
+                    "Welcome back, " + gameId + "!\nYour farm is stored on this device.";
+        }
+        // Only a verified session supplies this name. Fit the original text box,
+        // without changing its font/geometry or rebinding the local farm owner.
+        int total = accountName.codePointCount(0, accountName.length());
+        int visible = Math.min(total, 32);
+        int fontIndex = gV(atc[29][3][7]);
+        a font = aZh != null && fontIndex < aZh.length ? aZh[fontIndex] : null;
+        while (true) {
+            String name = accountName.substring(0, accountName.offsetByCodePoints(0, visible)) +
+                    (visible < total ? "..." : "");
+            String caption = name + " (" + gameId + ")\n" +
+                    (vietnamese ? "Nông trại cục bộ." : "Farm stored on this device.");
+            if (font == null || atc[29][3][5] <= 0 || atc[29][3][6] <= 0 || visible <= 1) return caption;
+            font.a(caption, (char[]) null);
+            int lines = font.a(caption, (int) atc[29][3][5], -1, false)[0];
+            if (lines * font.hG() + Math.max(0, lines - 1) * font.hA() <= atc[29][3][6]) return caption;
+            visible--;
+        }
     }
 
     private static boolean socialAccountScreen(int phase) {

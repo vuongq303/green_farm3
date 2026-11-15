@@ -113,11 +113,14 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
 
         @JvmStatic fun messageFor(code: String): String = when (code) {
             "configuration_required" -> "Chưa cấu hình domain HTTPS cho backend tài khoản."
-            "oauth_not_configured" -> "Chưa cấu hình ứng dụng Facebook trên backend."
+            "auth_not_configured" -> "Backend tài khoản chưa được cấu hình HTTPS. Hãy kiểm tra cấu hình máy chủ."
+            "oauth_not_configured" -> "Phương thức đăng nhập đã chọn chưa được cấu hình trên backend."
+            "database_unavailable" -> "Máy chủ tài khoản tạm thời không sẵn sàng. Vui lòng thử lại."
             "unsupported_device" -> "Đăng nhập an toàn cần Android 6.0 trở lên. Dữ liệu nông trại vẫn được giữ nguyên."
             "storage_error" -> "Không thể đọc hoặc lưu phiên đăng nhập an toàn. Hãy thử đăng nhập lại."
             "invalid_callback" -> "Kết quả đăng nhập không hợp lệ. Hãy thử lại."
-            "access_denied", "authentication_failed" -> "Đăng nhập đã bị hủy hoặc nhà cung cấp từ chối xác thực."
+            "access_denied" -> "Bạn đã hủy đăng nhập. Có thể thử lại."
+            "authentication_failed" -> "Không thể xác thực tài khoản. Vui lòng thử lại."
             "attempt_expired", "invalid_code", "expired_code" -> "Yêu cầu đăng nhập đã hết hạn. Hãy thử lại."
             "invalid_session", "session_expired", "invalid_refresh_token" -> "Phiên đã hết hạn. Vui lòng đăng nhập lại."
             "rate_limited" -> "Bạn đã thử quá nhiều lần. Vui lòng đợi rồi thử lại."
@@ -143,6 +146,9 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
     var status: Int = SIGNED_OUT; private set
     var message: String = "Vui lòng đăng nhập tài khoản để tiếp tục"; private set
     val gameId: String get() = currentSession?.user?.gameId ?: ""
+    /** A remembered name is visible only after this process verifies the session with the backend. */
+    val accountName: String get() = if (status == WELCOME || status == READY)
+        currentSession?.user?.displayName.orEmpty().trim() else ""
     val busy: Boolean get() = status == CHECKING || status == BROWSER || status == EXCHANGING || status == LOGGING_OUT
     val needsGate: Boolean get() = status != READY
 

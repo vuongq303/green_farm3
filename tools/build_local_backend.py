@@ -28,9 +28,25 @@ NETWORK_DIAGNOSTICS = {
     'reverse_patch_semantics_verified': True,
 }
 
+FACEBOOK_LIFECYCLE = {
+    'owner': 'Ljavax/microedition/midlet/MIDlet;',
+    'original_delegate': 'Ljavax/microedition/midlet/v;',
+    'helper': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LegacyFacebookLifecycle;',
+    'call_count': 12,
+    'method_counts': {name: 1 for name in (
+        'onCreate(Landroid/os/Bundle;)V', 'onDestroy()V', 'onPause()V',
+        'onSaveInstanceState(Landroid/os/Bundle;)V', 'onRestart()V', 'onResume()V',
+        'onStart()V', 'onStop()V', 'onNewIntent(Landroid/content/Intent;)V',
+        'onActivityResult(IILandroid/content/Intent;)V', 'onWindowFocusChanged(Z)V',
+        'onConfigurationChanged(Landroid/content/res/Configuration;)V')},
+    'helper_methods_verified': True,
+    'method_references_only': True,
+    'reverse_patch_semantics_verified': True,
+}
+
 
 def prepare(original, base, patched_dex, output, relocated_dex=None, require_local_startup_guard=False,
-            require_network_diagnostics=False):
+            require_network_diagnostics=False, require_legacy_facebook_lifecycle=False):
     original, base, patched_dex, output = map(Path, (original, base, patched_dex, output))
     base_report = base.with_suffix('.provenance.json')
     patch_report = patched_dex.with_suffix(patched_dex.suffix + '.json')
@@ -95,6 +111,17 @@ def prepare(original, base, patched_dex, output, relocated_dex=None, require_loc
     if ((require_network_diagnostics and not network_verified)
             or (network is not None and not network_verified)):
         raise ValueError('Network diagnostics provenance mismatch')
+    facebook = patch.get('legacy_facebook_lifecycle')
+    facebook_verified = (facebook == FACEBOOK_LIFECYCLE and isinstance(facebook, dict)
+                         and type(facebook.get('call_count')) is int
+                         and facebook.get('helper_methods_verified') is True
+                         and facebook.get('method_references_only') is True
+                         and facebook.get('reverse_patch_semantics_verified') is True
+                         and isinstance(facebook.get('method_counts'), dict)
+                         and all(type(count) is int for count in facebook['method_counts'].values()))
+    if ((require_legacy_facebook_lifecycle and not facebook_verified)
+            or (facebook is not None and not facebook_verified)):
+        raise ValueError('Legacy Facebook lifecycle guard provenance mismatch')
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(base) as before:
         names = before.namelist()
         if len(names) != len(set(names)) or any(
@@ -132,6 +159,7 @@ def main():
     parser.add_argument('--relocated-dex', type=Path)
     parser.add_argument('--require-local-startup-guard', action='store_true')
     parser.add_argument('--require-network-diagnostics', action='store_true')
+    parser.add_argument('--require-legacy-facebook-lifecycle', action='store_true')
     args = parser.parse_args()
     output = args.output.resolve()
     inputs = (args.original, args.base, args.patched_dex, args.keystore,
@@ -146,7 +174,8 @@ def main():
         temp = Path(directory)
         unsigned, aligned, signed = [temp / n for n in ('unsigned.apk', 'aligned.apk', 'signed.apk')]
         baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned, args.relocated_dex,
-                                  args.require_local_startup_guard, args.require_network_diagnostics)
+                                  args.require_local_startup_guard, args.require_network_diagnostics,
+                                  args.require_legacy_facebook_lifecycle)
         if args.relocated_dex is not None:
             from verify_runtime_apk import manifest
             relocation = json.loads(args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json').read_text())

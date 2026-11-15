@@ -3,6 +3,7 @@ import { isIP } from 'node:net';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadSocialAuthConfig } from './auth/config.js';
+import { normalizeHttpOrigin } from './backend-url.js';
 
 const backendDirectory = fileURLToPath(new URL('..', import.meta.url));
 const defaultPropertiesFile = fileURLToPath(new URL('../../gradle.properties', import.meta.url));
@@ -13,18 +14,8 @@ export function loadEnvironment(file = resolve(backendDirectory, '.env')) {
 }
 
 export function normalizeBackendBaseUrl(value) {
-  const error = () => new Error('Set BACKEND_BASE_URL in root gradle.properties to http(s)://<LAN IPv4>:<port>/ (no credentials, path, query or fragment)');
-  if (typeof value !== 'string' || !value || value !== value.trim() || /\s/u.test(value)) throw error();
-  // Reject ambiguous IPv4 spellings, including octal/hex/integer URL aliases.
-  const match = /^(https?):\/\/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?::([0-9]+))?\/?$/iu.exec(value);
-  if (!match || isIP(match[2]) !== 4) throw error();
-  const octets = match[2].split('.').map(Number);
-  if (octets.some((part, index) => String(part) !== match[2].split('.')[index]) ||
-      octets[0] === 0 || octets[0] === 127 || octets[0] >= 224 ||
-      (octets[0] === 169 && octets[1] === 254) || match[2] === '10.0.2.2') throw error();
-  if (match[3] && (!/^[1-9][0-9]*$/u.test(match[3]) || Number(match[3]) > 65535)) throw error();
-  const url = new URL(value);
-  return url.origin + '/';
+  try { return normalizeHttpOrigin(value); }
+  catch { throw new Error('Set BACKEND_BASE_URL in root gradle.properties to an HTTP(S) origin with a hostname, IPv4 or bracketed IPv6 and optional port; no credentials/path/query/fragment'); }
 }
 
 export function readBackendBaseUrl(propertiesFile = defaultPropertiesFile) {
@@ -39,7 +30,7 @@ export function readBackendBaseUrl(propertiesFile = defaultPropertiesFile) {
   }
   if (values.length !== 1) throw new Error('Define BACKEND_BASE_URL exactly once in ' + propertiesFile);
   try { return normalizeBackendBaseUrl(values[0]); }
-  catch { throw new Error('Invalid BACKEND_BASE_URL in ' + propertiesFile + '; use http(s)://<LAN IPv4>:<port>/'); }
+  catch { throw new Error('Invalid BACKEND_BASE_URL in ' + propertiesFile + '; use an HTTP(S) hostname, IPv4 or bracketed IPv6 origin'); }
 }
 
 function integer(env, key, fallback, min, max) {
@@ -62,7 +53,7 @@ export function loadDatabaseConfig(env = process.env) {
     port: integer(env, 'DB_PORT', 3306, 1, 65535),
     database: env.DB_NAME,
     user: env.DB_USER,
-    password: "",
+    password: env.DB_PASSWORD,
     connectionLimit: integer(env, 'DB_POOL_SIZE', 5, 1, 50),
     connectTimeout: integer(env, 'DB_CONNECT_TIMEOUT_MS', 5000, 100, 30000),
   };
@@ -74,12 +65,9 @@ export function loadConfig(env = process.env) {
   }
   const publicBaseUrl = readBackendBaseUrl(env.BACKEND_CONFIG_FILE ? resolve(env.BACKEND_CONFIG_FILE) : defaultPropertiesFile);
   const host = env.HOST ?? '0.0.0.0';
-  if (host !== '0.0.0.0' && isIP(host) !== 4) throw new Error('HOST must be an IPv4 bind address');
+  if (host !== 'localhost' && isIP(host) === 0) throw new Error('HOST must be a local IP bind address or localhost');
   const port = integer(env, 'PORT', 8787, 1, 65535);
-  const url = new URL(publicBaseUrl);
-  const advertisedPort = Number(url.port || (url.protocol === 'https:' ? 443 : 80));
-  if (advertisedPort !== port) throw new Error('PORT must match the port in BACKEND_BASE_URL in root gradle.properties');
-  if (url.protocol !== 'http:') throw new Error('This direct Node listener uses HTTP; HTTPS requires an explicit TLS/reverse-proxy setup before use');
+  // The public origin can belong to a proxy or tunnel; PORT only binds local Node.
   const sessionSecret = env.RESEARCH_SESSION_SECRET;
   if (!sessionSecret || Buffer.byteLength(sessionSecret) < 32) throw new Error('Set a stable RESEARCH_SESSION_SECRET of at least 32 bytes in backend/.env');
   const legacyText = env.LEGACY_AUTH_ENABLED ?? (env.NODE_ENV === 'production' ? 'false' : 'true');

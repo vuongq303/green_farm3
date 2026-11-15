@@ -39,6 +39,7 @@ ADDED_CORE_SOURCES = frozenset({
     'SocialAccountFlow', 'SocialAccountController', 'SocialAuthClient',
     'SecureAccountStore', 'SocialAuthCallbackActivity', 'SocialAccountArtwork',
     'EmbeddedAccountActivity', 'AuthWebViewPolicy',
+    'LegacyFacebookLifecycle',
 })
 CORE_PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480/'
 TARGET_PACKAGE = 'com/quanhoang/greenfarm3/S800x480/'

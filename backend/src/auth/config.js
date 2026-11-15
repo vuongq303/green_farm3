@@ -1,13 +1,12 @@
 import { isIP } from 'node:net';
+import { normalizeHttpOrigin } from '../backend-url.js';
 
 export const APP_REDIRECT_URI = 'com.quanhoang.greenfarm3://oauth/callback';
 
 function httpsOrigin(value) {
   try {
-    const url = new URL(value);
-    if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash ||
-        (url.pathname !== '/' && url.pathname !== '') || !url.hostname ||
-        ['localhost', '0.0.0.0', '127.0.0.1', '[::1]'].includes(url.hostname)) throw new Error();
+    const url = new URL(normalizeHttpOrigin(value));
+    if (url.protocol !== 'https:') throw new Error();
     return url.origin;
   } catch { throw new Error('AUTH_PUBLIC_BASE_URL must be an HTTPS origin without credentials, path or query'); }
 }
@@ -20,20 +19,34 @@ function setting(env, key, max = 512) {
   return value;
 }
 
+/** Optional OAuth configuration belongs to its provider. An incomplete or
+ * invalid Facebook/Google setup must not prevent first-party account login or
+ * validation of already-issued sessions. Disabled providers retain no secrets. */
+function oauthProvider(env, name, publicBaseUrl) {
+  const facebook = name === 'facebook';
+  const disabled = { clientId: '', clientSecret: '', ...(facebook ? { version: 'v24.0' } : {}),
+    enabled: false, configurationError: 'oauth_not_configured' };
+  try {
+    const clientId = setting(env, facebook ? 'FACEBOOK_APP_ID' : 'GOOGLE_OAUTH_CLIENT_ID');
+    const clientSecret = setting(env, facebook ? 'FACEBOOK_APP_SECRET' : 'GOOGLE_OAUTH_CLIENT_SECRET', 2048);
+    const version = facebook ? setting(env, 'FACEBOOK_GRAPH_VERSION') || 'v24.0' : undefined;
+    if (!publicBaseUrl || !clientId || !clientSecret ||
+        (facebook && (!/^[0-9]+$/u.test(clientId) || !/^v[0-9]{1,2}\.0$/u.test(version)))) return disabled;
+    return { clientId, clientSecret, ...(facebook ? { version } : {}), enabled: true };
+  } catch {
+    // Do not surface raw settings in errors/logs. The selected provider returns
+    // oauth_not_configured; Website continues through its independent path.
+    return disabled;
+  }
+}
+
 /** These credentials stay in the server environment, never in redirects/APKs. */
 export function loadSocialAuthConfig(env = process.env) {
   const publicBaseUrl = env.AUTH_PUBLIC_BASE_URL ? httpsOrigin(env.AUTH_PUBLIC_BASE_URL) : null;
   const trustedProxyIp = env.AUTH_TRUSTED_PROXY_IP ?? '';
   if (trustedProxyIp && !isIP(trustedProxyIp)) throw new Error('AUTH_TRUSTED_PROXY_IP must be one exact proxy IP');
-  const google = { clientId: setting(env, 'GOOGLE_OAUTH_CLIENT_ID'), clientSecret: setting(env, 'GOOGLE_OAUTH_CLIENT_SECRET', 2048) };
-  const facebook = { clientId: setting(env, 'FACEBOOK_APP_ID'), clientSecret: setting(env, 'FACEBOOK_APP_SECRET', 2048),
-    version: setting(env, 'FACEBOOK_GRAPH_VERSION') || 'v24.0' };
-  if (!/^v[0-9]{1,2}\.0$/u.test(facebook.version)) throw new Error('Invalid FACEBOOK_GRAPH_VERSION');
-  if (facebook.clientId && !/^[0-9]+$/u.test(facebook.clientId)) throw new Error('Invalid FACEBOOK_APP_ID');
-  for (const [provider, config] of Object.entries({ google, facebook })) {
-    if (Boolean(config.clientId) !== Boolean(config.clientSecret)) throw new Error('Configure both ' + provider + ' OAuth client ID and secret');
-    config.enabled = Boolean(publicBaseUrl && config.clientId && config.clientSecret);
-  }
+  const google = oauthProvider(env, 'google', publicBaseUrl);
+  const facebook = oauthProvider(env, 'facebook', publicBaseUrl);
   return { publicBaseUrl, trustedProxyIp, redirectUri: APP_REDIRECT_URI,
     providers: { google, facebook, password: { enabled: Boolean(publicBaseUrl) } },
     attemptTtl: 300, codeTtl: 60, accessTtl: 900, refreshTtl: 2592000 };
