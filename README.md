@@ -13,9 +13,9 @@ Luồng tài khoản mặc định tái sử dụng box đăng nhập gốc và 
 tính. Nút Facebook giữ OAuth chính thức qua trình duyệt; nút Đăng nhập bên phải
 mở website tài khoản riêng ngay trong WebView của game, thay cho Google Login.
 Cấu hình `AUTH_BASE_URL` trong Gradle cùng `AUTH_PUBLIC_BASE_URL` phía server;
-tài khoản riêng chỉ cần HTTPS và MySQL, không cần Google OAuth. Hiện chưa có
-domain HTTPS nên cấu hình được để trống; cần bổ sung trước khi đăng nhập trên thiết bị.
-Xem [báo cáo WebView, APK và kiểm thử](docs/EMBEDDED_AUTH_REPORT.md) cùng
+tài khoản riêng chỉ cần HTTPS và MySQL, không phụ thuộc cấu hình/token Facebook
+hoặc Google. URL đọc từ cấu hình Gradle, hỗ trợ tên miền, IPv4 và IPv6.
+Xem [bản sửa độc lập Website/Facebook và kết quả kiểm thử](docs/WEBSITE_AUTH_ISOLATION.md) cùng
 [hướng dẫn backend tài khoản](backend/EMBEDDED_AUTH.md). SQLite nông trại vẫn cục bộ.
 
 Pipeline chuẩn khôi phục resource, biên dịch Java/Kotlin được chọn và các helper,
@@ -58,12 +58,17 @@ nghiên cứu này.
 `gradle.properties` ở thư mục gốc:
 
 ```properties
-BACKEND_BASE_URL=http://10.61.217.55:8787/
+BACKEND_BASE_URL=https://backend.example.com/
+AUTH_BASE_URL=https://backend.example.com/
 ```
 
-Đây là URL LAN legacy đang cấu hình, không phải URL tài khoản HTTPS. Đổi IP/port phải sửa biến này, khởi động
-lại backend, **build và cài lại APK**. Không có fallback localhost/`10.0.2.2`;
-không dùng `localBackendUrl` nữa. Backend đọc trực tiếp cùng file properties.
+Đây là ví dụ; thay bằng URL backend thật. `BACKEND_BASE_URL` nhận origin HTTP(S),
+hostname/IPv4/IPv6 và cổng tùy chọn; `AUTH_BASE_URL` yêu cầu HTTPS. Các route
+auth dùng đường dẫn cố định `/auth/...`, nên cấu hình chỉ chứa origin.
+Đổi URL phải **build và cài lại APK**, đồng thời cập nhật `AUTH_PUBLIC_BASE_URL`
+phía server. Không có fallback địa chỉ khác; không dùng `localBackendUrl` nữa.
+Node đọc `BACKEND_BASE_URL` từ cùng file properties; `HOST`/`PORT` chỉ bind local,
+có thể khác cổng HTTPS công khai của proxy hoặc tunnel.
 
 Backend dùng JavaScript ES Modules, Node.js 24+ và MySQL 8.0/8.4. Tạo database/
 user MySQL và cấu hình mật khẩu riêng theo [hướng dẫn backend](backend/README.md),

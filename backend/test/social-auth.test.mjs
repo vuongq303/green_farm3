@@ -13,13 +13,16 @@ const configured = () => loadSocialAuthConfig({ AUTH_PUBLIC_BASE_URL: 'https://a
   GOOGLE_OAUTH_CLIENT_ID: 'test-web-client.apps.googleusercontent.com', GOOGLE_OAUTH_CLIENT_SECRET: 'test-google-secret',
   FACEBOOK_APP_ID: '123456789', FACEBOOK_APP_SECRET: 'test-facebook-secret', AUTH_TRUSTED_PROXY_IP: '127.0.0.1' });
 
-test('social config requires HTTPS and complete provider configuration without leaking values', () => {
+test('social config requires HTTPS and isolates incomplete provider configuration without leaking values', () => {
   assert.equal(loadSocialAuthConfig({}).publicBaseUrl, null);
   for (const origin of ['http://accounts.example.test', 'https://user:secret@accounts.example.test',
-    'https://accounts.example.test/path', 'https://accounts.example.test/?token=secret', 'https://localhost']) {
+    'https://accounts.example.test/path', 'https://accounts.example.test/?token=secret']) {
     assert.throws(() => loadSocialAuthConfig({ AUTH_PUBLIC_BASE_URL: origin }), /AUTH_PUBLIC_BASE_URL/u);
   }
-  assert.throws(() => loadSocialAuthConfig({ GOOGLE_OAUTH_CLIENT_SECRET: 'private-test-value' }), error => !error.message.includes('private-test-value'));
+  const incomplete = loadSocialAuthConfig({ GOOGLE_OAUTH_CLIENT_SECRET: 'private-test-value' });
+  assert.equal(incomplete.providers.google.enabled, false);
+  assert.equal(incomplete.providers.google.configurationError, 'oauth_not_configured');
+  assert.ok(!JSON.stringify(incomplete).includes('private-test-value'));
   const config = configured();
   assert.equal(config.providers.google.enabled, true);
   assert.equal(config.providers.facebook.enabled, true);
@@ -224,7 +227,37 @@ test('malformed JSON fields, forged callbacks and HTTPS spoofing fail with expli
   const missing = await fixture(t, { config: loadSocialAuthConfig({}) });
   const unavailable = await missing.post('/auth/attempt', {});
   assert.equal(unavailable.status, 503);
-  assert.equal((await unavailable.json()).error.code, 'oauth_not_configured');
+  assert.equal((await unavailable.json()).error.code, 'auth_not_configured');
+});
+
+test('website attempts and account sessions ignore broken OAuth settings and never select a provider implicitly', async t => {
+  const config = loadSocialAuthConfig({ AUTH_PUBLIC_BASE_URL: 'https://accounts.example.test',
+    FACEBOOK_APP_ID: '123456789', GOOGLE_OAUTH_CLIENT_SECRET: 'incomplete-google-fixture' });
+  let providerCalls = 0;
+  const forbidden = () => { ++providerCalls; throw new Error('OAuth must not run for Website'); };
+  const f = await fixture(t, { config, providers: { authorizationUrl: forbidden, verifyIdentity: forbidden } });
+  const request = { state: value(), code_challenge: value(), redirect_uri: APP_REDIRECT_URI };
+  const website = await f.post('/auth/attempt', { ...request, provider: 'password' });
+  assert.equal(website.status, 201);
+  assert.match((await website.json()).authorization_url, /^https:\/\/accounts\.example\.test\/auth\/web\/login\?attempt=/u);
+  const missing = await f.post('/auth/attempt', request);
+  assert.equal(missing.status, 400);
+  assert.equal((await missing.json()).error.code, 'invalid_request');
+  for (const provider of ['facebook', 'google']) {
+    const unavailable = await f.post('/auth/attempt', { ...request, provider });
+    assert.equal(unavailable.status, 503);
+    assert.equal((await unavailable.json()).error.code, 'oauth_not_configured');
+  }
+  assert.equal((await f.post('/auth/facebook', { ...request, provider: 'password' })).status, 400);
+  assert.equal((await f.get('/auth/me', { Authorization: 'Bearer ' + value() })).status, 401);
+  assert.equal((await f.post('/auth/refresh', { refresh_token: value() })).status, 401);
+  assert.equal((await f.post('/auth/logout', { refresh_token: value() }, { Authorization: 'Bearer ' + value() })).status, 204);
+  assert.equal(providerCalls, 0);
+
+  const noStore = await fixture(t, { config, store: undefined });
+  const unavailableDatabase = await noStore.post('/auth/attempt', { ...request, provider: 'password' });
+  assert.equal(unavailableDatabase.status, 503);
+  assert.equal((await unavailableDatabase.json()).error.code, 'database_unavailable');
 });
 
 test('attempt requests are rate limited and provider failure never appears as authenticated success', async t => {

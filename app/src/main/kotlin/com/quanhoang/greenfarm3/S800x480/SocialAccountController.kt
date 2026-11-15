@@ -85,6 +85,7 @@ class SocialAccountController private constructor() {
         @JvmStatic fun status(): Int = flow?.status ?: ERROR
         @JvmStatic fun message(): String = flow?.message ?: SocialAccountFlow.messageFor(initializationError)
         @JvmStatic fun gameId(): String = flow?.gameId ?: ""
+        @JvmStatic fun accountName(): String = flow?.accountName ?: ""
         @JvmStatic fun busy(): Boolean = flow?.busy ?: false
 
         /** The callback Activity accepts no tokens and never trusts Intent extras. */

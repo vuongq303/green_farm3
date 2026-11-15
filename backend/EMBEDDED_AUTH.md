@@ -1,5 +1,11 @@
 # Embedded account login
 
+Website authentication is independent of optional Facebook/Google configuration.
+Missing or malformed OAuth settings disable only that provider; the password
+flow never calls its verifier. Shared configuration errors use `auth_not_configured`,
+while `oauth_not_configured` applies only when an OAuth provider is selected.
+See [the current fix report](../docs/WEBSITE_AUTH_ISOLATION.md).
+
 The right-hand account button now uses a project-owned username/email/password
 website inside an Android WebView. Facebook keeps its existing official browser
 OAuth flow. Google identities, sessions and server OAuth routes remain intact;
@@ -112,7 +118,7 @@ npm start
 ```
 
 Without a configured HTTPS `AUTH_PUBLIC_BASE_URL`, the local `/health` endpoint
-can be healthy while account routes report `503 oauth_not_configured`. The app
+can be healthy while account routes report `503 auth_not_configured`. The app
 without `AUTH_BASE_URL` reports missing configuration. Neither state is a
 successful login. This checkout does not deploy a domain or create real OAuth
 applications, and it has no HTTP, fake-account or certificate-error bypass.

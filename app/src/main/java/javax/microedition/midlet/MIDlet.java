@@ -764,7 +764,7 @@ public abstract class MIDlet extends BaseActivity {
                 y.onCreate(bundle);
                 x.onCreate(bundle);
                 w.onCreate(bundle);
-                v.onCreate(bundle);
+                com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onCreate(bundle);
                 u.onCreate(bundle);
                 t.onCreate(bundle);
                 r.onCreate(bundle);
@@ -811,7 +811,7 @@ public abstract class MIDlet extends BaseActivity {
         y.onDestroy();
         x.onDestroy();
         w.onDestroy();
-        v.onDestroy();
+        com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onDestroy();
         u.onDestroy();
         t.onDestroy();
         r.onDestroy();
@@ -839,7 +839,7 @@ public abstract class MIDlet extends BaseActivity {
             y.onPause();
             x.onPause();
             w.onPause();
-            v.onPause();
+            com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onPause();
             u.onPause();
             t.onPause();
             r.onPause();
@@ -863,7 +863,7 @@ public abstract class MIDlet extends BaseActivity {
         y.onSaveInstanceState(bundle);
         x.onSaveInstanceState(bundle);
         w.onSaveInstanceState(bundle);
-        v.onSaveInstanceState(bundle);
+        com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onSaveInstanceState(bundle);
         u.onSaveInstanceState(bundle);
         t.onSaveInstanceState(bundle);
         r.onSaveInstanceState(bundle);
@@ -882,7 +882,7 @@ public abstract class MIDlet extends BaseActivity {
             y.onRestart();
             x.onRestart();
             w.onRestart();
-            v.onRestart();
+            com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onRestart();
             u.onRestart();
             t.onRestart();
             r.onRestart();
@@ -952,7 +952,7 @@ public abstract class MIDlet extends BaseActivity {
             y.onResume();
             x.onResume();
             w.onResume();
-            v.onResume();
+            com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onResume();
             u.onResume();
             t.onResume();
             r.onResume();
@@ -982,7 +982,7 @@ public abstract class MIDlet extends BaseActivity {
             y.onStart();
             x.onStart();
             w.onStart();
-            v.onStart();
+            com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onStart();
             u.onStart();
             t.onStart();
             r.onStart();
@@ -1001,7 +1001,7 @@ public abstract class MIDlet extends BaseActivity {
             y.onStop();
             x.onStop();
             w.onStop();
-            v.onStop();
+            com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onStop();
             u.onStop();
             t.onStop();
             r.onStop();
@@ -1021,7 +1021,7 @@ public abstract class MIDlet extends BaseActivity {
         y.onNewIntent(intent);
         x.onNewIntent(intent);
         w.onNewIntent(intent);
-        v.onNewIntent(intent);
+        com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onNewIntent(intent);
         u.onNewIntent(intent);
         t.onNewIntent(intent);
         r.onNewIntent(intent);
@@ -1037,7 +1037,7 @@ public abstract class MIDlet extends BaseActivity {
         y.onActivityResult(i, i2, intent);
         x.onActivityResult(i, i2, intent);
         w.onActivityResult(i, i2, intent);
-        v.onActivityResult(i, i2, intent);
+        com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onActivityResult(i, i2, intent);
         u.onActivityResult(i, i2, intent);
         t.onActivityResult(i, i2, intent);
         r.onActivityResult(i, i2, intent);
@@ -1123,7 +1123,7 @@ public abstract class MIDlet extends BaseActivity {
             y.onWindowFocusChanged(zBE);
             x.onWindowFocusChanged(zBE);
             w.onWindowFocusChanged(zBE);
-            v.onWindowFocusChanged(zBE);
+            com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onWindowFocusChanged(zBE);
             u.onWindowFocusChanged(zBE);
             t.onWindowFocusChanged(zBE);
             r.onWindowFocusChanged(zBE);
@@ -1302,7 +1302,7 @@ public abstract class MIDlet extends BaseActivity {
         y.onConfigurationChanged(configuration);
         x.onConfigurationChanged(configuration);
         w.onConfigurationChanged(configuration);
-        v.onConfigurationChanged(configuration);
+        com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle.onConfigurationChanged(configuration);
         u.onConfigurationChanged(configuration);
         t.onConfigurationChanged(configuration);
         r.onConfigurationChanged(configuration);

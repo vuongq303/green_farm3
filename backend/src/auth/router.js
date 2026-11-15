@@ -11,6 +11,7 @@ const STATE = /^[A-Za-z0-9_-]{32,128}$/u;
 const VERIFIER = /^[A-Za-z0-9._~-]{43,128}$/u;
 const matches = (expression, value) => typeof value === 'string' && expression.test(value);
 const PUBLIC_MESSAGES = {
+  auth_not_configured: 'Chưa cấu hình địa chỉ HTTPS của máy chủ tài khoản.',
   oauth_not_configured: 'Nhà cung cấp đăng nhập chưa được cấu hình trên máy chủ.',
   https_required: 'Đăng nhập tài khoản yêu cầu kết nối HTTPS.',
   invalid_request: 'Yêu cầu đăng nhập không hợp lệ.',
@@ -123,7 +124,11 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
   const seconds = () => Math.floor(now() / 1000);
 
   function configured(provider) {
-    if (!config?.publicBaseUrl || !store || (provider && !config.providers[provider]?.enabled)) fail(503, 'oauth_not_configured');
+    if (!config?.publicBaseUrl) fail(503, 'auth_not_configured');
+    if (!store) fail(503, 'database_unavailable');
+    // Password registration/login and shared sessions never require an OAuth
+    // provider. Only a request explicitly choosing Facebook/Google checks it.
+    if (provider && provider !== 'password' && !config.providers?.[provider]?.enabled) fail(503, 'oauth_not_configured');
   }
   function callback(attempt, values) {
     const url = new URL(APP_REDIRECT_URI);

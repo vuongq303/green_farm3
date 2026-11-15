@@ -265,6 +265,32 @@ class LocalBackendPackagingTest(unittest.TestCase):
         prepare_instrumented()
         self.assertTrue(self.output.exists())
 
+    def test_facebook_lifecycle_requires_exact_bound_reference_only_proof(self):
+        with self.assertRaisesRegex(ValueError, 'Facebook lifecycle'):
+            build.prepare(self.original, self.base, self.dex, self.output,
+                          require_legacy_facebook_lifecycle=True)
+        good = copy.deepcopy(self.patch)
+        good['legacy_facebook_lifecycle'] = copy.deepcopy(build.FACEBOOK_LIFECYCLE)
+        self.patch = good
+        self.write_reports()
+        build.prepare(self.original, self.base, self.dex, self.output,
+                      require_legacy_facebook_lifecycle=True)
+        self.output.unlink()
+        for mutate in (
+            lambda proof: proof.update(call_count=True),
+            lambda proof: proof.update(call_count=11),
+            lambda proof: proof.update(owner='Lwrong/MIDlet;'),
+            lambda proof: proof.update(helper_methods_verified=False),
+            lambda proof: proof.update(method_references_only=False),
+            lambda proof: proof.update(reverse_patch_semantics_verified=False),
+            lambda proof: proof['method_counts'].update({'onCreate(Landroid/os/Bundle;)V': True}),
+            lambda proof: proof['method_counts'].pop('onDestroy()V'),
+        ):
+            self.patch = copy.deepcopy(good)
+            mutate(self.patch['legacy_facebook_lifecycle'])
+            self.write_reports()
+            self.assert_rejected_before_output('Facebook lifecycle')
+
     def test_rejects_unverified_or_unbound_generated_revision_metadata(self):
         revision = self.baseline["build_revision_metadata"]
         for field, invalid in (("original_guard_accepts_generated_revision", False),

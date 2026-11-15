@@ -220,9 +220,13 @@ class BackendEndpointPatchTest(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.verify_patch(source, self.path / f"{mode}-patched.dex")
 
-    def test_allows_explicit_lan_ipv4_http_and_https_origins(self):
+    def test_allows_general_http_https_origins_without_changing_dex_proofs(self):
         for n, url in enumerate(("http://192.168.1.3:8787/", "http://172.26.91.236:18787/",
-                                 "https://10.37.233.55/", "https://203.0.113.2:443/")):
+                                 "https://10.37.233.55/", "https://203.0.113.2:443/",
+                                 "http://localhost:8787/", "http://backend:8080/", "http://farm.local:8787/",
+                                 "http://127.0.0.1:8787/", "http://0.0.0.0:8787/", "http://10.0.2.2:8787/",
+                                 "https://ipaq-gentle-acquisition-sacred.trycloudflare.com/",
+                                 "http://example.org/", "http://[::1]:8787/", "https://[2001:db8::1]/")):
             with self.subTest(url=url):
                 self.verify_patch(self.fixture, self.path / f"allowed-{n}.dex", url)
 
@@ -234,18 +238,37 @@ class BackendEndpointPatchTest(unittest.TestCase):
         self.assertEqual(report['replacement_url'], LOCAL)
         self.assertEqual(self.oracle('verify', self.fixture, output, LOCAL).returncode, 0)
 
-    def test_rejects_non_ipv4_non_unicast_and_malformed_origins_without_publishing(self):
-        invalid = ("", "http://example.com/", "http://10.0.2.2/", "http://0.0.0.0/", "http://127.2.3.4/",
-                   "http://169.254.1.2/", "http://224.0.0.1/", "http://255.255.255.255/", "http://[::1]/",
+    def test_canonicalizes_dns_idn_and_ipv6_before_embedding(self):
+        for index, (raw, expected) in enumerate((
+                ("HTTP://Example.ORG:80", "http://example.org:80/"),
+                ("https://bücher.example/", "https://xn--bcher-kva.example/"),
+                ("https://[2001:0DB8:0:0:0:0:0:1]:443/", "https://[2001:db8::1]:443/"),
+                ("https://[::ffff:192.0.2.1]/", "https://[::ffff:c000:201]/"))):
+            with self.subTest(raw=raw):
+                output = self.path / f"canonical-origin-{index}.dex"
+                result = self.patch(self.fixture, output, raw)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                report = json.loads(output.with_name(output.name + ".json").read_text())
+                self.assertEqual(report['replacement_url'], expected)
+                self.assertTrue(report['reverse_patch_semantics_verified'])
+                self.assertEqual(self.oracle('verify', self.fixture, output, expected).returncode, 0)
+
+    def test_rejects_ambiguous_or_malformed_origins_without_publishing(self):
+        invalid = ("", "http://127.1/", "http://3232235777/", "http://0x7f000001/", "http://example.123/",
+                   "http://[::1", "http://::1/", "http://[::1]:/", "http://[gggg::1]/", "http://[fe80::1%25eth0]/",
+                   "http://user_name/", "http://-example.org/", "http://example..org/", "http://example.org%2f.evil/",
                    "http://192.168.001.1/", "http://192.168.1.300/", "http://192.168.1.3:/",
                    "ftp://192.168.1.3/", "http://user@192.168.1.3/", "https://192.168.1.3/?q=1",
                    "https://192.168.1.3/#fragment", "https://192.168.1.3:70000/", "http://192.168.1.3:0/",
-                   "https://192.168.1.3/api/", "//192.168.1.3/", "http://192.168.1.3\\@example.com/", ORIGINAL)
+                   "https://192.168.1.3/api/", "//192.168.1.3/", "http://192.168.1.3\\@example.com/",
+                   " http://example.org/", "https://example.org/\r\nAuthorization: do-not-echo",
+                   "http://private-user:do-not-echo@example.org/")
         for n, url in enumerate(invalid):
             with self.subTest(url=url):
                 output = self.path / f"invalid-url-{n}.dex"
                 result = self.patch(self.fixture, output, url)
                 self.assertNotEqual(result.returncode, 0)
+                self.assertNotIn('do-not-echo', result.stdout + result.stderr)
                 self.assertFalse(output.exists())
                 self.assertFalse(output.with_name(output.name + ".json").exists())
 

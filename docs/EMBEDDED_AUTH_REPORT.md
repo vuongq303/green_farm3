@@ -1,5 +1,9 @@
 # Tài khoản riêng trong WebView Green Farm 3
 
+Đây là báo cáo của mốc tích hợp WebView ban đầu. Bản sửa dựa trên `main` mới nhất,
+tách cấu hình/lifecycle Facebook và mở rộng URL được ghi trong
+[WEBSITE_AUTH_ISOLATION.md](WEBSITE_AUTH_ISOLATION.md).
+
 Nút bên phải của box đăng nhập gốc chuyển từ Google sang tài khoản riêng trong
 WebView. Nút Facebook tiếp tục dùng luồng OAuth chính thức qua trình duyệt;
 Facebook không chạy trong WebView. Những tài khoản Google đã tạo vẫn được giữ

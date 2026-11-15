@@ -21,6 +21,8 @@ METHODS = (
     'private static void socialAccountLeft()',
     'private static void socialAccountRight()',
     'private static void configureSocialAccountUi()',
+    'private static String socialAccountWelcome(String accountName, String gameId, boolean vietnamese)',
+    'static int gV(int i)',
     'private static boolean socialAccountScreen(int phase)',
     'static boolean kx(int i)',
     'static void CL()',
@@ -38,6 +40,7 @@ static short[][][] atc=new short[50][11][24];
 static String[][] ate=new String[50][11];
 static boolean[][] shown=new boolean[50][11],enabled=new boolean[50][11];
 static Sprite[] atf=new Sprite[125];
+static a[] aZh=new a[8];
 static void e(int g,int i,boolean v){shown[g][i]=v;visibilityCalls++;}
 static void f(int g,int i,boolean v){enabled[g][i]=v;}
 static void DF(){dfCalls++;}static void gM(int g){if(g!=29)throw new AssertionError();layerRebuilds++;}
@@ -57,7 +60,7 @@ static void ok(boolean v,String m){if(!v)throw new AssertionError(m);}
 static void reset(){
  aYU=16;aTL=-1;aTO=-1;auC=-1;aUb=aTK=false;aPg=aPe=aPj=arD=aPf=aPh=aPi=false;
  transitions=lastTransition=dfCalls=layerRebuilds=sounds=legacyUi=legacyCalls=visibilityCalls=0;
- socialAccountUiStatus=-1;socialAccountUiLanguage=-1;socialAccountUiBusy=false;socialAccountUiMessage=socialAccountUiGameId=null;
+ socialAccountUiStatus=-1;socialAccountUiLanguage=-1;socialAccountUiBusy=false;socialAccountUiMessage=socialAccountUiGameId=socialAccountUiName=null;
  asl=asm=apq=apx=false;loadingPops=oldVersionPrompts=0;
  LocalDevelopmentConfig.ONLINE_ACCOUNTS=true;SocialAccountController.reset();GameRuntime.reset();SocialAccountArtwork.draws=0;GloftGF2F.minimizes=0;GloftGF2F.language=16;
  atc[29][6][2]=157;atc[29][6][3]=399;atc[29][6][5]=20;atc[29][6][6]=78;
@@ -66,7 +69,10 @@ static void reset(){
  atc[29][9][2]=164;atc[29][9][3]=407;atc[29][9][5]=226;atc[29][9][6]=38;
  atc[29][10][2]=504;atc[29][10][3]=407;atc[29][10][5]=226;atc[29][10][6]=38;
  atc[0][3][2]=184;atc[0][3][3]=412;
+ atc[29][3][5]=394;atc[29][3][6]=103;atc[29][3][7]=2;
  for(int i=0;i<atf.length;i++)atf[i]=new Sprite();
+ for(int i=0;i<aZh.length;i++)aZh[i]=new a();
+ a.charWidth=10;a.lineHeight=18;a.spacing=1;a.measureCalls=0;
 }
 static String geometry(){StringBuilder out=new StringBuilder();for(int item:new int[]{6,7,8,9,10})for(int field:new int[]{2,3,5,6,7})out.append(atc[29][item][field]).append(',');return out.toString();}
 static void testEntryDefaults(){
@@ -140,6 +146,30 @@ static void testUiRefreshOwnership(){
  socialAccountScreen(2);ok(dfCalls==8,"steady frame after resume does not rebuild again");
  socialAccountScreen(0);ok(dfCalls==9&&layerRebuilds==9,"re-entry refreshes native UI ownership");
 }
+static void testVerifiedAccountName(){
+ reset();String before=geometry();SocialAccountController.savedAccountName="unverified_cached_name";configureSocialAccountUi();
+ ok(!ate[29][3].contains("unverified_cached_name"),"unverified remembered names do not label the login screen");
+ SocialAccountController.state=SocialAccountController.WELCOME;SocialAccountController.savedAccountName="player123";configureSocialAccountUi();
+ ok(ate[29][3].equals("player123 (GF000123)\nNông trại cục bộ."),"verified username and backend GAME_ID appear with the local-farm notice");
+ ok(before.equals(geometry())&&atc[29][3][5]==394&&atc[29][3][6]==103&&atc[29][3][7]==2,"verified identity keeps original buttons, text bounds and font");
+ int rebuilds=dfCalls,measurements=a.measureCalls;configureSocialAccountUi();socialAccountScreen(2);
+ ok(dfCalls==rebuilds&&a.measureCalls==measurements,"stable verified names do not rebuild hitboxes or repeat font layout");
+ SocialAccountController.savedAccountName="player456";configureSocialAccountUi();
+ ok(dfCalls==rebuilds+1&&ate[29][3].startsWith("player456 (GF000123)")&&!ate[29][3].contains("player123"),"verified name changes invalidate the UI cache");
+ SocialAccountController.savedAccountName="";configureSocialAccountUi();
+ ok(ate[29][3].startsWith("Chào mừng GF000123 trở lại!"),"missing provider display name falls back to the original GAME_ID welcome");
+ String longUsername="WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW";SocialAccountController.savedAccountName=longUsername;aYU=0;configureSocialAccountUi();
+ ok(ate[29][3].startsWith(longUsername+" (GF000123)")&&ate[29][3].contains("Farm stored on this device."),"32-character website username remains complete when native layout fits");
+ a.charWidth=20;a.lineHeight=26;a.spacing=2;socialAccountUiStatus=-1;configureSocialAccountUi();
+ String fitted=ate[29][3];a font=aZh[2];int lines=font.a(fitted,394,-1,false)[0];
+ ok(fitted.contains("... (GF000123)")&&lines*font.hG()+(lines-1)*font.hA()<=103,"oversized names are fitted using the original native font metrics");
+ a.charWidth=10;a.lineHeight=18;a.spacing=1;String emoji=new String(Character.toChars(0x1F33E));StringBuilder providerName=new StringBuilder();
+ for(int i=0;i<33;i++)providerName.append(emoji);SocialAccountController.savedAccountName=providerName.toString();configureSocialAccountUi();
+ ok(ate[29][3].startsWith(providerName.substring(0,64)+"... (GF000123)"),"provider display cap preserves Unicode code points");
+ SocialAccountController.state=SocialAccountController.LOGGING_OUT;SocialAccountController.inProgress=true;configureSocialAccountUi();
+ ok(!ate[29][3].contains("GF000123")&&!ate[29][3].contains(emoji),"leaving the verified welcome removes its account label");
+ ok(transitions==0&&legacyCalls==0&&SocialAccountController.actions()==0,"presenting an account name cannot enter or rebind a farm");
+}
 static void testLegacyModeOwnership(){
  reset();LocalDevelopmentConfig.ONLINE_ACCOUNTS=false;kx(0);
  ok(legacyUi==1&&SocialAccountController.startups==0&&transitions==0,"disabled online mode retains original Facebook screen entry");
@@ -156,7 +186,7 @@ static void testLoadingReadiness(){
  reset();LocalDevelopmentConfig.ONLINE_ACCOUNTS=false;asl=asm=apq=apx=true;
  ok(!qS()&&loadingPops==0&&oldVersionPrompts==1,"legacy mode keeps original upgrade screen behavior");
 }
-public static void main(String[]args){testEntryDefaults();testNativeUiAndButtons();testGateAndBusyRendering();testUiRefreshOwnership();testLegacyModeOwnership();testLoadingReadiness();
+public static void main(String[]args){testEntryDefaults();testNativeUiAndButtons();testGateAndBusyRendering();testUiRefreshOwnership();testVerifiedAccountName();testLegacyModeOwnership();testLoadingReadiness();
 System.out.println("PASS actual native account gate/buttons, original geometry, verified-only entry, cancellation, defaults and legacy-mode ownership");}
 '''
 
@@ -166,10 +196,11 @@ class LocalDevelopmentMode {static boolean skipLegacyBackend(){return LocalDevel
 class SocialAccountController {
  static final int SIGNED_OUT=0,CHECKING=1,BROWSER=2,EXCHANGING=3,WELCOME=4,READY=5,ERROR=6,LOGGING_OUT=7;
  static int state,startups,ticks,facebook,password,continues,logouts,cancels;static boolean inProgress;
- static String errorMessage,savedGameId;
- static void reset(){state=SIGNED_OUT;startups=ticks=facebook=password=continues=logouts=cancels=0;inProgress=false;errorMessage="Mất kết nối. Vui lòng thử lại.";savedGameId="GF000123";}
+ static String errorMessage,savedGameId,savedAccountName;
+ static void reset(){state=SIGNED_OUT;startups=ticks=facebook=password=continues=logouts=cancels=0;inProgress=false;errorMessage="Mất kết nối. Vui lòng thử lại.";savedGameId="GF000123";savedAccountName="";}
  static boolean busy(){return inProgress;}static int status(){return state;}
  static String gameId(){return savedGameId;}static String message(){return errorMessage;}
+ static String accountName(){return state==WELCOME||state==READY?savedAccountName:"";}
  static void startupGate(){startups++;}static void tick(){ticks++;}
  static void choose(String provider){if(provider.equals("facebook"))facebook++;else if(provider.equals("password"))password++;else throw new AssertionError();inProgress=true;state=BROWSER;}
  static void continueSaved(){continues++;inProgress=true;state=CHECKING;}static void logout(){logouts++;inProgress=true;state=LOGGING_OUT;}
@@ -179,6 +210,12 @@ class GloftGF2F {static GloftGF2F acw=new GloftGF2F(),acx=acw;static int languag
  int kR(){return language;}String bY(String key){return "on";}void jf(String value){if(!value.equals("MIDlet://minimize"))throw new AssertionError();minimizes++;}}
 class bt {static boolean nY(){return false;}static void nT(){throw new AssertionError("legacy Facebook SDK invoked");}}
 class Sprite {void a(Object graphics,int frame,float x,float y,int transform){}}
+class a {
+ static int charWidth=10,lineHeight=18,spacing=1,measureCalls;
+ void a(String value,char[] ignored){if(ignored!=null)throw new AssertionError();}
+ short[] a(String value,int width,int unused,boolean flag){measureCalls++;int lines=0;for(String part:value.split("\\n",-1))lines+=Math.max(1,(part.codePointCount(0,part.length())*charWidth+width-1)/width);return new short[]{(short)lines};}
+ int hG(){return lineHeight;}int hA(){return spacing;}
+}
 class w {static int screenWidth=800,screenHeight=480;}
 class SystemClock {static long uptimeMillis(){return 1000L;}}
 class SocialAccountArtwork {static int draws;static boolean drawAccountIcon(int x,int y,int size){if(x!=505||y!=408||size!=32)throw new AssertionError("original icon footprint");draws++;return true;}}
@@ -195,7 +232,7 @@ class SocialAccountEngineTest(unittest.TestCase):
         source = (ROOT / 'app/src/main/java/com/quanhoang/greenfarm3/S800x480/FarmGameEngine.java').read_text()
         methods = '\n'.join(extract_method(source, signature) for signature in METHODS)
         cache_fields = re.findall(r'^    private static (?:int|boolean|String) socialAccountUi\w+(?: = [^;]+)?;', source, re.MULTILINE)
-        self.assertEqual(len(cache_fields), 5, 'execute the production UI-cache declarations')
+        self.assertEqual(len(cache_fields), 6, 'execute the production UI-cache declarations')
         with tempfile.TemporaryDirectory(prefix='social-account-engine-') as temp:
             path = Path(temp)
             fixture = path / 'FarmGameEngine.java'

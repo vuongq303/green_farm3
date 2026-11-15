@@ -18,14 +18,29 @@ assert validator.normalize('http://10.37.233.55:8787') == 'http://10.37.233.55:8
 assert validator.normalize('https://192.168.1.12/') == 'https://192.168.1.12/'
 assert validator.normalize('HTTP://172.26.91.236:18787/') == 'http://172.26.91.236:18787/'
 assert validator.normalize('https://8.8.8.8:443/') == 'https://8.8.8.8:443/'
-def invalid = [null, '', 'http://localhost:8787/', 'http://0.0.0.0:8787/',
-    'http://127.1.2.3/', 'http://10.0.2.2:8787/', 'http://169.254.1.2/',
-    'http://224.0.0.1/', 'http://255.255.255.255/', 'http://1.2.3.256/',
-    'http://1.2.03.4/', 'http://[::1]/', 'http://example.org/', 'ftp://10.37.233.55/',
+assert validator.normalize('http://localhost:8787') == 'http://localhost:8787/'
+assert validator.normalize('http://farm-server.local:8787/') == 'http://farm-server.local:8787/'
+assert validator.normalize('http://backend:8080/') == 'http://backend:8080/'
+assert validator.normalize('http://127.0.0.1:8787/') == 'http://127.0.0.1:8787/'
+assert validator.normalize('http://0.0.0.0:8787/') == 'http://0.0.0.0:8787/'
+assert validator.normalize('http://10.0.2.2:8787/') == 'http://10.0.2.2:8787/'
+assert validator.normalize('HTTP://Example.ORG:80') == 'http://example.org:80/'
+assert validator.normalize('https://ipaq-gentle-acquisition-sacred.trycloudflare.com') == 'https://ipaq-gentle-acquisition-sacred.trycloudflare.com/'
+assert validator.normalize('https://bücher.example/') == 'https://xn--bcher-kva.example/'
+assert validator.normalize('http://[::1]:8787') == 'http://[::1]:8787/'
+assert validator.normalize('https://[2001:0DB8:0:0:0:0:0:1]:443/') == 'https://[2001:db8::1]:443/'
+assert validator.normalize('https://[::ffff:192.0.2.1]/') == 'https://[::ffff:c000:201]/'
+def invalid = [null, '', 'http://1.2.3.256/',
+    'http://1.2.03.4/', 'ftp://10.37.233.55/',
+    'http://127.1/', 'http://3232235777/', 'http://0x7f000001/', 'http://0177.0.0.1/',
+    'http://example.123/', 'http://user_name/', 'http://-example.org/', 'http://example..org/',
+    'http://[::1', 'http://::1/', 'http://[::1]:/', 'http://[gggg::1]/',
+    'http://[fe80::1%25eth0]/', 'http://example.org%2f.evil/',
     'http://10.37.233.55:0/', 'http://10.37.233.55:65536/', 'http://10.37.233.55:/',
     'http://secret:do-not-echo@10.37.233.55/', 'http://10.37.233.55/api/',
     'http://10.37.233.55/?q=1', 'http://10.37.233.55/#x', '//10.37.233.55/',
-    'http://10.37.233.55\\evil/', 'http://10.37.233.55/ bad']
+    'http://10.37.233.55\\evil/', 'http://10.37.233.55/ bad', ' http://example.org/',
+    'https://example.org/\r\nAuthorization: do-not-echo']
 invalid.each { value ->
     try { validator.normalize(value); assert false: 'Unexpectedly accepted invalid URL' }
     catch (IllegalArgumentException error) {
@@ -34,7 +49,7 @@ invalid.each { value ->
         assert !error.message.contains('do-not-echo')
     }
 }
-println('PASS: 4 canonical origins and 24 invalid/missing URL cases')
+println('PASS: general HTTP(S) origins, canonical DNS/IPv4/IPv6, invalid authority and secret redaction')
 '''
 
 
