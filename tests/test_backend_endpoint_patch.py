@@ -146,14 +146,19 @@ class BackendEndpointPatchTest(unittest.TestCase):
         jdk = Path(os.environ.get("JAVA_HOME", "/workspace/tooling/jdk-21.0.9+10"))
         cls.java = jdk / "bin/java"
         javac = jdk / "bin/javac"
-        jars = Path("/workspace/tooling/dexmerge")
-        if not cls.java.exists() or not javac.exists() or not (jars / "dexlib2-2.5.2.jar").exists():
+        legacy_jars = Path("/workspace/tooling/dexmerge")
+        cache = Path(os.environ.get('GRADLE_USER_HOME', Path.home() / '.gradle')) / 'caches/modules-2/files-2.1'
+        jars = (list(cache.glob('org.smali/dexlib2/2.5.2/*/*.jar'))
+                + list(cache.glob('com.google.guava/guava/*/*/*.jar')))
+        if not jars and (legacy_jars / 'dexlib2-2.5.2.jar').exists():
+            jars = list(legacy_jars.glob('*.jar'))
+        if not cls.java.exists() or not javac.exists() or not jars:
             raise unittest.SkipTest("Requires JDK and cached dexlib2 2.5.2 tool dependencies")
         cls.temp = tempfile.TemporaryDirectory(prefix="backend-endpoint-tests-")
         cls.path = Path(cls.temp.name)
         oracle = cls.path / "BackendEndpointOracle.java"
         oracle.write_text(ORACLE)
-        cls.classpath = str(cls.path) + os.pathsep + str(jars / "*")
+        cls.classpath = os.pathsep.join(map(str, [cls.path, *jars]))
         result = subprocess.run([str(javac), "-cp", cls.classpath, "-d", str(cls.path),
                                  str(ROOT / "tools/PatchBackendEndpoint.java"), str(oracle)], capture_output=True, text=True)
         if result.returncode:

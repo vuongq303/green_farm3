@@ -35,6 +35,7 @@ def localDevelopment = providers.gradleProperty('greenfarmLocalDevelopment').map
 }.orElse(false)
 def generateLocalDevelopmentConfig = tasks.register('generateLocalDevelopmentConfig') {
     inputs.property('enabled', localDevelopment)
+    inputs.property('backendBaseUrl', backendBaseUrl)
     def directory = layout.buildDirectory.dir('generated/local-development-config')
     outputs.dir(directory)
     doLast {
@@ -46,6 +47,7 @@ def generateLocalDevelopmentConfig = tasks.register('generateLocalDevelopmentCon
 public final class LocalDevelopmentConfig {
     private LocalDevelopmentConfig() {}
     public static final boolean ENABLED = ${localDevelopment.get()};
+    public static final String BACKEND_BASE_URL = "${backendBaseUrl.get()}";
 }
 """, 'UTF-8')
     }

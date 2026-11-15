@@ -20,6 +20,8 @@ import org.jf.dexlib2.builder.instruction.BuilderInstruction10x;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction11x;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction21t;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction35c;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction3rc;
+import org.jf.dexlib2.builder.BuilderInstruction;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
@@ -31,6 +33,8 @@ import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
 import org.jf.dexlib2.iface.instruction.OffsetInstruction;
 import org.jf.dexlib2.iface.instruction.VariableRegisterInstruction;
+import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
+import org.jf.dexlib2.iface.instruction.RegisterRangeInstruction;
 import org.jf.dexlib2.iface.reference.MethodReference;
 import org.jf.dexlib2.iface.reference.StringReference;
 import org.jf.dexlib2.immutable.ImmutableClassDef;
@@ -53,7 +57,153 @@ public final class PatchBackendEndpoint {
     static final String ORIGINAL = "https://eve.gameloft.com/";
     static final String STARTUP_OWNER = "Lcom/gameloft/android/wrapper/au;";
     static final String LOCAL_MODE = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;";
+    static final String HTTP_OWNER = "Lcom/gameloft/a/b/e;";
+    static final String NETWORK_HELPER = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/NetworkDiagnostics;";
+
+    private static final class NetworkHook {
+        final String owner, name, result, helperName;
+        final List<String> parameters, helperParameters;
+
+        NetworkHook(String owner, String name, List<String> parameters, String result,
+                    String helperName, List<String> helperParameters) {
+            this.owner = owner; this.name = name; this.parameters = parameters;
+            this.result = result; this.helperName = helperName; this.helperParameters = helperParameters;
+        }
+
+        boolean matches(MethodReference reference, boolean reverse) {
+            return reference.getDefiningClass().equals(reverse ? NETWORK_HELPER : owner)
+                    && reference.getName().equals(reverse ? helperName : name)
+                    && reference.getParameterTypes().equals(reverse ? helperParameters : parameters)
+                    && reference.getReturnType().equals(result);
+        }
+
+        MethodReference reference(boolean reverse) {
+            return new ImmutableMethodReference(reverse ? owner : NETWORK_HELPER,
+                    reverse ? name : helperName, reverse ? parameters : helperParameters, result);
+        }
+    }
+
+    // Wrappers consume the existing receiver as their first argument. No
+    // register, move-result, branch or exception handler needs to be rewritten.
+    private static final List<NetworkHook> NETWORK_HOOKS = Arrays.asList(
+            new NetworkHook("Ljava/net/URL;", "openConnection", Collections.emptyList(),
+                    "Ljava/net/URLConnection;", "openConnection", Collections.singletonList("Ljava/net/URL;")),
+            new NetworkHook("Ljava/net/URL;", "openConnection", Collections.singletonList("Ljava/net/Proxy;"),
+                    "Ljava/net/URLConnection;", "openConnection", Arrays.asList("Ljava/net/URL;", "Ljava/net/Proxy;")),
+            new NetworkHook("Ljava/net/HttpURLConnection;", "getResponseCode", Collections.emptyList(),
+                    "I", "responseCode", Collections.singletonList("Ljava/net/HttpURLConnection;")),
+            new NetworkHook("Ljava/lang/Exception;", "printStackTrace", Collections.emptyList(),
+                    "V", "failure", Collections.singletonList("Ljava/lang/Throwable;")));
     private PatchBackendEndpoint() {}
+
+    private static boolean sdkHttpRun(Method method) {
+        return method.getDefiningClass().equals(HTTP_OWNER) && method.getName().equals("run")
+                && method.getParameterTypes().isEmpty() && method.getReturnType().equals("V");
+    }
+
+    private static MethodReference methodReference(Instruction instruction) {
+        if (!(instruction instanceof ReferenceInstruction)) return null;
+        Object reference = ((ReferenceInstruction) instruction).getReference();
+        return reference instanceof MethodReference ? (MethodReference) reference : null;
+    }
+
+    private static boolean beginReference(MethodReference reference) {
+        return reference != null && reference.getDefiningClass().equals(NETWORK_HELPER)
+                && reference.getName().equals("begin") && reference.getParameterTypes().isEmpty()
+                && reference.getReturnType().equals("V");
+    }
+
+    private static BuilderInstruction replaceNetworkInvoke(Instruction instruction, NetworkHook hook,
+                                                           boolean reverse) throws IOException {
+        int count = ((VariableRegisterInstruction) instruction).getRegisterCount();
+        if (count != hook.helperParameters.size()) throw new IOException("Unexpected SDK HTTP invoke register count");
+        if (instruction.getOpcode() == (reverse ? Opcode.INVOKE_STATIC : Opcode.INVOKE_VIRTUAL)
+                && instruction instanceof FiveRegisterInstruction) {
+            FiveRegisterInstruction registers = (FiveRegisterInstruction) instruction;
+            return new BuilderInstruction35c(reverse ? Opcode.INVOKE_VIRTUAL : Opcode.INVOKE_STATIC,
+                    count, registers.getRegisterC(), registers.getRegisterD(), registers.getRegisterE(),
+                    registers.getRegisterF(), registers.getRegisterG(), hook.reference(reverse));
+        }
+        if (instruction.getOpcode() == (reverse ? Opcode.INVOKE_STATIC_RANGE : Opcode.INVOKE_VIRTUAL_RANGE)
+                && instruction instanceof RegisterRangeInstruction) {
+            return new BuilderInstruction3rc(reverse ? Opcode.INVOKE_VIRTUAL_RANGE : Opcode.INVOKE_STATIC_RANGE,
+                    ((RegisterRangeInstruction) instruction).getStartRegister(), count, hook.reference(reverse));
+        }
+        throw new IOException("Unexpected SDK HTTP invoke opcode or format");
+    }
+
+    /** Add diagnostics around the original SDK's four reviewed HTTP calls. */
+    private static ClassDef instrumentNetwork(ClassDef definition, boolean reverse) throws IOException {
+        int found = 0;
+        List<Method> methods = new ArrayList<>();
+        for (Method method : definition.getMethods()) {
+            if (!sdkHttpRun(method)) { methods.add(method); continue; }
+            found++;
+            MethodImplementation implementation = method.getImplementation();
+            if (!AccessFlags.PUBLIC.isSet(method.getAccessFlags()) || AccessFlags.STATIC.isSet(method.getAccessFlags())
+                    || implementation == null || implementation.getRegisterCount() < 1) {
+                throw new IOException("Unexpected SDK HTTP run method shape");
+            }
+            MutableMethodImplementation code = new MutableMethodImplementation(implementation);
+            if (reverse) {
+                Instruction first = code.getInstructions().get(0);
+                if (first.getOpcode() != Opcode.INVOKE_STATIC || !beginReference(methodReference(first))
+                        || ((VariableRegisterInstruction) first).getRegisterCount() != 0) {
+                    throw new IOException("SDK network diagnostics entry is missing or malformed");
+                }
+                code.removeInstruction(0);
+            }
+            int[] counts = new int[NETWORK_HOOKS.size()];
+            for (int index = 0; index < code.getInstructions().size(); index++) {
+                Instruction instruction = code.getInstructions().get(index);
+                MethodReference reference = methodReference(instruction);
+                if (reference == null) continue;
+                boolean matched = false;
+                for (int hookIndex = 0; hookIndex < NETWORK_HOOKS.size(); hookIndex++) {
+                    NetworkHook hook = NETWORK_HOOKS.get(hookIndex);
+                    if (!hook.matches(reference, reverse)) continue;
+                    counts[hookIndex]++;
+                    code.replaceInstruction(index, replaceNetworkInvoke(instruction, hook, reverse));
+                    matched = true;
+                    break;
+                }
+                if (!matched && reference.getDefiningClass().equals(NETWORK_HELPER)) {
+                    throw new IOException("Unexpected SDK network diagnostics call");
+                }
+            }
+            for (int count : counts) if (count != 1) {
+                throw new IOException("Expected exactly one SDK HTTP call for each network diagnostics hook");
+            }
+            if (!reverse) code.addInstruction(0, new BuilderInstruction35c(Opcode.INVOKE_STATIC,
+                    0, 0, 0, 0, 0, 0, new ImmutableMethodReference(NETWORK_HELPER, "begin", Collections.emptyList(), "V")));
+            methods.add(new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
+                    method.getReturnType(), method.getAccessFlags(), method.getAnnotations(),
+                    method.getHiddenApiRestrictions(), code));
+        }
+        if (found != 1) throw new IOException("Expected exactly one SDK HTTP run()V entry");
+        return new ImmutableClassDef(definition.getType(), definition.getAccessFlags(), definition.getSuperclass(),
+                definition.getInterfaces(), definition.getSourceFile(), definition.getAnnotations(), definition.getFields(), methods);
+    }
+
+    private static void requireNetworkHelper(Map<String, ClassDef> definitions) throws IOException {
+        ClassDef helper = definitions.get(NETWORK_HELPER);
+        if (helper == null) throw new IOException("The compiled network diagnostics helper is missing");
+        List<MethodReference> expected = new ArrayList<>();
+        expected.add(new ImmutableMethodReference(NETWORK_HELPER, "begin", Collections.emptyList(), "V"));
+        for (NetworkHook hook : NETWORK_HOOKS) expected.add(hook.reference(false));
+        for (MethodReference target : expected) {
+            boolean found = false;
+            for (Method method : helper.getMethods()) {
+                if (method.getName().equals(target.getName()) && method.getReturnType().equals(target.getReturnType())
+                        && method.getParameterTypes().equals(target.getParameterTypes()) && method.getImplementation() != null
+                        && AccessFlags.PUBLIC.isSet(method.getAccessFlags()) && AccessFlags.STATIC.isSet(method.getAccessFlags())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) throw new IOException("The compiled network diagnostics helper method is missing: " + target.getName());
+        }
+    }
 
     private static boolean startup(Method method) {
         return method.getDefiningClass().equals(STARTUP_OWNER) && method.getName().equals("Qh")
@@ -255,10 +405,15 @@ public final class PatchBackendEndpoint {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 3 && !(args.length == 4 && args[3].equals("--guard-local-startup"))) {
-            throw new IllegalArgumentException("Usage: PatchBackendEndpoint input.dex output.dex baseURL [--guard-local-startup]");
+        if (args.length < 3 || args.length > 5) {
+            throw new IllegalArgumentException("Usage: PatchBackendEndpoint input.dex output.dex baseURL [--guard-local-startup] [--network-diagnostics]");
         }
-        boolean localStartupGuard = args.length == 4;
+        boolean localStartupGuard = false, networkDiagnostics = false;
+        for (int index = 3; index < args.length; index++) {
+            if (args[index].equals("--guard-local-startup") && !localStartupGuard) localStartupGuard = true;
+            else if (args[index].equals("--network-diagnostics") && !networkDiagnostics) networkDiagnostics = true;
+            else throw new IllegalArgumentException("Unknown or duplicate patch option");
+        }
         String replacement = validateUrl(args[2]);
         Path input = Paths.get(args[0]).toRealPath();
         Path output = Paths.get(args[1]).toAbsolutePath().normalize();
@@ -283,6 +438,11 @@ public final class PatchBackendEndpoint {
             if (!original.containsKey(STARTUP_OWNER)) throw new IOException("Missing SDK startup owner");
             modified.put(STARTUP_OWNER, guardStartup(original.get(STARTUP_OWNER), false));
         }
+        if (networkDiagnostics) {
+            requireNetworkHelper(original);
+            if (!original.containsKey(HTTP_OWNER)) throw new IOException("Missing SDK HTTP owner");
+            modified.put(HTTP_OWNER, instrumentNetwork(original.get(HTTP_OWNER), false));
+        }
         byte[] outputBytes = serialize(modified.values(), opcodes);
         Map<String, ClassDef> actual = classes(outputBytes, opcodes);
         if (!original.keySet().equals(actual.keySet())) throw new IOException("Class set changed");
@@ -300,9 +460,17 @@ public final class PatchBackendEndpoint {
                 throw new IOException("Reverse-patched SDK startup semantics changed");
             }
         }
+        if (networkDiagnostics) {
+            ClassDef restored = instrumentNetwork(actual.get(HTTP_OWNER), true);
+            if (!Arrays.equals(serialize(Collections.singletonList(original.get(HTTP_OWNER)), opcodes),
+                    serialize(Collections.singletonList(restored), opcodes))) {
+                throw new IOException("Reverse-patched SDK network diagnostics semantics changed");
+            }
+        }
         Map<String, ClassDef> beforeOthers = new TreeMap<>(original), afterOthers = new TreeMap<>(actual);
         for (String owner : TARGETS.keySet()) { beforeOthers.remove(owner); afterOthers.remove(owner); }
         if (localStartupGuard) { beforeOthers.remove(STARTUP_OWNER); afterOthers.remove(STARTUP_OWNER); }
+        if (networkDiagnostics) { beforeOthers.remove(HTTP_OWNER); afterOthers.remove(HTTP_OWNER); }
         byte[] beforeCanonical = serialize(beforeOthers.values(), opcodes);
         if (!Arrays.equals(beforeCanonical, serialize(afterOthers.values(), opcodes))) throw new IOException("Other class semantics changed");
         String json = "{\n"
@@ -321,6 +489,11 @@ public final class PatchBackendEndpoint {
                     ? "{\"owner\":" + quote(STARTUP_OWNER) + ",\"method\":\"Qh()V\",\"predicate\":"
                         + quote(LOCAL_MODE + "->isEnabled()Z")
                         + ",\"original_false_branch_preserved\":true,\"reverse_patch_semantics_verified\":true}"
+                    : "null") + ",\n"
+                + "  \"network_diagnostics\": " + (networkDiagnostics
+                    ? "{\"owner\":" + quote(HTTP_OWNER) + ",\"method\":\"run()V\",\"helper\":" + quote(NETWORK_HELPER)
+                        + ",\"begin_calls\":1,\"hook_counts\":{\"open_connection\":1,\"open_connection_proxy\":1,\"response_code\":1,\"failure\":1}"
+                        + ",\"reverse_patch_semantics_verified\":true}"
                     : "null") + ",\n"
                 + "  \"unchanged_classes_canonical_sha256\": " + quote(sha256(beforeCanonical)) + "\n}\n";
         // Publish only after read-back verification. Both files use same-directory atomic rename.

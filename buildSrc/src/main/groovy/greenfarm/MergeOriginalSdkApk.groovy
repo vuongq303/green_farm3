@@ -178,11 +178,12 @@ abstract class MergeOriginalSdkApk extends DefaultTask {
             File patchedDex = new File(work, 'backend/classes.dex')
             // The SDK starts auth before the game engine exists. The guard
             // reads the same opt-in compiled mode as the source startup path.
-            runJava('PatchBackendEndpoint', mergedDex, patchedDex, endpoint, '--guard-local-startup')
+            runJava('PatchBackendEndpoint', mergedDex, patchedDex, endpoint,
+                    '--guard-local-startup', '--network-diagnostics')
             List<Object> packageArguments = ['--original', original,
                     '--base', base, '--patched-dex', patchedDex,
                     '--sdk', sdkDirectory.get().asFile, '--keystore', keystore.get().asFile,
-                    '--output', output, '--require-local-startup-guard']
+                    '--output', output, '--require-local-startup-guard', '--require-network-diagnostics']
             if (gamePackage.get() == 'com.quanhoang.greenfarm3') {
                 Map mergeReport = (Map) new JsonSlurper().parse(new File(mergedDex.absolutePath + '.json'))
                 if (!(mergeReport.game_symbols_renamed instanceof Boolean)) {

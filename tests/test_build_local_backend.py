@@ -234,6 +234,36 @@ class LocalBackendPackagingTest(unittest.TestCase):
         prepare_guarded()
         self.assertTrue(self.output.exists())
 
+    def test_network_diagnostics_require_exact_bound_sdk_hook_proof(self):
+        def prepare_instrumented():
+            return build.prepare(self.original, self.base, self.dex, self.output,
+                                 require_network_diagnostics=True)
+        with self.assertRaisesRegex(ValueError, 'Network diagnostics provenance'):
+            prepare_instrumented()
+        invalid = [
+            dict(build.NETWORK_DIAGNOSTICS, owner='Lwrong/Owner;'),
+            dict(build.NETWORK_DIAGNOSTICS, method='run(I)V'),
+            dict(build.NETWORK_DIAGNOSTICS, helper='Lwrong/Helper;'),
+            dict(build.NETWORK_DIAGNOSTICS, begin_calls=True),
+            dict(build.NETWORK_DIAGNOSTICS, begin_calls=2),
+            dict(build.NETWORK_DIAGNOSTICS, reverse_patch_semantics_verified=1),
+            dict(build.NETWORK_DIAGNOSTICS, hook_counts=dict(build.NETWORK_DIAGNOSTICS['hook_counts'], failure=0)),
+            dict(build.NETWORK_DIAGNOSTICS, hook_counts=dict(build.NETWORK_DIAGNOSTICS['hook_counts'], failure=True)),
+            dict(build.NETWORK_DIAGNOSTICS, extra='unreviewed hook'),
+        ]
+        for proof in invalid:
+            self.patch['network_diagnostics'] = proof
+            self.write_reports()
+            with self.subTest(proof=proof), self.assertRaisesRegex(ValueError, 'Network diagnostics provenance'):
+                prepare_instrumented()
+            self.assertFalse(self.output.exists())
+            # Malformed optional proofs must not be accepted when the flag is absent.
+            self.assert_rejected_before_output('Network diagnostics provenance')
+        self.patch['network_diagnostics'] = copy.deepcopy(build.NETWORK_DIAGNOSTICS)
+        self.write_reports()
+        prepare_instrumented()
+        self.assertTrue(self.output.exists())
+
     def test_rejects_unverified_or_unbound_generated_revision_metadata(self):
         revision = self.baseline["build_revision_metadata"]
         for field, invalid in (("original_guard_accepts_generated_revision", False),
