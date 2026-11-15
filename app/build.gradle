@@ -25,7 +25,7 @@ if (providers.gradleProperty('localBackendUrl').isPresent()) {
 def backendBaseUrl = providers.gradleProperty('BACKEND_BASE_URL').orElse('')
         .map { BackendBaseUrl.normalize(it) }
 def gameNamespace = 'com.quanhoang.greenfarm3'
-// Opt-in only: ordinary debug builds retain the original network workflow.
+// Optional local sandbox mode remains independent of online authentication.
 def localDevelopment = providers.gradleProperty('greenfarmLocalDevelopment').map { value ->
     switch (value.toLowerCase(Locale.ROOT)) {
         case 'true': return true
@@ -33,9 +33,25 @@ def localDevelopment = providers.gradleProperty('greenfarmLocalDevelopment').map
         default: throw new GradleException('greenfarmLocalDevelopment must be true or false')
     }
 }.orElse(false)
+def onlineAccounts = providers.gradleProperty('greenfarmOnlineAccounts').map { value ->
+    if (value == 'true') return true
+    if (value == 'false') return false
+    throw new GradleException('greenfarmOnlineAccounts must be true or false')
+}.orElse(true)
+def authBaseUrl = providers.gradleProperty('AUTH_BASE_URL').orElse('').map { value ->
+    if (value == '') return ''
+    def uri = new URI(value)
+    if (uri.scheme != 'https' || !uri.host || uri.userInfo || uri.query || uri.fragment ||
+            !(uri.path in ['', '/']) || uri.port == 0 || uri.port > 65535) {
+        throw new GradleException('AUTH_BASE_URL must be an HTTPS origin without credentials, path, query or fragment')
+    }
+    return value.replaceAll('/+$', '') + '/'
+}
 def generateLocalDevelopmentConfig = tasks.register('generateLocalDevelopmentConfig') {
     inputs.property('enabled', localDevelopment)
     inputs.property('backendBaseUrl', backendBaseUrl)
+    inputs.property('onlineAccounts', onlineAccounts)
+    inputs.property('authBaseUrl', authBaseUrl)
     def directory = layout.buildDirectory.dir('generated/local-development-config')
     outputs.dir(directory)
     doLast {
@@ -48,6 +64,8 @@ public final class LocalDevelopmentConfig {
     private LocalDevelopmentConfig() {}
     public static final boolean ENABLED = ${localDevelopment.get()};
     public static final String BACKEND_BASE_URL = "${backendBaseUrl.get()}";
+    public static final boolean ONLINE_ACCOUNTS = ${onlineAccounts.get() && !localDevelopment.get()};
+    public static final String AUTH_BASE_URL = "${authBaseUrl.get()}";
 }
 """, 'UTF-8')
     }

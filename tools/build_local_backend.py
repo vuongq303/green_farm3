@@ -76,7 +76,7 @@ def prepare(original, base, patched_dex, output, relocated_dex=None, require_loc
     expected_guard = {
         'owner': 'Lcom/gameloft/android/wrapper/au;',
         'method': 'Qh()V',
-        'predicate': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;->isEnabled()Z',
+        'predicate': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;->skipLegacyBackend()Z',
         'original_false_branch_preserved': True,
         'reverse_patch_semantics_verified': True,
     }

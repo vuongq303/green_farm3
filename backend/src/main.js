@@ -24,6 +24,7 @@ async function main() {
     // mysql2 pools connect lazily. Creating a pool does not prove that MySQL
     // accepts the credentials or that the required migration has been applied.
     const database = await store.health();
+    if (Object.values(config.auth.providers).some(provider => provider.enabled)) await store.social.health();
     console.log(JSON.stringify({ event: 'database_ready', schema_version: database.schemaVersion }));
   } catch {
     console.error(JSON.stringify({

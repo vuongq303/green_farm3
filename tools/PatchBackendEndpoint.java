@@ -232,7 +232,7 @@ public final class PatchBackendEndpoint {
                     throw new IOException("SDK startup guard is missing or malformed");
                 }
                 MethodReference predicate = (MethodReference) ((ReferenceInstruction) instructions.get(0)).getReference();
-                if (!predicate.getDefiningClass().equals(LOCAL_MODE) || !predicate.getName().equals("isEnabled")
+                if (!predicate.getDefiningClass().equals(LOCAL_MODE) || !predicate.getName().equals("skipLegacyBackend")
                         || !predicate.getParameterTypes().isEmpty() || !predicate.getReturnType().equals("Z")
                         || ((VariableRegisterInstruction) instructions.get(0)).getRegisterCount() != 0
                         || ((OneRegisterInstruction) instructions.get(1)).getRegisterA() != 0
@@ -243,7 +243,7 @@ public final class PatchBackendEndpoint {
                 for (int index = 0; index < 4; index++) code.removeInstruction(0);
             } else {
                 code.addInstruction(0, new BuilderInstruction35c(Opcode.INVOKE_STATIC, 0, 0, 0, 0, 0, 0,
-                        new ImmutableMethodReference(LOCAL_MODE, "isEnabled", Collections.emptyList(), "Z")));
+                        new ImmutableMethodReference(LOCAL_MODE, "skipLegacyBackend", Collections.emptyList(), "Z")));
                 code.addInstruction(1, new BuilderInstruction11x(Opcode.MOVE_RESULT, 0));
                 // The return is outside the SDK's original try regions. Builder
                 // labels preserve every original branch/debug/handler address.
@@ -262,7 +262,7 @@ public final class PatchBackendEndpoint {
     private static void requireLocalMode(Map<String, ClassDef> definitions) throws IOException {
         ClassDef helper = definitions.get(LOCAL_MODE);
         if (helper != null) for (Method method : helper.getMethods()) {
-            if (method.getName().equals("isEnabled") && method.getParameterTypes().isEmpty()
+            if (method.getName().equals("skipLegacyBackend") && method.getParameterTypes().isEmpty()
                     && method.getReturnType().equals("Z") && method.getImplementation() != null
                     && AccessFlags.STATIC.isSet(method.getAccessFlags())
                     && AccessFlags.PUBLIC.isSet(method.getAccessFlags())) return;
@@ -487,7 +487,7 @@ public final class PatchBackendEndpoint {
                 + "  \"reverse_patch_semantics_verified\": true,\n"
                 + "  \"local_startup_guard\": " + (localStartupGuard
                     ? "{\"owner\":" + quote(STARTUP_OWNER) + ",\"method\":\"Qh()V\",\"predicate\":"
-                        + quote(LOCAL_MODE + "->isEnabled()Z")
+                        + quote(LOCAL_MODE + "->skipLegacyBackend()Z")
                         + ",\"original_false_branch_preserved\":true,\"reverse_patch_semantics_verified\":true}"
                     : "null") + ",\n"
                 + "  \"network_diagnostics\": " + (networkDiagnostics

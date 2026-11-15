@@ -32,6 +32,13 @@ class NetworkDiagnostics private constructor() {
             write(false, "startup url=${safeUrl(baseUrl)} mode=${if (local) "LOCAL" else "NETWORK"}")
         }
 
+        @JvmStatic fun accountStartup(baseUrl: String) {
+            val endpoint = safeUrl(baseUrl)
+            val configured = endpoint != "<invalid-url>" && baseUrl.startsWith("https://")
+            write(!configured, "account_startup url=$endpoint configured=$configured mode=OAUTH" +
+                if (configured) "" else " hint=Set AUTH_BASE_URL to the HTTPS authentication backend origin.")
+        }
+
         @JvmStatic fun safeUrl(value: String?): String {
             if (value == null) return "<invalid-url>"
             return try {
@@ -46,7 +53,10 @@ class NetworkDiagnostics private constructor() {
                 val route = when {
                     path.isEmpty() || path == "/" -> "/"
                     path in arrayOf("/health", "/healthz", "/authorize", "/locate/auth",
-                        "/locate/storage", "/profiles/me/myprofile", "/users/me/compliance") -> path
+                        "/locate/storage", "/profiles/me/myprofile", "/users/me/compliance",
+                        "/auth/attempt", "/auth/facebook", "/auth/google", "/auth/exchange",
+                        "/auth/me", "/auth/logout", "/auth/refresh", "/auth/browser/start",
+                        "/auth/callback/facebook", "/auth/callback/google") -> path
                     path.matches(Regex("/config/[^/]+/datacenters")) -> "/config/:client/datacenters"
                     path.matches(Regex("/config/[^/]+/datacenters/[^/]+/urls")) -> "/config/:client/datacenters/:name/urls"
                     else -> "/<redacted>"
@@ -74,7 +84,13 @@ class NetworkDiagnostics private constructor() {
         }
 
         @JvmStatic @Throws(IOException::class)
-        fun responseCode(connection: HttpURLConnection): Int {
+        fun responseCode(connection: HttpURLConnection): Int = reportResponse(connection, true)
+
+        /** The new JSON account API accepts standard 2xx, including create/logout. */
+        @JvmStatic @Throws(IOException::class)
+        fun authResponseCode(connection: HttpURLConnection): Int = reportResponse(connection, false)
+
+        private fun reportResponse(connection: HttpURLConnection, legacy: Boolean): Int {
             val status = connection.responseCode
             // A platform redirect may have changed the connection's URL.
             val endpoint = safeUrl(connection.url.toExternalForm())
@@ -92,9 +108,11 @@ class NetworkDiagnostics private constructor() {
                     if (location != null) message += " redirect_to=${safeUrl(URL(connection.url, location).toExternalForm())}"
                 } catch (_: Exception) { }
             }
-            val rejected = status != 200 && status != 202 && status != 302
+            val rejected = if (legacy) status != 200 && status != 202 && status != 302 else status !in 200..299
             if (status >= 400) message += " kind=HTTP_ERROR hint=${httpHint(status)}"
-            else if (rejected) message += " kind=UNEXPECTED_STATUS hint=This client expects HTTP 200/202; check the backend API response."
+            else if (rejected) message += if (legacy)
+                " kind=UNEXPECTED_STATUS hint=This client expects HTTP 200/202; check the backend API response."
+                else " kind=UNEXPECTED_STATUS hint=Account API redirects are refused; check the HTTPS origin and proxy configuration."
             write(rejected, message)
             return status
         }

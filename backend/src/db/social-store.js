@@ -1,0 +1,210 @@
+import { DatabaseUnavailableError } from './store.js';
+
+// Keep identity arithmetic out of JavaScript numbers even if a caller supplies
+// a pool without mysql2's bigNumberStrings option.
+const USER_COLUMNS = 'CAST(u.id AS CHAR) AS user_id, u.game_id, u.provider, u.display_name';
+
+function user(row) {
+  return { id: String(row.user_id ?? row.id), game_id: row.game_id,
+    provider: row.provider, display_name: row.display_name ?? null };
+}
+
+function attempt(row) {
+  if (!row) return undefined;
+  return { id: row.id, provider: row.provider, appState: row.app_state,
+    codeChallenge: row.code_challenge, redirectUri: row.redirect_uri,
+    oauthStateHash: row.oauth_state_hash, nonce: row.nonce, providerVerifier: row.provider_verifier,
+    createdAt: Number(row.created_at), expiresAt: Number(row.expires_at),
+    startedAt: row.started_at == null ? null : Number(row.started_at),
+    consumedAt: row.consumed_at == null ? null : Number(row.consumed_at) };
+}
+
+async function insertSession(connection, userId, session, familyId = session.id) {
+  if (familyId === session.id) {
+    await connection.execute(`INSERT INTO gf_auth_session_families
+      (id, user_id, created_at) VALUES (?, ?, ?)`, [familyId, userId, session.issuedAt]);
+  }
+  await connection.execute(`INSERT INTO gf_auth_sessions
+    (id, user_id, access_hash, refresh_hash, issued_at, access_expires_at, refresh_expires_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)`, [session.id, userId, session.accessHash, session.refreshHash,
+    session.issuedAt, session.accessExpiresAt, session.refreshExpiresAt]);
+  await connection.execute('INSERT INTO gf_auth_session_links (session_id, family_id) VALUES (?, ?)',
+    [session.id, familyId]);
+}
+
+/** Opaque-token/code hashes only; this store has no gameplay or SQLite API. */
+export function createSocialStore(pool) {
+  async function run(operation) {
+    try { return await operation(); }
+    catch { throw new DatabaseUnavailableError(); }
+  }
+
+  async function transaction(operation) {
+    let connection;
+    try {
+      connection = await pool.getConnection();
+      await connection.beginTransaction();
+      const result = await operation(connection);
+      await connection.commit();
+      return result;
+    } catch {
+      if (connection) {
+        try { await connection.rollback(); } catch { /* disconnected */ }
+      }
+      throw new DatabaseUnavailableError();
+    } finally { connection?.release(); }
+  }
+
+  return {
+    async health() {
+      return run(async () => {
+        const [versions] = await pool.execute('SELECT version FROM gf_schema_migrations WHERE version = ?', [3]);
+        if (versions.length !== 1) throw new DatabaseUnavailableError();
+        await pool.query('SELECT id, game_id, provider, provider_user_id FROM users LIMIT 0');
+        await pool.query('SELECT id, oauth_state_hash, code_challenge, consumed_at FROM gf_auth_attempts LIMIT 0');
+        await pool.query('SELECT code_hash, attempt_id, user_id, used_at FROM gf_auth_codes LIMIT 0');
+        await pool.query('SELECT id, access_hash, refresh_hash, revoked_at FROM gf_auth_sessions LIMIT 0');
+        await pool.query('SELECT id, user_id, revoked_at FROM gf_auth_session_families LIMIT 0');
+        await pool.query('SELECT session_id, family_id FROM gf_auth_session_links LIMIT 0');
+        return { status: 'ready', schemaVersion: 3 };
+      });
+    },
+
+    async upsertUser(provider, providerUserId, displayName, now) {
+      return transaction(async connection => {
+        await connection.execute(`INSERT INTO users
+          (provider, provider_user_id, display_name, created_at, updated_at, last_login_at)
+          VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id),
+          display_name = COALESCE(VALUES(display_name), display_name), updated_at = VALUES(updated_at),
+          last_login_at = VALUES(last_login_at)`, [provider, providerUserId, displayName ?? null, now, now, now]);
+        const [[row]] = await connection.execute(`SELECT CAST(id AS CHAR) AS id, game_id, provider, display_name
+          FROM users WHERE provider = ? AND provider_user_id = ? FOR UPDATE`, [provider, providerUserId]);
+        if (!row.game_id) {
+          row.game_id = 'GF' + String(row.id).padStart(6, '0');
+          await connection.execute('UPDATE users SET game_id = ? WHERE id = ?', [row.game_id, row.id]);
+        }
+        return user(row);
+      });
+    },
+
+    async createAttempt(record) {
+      return run(async () => {
+        await pool.execute(`INSERT INTO gf_auth_attempts
+          (id, provider, app_state, code_challenge, redirect_uri, created_at, expires_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)`, [record.id, record.provider, record.appState,
+          record.codeChallenge, record.redirectUri, record.createdAt, record.expiresAt]);
+      });
+    },
+
+    async getAttempt(id) {
+      return run(async () => {
+        const [[row]] = await pool.execute('SELECT * FROM gf_auth_attempts WHERE id = ?', [id]);
+        return attempt(row);
+      });
+    },
+
+    async startAttempt(id, state, now) {
+      return transaction(async connection => {
+        const [[row]] = await connection.execute('SELECT * FROM gf_auth_attempts WHERE id = ? FOR UPDATE', [id]);
+        if (!row || row.started_at != null || row.consumed_at != null || Number(row.expires_at) <= now) return undefined;
+        await connection.execute(`UPDATE gf_auth_attempts SET oauth_state_hash = ?, nonce = ?,
+          provider_verifier = ?, started_at = ? WHERE id = ?`,
+        [state.oauthStateHash, state.nonce, state.providerVerifier ?? null, now, id]);
+        return attempt({ ...row, oauth_state_hash: state.oauthStateHash, nonce: state.nonce,
+          provider_verifier: state.providerVerifier ?? null, started_at: now });
+      });
+    },
+
+    async claimOAuthAttempt(oauthStateHash, provider, now) {
+      return transaction(async connection => {
+        const [[row]] = await connection.execute(`SELECT * FROM gf_auth_attempts
+          WHERE oauth_state_hash = ? AND provider = ? FOR UPDATE`, [oauthStateHash, provider]);
+        if (!row || row.started_at == null || row.consumed_at != null || Number(row.expires_at) <= now) return undefined;
+        await connection.execute('UPDATE gf_auth_attempts SET consumed_at = ? WHERE id = ?', [now, row.id]);
+        return attempt({ ...row, consumed_at: now });
+      });
+    },
+
+    async issueCode({ attemptId, userId, codeHash, expiresAt, now }) {
+      return transaction(async connection => {
+        const [[row]] = await connection.execute('SELECT * FROM gf_auth_attempts WHERE id = ? FOR UPDATE', [attemptId]);
+        if (!row || row.consumed_at == null || Number(row.expires_at) <= now || expiresAt <= now) return false;
+        const [existing] = await connection.execute('SELECT code_hash FROM gf_auth_codes WHERE attempt_id = ?', [attemptId]);
+        if (existing.length) return false;
+        await connection.execute(`INSERT INTO gf_auth_codes
+          (code_hash, attempt_id, user_id, code_challenge, redirect_uri, expires_at) VALUES (?, ?, ?, ?, ?, ?)`,
+        [codeHash, attemptId, userId, row.code_challenge, row.redirect_uri, expiresAt]);
+        return true;
+      });
+    },
+
+    async exchangeCode({ codeHash, codeChallenge, redirectUri, now, session }) {
+      return transaction(async connection => {
+        const [[row]] = await connection.execute(`SELECT c.used_at, c.expires_at, c.code_challenge,
+          c.redirect_uri, ${USER_COLUMNS}
+          FROM gf_auth_codes c INNER JOIN users u ON u.id = c.user_id WHERE c.code_hash = ? FOR UPDATE`, [codeHash]);
+        if (!row || row.used_at != null || Number(row.expires_at) <= now ||
+            row.code_challenge !== codeChallenge || row.redirect_uri !== redirectUri) return undefined;
+        await connection.execute('UPDATE gf_auth_codes SET used_at = ? WHERE code_hash = ?', [now, codeHash]);
+        await insertSession(connection, row.user_id, session);
+        return user(row);
+      });
+    },
+
+    async findAccess(accessHash, now) {
+      return run(async () => {
+        const [[row]] = await pool.execute(`SELECT s.id AS session_id, s.issued_at,
+          s.access_expires_at, s.refresh_expires_at, ${USER_COLUMNS}
+          FROM gf_auth_sessions s INNER JOIN users u ON u.id = s.user_id
+          INNER JOIN gf_auth_session_links l ON l.session_id = s.id
+          INNER JOIN gf_auth_session_families f ON f.id = l.family_id
+          WHERE s.access_hash = ? AND s.revoked_at IS NULL AND f.revoked_at IS NULL
+          AND s.access_expires_at > ?`, [accessHash, now]);
+        if (!row) return undefined;
+        return { user: user(row), sessionId: row.session_id, issuedAt: Number(row.issued_at),
+          accessExpiresAt: Number(row.access_expires_at), refreshExpiresAt: Number(row.refresh_expires_at) };
+      });
+    },
+
+    async rotateRefresh(refreshHash, session, now) {
+      return transaction(async connection => {
+        const [[link]] = await connection.execute(`SELECT l.family_id FROM gf_auth_session_links l
+          INNER JOIN gf_auth_sessions s ON s.id = l.session_id WHERE s.refresh_hash = ?`, [refreshHash]);
+        if (!link) return undefined;
+        // Family first, token second: logout and rotation share this ordering.
+        const [[family]] = await connection.execute(`SELECT CAST(user_id AS CHAR) AS user_id, revoked_at
+          FROM gf_auth_session_families WHERE id = ? FOR UPDATE`, [link.family_id]);
+        if (!family || family.revoked_at != null) return undefined;
+        const [[row]] = await connection.execute(`SELECT s.id AS session_id, s.revoked_at,
+          s.refresh_expires_at, ${USER_COLUMNS} FROM gf_auth_sessions s
+          INNER JOIN users u ON u.id = s.user_id WHERE s.refresh_hash = ? FOR UPDATE`, [refreshHash]);
+        if (!row || row.revoked_at != null || String(row.user_id) !== String(family.user_id)
+            || Number(row.refresh_expires_at) <= now) return undefined;
+        await connection.execute('UPDATE gf_auth_sessions SET revoked_at = ? WHERE id = ?', [now, row.session_id]);
+        await insertSession(connection, row.user_id, session, link.family_id);
+        return user(row);
+      });
+    },
+
+    async revoke(accessHash, refreshHash, now) {
+      if (!accessHash) return false;
+      return transaction(async connection => {
+        const [[link]] = await connection.execute(`SELECT l.family_id FROM gf_auth_session_links l
+          INNER JOIN gf_auth_sessions s ON s.id = l.session_id WHERE s.access_hash = ?`, [accessHash]);
+        if (!link) return false;
+        const [[family]] = await connection.execute(`SELECT revoked_at FROM gf_auth_session_families
+          WHERE id = ? FOR UPDATE`, [link.family_id]);
+        if (!family || family.revoked_at != null) return false;
+        const [[row]] = await connection.execute(`SELECT id, refresh_hash, revoked_at
+          FROM gf_auth_sessions WHERE access_hash = ? FOR UPDATE`, [accessHash]);
+        if (!row || (refreshHash && !row.refresh_hash.equals(refreshHash))) return false;
+        // A response from an in-flight refresh may arrive after local logout.
+        // Even an older token pair revokes all descendants through the family.
+        await connection.execute('UPDATE gf_auth_session_families SET revoked_at = ? WHERE id = ?', [now, link.family_id]);
+        await connection.execute(`UPDATE gf_auth_sessions s INNER JOIN gf_auth_session_links l ON l.session_id = s.id
+          SET s.revoked_at = COALESCE(s.revoked_at, ?) WHERE l.family_id = ?`, [now, link.family_id]);
+        return true;
+      });
+    },
+  };
+}

@@ -38,7 +38,7 @@ public class LocalStartupGuardOracle {
         return new ImmutableMethod(owner,name,Collections.emptyList(),type,9,Collections.emptySet(),Collections.emptySet(),
             new ImmutableMethodImplementation(registers,code,blocks,lines));
     }
-    static void fixture(String path,boolean helper) throws Exception {
+    static void fixture(String path,boolean helper,String predicate) throws Exception {
         BackendEndpointOracle.fixture("narrow",path);
         TreeMap<String,ClassDef> classes=BackendEndpointOracle.read(path);
         List<Instruction> code=Arrays.asList(
@@ -53,7 +53,7 @@ public class LocalStartupGuardOracle {
             Collections.singletonList(new ImmutableTryBlock(3,3,Collections.singletonList(
                 new ImmutableExceptionHandler("Ljava/lang/Exception;",7)))),
             Collections.singletonList(new ImmutableLineNumber(3,77))))));
-        if(helper) classes.put(HELPER,clazz(HELPER,Collections.singletonList(method(HELPER,"isEnabled","Z",1,
+        if(helper) classes.put(HELPER,clazz(HELPER,Collections.singletonList(method(HELPER,predicate,"Z",1,
             Arrays.asList(new ImmutableInstruction11n(Opcode.CONST_4,0,0),new ImmutableInstruction11x(Opcode.RETURN,0)),
             Collections.emptyList(),Collections.emptyList()))));
         Files.write(Paths.get(path),BackendEndpointOracle.canonical(classes.values()));
@@ -69,20 +69,21 @@ public class LocalStartupGuardOracle {
             || b.get(2).getOpcode()!=Opcode.IF_EQZ || b.get(3).getOpcode()!=Opcode.RETURN_VOID)
             throw new AssertionError("Wrong guard opcodes");
         MethodReference ref=(MethodReference)((ReferenceInstruction)b.get(0)).getReference();
-        if(!ref.getDefiningClass().equals(HELPER)||!ref.getName().equals("isEnabled")
+        if(!ref.getDefiningClass().equals(HELPER)||!ref.getName().equals("skipLegacyBackend")
             ||!ref.getParameterTypes().isEmpty()||!ref.getReturnType().equals("Z"))
             throw new AssertionError("Guard calls an unexpected predicate");
         if(((OneRegisterInstruction)b.get(1)).getRegisterA()!=0
             ||((OneRegisterInstruction)b.get(2)).getRegisterA()!=0
             ||((OffsetInstruction)b.get(2)).getCodeOffset()!=3)
             throw new AssertionError("Guard must fall through to return or branch exactly to original start");
-        // A tiny independent interpreter for the prologue: local=true exits;
-        // false enters the original SDK path, whose login instruction remains.
-        for(boolean local:new boolean[]{false,true}) {
+        // Offline or online-account mode must skip legacy anonymous startup;
+        // ordinary legacy mode still enters the original SDK path.
+        for(boolean local:new boolean[]{false,true}) for(boolean online:new boolean[]{false,true}) {
+            boolean skip=local||online;
             int index=2;
-            index=local?index+1:index+2;
+            index=skip?index+1:index+2;
             boolean callsOriginal=b.get(index).getOpcode()!=Opcode.RETURN_VOID;
-            if(callsOriginal==local) throw new AssertionError("Incorrect local/remote branch");
+            if(callsOriginal==skip) throw new AssertionError("Incorrect legacy/offline/online-account branch");
         }
         for(int n=0;n<a.size();n++) {
             Instruction x=a.get(n),y=b.get(n+4);
@@ -107,10 +108,10 @@ public class LocalStartupGuardOracle {
         if(!Arrays.equals(BackendEndpointOracle.canonical(Collections.singleton(before.get(OWNER))),
             BackendEndpointOracle.canonical(Collections.singleton(restoredOwner))))
             throw new AssertionError("Other SDK owner semantics changed");
-        System.out.println("PASS: local returns, remote original path retained, original branches/try/debug metadata intact");
+        System.out.println("PASS: offline/online-account modes return, legacy original path retained, original branches/try/debug metadata intact");
     }
     public static void main(String[] args) throws Exception {
-        if(args[0].equals("fixture")) fixture(args[1],Boolean.parseBoolean(args[2]));
+        if(args[0].equals("fixture")) fixture(args[1],Boolean.parseBoolean(args[2]),args.length>3?args[3]:"skipLegacyBackend");
         else verify(args[1],args[2]);
     }
 }
@@ -154,12 +155,23 @@ class LocalStartupGuardTest(unittest.TestCase):
         result = self.command('LocalStartupGuardOracle', 'verify', source, output)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         proof = json.loads(output.with_suffix('.dex.json').read_text())['local_startup_guard']
+        self.assertEqual(proof['predicate'],
+                         'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;->skipLegacyBackend()Z')
         self.assertTrue(proof['original_false_branch_preserved'])
         self.assertTrue(proof['reverse_patch_semantics_verified'])
 
     def test_guard_rejects_missing_helper_without_publishing_output(self):
         source, output = self.directory / 'missing-helper.dex', self.directory / 'must-not-exist.dex'
         result = self.command('LocalStartupGuardOracle', 'fixture', source, 'false')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('PatchBackendEndpoint', source, output, 'http://192.168.1.5:8787/', '--guard-local-startup')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(output.exists())
+        self.assertIn('helper is missing', result.stderr)
+
+    def test_old_offline_only_predicate_cannot_satisfy_the_online_account_guard(self):
+        source, output = self.directory / 'old-helper.dex', self.directory / 'old-must-not-exist.dex'
+        result = self.command('LocalStartupGuardOracle', 'fixture', source, 'true', 'isEnabled')
         self.assertEqual(result.returncode, 0, result.stderr)
         result = self.command('PatchBackendEndpoint', source, output, 'http://192.168.1.5:8787/', '--guard-local-startup')
         self.assertNotEqual(result.returncode, 0)

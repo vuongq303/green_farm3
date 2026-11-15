@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { HttpError, respond, form, parsePairs, required, routeSegments, validateClientPath } from './http.js';
 import { createSessionService } from './services/sessions.js';
 import { normalizeBackendBaseUrl } from './config.js';
+import { createSocialAuthRouter } from './auth/router.js';
 
 const DATACENTER_NAME = 'local';
 const DATACENTER_ID = 'local-research';
@@ -22,6 +23,8 @@ export function createResearchServer(options) {
   const sessions = createSessionService({ store, secret: options.sessionSecret, ttl: options.sessionTtlSeconds ?? 900, refreshTtl: options.refreshTtlSeconds ?? 2592000, now });
   const log = options.log ?? (entry => console.log(JSON.stringify(entry)));
   const errorLog = options.errorLog ?? (entry => console.error(JSON.stringify(entry)));
+  const social = createSocialAuthRouter({ config: options.auth, store: options.socialStore ?? store.social,
+    now, providers: options.socialProviders, errorLog });
 
   const server = createServer((request, response) => {
     let path = '[unmatched]';
@@ -39,6 +42,15 @@ export function createResearchServer(options) {
         throw new HttpError(400, 'invalid_path');
       }
       const url = new URL(request.url, 'http://local.invalid');
+      if (url.pathname === '/auth' || url.pathname.startsWith('/auth/')) {
+        // OAuth query strings contain authorization codes and must never enter logs.
+        path = url.pathname.startsWith('/auth/callback/') ? '/auth/callback/:provider'
+          : url.pathname.startsWith('/auth/assets/') ? '/auth/assets/:file'
+          : ['/auth/attempt', '/auth/facebook', '/auth/google', '/auth/exchange', '/auth/me',
+            '/auth/refresh', '/auth/logout', '/auth/browser/start'].includes(url.pathname) ? url.pathname : '/auth/[unknown]';
+        await social.handle(request, response, url);
+        return;
+      }
       const parts = routeSegments(url.pathname);
       let expectedMethod;
 
@@ -80,6 +92,10 @@ export function createResearchServer(options) {
         response.setHeader('Allow', expectedMethod);
         request.resume();
         throw new HttpError(405, 'method_not_allowed');
+      }
+
+      if (options.legacyAuthEnabled === false && ['/authorize', '/profiles/me/myprofile', '/users/me/compliance'].includes(path)) {
+        throw new HttpError(503, 'legacy_auth_disabled');
       }
 
       if (path === '/health' || path === '/healthz') {

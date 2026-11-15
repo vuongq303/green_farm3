@@ -9,6 +9,13 @@ Application ID và namespace chính hiện là **`com.quanhoang.greenfarm3`**.
 [hướng dẫn xuất/nhập save](docs/SAVE_TRANSFER_KOTLIN.md), dùng đúng khóa ký của bản
 cũ cho APK cầu nối. Không gỡ bản cũ trước khi kiểm tra bản nhập.
 
+Luồng tài khoản mới mặc định dùng Facebook/Google qua OAuth chính thức, tái sử
+dụng box đăng nhập gốc và bỏ qua màn tuổi/giới tính. Cấu hình `AUTH_BASE_URL`
+trong Gradle cùng `AUTH_PUBLIC_BASE_URL` và OAuth phía server; xác thực cần HTTPS.
+Hiện chưa có domain/OAuth nên cấu hình được để trống và chưa thể đăng nhập thật.
+Xem [báo cáo bàn giao, APK và kiểm thử](docs/SOCIAL_AUTH_REPORT.md) cùng
+[hướng dẫn backend tài khoản](backend/SOCIAL_AUTH.md). SQLite nông trại vẫn cục bộ.
+
 Pipeline chuẩn khôi phục resource, biên dịch Java/Kotlin được chọn và các helper,
 ghép runtime DEX còn lại, đổi package/symbol có kiểm chứng, cập nhật metadata
 kích thước DEX, ký và kiểm tra APK. AGP cung cấp đúng
@@ -26,7 +33,8 @@ Bản APK debug đã build để tải nằm trong [artifacts/](artifacts/README
 Chạy độc lập backend để phát triển: build với
 `./gradlew :app:assembleDebug -PgreenfarmLocalDevelopment=true`
 (Windows dùng `gradlew.bat`). Mặc định cờ này là `false`; build lại với `false`
-để dùng luồng backend cũ. Chế độ local giữ màn hình Accept/loading, dùng SQLite
+để dùng luồng tài khoản mới. Luồng legacy chỉ dành cho nghiên cứu khi đặt riêng
+`-PgreenfarmOnlineAccounts=false`. Chế độ local giữ màn hình Accept/loading, dùng SQLite
 và không tạo token xác thực. Chỉ người chơi local mới được khởi tạo
 99.999.999 xu / 3.000.000 cash; số dư đã lưu được giữ nguyên.
 Xem [phạm vi sửa lỗi và kiểm chứng](docs/LOCAL_DEVELOPMENT_FIXES.md).
@@ -44,14 +52,14 @@ bằng argument array, hỗ trợ đường dẫn có khoảng trắng. Khóa de
 `.local/`, không commit và không bị `clean` xóa. Release chưa bật trong pipeline
 nghiên cứu này.
 
-Địa chỉ backend của app và các URL discovery dùng chung **một biến** trong
+Địa chỉ backend legacy và các URL discovery dùng chung **một biến** trong
 `gradle.properties` ở thư mục gốc:
 
 ```properties
-BACKEND_BASE_URL=http://10.37.233.55:8787/
+BACKEND_BASE_URL=http://10.61.217.55:8787/
 ```
 
-Đây là IPv4 Windows bạn đã cung cấp. Đổi IP/port phải sửa biến này, khởi động
+Đây là URL LAN legacy đang cấu hình, không phải URL OAuth mới. Đổi IP/port phải sửa biến này, khởi động
 lại backend, **build và cài lại APK**. Không có fallback localhost/`10.0.2.2`;
 không dùng `localBackendUrl` nữa. Backend đọc trực tiếp cùng file properties.
 
@@ -69,20 +77,22 @@ npm start
 # Khi phát triển: npm run dev
 ```
 
-Listener mặc định `HOST=0.0.0.0`, `PORT=8787`. App chỉ gọi HTTP; tài khoản MySQL
+Listener mặc định `HOST=0.0.0.0`, `PORT=8787`. Giao thức legacy dùng HTTP;
+xác thực Facebook/Google dùng HTTPS qua reverse proxy. Thông tin MySQL
 chỉ ở `backend/.env`, không nằm trong APK. Kiểm tra từ Windows **và** emulator:
-`http://10.37.233.55:8787/health`. Backend kiểm tra MySQL/schema trước khi mở
+`http://10.61.217.55:8787/health`. Backend kiểm tra MySQL/schema trước khi mở
 cổng; lỗi thì báo rõ và thoát mã 1. Nếu DB mất kết nối sau khi đã chạy, endpoint
 trả 503, không chuyển sang RAM/JSON. Hướng dẫn lấy IPv4, migration
 và rule Windows Firewall đúng cổng nằm trong README backend.
 
-Tài khoản anonymous, access/refresh session và compliance hiện được lưu vào
+Tài khoản legacy anonymous, access/refresh session và compliance được lưu vào
 MySQL. Gameplay/save nông trại chuyển sang SQLite bền vững trên thiết bị
 (`greenfarm-progress.db`, schema 4), tự tạo/migration và nhập RMS cũ có CRC hợp lệ.
 Snapshot giữ codec gốc, gồm tutorial, quest, kho, farm, timestamp, thưởng đang chờ
 và hướng sprite. Snapshot tại cuối frame được gom500/2000ms (debounce/max wait, tối đa50 dấu thay đổi) rồi ghi bằng một
 worker SQLite; lỗi đọc dừng tải, lỗi ghi giữ snapshot chờ và retry có kiểm soát. Đặt/di chuyển có ✓/✕, preview không được lưu như vị trí đã
-xác nhận. Chưa triển khai cloud farm save hoặc Facebook Connect mới.
+xác nhận. Chưa triển khai cloud farm save; tài khoản Facebook/Google mới chỉ
+xác thực và cấp GAME_ID, không đồng bộ hoặc gắn lại nông trại.
 
 [Báo cáo ổn định tải tài nguyên và bắt buộc restart ngôn ngữ](docs/REOPEN_STABILITY_REPORT.md).
 

@@ -1,6 +1,7 @@
 import { createHash, randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
 import mysql from 'mysql2/promise';
+import { createSocialStore } from './social-store.js';
 
 const derivePassword = promisify(scrypt);
 const MAX_SESSIONS = 10000;
@@ -72,6 +73,7 @@ export function createMysqlStore(config) {
   }
 
   return {
+    social: createSocialStore(pool),
     async health() {
       try {
         const [versions] = await pool.execute('SELECT version FROM gf_schema_migrations WHERE version = ?', [1]);
