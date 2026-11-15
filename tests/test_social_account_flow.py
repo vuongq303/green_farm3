@@ -27,22 +27,23 @@ class Vault : SocialAccountFlow.Vault {
  override fun clearAttempt(){pending=null;returned=null}
 }
 class Platform:SocialAccountFlow.Platform {
- var time=1_700_000_000_000L;var random=0;var opened=0;val jobs=ArrayDeque<()->Unit>()
+ var time=1_700_000_000_000L;var random=0;var opened=0;var browsers=0;var embedded=0;val jobs=ArrayDeque<()->Unit>()
  override fun now()=time
  override fun randomBytes(size:Int)=ByteArray(size){(++random).toByte()}
  override fun execute(work:()->Unit){jobs.add(work)}
- override fun openBrowser(url:String){check(url.startsWith("https://auth.example/"));opened++}
+ override fun openBrowser(url:String){check(url.startsWith("https://auth.example/auth/browser/start?id="));opened++;browsers++}
+ override fun openEmbedded(url:String){check(url.startsWith("https://auth.example/auth/web/login?attempt="));opened++;embedded++}
 }
 class Backend(val platform:Platform):SocialAccountFlow.Backend {
  var attempts=0;var exchanges=0;var checks=0;var refreshes=0;var revokes=0
- var user=SocialIdentity("GF000001","google","Player")
+ var user=SocialIdentity("GF000001","password","Player")
  var checkFailure:String?=null;var refreshFailure:String?=null;var exchangeFailure:String?=null
  var offlineLogout=false;var attemptAction:(()->Unit)?=null;var exchangeAction:(()->Unit)?=null;var checkAction:(()->Unit)?=null
  var lastState="";var lastChallenge="";var lastVerifier=""
  fun session(token:String="new-access")=SocialSession(token,"new-refresh",platform.time+900_000,platform.time+2_592_000_000,user)
  override fun attempt(provider:String,state:String,challenge:String):SocialAttemptReply{
   attempts++;lastState=state;lastChallenge=challenge;attemptAction?.invoke()
-  return SocialAttemptReply("https://auth.example/auth/browser/start?id="+"a".repeat(43),300)
+  return SocialAttemptReply("https://auth.example/"+(if(provider=="password")"auth/web/login?attempt=" else "auth/browser/start?id=")+"a".repeat(43),300)
  }
  override fun exchange(code:String,verifier:String):SocialSession{
   exchanges++;lastVerifier=verifier;exchangeAction?.invoke();exchangeFailure?.let{throw SocialAuthFailure(it)}
@@ -80,8 +81,8 @@ fun main(){
  run{
   val v=Vault();val p=Platform();val b=Backend(p);val f=SocialAccountFlow(v,b,p)
   check(f.startupGate());pump(f,p);check(f.status==SocialAccountFlow.SIGNED_OUT&&b.checks==0)
-  f.choose("google");f.choose("facebook");pump(f,p)
-  check(b.attempts==1&&p.opened==1&&f.status==SocialAccountFlow.BROWSER)
+  f.choose("password");f.choose("facebook");pump(f,p)
+  check(b.attempts==1&&p.opened==1&&p.embedded==1&&p.browsers==0&&f.status==SocialAccountFlow.BROWSER)
   check(v.pending!!.state.length==43&&v.pending!!.verifier.length==43&&b.lastChallenge==SocialAccountFlow.challenge(v.pending!!.verifier))
   val verifier=v.pending!!.verifier;complete(f,v,p)
   check(f.status==SocialAccountFlow.READY&&!f.needsGate&&f.gameId=="GF000001"&&v.saved!=null&&v.pending==null&&v.returned==null)
@@ -101,25 +102,25 @@ fun main(){
  run{
   // Process death after leaving the app: encrypted vault is represented by shared records.
   val v=Vault();val p=Platform();val b=Backend(p);val first=SocialAccountFlow(v,b,p)
-  first.startupGate();pump(first,p);first.choose("google");pump(first,p)
+  first.startupGate();pump(first,p);first.choose("password");pump(first,p)
   v.returned=SocialCallback(v.pending!!.state,code,null)
   val recovered=SocialAccountFlow(v,b,p);recovered.startupGate();pump(recovered,p)
   check(recovered.status==SocialAccountFlow.READY&&b.exchanges==1)
  }
  run{
   val v=Vault();val p=Platform();val b=Backend(p);val f=SocialAccountFlow(v,b,p)
-  f.startupGate();pump(f,p);f.choose("google");pump(f,p)
+  f.startupGate();pump(f,p);f.choose("password");pump(f,p)
   v.returned=SocialCallback("wrong".repeat(9),code,null);f.callbackAvailable();pump(f,p)
   check(f.status==SocialAccountFlow.ERROR&&b.exchanges==0&&v.saved==null)
-  f.choose("google");pump(f,p);v.returned=SocialCallback(v.pending!!.state,null,"access_denied");f.callbackAvailable();pump(f,p)
+  f.choose("password");pump(f,p);v.returned=SocialCallback(v.pending!!.state,null,"access_denied");f.callbackAvailable();pump(f,p)
   check(f.status==SocialAccountFlow.ERROR&&b.exchanges==0&&v.pending==null)
  }
  run{
   val v=Vault();val p=Platform();val b=Backend(p);val f=SocialAccountFlow(v,b,p)
-  f.startupGate();pump(f,p);f.choose("google");pump(f,p)
+  f.startupGate();pump(f,p);f.choose("facebook");pump(f,p)
   f.onHostPaused();f.onHostResumed();p.time+=2001;f.tick()
   check(f.status==SocialAccountFlow.ERROR&&v.pending==null)
-  f.choose("google");pump(f,p);p.time+=300001;f.tick()
+  f.choose("password");pump(f,p);p.time+=300001;f.tick()
   check(f.status==SocialAccountFlow.ERROR&&v.pending==null&&b.exchanges==0)
  }
  run{
@@ -143,9 +144,9 @@ fun main(){
  }
  run{
   val v=Vault();val p=Platform();val b=Backend(p);val f=SocialAccountFlow(v,b,p)
-  f.startupGate();pump(f,p);b.attemptAction={f.cancel()};f.choose("google");pump(f,p)
+  f.startupGate();pump(f,p);b.attemptAction={f.cancel()};f.choose("password");pump(f,p)
   check(f.status==SocialAccountFlow.SIGNED_OUT&&v.pending==null&&v.saved==null&&p.opened==0)
-  b.attemptAction=null;f.choose("google");pump(f,p);b.exchangeAction={f.cancel()};complete(f,v,p)
+  b.attemptAction=null;f.choose("password");pump(f,p);b.exchangeAction={f.cancel()};complete(f,v,p)
   check(f.status==SocialAccountFlow.SIGNED_OUT&&v.saved==null&&b.revokes==1)
  }
  run{
@@ -155,10 +156,10 @@ fun main(){
  }
  run{
   val v=Vault();val p=Platform();val b=Backend(p);val f=SocialAccountFlow(v,b,p)
-  f.startupGate();pump(f,p);f.choose("google");pump(f,p)
+  f.startupGate();pump(f,p);f.choose("password");pump(f,p)
   v.returned=SocialCallback(v.pending!!.state,code,null);f.callbackAvailable();p.time+=60001;f.tick();pump(f,p)
   check(f.status==SocialAccountFlow.ERROR&&v.saved==null&&b.exchanges==0)
-  f.choose("google");pump(f,p);b.exchangeAction={p.time+=60001};complete(f,v,p)
+  f.choose("password");pump(f,p);b.exchangeAction={p.time+=60001};complete(f,v,p)
   check(f.status==SocialAccountFlow.ERROR&&v.saved==null&&b.revokes==1)
  }
  run{
@@ -168,6 +169,28 @@ fun main(){
   check(f.status==SocialAccountFlow.ERROR&&f.needsGate)
   f.logout();p.time+=60001;f.tick();pump(f,p)
   check(f.status==SocialAccountFlow.SIGNED_OUT&&v.saved==null&&f.needsGate)
+ }
+ run{
+  val v=Vault();val p=Platform();val b=Backend(p);val f=SocialAccountFlow(v,b,p)
+  f.startupGate();pump(f,p);f.choose("google");pump(f,p)
+  check(b.attempts==0&&f.status==SocialAccountFlow.SIGNED_OUT){"Removed Google button must not start OAuth"}
+  f.choose("password");pump(f,p);f.onHostPaused();f.onHostResumed();p.time+=2001;f.tick()
+  check(f.status==SocialAccountFlow.BROWSER&&p.browsers==0){"Embedded Activity pause must not look like a closed external browser"}
+  val restored=SocialAccountFlow(v,b,p);restored.startupGate();pump(restored,p)
+  check(restored.status==SocialAccountFlow.BROWSER&&p.embedded==2&&p.browsers==0){"Pending embedded login should recover inside game"}
+  check(restored.embeddedFailed("timeout"));check(restored.status==SocialAccountFlow.ERROR&&v.pending==null)
+ }
+ run{
+  val v=Vault();val p=Platform();val b=Backend(p);val f=SocialAccountFlow(v,b,p)
+  f.startupGate();pump(f,p);f.choose("password");pump(f,p)
+  b.user=SocialIdentity("GF000001","google","Mismatch");complete(f,v,p)
+  check(f.status==SocialAccountFlow.ERROR&&v.saved==null&&b.revokes==1){"Exchange must match the pending authentication method"}
+ }
+ run{
+  val v=Vault();val p=Platform();val b=Backend(p);b.user=SocialIdentity("GF000009","google","Existing Google")
+  v.saved=b.session();val f=SocialAccountFlow(v,b,p);f.startupGate();pump(f,p)
+  check(f.status==SocialAccountFlow.WELCOME&&f.gameId=="GF000009"){"Existing Google identities and sessions remain readable"}
+  f.continueSaved();pump(f,p);check(f.status==SocialAccountFlow.READY)
  }
  println("PASS production social account flow: PKCE/state/callback validation, browser cancellation/timeouts, process recovery, welcome/refresh/logout and account isolation")
 }

@@ -1,7 +1,9 @@
 # Green Farm backend: JavaScript và MySQL
 
-Hệ thống tài khoản Facebook/Google mới, cấu hình HTTPS/OAuth, migration và API
-được mô tả trong [SOCIAL_AUTH.md](SOCIAL_AUTH.md). Dữ liệu nông trại vẫn ở SQLite
+Đăng ký/đăng nhập tài khoản riêng bằng WebView, migration MySQL và cấu hình HTTPS/
+Cloudflare Tunnel được mô tả trong [EMBEDDED_AUTH.md](EMBEDDED_AUTH.md). Nút Facebook
+giữ OAuth chính thức; dữ liệu và API Google cũ được bảo toàn, xem
+[SOCIAL_AUTH.md](SOCIAL_AUTH.md). Dữ liệu nông trại vẫn ở SQLite
 trên thiết bị; các API legacy bên dưới chỉ phục vụ tương thích nghiên cứu và
 không thay thế xác thực tài khoản mới.
 

@@ -47,7 +47,8 @@ export function createResearchServer(options) {
         path = url.pathname.startsWith('/auth/callback/') ? '/auth/callback/:provider'
           : url.pathname.startsWith('/auth/assets/') ? '/auth/assets/:file'
           : ['/auth/attempt', '/auth/facebook', '/auth/google', '/auth/exchange', '/auth/me',
-            '/auth/refresh', '/auth/logout', '/auth/browser/start'].includes(url.pathname) ? url.pathname : '/auth/[unknown]';
+            '/auth/refresh', '/auth/logout', '/auth/browser/start', '/auth/login', '/auth/register',
+            '/auth/web/login', '/auth/web/register'].includes(url.pathname) ? url.pathname : '/auth/[unknown]';
         await social.handle(request, response, url);
         return;
       }

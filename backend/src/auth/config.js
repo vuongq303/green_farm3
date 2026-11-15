@@ -35,7 +35,8 @@ export function loadSocialAuthConfig(env = process.env) {
     config.enabled = Boolean(publicBaseUrl && config.clientId && config.clientSecret);
   }
   return { publicBaseUrl, trustedProxyIp, redirectUri: APP_REDIRECT_URI,
-    providers: { google, facebook }, attemptTtl: 300, codeTtl: 60, accessTtl: 900, refreshTtl: 2592000 };
+    providers: { google, facebook, password: { enabled: Boolean(publicBaseUrl) } },
+    attemptTtl: 300, codeTtl: 60, accessTtl: 900, refreshTtl: 2592000 };
 }
 
 function normalizedIp(value) { return value?.startsWith('::ffff:') ? value.slice(7) : value; }

@@ -1,8 +1,11 @@
 import { DatabaseUnavailableError } from './store.js';
+import { timingSafeEqual } from 'node:crypto';
 
 // Keep identity arithmetic out of JavaScript numbers even if a caller supplies
 // a pool without mysql2's bigNumberStrings option.
 const USER_COLUMNS = 'CAST(u.id AS CHAR) AS user_id, u.game_id, u.provider, u.display_name';
+const ACTIVE_USER = `(u.provider <> 'password' OR EXISTS
+  (SELECT 1 FROM gf_password_accounts p WHERE p.user_id = u.id AND p.account_status = 'active'))`;
 
 function user(row) {
   return { id: String(row.user_id ?? row.id), game_id: row.game_id,
@@ -32,6 +35,31 @@ async function insertSession(connection, userId, session, familyId = session.id)
     [session.id, familyId]);
 }
 
+async function insertPasswordUser(connection, { providerUserId, username, email, passwordHash, now }) {
+  await connection.execute(`INSERT INTO users
+    (provider, provider_user_id, display_name, created_at, updated_at, last_login_at)
+    VALUES ('password', ?, ?, ?, ?, ?)`, [providerUserId, username, now, now, now]);
+  const [[row]] = await connection.execute(`SELECT CAST(id AS CHAR) AS id, game_id, provider, display_name
+    FROM users WHERE provider = 'password' AND provider_user_id = ? FOR UPDATE`, [providerUserId]);
+  row.game_id = 'GF' + String(row.id).padStart(6, '0');
+  await connection.execute('UPDATE users SET game_id = ? WHERE id = ?', [row.game_id, row.id]);
+  await connection.execute(`INSERT INTO gf_password_accounts
+    (user_id, username, email, password_hash, created_at, updated_at, last_login_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)`, [row.id, username, email, passwordHash, now, now, now]);
+  return user(row);
+}
+
+async function lockPasswordWebAttempt(connection, cookieHash, csrfHash, now) {
+  const [[row]] = await connection.execute(`SELECT a.*, w.csrf_hash, w.expires_at AS web_expires_at
+    FROM gf_auth_web_sessions w INNER JOIN gf_auth_attempts a ON a.id = w.attempt_id
+    WHERE w.cookie_hash = ? FOR UPDATE`, [cookieHash]);
+  if (!row || row.provider !== 'password' || row.started_at == null || row.consumed_at != null ||
+      Number(row.expires_at) <= now || Number(row.web_expires_at) <= now ||
+      !Buffer.isBuffer(csrfHash) || csrfHash.length !== row.csrf_hash.length ||
+      !timingSafeEqual(row.csrf_hash, csrfHash)) return undefined;
+  return row;
+}
+
 /** Opaque-token/code hashes only; this store has no gameplay or SQLite API. */
 export function createSocialStore(pool) {
   async function run(operation) {
@@ -39,7 +67,7 @@ export function createSocialStore(pool) {
     catch { throw new DatabaseUnavailableError(); }
   }
 
-  async function transaction(operation) {
+  async function transaction(operation, { duplicateIsUndefined = false, duplicateResult } = {}) {
     let connection;
     try {
       connection = await pool.getConnection();
@@ -47,10 +75,11 @@ export function createSocialStore(pool) {
       const result = await operation(connection);
       await connection.commit();
       return result;
-    } catch {
+    } catch (error) {
       if (connection) {
         try { await connection.rollback(); } catch { /* disconnected */ }
       }
+      if (duplicateIsUndefined && error?.code === 'ER_DUP_ENTRY') return duplicateResult;
       throw new DatabaseUnavailableError();
     } finally { connection?.release(); }
   }
@@ -58,7 +87,7 @@ export function createSocialStore(pool) {
   return {
     async health() {
       return run(async () => {
-        const [versions] = await pool.execute('SELECT version FROM gf_schema_migrations WHERE version = ?', [3]);
+        const [versions] = await pool.execute('SELECT version FROM gf_schema_migrations WHERE version = ?', [4]);
         if (versions.length !== 1) throw new DatabaseUnavailableError();
         await pool.query('SELECT id, game_id, provider, provider_user_id FROM users LIMIT 0');
         await pool.query('SELECT id, oauth_state_hash, code_challenge, consumed_at FROM gf_auth_attempts LIMIT 0');
@@ -66,7 +95,9 @@ export function createSocialStore(pool) {
         await pool.query('SELECT id, access_hash, refresh_hash, revoked_at FROM gf_auth_sessions LIMIT 0');
         await pool.query('SELECT id, user_id, revoked_at FROM gf_auth_session_families LIMIT 0');
         await pool.query('SELECT session_id, family_id FROM gf_auth_session_links LIMIT 0');
-        return { status: 'ready', schemaVersion: 3 };
+        await pool.query('SELECT user_id, username, email, password_hash, account_status FROM gf_password_accounts LIMIT 0');
+        await pool.query('SELECT cookie_hash, attempt_id, csrf_hash, expires_at FROM gf_auth_web_sessions LIMIT 0');
+        return { status: 'ready', schemaVersion: 4 };
       });
     },
 
@@ -87,6 +118,44 @@ export function createSocialStore(pool) {
       });
     },
 
+    async registerPasswordUser({ providerUserId, username, email, passwordHash, now }) {
+      return transaction(connection => insertPasswordUser(connection,
+        { providerUserId, username, email, passwordHash, now }), { duplicateIsUndefined: true });
+    },
+
+    async registerPasswordAndClaim({ cookieHash, csrfHash, providerUserId, username, email, passwordHash, now }) {
+      return transaction(async connection => {
+        const row = await lockPasswordWebAttempt(connection, cookieHash, csrfHash, now);
+        if (!row) return undefined;
+        const account = await insertPasswordUser(connection, { providerUserId, username, email, passwordHash, now });
+        await connection.execute('UPDATE gf_auth_attempts SET consumed_at = ? WHERE id = ?', [now, row.id]);
+        return { user: account, attempt: attempt({ ...row, consumed_at: now }) };
+      }, { duplicateIsUndefined: true, duplicateResult: { duplicate: true } });
+    },
+
+    async findPasswordCredential(identifier) {
+      return run(async () => {
+        const [[row]] = await pool.execute(`SELECT CAST(user_id AS CHAR) AS user_id,
+          username, email, password_hash, account_status FROM gf_password_accounts
+          WHERE username = ? OR email = ?`, [identifier, identifier]);
+        if (!row) return undefined;
+        return { userId: String(row.user_id), username: row.username, email: row.email,
+          passwordHash: row.password_hash, accountStatus: row.account_status };
+      });
+    },
+
+    async loginPasswordUser(userId, now) {
+      return transaction(async connection => {
+        const [[row]] = await connection.execute(`SELECT ${USER_COLUMNS} FROM users u
+          INNER JOIN gf_password_accounts p ON p.user_id = u.id
+          WHERE u.id = ? AND u.provider = 'password' AND p.account_status = 'active' FOR UPDATE`, [userId]);
+        if (!row) return undefined;
+        await connection.execute('UPDATE users SET last_login_at = ?, updated_at = ? WHERE id = ?', [now, now, userId]);
+        await connection.execute('UPDATE gf_password_accounts SET last_login_at = ? WHERE user_id = ?', [now, userId]);
+        return user(row);
+      });
+    },
+
     async createAttempt(record) {
       return run(async () => {
         await pool.execute(`INSERT INTO gf_auth_attempts
@@ -100,6 +169,37 @@ export function createSocialStore(pool) {
       return run(async () => {
         const [[row]] = await pool.execute('SELECT * FROM gf_auth_attempts WHERE id = ?', [id]);
         return attempt(row);
+      });
+    },
+
+    async startPasswordAttempt(id, cookieHash, csrfHash, now) {
+      return transaction(async connection => {
+        const [[row]] = await connection.execute('SELECT * FROM gf_auth_attempts WHERE id = ? FOR UPDATE', [id]);
+        if (!row || row.provider !== 'password' || row.started_at != null || row.consumed_at != null ||
+            Number(row.expires_at) <= now) return undefined;
+        await connection.execute('UPDATE gf_auth_attempts SET started_at = ? WHERE id = ?', [now, id]);
+        await connection.execute(`INSERT INTO gf_auth_web_sessions (cookie_hash, attempt_id, csrf_hash, expires_at)
+          VALUES (?, ?, ?, ?)`, [cookieHash, id, csrfHash, row.expires_at]);
+        return attempt({ ...row, started_at: now });
+      });
+    },
+
+    async getPasswordWebSession(cookieHash, now) {
+      return run(async () => {
+        const [[row]] = await pool.execute(`SELECT a.*, w.csrf_hash, w.expires_at AS web_expires_at
+          FROM gf_auth_web_sessions w INNER JOIN gf_auth_attempts a ON a.id = w.attempt_id
+          WHERE w.cookie_hash = ? AND w.expires_at > ? AND a.expires_at > ?
+          AND a.provider = 'password' AND a.started_at IS NOT NULL AND a.consumed_at IS NULL`, [cookieHash, now, now]);
+        return row ? { attempt: attempt(row), csrfHash: row.csrf_hash } : undefined;
+      });
+    },
+
+    async claimPasswordAttempt(cookieHash, csrfHash, now) {
+      return transaction(async connection => {
+        const row = await lockPasswordWebAttempt(connection, cookieHash, csrfHash, now);
+        if (!row) return undefined;
+        await connection.execute('UPDATE gf_auth_attempts SET consumed_at = ? WHERE id = ?', [now, row.id]);
+        return attempt({ ...row, consumed_at: now });
       });
     },
 
@@ -129,6 +229,9 @@ export function createSocialStore(pool) {
       return transaction(async connection => {
         const [[row]] = await connection.execute('SELECT * FROM gf_auth_attempts WHERE id = ? FOR UPDATE', [attemptId]);
         if (!row || row.consumed_at == null || Number(row.expires_at) <= now || expiresAt <= now) return false;
+        const [[identity]] = await connection.execute(`SELECT u.id FROM users u
+          WHERE u.id = ? AND u.provider = ? AND ${ACTIVE_USER} FOR UPDATE`, [userId, row.provider]);
+        if (!identity) return false;
         const [existing] = await connection.execute('SELECT code_hash FROM gf_auth_codes WHERE attempt_id = ?', [attemptId]);
         if (existing.length) return false;
         await connection.execute(`INSERT INTO gf_auth_codes
@@ -142,7 +245,7 @@ export function createSocialStore(pool) {
       return transaction(async connection => {
         const [[row]] = await connection.execute(`SELECT c.used_at, c.expires_at, c.code_challenge,
           c.redirect_uri, ${USER_COLUMNS}
-          FROM gf_auth_codes c INNER JOIN users u ON u.id = c.user_id WHERE c.code_hash = ? FOR UPDATE`, [codeHash]);
+          FROM gf_auth_codes c INNER JOIN users u ON u.id = c.user_id WHERE c.code_hash = ? AND ${ACTIVE_USER} FOR UPDATE`, [codeHash]);
         if (!row || row.used_at != null || Number(row.expires_at) <= now ||
             row.code_challenge !== codeChallenge || row.redirect_uri !== redirectUri) return undefined;
         await connection.execute('UPDATE gf_auth_codes SET used_at = ? WHERE code_hash = ?', [now, codeHash]);
@@ -159,7 +262,7 @@ export function createSocialStore(pool) {
           INNER JOIN gf_auth_session_links l ON l.session_id = s.id
           INNER JOIN gf_auth_session_families f ON f.id = l.family_id
           WHERE s.access_hash = ? AND s.revoked_at IS NULL AND f.revoked_at IS NULL
-          AND s.access_expires_at > ?`, [accessHash, now]);
+          AND s.access_expires_at > ? AND ${ACTIVE_USER}`, [accessHash, now]);
         if (!row) return undefined;
         return { user: user(row), sessionId: row.session_id, issuedAt: Number(row.issued_at),
           accessExpiresAt: Number(row.access_expires_at), refreshExpiresAt: Number(row.refresh_expires_at) };
@@ -177,7 +280,7 @@ export function createSocialStore(pool) {
         if (!family || family.revoked_at != null) return undefined;
         const [[row]] = await connection.execute(`SELECT s.id AS session_id, s.revoked_at,
           s.refresh_expires_at, ${USER_COLUMNS} FROM gf_auth_sessions s
-          INNER JOIN users u ON u.id = s.user_id WHERE s.refresh_hash = ? FOR UPDATE`, [refreshHash]);
+          INNER JOIN users u ON u.id = s.user_id WHERE s.refresh_hash = ? AND ${ACTIVE_USER} FOR UPDATE`, [refreshHash]);
         if (!row || row.revoked_at != null || String(row.user_id) !== String(family.user_id)
             || Number(row.refresh_expires_at) <= now) return undefined;
         await connection.execute('UPDATE gf_auth_sessions SET revoked_at = ? WHERE id = ?', [now, row.session_id]);

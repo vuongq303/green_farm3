@@ -94,6 +94,17 @@ fun main(){
  clean(Reply(201,JSONObject().put("authorization_url","https://auth.example/auth/browser/start?id="+"a".repeat(43)).put("expires_in",300).toString()))
  check(explicit.attempt("google",state,challenge).expiresIn==300L)
  clean(Reply(201,"{}"));expect("invalid_response"){client.attempt("google",state,challenge)}
+ clean(Reply(201,JSONObject().put("authorization_url","https://auth.example/auth/web/login?attempt="+"a".repeat(43)).put("expires_in",300).toString()))
+ check(client.attempt("password",state,challenge).authorizationUrl.contains("/auth/web/login?attempt="))
+ check(JSONObject(Transport.last!!.sent.toString("UTF-8")).getString("provider")=="password")
+ clean(Reply(201,JSONObject().put("authorization_url","https://auth.example/auth/browser/start?id="+"a".repeat(43)).put("expires_in",300).toString()))
+ expect("invalid_response"){client.attempt("password",state,challenge)}
+ clean(Reply(201,JSONObject().put("authorization_url","https://auth.example/auth/web/login?attempt="+"a".repeat(43)).put("expires_in",300).toString()))
+ expect("invalid_response"){client.attempt("facebook",state,challenge)}
+ for(bad in listOf("https://evil.example/auth/web/login?attempt="+"a".repeat(43),"https://auth.example/auth/web/login?attempt="+"a".repeat(43)+"&redirect=https://evil.example/")){
+  clean(Reply(201,JSONObject().put("authorization_url",bad).put("expires_in",300).toString()));expect("invalid_response"){client.attempt("password",state,challenge)}
+ }
+ clean(Reply(200,JSONObject().put("user",user(provider="password")).toString()));check(client.me(secret).provider=="password")
  clean(Reply(200,tokens()))
  val session=client.exchange("c".repeat(43),verifier)
  check(session.user.gameId=="GF000001"&&session.user.provider=="google")

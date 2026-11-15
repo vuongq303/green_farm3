@@ -21,7 +21,6 @@ import android.widget.Toast
 import com.quanhoang.greenfarm3.S800x480.LocalDevelopmentConfig
 import com.quanhoang.greenfarm3.S800x480.NetworkDiagnostics
 import com.quanhoang.greenfarm3.S800x480.SocialAccountController
-import com.quanhoang.greenfarm3.S800x480.SocialAccountArtwork
 
 /** Android launcher configuration recovered from the original Start bytecode. */
 open class Start : BaseActivity() {
@@ -35,7 +34,6 @@ open class Start : BaseActivity() {
         if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) {
             NetworkDiagnostics.accountStartup(LocalDevelopmentConfig.AUTH_BASE_URL)
             SocialAccountController.initialize(applicationContext, LocalDevelopmentConfig.AUTH_BASE_URL)
-            SocialAccountArtwork.initialize(applicationContext)
         } else NetworkDiagnostics.startup(LocalDevelopmentConfig.BACKEND_BASE_URL, LocalDevelopmentConfig.ENABLED)
         if (!SaveTransferGate.enterGame(this)) {
             super.onCreate(savedInstanceState)

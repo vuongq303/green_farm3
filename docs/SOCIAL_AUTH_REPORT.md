@@ -1,5 +1,9 @@
 # Bàn giao tài khoản Facebook / Google
 
+Đây là báo cáo của mốc Facebook/Google trước khi thay nút Google bằng tài khoản
+riêng trong WebView. Xem [báo cáo WebView hiện tại](EMBEDDED_AUTH_REPORT.md) cho
+luồng và kết quả kiểm thử mới.
+
 Đã triển khai mã nguồn Android, backend và website handoff; APK Debug đã build.
 Đây chưa phải hệ thống OAuth đã triển khai và xác minh với tài khoản thật.
 Hiện chỉ có backend local: domain HTTPS, Facebook App và Google Web OAuth Client

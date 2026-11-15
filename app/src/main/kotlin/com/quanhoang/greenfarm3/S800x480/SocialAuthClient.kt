@@ -41,14 +41,16 @@ class SocialAuthClient(baseUrl: String, private val operationTimeoutMillis: Long
             } catch (_: Exception) { throw SocialAuthFailure("configuration_required") }
         }
 
-        @JvmStatic fun isAuthorizationUrl(value: String, origin: String): Boolean = try {
+        @JvmStatic fun isAuthorizationUrl(value: String, origin: String, provider: String? = null): Boolean = try {
             val target = URI(value)
             val base = URI(origin)
             target.scheme == "https" && target.rawUserInfo == null && target.rawFragment == null &&
                 target.host.orEmpty().equals(base.host, ignoreCase = true) &&
                 (if (target.port == -1) 443 else target.port) == (if (base.port == -1) 443 else base.port) &&
-                target.rawPath == "/auth/browser/start" &&
-                target.rawQuery.orEmpty().matches(Regex("id=[A-Za-z0-9_-]{32,128}"))
+                ((provider != "password" && target.rawPath == "/auth/browser/start" &&
+                    target.rawQuery.orEmpty().matches(Regex("id=[A-Za-z0-9_-]{32,128}"))) ||
+                 (provider == null || provider == "password") && target.rawPath == "/auth/web/login" &&
+                    target.rawQuery.orEmpty().matches(Regex("attempt=[A-Za-z0-9_-]{43}")))
         } catch (_: Exception) { false }
     }
 
@@ -57,7 +59,7 @@ class SocialAuthClient(baseUrl: String, private val operationTimeoutMillis: Long
             val response = request("POST", "auth/attempt", JSONObject().put("provider", provider)
                 .put("state", state).put("code_challenge", challenge).put("redirect_uri", SocialAccountFlow.REDIRECT_URI))
             val authorization = response.getString("authorization_url")
-            if (!isAuthorizationUrl(authorization, origin)) throw SocialAuthFailure("invalid_response")
+            if (!isAuthorizationUrl(authorization, origin, provider)) throw SocialAuthFailure("invalid_response")
             return SocialAttemptReply(authorization, response.getLong("expires_in"))
         } catch (failure: SocialAuthFailure) { throw failure }
         catch (_: Exception) { throw SocialAuthFailure("invalid_response") }
@@ -99,7 +101,7 @@ class SocialAuthClient(baseUrl: String, private val operationTimeoutMillis: Long
             val gameId = value.getString("game_id")
             val provider = value.getString("provider")
             val displayName = value.optString("display_name", "")
-            if (!gameId.matches(Regex("GF[0-9]{6,20}")) || provider !in arrayOf("facebook", "google") ||
+            if (!gameId.matches(Regex("GF[0-9]{6,20}")) || provider !in arrayOf("facebook", "google", "password") ||
                 displayName.length > 256 || displayName.any { it.code < 32 }) throw SocialAuthFailure("invalid_response")
             return SocialIdentity(gameId, provider, displayName)
         } catch (failure: SocialAuthFailure) { throw failure }

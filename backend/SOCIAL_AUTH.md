@@ -1,5 +1,11 @@
 # Facebook / Google accounts
 
+The current Android right-hand button has moved to project-owned password login
+inside a restricted WebView; see [EMBEDDED_AUTH.md](EMBEDDED_AUTH.md). Facebook
+keeps this official browser flow. Existing Google identities/server routes are
+preserved for compatibility, but the new right-hand button does not start Google
+OAuth. No provider OAuth is embedded in a WebView.
+
 This implementation adds account authentication and stable game IDs. MySQL has
 no farm payload endpoint, and login/logout does not read, migrate, reset or bind
 the Android gameplay SQLite database. The same device continues to show its

@@ -50,6 +50,8 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
         fun execute(work: () -> Unit)
         /** Open the system browser; implementations marshal this operation to Android's UI thread. */
         fun openBrowser(url: String)
+        /** Only the private account website is embedded; providers stay in the system browser. */
+        fun openEmbedded(url: String)
     }
 
     companion object {
@@ -110,7 +112,8 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
         } catch (_: Exception) { null }
 
         @JvmStatic fun messageFor(code: String): String = when (code) {
-            "oauth_not_configured", "configuration_required" -> "Chưa cấu hình domain HTTPS hoặc ứng dụng Facebook/Google trên backend."
+            "configuration_required" -> "Chưa cấu hình domain HTTPS cho backend tài khoản."
+            "oauth_not_configured" -> "Chưa cấu hình ứng dụng Facebook trên backend."
             "unsupported_device" -> "Đăng nhập an toàn cần Android 6.0 trở lên. Dữ liệu nông trại vẫn được giữ nguyên."
             "storage_error" -> "Không thể đọc hoặc lưu phiên đăng nhập an toàn. Hãy thử đăng nhập lại."
             "invalid_callback" -> "Kết quả đăng nhập không hợp lệ. Hãy thử lại."
@@ -119,6 +122,8 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
             "invalid_session", "session_expired", "invalid_refresh_token" -> "Phiên đã hết hạn. Vui lòng đăng nhập lại."
             "rate_limited" -> "Bạn đã thử quá nhiều lần. Vui lòng đợi rồi thử lại."
             "browser_unavailable" -> "Không mở được trình duyệt. Hãy kiểm tra trình duyệt trên thiết bị rồi thử lại."
+            "webview_unavailable" -> "Không mở được trang tài khoản trong game. Hãy cập nhật Android System WebView rồi thử lại."
+            "webview_closed" -> "Đăng nhập tài khoản chưa hoàn tất. Bạn có thể thử lại."
             "browser_closed" -> "Đăng nhập chưa hoàn tất trong trình duyệt. Bạn có thể thử lại."
             "timeout" -> "Kết nối xác thực quá thời gian chờ. Hãy kiểm tra mạng và thử lại."
             "tls_error" -> "Không thể xác minh kết nối HTTPS. Hãy kiểm tra chứng chỉ server và ngày giờ thiết bị."
@@ -178,7 +183,7 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
 
     @Synchronized fun choose(provider: String) {
         if (status != SIGNED_OUT && status != ERROR) return
-        if (provider != "facebook" && provider != "google") return
+        if (provider != "facebook" && provider != "password") return
         val state = base64Url(platform.randomBytes(32))
         val verifier = base64Url(platform.randomBytes(32))
         val id = ++generation
@@ -202,9 +207,8 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                 publish(id) {
                     pending = attempt
                     status = BROWSER
-                    message = "Đang chờ xác thực trong trình duyệt..."
-                    try { platform.openBrowser(attempt.authorizationUrl) }
-                    catch (_: Exception) { failPending("browser_unavailable") }
+                    message = if (provider == "password") "Đang mở trang tài khoản trong game..." else "Đang chờ xác thực trong trình duyệt..."
+                    openAttempt(attempt)
                 }
             } catch (failure: Exception) { publishFailure(id, failure) }
         }
@@ -282,11 +286,11 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
     }
 
     @Synchronized fun onHostPaused() {
-        if (status == BROWSER) browserWasPaused = true
+        if (status == BROWSER && pending?.provider != "password") browserWasPaused = true
     }
 
     @Synchronized fun onHostResumed() {
-        if (status == BROWSER && browserWasPaused) resumedAt = platform.now()
+        if (status == BROWSER && pending?.provider != "password" && browserWasPaused) resumedAt = platform.now()
     }
 
     private fun recover() {
@@ -314,7 +318,8 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                     publish(id) {
                         pending = attempt
                         status = BROWSER
-                        message = "Đang chờ xác thực trong trình duyệt. Bạn có thể hủy và thử lại."
+                        message = if (attempt.provider == "password") "Đang khôi phục trang tài khoản trong game..." else "Đang chờ xác thực trong trình duyệt. Bạn có thể hủy và thử lại."
+                        if (attempt.provider == "password") openAttempt(attempt)
                     }
                     return@execute
                 }
@@ -378,6 +383,10 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                 if (callback.error != null) throw SocialAuthFailure(callback.error)
                 val code = callback.code ?: throw SocialAuthFailure("invalid_callback")
                 val session = backend.exchange(code, attempt.verifier)
+                if (session.user.provider != attempt.provider) {
+                    try { backend.logout(session.accessToken, session.refreshToken) } catch (_: Exception) { }
+                    throw SocialAuthFailure("invalid_session")
+                }
                 val retained = synchronized(this) {
                     if (generation != id || platform.now() >= operationDeadline) {
                         false
@@ -397,6 +406,21 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                     message = "Chào mừng ${session.user.gameId}!"
                 }
             } catch (failure: Exception) { publishFailure(id, failure) }
+        }
+    }
+
+    @Synchronized fun embeddedFailed(code: String): Boolean {
+        if (status != BROWSER || pending?.provider != "password") return false
+        failPending(code)
+        return true
+    }
+
+    private fun openAttempt(attempt: SocialAttempt) {
+        try {
+            if (attempt.provider == "password") platform.openEmbedded(attempt.authorizationUrl)
+            else platform.openBrowser(attempt.authorizationUrl)
+        } catch (_: Exception) {
+            failPending(if (attempt.provider == "password") "webview_unavailable" else "browser_unavailable")
         }
     }
 

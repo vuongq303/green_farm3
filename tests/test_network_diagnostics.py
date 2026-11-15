@@ -67,6 +67,8 @@ public class NetworkDiagnosticsProbe {
  static void safeUrls(){
   check(NetworkDiagnostics.safeUrl("http://private-user:private-pass@10.61.217.55:8787/authorize?access_token="+SECRET+"#private-fragment").equals("http://10.61.217.55:8787/authorize"),"Authentication URL sanitization");
   check(NetworkDiagnostics.safeUrl("https://example.invalid/health").equals("https://example.invalid:443/health"),"HTTPS default port absent");
+  for(String path:new String[]{"/auth/web/login","/auth/web/register","/auth/login","/auth/register"})
+   check(NetworkDiagnostics.safeUrl("https://example.invalid"+path+"?attempt="+SECRET+"&csrf="+SECRET).equals("https://example.invalid:443"+path),"Embedded account route/query sanitization");
   check(NetworkDiagnostics.safeUrl("http://example.invalid/locate/auth?access_token="+SECRET).equals("http://example.invalid:80/locate/auth"),"Auth discovery URL");
   String data=NetworkDiagnostics.safeUrl("http://example.invalid/config/private-client/datacenters/private-name/urls?token="+SECRET);
   check(data.contains("datacenters")&&!data.contains("private-client")&&!data.contains("private-name")&&!data.contains(SECRET),"Discovery identifiers must be templated");

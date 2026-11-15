@@ -4635,15 +4635,6 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     @Override
-    public void onSurfaceCreated(javax.microedition.khronos.opengles.GL10 gl10,
-            javax.microedition.khronos.egl.EGLConfig config) {
-        super.onSurfaceCreated(gl10, config);
-        if (LocalDevelopmentConfig.ONLINE_ACCOUNTS && GameRuntime.QD == this) {
-            SocialAccountArtwork.onSurfaceCreated();
-        }
-    }
-
-    @Override
     public void onSurfaceChanged(javax.microedition.khronos.opengles.GL10 gl10, int width, int height) {
         if (moveSurfaceWidth != -1 && (width != moveSurfaceWidth || height != moveSurfaceHeight)) {
             moveInterruptionRequested = true;
@@ -38201,7 +38192,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         if (SocialAccountController.status() == SocialAccountController.WELCOME) {
             SocialAccountController.logout();
         } else {
-            SocialAccountController.choose("google");
+            SocialAccountController.choose("password");
         }
         configureSocialAccountUi();
     }
@@ -38244,7 +38235,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         } else {
             ate[29][3] = busy ? (vietnamese ? "Đang xác thực tài khoản..." : "Checking your account...") :
                     (status == SocialAccountController.ERROR ? (vietnamese ? message :
-                    "Sign-in failed. Check the HTTPS backend/OAuth configuration and try again.") :
+                    "Sign-in failed. Check the HTTPS backend connection and try again.") :
                     (vietnamese ? "Vui lòng đăng nhập tài khoản để tiếp tục" : "Please sign in to continue"));
             ate[29][9] = "Facebook";
             ate[29][10] = vietnamese ? "Đăng nhập" : "Sign in";
@@ -38284,7 +38275,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             }
             gJ(29);
             if (SocialAccountController.status() != SocialAccountController.WELCOME) {
-                SocialAccountArtwork.drawGoogleIcon(atc[29][8][2] + 8, atc[29][8][3] + 9, 32);
+                SocialAccountArtwork.drawAccountIcon(atc[29][8][2] + 8, atc[29][8][3] + 9, 32);
             }
             if (SocialAccountController.busy()) {
                 dl(0x66000000);
