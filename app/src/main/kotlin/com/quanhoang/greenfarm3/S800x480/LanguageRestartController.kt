@@ -252,6 +252,8 @@ class LanguageRestartController private constructor() {
                     }
                 }
             }
+            // GUI4 also serves sell confirmations; this notice has no price.
+            FarmGameEngine.e(4, 13, false)
         }
 
         private fun showFontFailure(selectionTicket: Int) {

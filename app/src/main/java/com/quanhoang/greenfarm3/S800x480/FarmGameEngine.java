@@ -4574,6 +4574,27 @@ public final class FarmGameEngine extends GameRuntime implements av {
         return avD != -1;
     }
 
+    static boolean isRequiredTutorialPlacement() {
+        if (aZB != 0 || avE == null) {
+            return false;
+        }
+        // Include the selection frame before Es advances to the placement
+        // step. Bind only the instructed item/source, never an ordinary move.
+        if ((currentTutorialStepIndex == 14 || currentTutorialStepIndex == 15)
+                && avD == 0 && avE.Kx == 54 && avE.aoC == 16) {
+            return true;
+        }
+        if ((currentTutorialStepIndex == 52 || currentTutorialStepIndex == 53)
+                && avD == 4 && avE.Kx == 50 && avE.aoC == 9) {
+            return true;
+        }
+        // The two required plots share a repeat-placement preview. Once both
+        // are committed, its remaining preview can be cleaned up normally.
+        return (currentTutorialStepIndex == 42
+                || (currentTutorialStepIndex == 43 && ayf < 2))
+                && avD == 1 && avE.Kx == 49 && avE.aoC == 0;
+    }
+
     static void cancelMovePreviewForInterruption() {
         if (avD != -1 && avE != null) {
             sv();
@@ -19408,7 +19429,8 @@ public final class FarmGameEngine extends GameRuntime implements av {
         }
         e(1, 83, z);
         f(1, 83, z);
-        if ((currentTutorialStepIndex != -1 || b.Ka) && avD == -1) {
+        if (isRequiredTutorialPlacement()
+                || ((currentTutorialStepIndex != -1 || b.Ka) && avD == -1)) {
             e(1, 84, false);
             f(1, 84, false);
         } else {
@@ -21586,6 +21608,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void b(int i, int i2, int i3, boolean z) {
+        if (isRequiredTutorialPlacement()) {
+            return;
+        }
         hc(-1);
         sv();
         h(false, -1);
@@ -34771,6 +34796,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static boolean jX(int i) {
+        if (isRequiredTutorialPlacement()) {
+            return false;
+        }
         String id = aNn[i].getId();
         aND = "";
         if (qN() && bt.nY() && ark && bt.nW() && arg && !aNH) {
@@ -42241,6 +42269,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void rG() {
+        if (isRequiredTutorialPlacement()) {
+            return;
+        }
         if (currentTutorialStepIndex == 13) {
             return;
         }
@@ -42611,9 +42642,21 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void rV() {
+        if (isRequiredTutorialPlacement()) {
+            return;
+        }
         aTD = (short) 0;
         gX(56);
         sv();
+    }
+
+    static boolean handleMovePlacementBack(int key) {
+        // Android Back maps to released key 19; Menu (24) retains pause.
+        if (key != 19 || avD == -1 || avE == null) {
+            return false;
+        }
+        rV();
+        return true;
     }
 
     static void rW() {
@@ -43551,12 +43594,18 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void sc() {
+        if (isRequiredTutorialPlacement()) {
+            return;
+        }
         gX(56);
         sv();
         aE(false);
     }
 
     static void se() {
+        if (isRequiredTutorialPlacement()) {
+            return;
+        }
         gX(56);
         sv();
         aE(false);
@@ -43867,7 +43916,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void sv() {
-        if (avD == -1 || avE == null) {
+        if (avD == -1 || avE == null || isRequiredTutorialPlacement()) {
             return;
         }
         int tutorial = currentTutorialStepIndex;
@@ -48161,6 +48210,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void xK() {
+        if (isRequiredTutorialPlacement()) {
+            return;
+        }
         aBF = true;
         hc(-1);
         sv();
@@ -48310,6 +48362,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     static void xQ() {
+        if (isRequiredTutorialPlacement()) {
+            return;
+        }
         if (aYS == 1054) {
             axW = true;
         }
@@ -59441,7 +59496,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                             avE.aom = iArr[1];
                         }
                     }
-                } else if (aZp > 15 && avE != aZn && currentTutorialStepIndex != 15 && currentTutorialStepIndex != 53 && currentTutorialStepIndex != 52 && currentTutorialStepIndex != 43 && aYS != 1031) {
+                } else if (aZp > 15 && avE != aZn && !isRequiredTutorialPlacement() && currentTutorialStepIndex != 15 && currentTutorialStepIndex != 53 && currentTutorialStepIndex != 52 && currentTutorialStepIndex != 43 && aYS != 1031) {
                     String str5 = "move state;" + avD;
                     if (avD == 0 || avD == 1 || avD == 4) {
                         sv();
@@ -59808,7 +59863,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 aMb = false;
             }
             int iJO = jO();
-            if (iJO == 19 || iJO == 24 || iJO == 11) {
+            if (!handleMovePlacementBack(iJO) && (iJO == 19 || iJO == 24 || iJO == 11)) {
                 if (bh(1, 46) && bg(1, 46)) {
                     rP();
                 } else if (iJO == 19 || iJO == 11) {
@@ -72592,7 +72647,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
                 if (aZn == null || !aZn.ams || aZp <= 15) {
                     return true;
                 }
-                if (avE != aZn && currentTutorialStepIndex != 15 && currentTutorialStepIndex != 53 && currentTutorialStepIndex != 52 && currentTutorialStepIndex != 43 && aYS != 1031) {
+                if (avE != aZn && !isRequiredTutorialPlacement() && currentTutorialStepIndex != 15 && currentTutorialStepIndex != 53 && currentTutorialStepIndex != 52 && currentTutorialStepIndex != 43 && aYS != 1031) {
                     String str = "move state;" + avD;
                     if (avD == 0 || avD == 1 || avD == 4) {
                         sv();

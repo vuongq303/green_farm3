@@ -171,11 +171,12 @@ class ci {
  static void progressSaveCommitted(){committedCallbacks++;}
  static void fE(int next){apz=next;apA=0;}
  static void qB(){state(18);apA=-1;}
- static boolean fontFailure;static int fontPrepares,lastFontLanguage;
+ static boolean fontFailure,notificationCoinVisible;static int fontPrepares,lastFontLanguage;
+ static void e(int gui,int item,boolean visible){if(gui!=4||item!=13)throw new AssertionError("unexpected language UI edit");notificationCoinVisible=visible;}
  static boolean prepareLanguageNotificationFonts(int language){fontPrepares++;if(fontFailure)return false;lastFontLanguage=language;return true;}
  static void requestResourceLoadRetry(){}
  static void showGameNotification(String title,String message){
-  state(20);apA=-1;
+  state(20);apA=-1;notificationCoinVisible=true;
   android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(new android.app.Activity()).setTitle(title).setMessage(message)
    .setPositiveButton(GameNotification.positiveLabel(),(d,w)->GameNotification.choose(true))
    .setCancelable(GameNotification.canDismiss()).setOnCancelListener(d->GameNotification.choose(false));
@@ -345,6 +346,7 @@ public class ProgressSaveChecks {
    check(android.os.Process.kills==0,"restarted before SQLite ack");finishPending();
    check(AlertDialog.latest.message.equals(LanguageRestartController.textFor(language)[1]),"popup not in selected language");
    check(AlertDialog.latest.positiveText.equals(LanguageRestartController.textFor(language)[2]),"restart label not translated");
+   check(!ci.notificationCoinVisible,"language confirmation retained the unrelated sale coin icon");
    check(AlertDialog.latest.negative==null&&!AlertDialog.latest.cancelable,"language notice has a second choice");
    check(GameSaveStore.durableLanguage==language&&ci.lastFontLanguage==language,"target setting/fonts not ready before popup");
    GameNotification.choose(false);check(GameNotification.isVisible()&&android.os.Process.kills==0,"Back dismissed mandatory restart");
@@ -358,6 +360,7 @@ public class ProgressSaveChecks {
   readySaved();ci.fontFailure=true;startLanguage(16);finishPending();
   check(GameSaveStore.durableLanguage==16&&ci.aYU==0&&android.os.Process.kills==0,"font failure changed durable setting/session");
   check(AlertDialog.latest.message.equals(LanguageRestartController.textFor(0)[7]),"resource error not rendered with valid current font");
+  check(ci.notificationCoinVisible,"language confirmation styling leaked into another notification");
   check(AlertDialog.latest.negative==null&&!AlertDialog.latest.cancelable,"font error has cancel option");
   int attempts=ci.fontPrepares,captures=ci.attempts;
   for(int frame=0;frame<100;frame++)LanguageRestartController.frameStarted();
