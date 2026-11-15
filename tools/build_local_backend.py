@@ -19,9 +19,18 @@ CORE_TARGET_CLASS = 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;'
 TARGET_CLASSES = [TARGET_CLASS, CORE_TARGET_CLASS]
 TARGET_METHOD = 'aL(Ljava/lang/String;)Ljava/lang/String;'
 ORIGINAL_URL = 'https://eve.gameloft.com/'
+NETWORK_DIAGNOSTICS = {
+    'owner': 'Lcom/gameloft/a/b/e;',
+    'method': 'run()V',
+    'helper': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/NetworkDiagnostics;',
+    'begin_calls': 1,
+    'hook_counts': {'open_connection': 1, 'open_connection_proxy': 1, 'response_code': 1, 'failure': 1},
+    'reverse_patch_semantics_verified': True,
+}
 
 
-def prepare(original, base, patched_dex, output, relocated_dex=None, require_local_startup_guard=False):
+def prepare(original, base, patched_dex, output, relocated_dex=None, require_local_startup_guard=False,
+            require_network_diagnostics=False):
     original, base, patched_dex, output = map(Path, (original, base, patched_dex, output))
     base_report = base.with_suffix('.provenance.json')
     patch_report = patched_dex.with_suffix(patched_dex.suffix + '.json')
@@ -77,6 +86,15 @@ def prepare(original, base, patched_dex, output, relocated_dex=None, require_loc
     if ((require_local_startup_guard and not guard_verified)
             or (guard is not None and not guard_verified)):
         raise ValueError('Local development startup guard provenance mismatch')
+    network = patch.get('network_diagnostics')
+    network_verified = (network == NETWORK_DIAGNOSTICS and isinstance(network, dict)
+                        and type(network.get('begin_calls')) is int
+                        and network.get('reverse_patch_semantics_verified') is True
+                        and isinstance(network.get('hook_counts'), dict)
+                        and all(type(count) is int for count in network['hook_counts'].values()))
+    if ((require_network_diagnostics and not network_verified)
+            or (network is not None and not network_verified)):
+        raise ValueError('Network diagnostics provenance mismatch')
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(base) as before:
         names = before.namelist()
         if len(names) != len(set(names)) or any(
@@ -113,6 +131,7 @@ def main():
         parser.add_argument('--' + name, required=True, type=Path)
     parser.add_argument('--relocated-dex', type=Path)
     parser.add_argument('--require-local-startup-guard', action='store_true')
+    parser.add_argument('--require-network-diagnostics', action='store_true')
     args = parser.parse_args()
     output = args.output.resolve()
     inputs = (args.original, args.base, args.patched_dex, args.keystore,
@@ -127,7 +146,7 @@ def main():
         temp = Path(directory)
         unsigned, aligned, signed = [temp / n for n in ('unsigned.apk', 'aligned.apk', 'signed.apk')]
         baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned, args.relocated_dex,
-                                  args.require_local_startup_guard)
+                                  args.require_local_startup_guard, args.require_network_diagnostics)
         if args.relocated_dex is not None:
             from verify_runtime_apk import manifest
             relocation = json.loads(args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json').read_text())
@@ -159,7 +178,7 @@ def main():
                                if args.relocated_dex else None),
         'build_revision_metadata': revision,
         'unchanged_assets_native_sha256': payload,
-        'scope': 'SDK and game Janus discovery constructors and optional local startup guard; unrelated legacy service clients are not migrated.',
+        'scope': 'SDK and game Janus discovery constructors, optional local startup guard and verified SDK HTTP diagnostics; unrelated legacy service clients are not migrated.',
     }
     output.with_suffix('.provenance.json').write_text(json.dumps(report, indent=2) + '\n')
     print('Built complete debug APK with configured backend:', output)

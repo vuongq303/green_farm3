@@ -231,7 +231,9 @@ public class am implements Runnable {
 
     @Override // java.lang.Runnable
     public void run() {
+        NetworkDiagnostics.begin();
         if (this.BH == null) {
+            NetworkDiagnostics.failure(new IllegalArgumentException("Missing request URL"));
             if (w.XZ) {
                 GameRuntime.b("HTTP:[" + this.acJ + "]: run: URL is null", "HTTP", 3);
             }
@@ -241,6 +243,7 @@ public class am implements Runnable {
             return;
         }
         if (this.acE == 1 && this.BI == null) {
+            NetworkDiagnostics.failure(new IllegalArgumentException("Missing request form"));
             if (w.XZ) {
                 GameRuntime.b("HTTP:[" + this.acJ + "]: run: Query is null", "HTTP", 3);
             }
@@ -275,9 +278,9 @@ public class am implements Runnable {
                 }
                 URL url = new URL(strBy, strBA, Integer.parseInt(strBC), strBB);
                 if (acO != null) {
-                    this.acD = (HttpURLConnection) url.openConnection(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(acO, acP)));
+                    this.acD = (HttpURLConnection) NetworkDiagnostics.openConnection(url, new Proxy(Proxy.Type.HTTP, new InetSocketAddress(acO, acP)));
                 } else {
-                    this.acD = (HttpURLConnection) url.openConnection();
+                    this.acD = (HttpURLConnection) NetworkDiagnostics.openConnection(url);
                 }
                 if (this.acE == 1) {
                     this.acD.setDoOutput(true);
@@ -316,7 +319,7 @@ public class am implements Runnable {
                 if (w.XZ) {
                     GameRuntime.b("HTTP:[" + this.acJ + "]: run: receive", "HTTP", 3);
                 }
-                this.Bg = this.acD.getResponseCode();
+                this.Bg = NetworkDiagnostics.responseCode(this.acD);
                 this.acH = this.acD.getResponseMessage();
                 this.BX = this.acD.getDate();
                 if (this.Bg == 302) {
@@ -467,6 +470,7 @@ public class am implements Runnable {
                 }
                 this.acF = false;
             } catch (Exception e) {
+                NetworkDiagnostics.failure(e);
                 if (w.XZ) {
                     GameRuntime.b("HTTP:[" + this.acJ + "]: run: exception : " + e.toString(), "HTTP", 3);
                     GameRuntime.d(e);
