@@ -86,6 +86,7 @@ def main():
         if not item.is_file():
             raise ValueError('Required Android tool is missing: ' + str(item))
     classes_root = compiled_classes(args.classes_root)
+    java_classes = ROOT / 'app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes'
     work = ROOT / '.local/game-save-probe' / args.prefix
     if work.exists():
         raise ValueError('This probe run prefix already exists; choose a fresh --prefix')
@@ -94,7 +95,7 @@ def main():
     dex_output = work / 'dex'
     classes.mkdir()
     dex_output.mkdir()
-    classpath = os.pathsep.join((str(android), str(classes_root),
+    classpath = os.pathsep.join((str(android), str(classes_root), str(java_classes),
                                str(ROOT / 'app/build/original-dependencies/compile-view.jar')))
     stdout, stderr = checked([jdk_tool('javac'), '-source', '8', '-target', '8',
                               '-cp', classpath, '-d', classes,
@@ -106,6 +107,7 @@ def main():
     stdout, stderr = checked([jdk_tool('java'), '-cp', d8, 'com.android.tools.r8.D8',
                               '--debug', '--min-api', '16', '--lib', android,
                               '--classpath', classes_root,
+                              '--classpath', java_classes,
                               '--classpath', ROOT / 'app/build/original-dependencies/compile-view.jar',
                               '--output', dex_output, *programs],
                              timeout=args.timeout)
@@ -151,6 +153,8 @@ def main():
         ('missing-critical-legacy', 'criticalmissing', 0),
         ('migrate-v1', 'migration1', 0), ('migrate-v3', 'migration3', 0),
         ('seed', 'corrupt', 0), ('corrupt-read', 'corrupt', 0),
+        ('seed', 'restorefailed', 0), ('failed-restore-barrier', 'restorefailed', 0),
+        ('seed', 'futureversion', 0), ('unsupported-version', 'futureversion', 0),
         ('seed', 'missing', 0), ('missing-records', 'missing', 0),
         ('seed', 'allmissing', 0), ('missing-all-tables', 'allmissing', 0),
         ('seed', 'posemissing', 0), ('missing-pose', 'posemissing', 0),
