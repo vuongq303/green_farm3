@@ -22,8 +22,29 @@ def debugKeystore = rootProject.layout.projectDirectory.file('.local/baseline-de
 if (providers.gradleProperty('localBackendUrl').isPresent()) {
     throw new GradleException('localBackendUrl is no longer supported. Set only BACKEND_BASE_URL in the root gradle.properties.')
 }
+// Keep the existing IPv4 HTTP validator for LAN backends, but also accept
+// HTTPS origins such as Cloudflare Tunnel addresses.
 def backendBaseUrl = providers.gradleProperty('BACKEND_BASE_URL').orElse('')
-        .map { BackendBaseUrl.normalize(it) }
+        .map { rawValue ->
+            def value = rawValue.toString().trim()
+            def uri = null
+            try {
+                uri = new URI(value)
+            } catch (Exception ignored) {
+                // Fall through to the original validator with its error message.
+            }
+            if (uri != null &&
+                    uri.scheme?.equalsIgnoreCase('https') &&
+                    uri.host &&
+                    uri.userInfo == null &&
+                    uri.query == null &&
+                    uri.fragment == null &&
+                    (uri.path == null || uri.path in ['', '/']) &&
+                    uri.port != 0 && uri.port <= 65535) {
+                return value.replaceAll('/+$', '') + '/'
+            }
+            return BackendBaseUrl.normalize(value)
+        }
 def gameNamespace = 'com.quanhoang.greenfarm3'
 // Optional local sandbox mode remains independent of online authentication.
 def localDevelopment = providers.gradleProperty('greenfarmLocalDevelopment').map { value ->

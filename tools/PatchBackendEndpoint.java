@@ -270,36 +270,71 @@ public final class PatchBackendEndpoint {
         throw new IOException("The compiled local development mode helper is missing");
     }
 
+    /** Accept an IPv4 backend over HTTP(S), or a DNS backend over HTTPS. */
     static String validateUrl(String value) throws Exception {
-        String message = "Set BACKEND_BASE_URL in root gradle.properties to an HTTP(S) IPv4 LAN origin, "
-                + "for example http://<server-IPv4>:<port>/; no userinfo, path, query, fragment or loopback address";
+        String message = "Set BACKEND_BASE_URL in root gradle.properties to an HTTP(S) IPv4 origin "
+                + "or an HTTPS DNS hostname (such as a Cloudflare Tunnel URL). "
+                + "An optional port is allowed; credentials, paths, queries and fragments are not.";
         try {
-            URI uri = new URI(value.trim());
+            String text = value == null ? "" : value.trim();
+            if (text.isEmpty() || text.indexOf('\\') >= 0) throw new IllegalArgumentException();
+            for (int i = 0; i < text.length(); i++) {
+                char c = text.charAt(i);
+                if (Character.isWhitespace(c) || Character.isSpaceChar(c) || Character.isISOControl(c)) {
+                    throw new IllegalArgumentException();
+                }
+            }
+
+            URI uri = new URI(text);
             String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
-            String host = uri.getHost();
-            if (!(scheme.equals("http") || scheme.equals("https")) || host == null
-                    || !host.matches("(?:0|[1-9][0-9]{0,2})(?:\\.(?:0|[1-9][0-9]{0,2})){3}")
+            String host = uri.getHost() == null ? null : uri.getHost().toLowerCase(Locale.ROOT);
+            String authority = uri.getRawAuthority();
+            int port = uri.getPort();
+            if (!(scheme.equals("http") || scheme.equals("https")) || host == null || authority == null
                     || uri.getRawUserInfo() != null || uri.getRawQuery() != null || uri.getRawFragment() != null
-                    || !(uri.getRawPath().isEmpty() || uri.getRawPath().equals("/"))
-                    || uri.getPort() == 0 || uri.getPort() > 65535 || uri.getRawAuthority().endsWith(":")
-                    || value.indexOf('\\') >= 0) {
-                throw new IllegalArgumentException(message);
+                    || !("".equals(uri.getRawPath()) || "/".equals(uri.getRawPath()))
+                    || !authority.matches("[A-Za-z0-9.-]+(?::[0-9]{1,5})?")
+                    || port == 0 || port > 65535 || (authority.indexOf(':') >= 0 && port == -1)) {
+                throw new IllegalArgumentException();
             }
-            String[] parts = host.split("\\.");
-            int[] octets = new int[4];
-            for (int index = 0; index < 4; index++) {
-                octets[index] = Integer.parseInt(parts[index]);
-                if (octets[index] > 255) throw new IllegalArgumentException(message);
+
+            if (host.matches("[0-9.]+")) {
+                // Keep the previous LAN IPv4 safety checks unchanged.
+                String[] parts = host.split("\\.", -1);
+                if (parts.length != 4) throw new IllegalArgumentException();
+                int[] octets = new int[4];
+                for (int i = 0; i < parts.length; i++) {
+                    if (!parts[i].matches("0|[1-9][0-9]{0,2}")) throw new IllegalArgumentException();
+                    octets[i] = Integer.parseInt(parts[i]);
+                    if (octets[i] > 255) throw new IllegalArgumentException();
+                }
+                if (octets[0] == 0 || octets[0] == 127 || octets[0] >= 224
+                        || (octets[0] == 169 && octets[1] == 254) || host.equals("10.0.2.2")) {
+                    throw new IllegalArgumentException();
+                }
+            } else if (!scheme.equals("https") || !isValidHttpsHostname(host)) {
+                // DNS hostnames may only be used over HTTPS.
+                throw new IllegalArgumentException();
             }
-            if (octets[0] == 0 || octets[0] == 127 || octets[0] >= 224
-                    || (octets[0] == 169 && octets[1] == 254) || host.equals("10.0.2.2")) {
-                throw new IllegalArgumentException(message);
-            }
-            return scheme + "://" + host + (uri.getPort() < 0 ? "" : ":" + uri.getPort()) + "/";
+
+            return scheme + "://" + host + (port < 0 ? "" : ":" + port) + "/";
         } catch (Exception failure) {
-            // A URI parser's exception may echo accidental userinfo/passwords.
+            // Do not echo the input: an invalid URL might contain credentials.
             throw new IllegalArgumentException(message);
         }
+    }
+
+    private static boolean isValidHttpsHostname(String host) {
+        if (host.length() > 253 || host.endsWith(".local")
+                || host.endsWith(".localhost") || host.endsWith(".internal")) {
+            return false;
+        }
+        String[] labels = host.split("\\.", -1);
+        if (labels.length < 2) return false;
+        for (String label : labels) {
+            if (!label.matches("[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?")) return false;
+        }
+        return !labels[labels.length - 1].matches("[0-9]+");
     }
 
     private static boolean target(Method method) {
