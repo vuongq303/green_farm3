@@ -60,3 +60,50 @@ footer { margin-top: 24px; color: #24451b; text-align: center; font: .8rem Arial
 @media (prefers-reduced-motion: reduce) {
   .farm-button:active { transform: none; }
 }
+
+/* Embedded first-party account forms; original OAuth handoff layout stays above. */
+body.password-page { padding: 22px 14px; justify-content: flex-start; }
+.password-panel { position: relative; width: min(100%, 520px); margin: auto 0; padding: 38px 28px 24px; }
+.password-brand { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 8px 0 18px; }
+.password-brand .game-logo { width: 64px; height: 64px; margin: 0; border-radius: 15px; }
+.password-brand .game-title { margin: 0; font-size: 1.65rem; }
+.password-panel h1 { font-size: 1.7rem; margin-bottom: 10px; }
+.password-intro { margin: 0 0 22px; line-height: 1.5; }
+.close-account {
+  position: absolute; top: 10px; right: 14px; padding: 5px 8px;
+  border: 1px solid #b78543; border-radius: 10px; background: #f9dfa1;
+  color: #654125; font: bold 1.05rem Arial, sans-serif; text-decoration: none;
+}
+.close-account:focus-visible, .account-mode-link:focus-visible { outline: 3px solid #244f7c; outline-offset: 3px; }
+.password-panel fieldset { min-width: 0; border: 0; margin: 0; padding: 0; text-align: left; }
+.password-panel label { display: block; margin: 16px 0 7px; font-weight: bold; font-size: 1.05rem; }
+.password-panel input:not([type="hidden"]) {
+  width: 100%; min-height: 48px; padding: 11px 12px;
+  border: 2px solid #c39555; border-radius: 12px; background: #fffdf3;
+  color: #422e1b; font: 1rem Arial, sans-serif; box-shadow: inset 0 2px 2px #bd9d6430;
+}
+.password-panel input:focus { border-color: #5d8a2d; outline: 2px solid #c0da78; outline-offset: 1px; }
+.password-panel input:disabled { opacity: .75; }
+.password-panel .field-hint { margin: 6px 2px 0; font: .82rem/1.45 Arial, sans-serif; color: #6c593b; }
+.password-panel button.farm-button { cursor: pointer; margin-top: 24px; }
+.password-panel .farm-button:disabled { cursor: wait; opacity: .8; }
+.form-status { min-height: 1.5em; margin: 20px 0 14px; color: #863d24; font: .95rem/1.5 Arial, sans-serif; overflow-wrap: anywhere; }
+.account-mode-link { display: inline-block; padding: 6px 0; color: #35621d; font-weight: bold; text-underline-offset: 3px; }
+.account-mode-link[aria-disabled="true"] { opacity: .6; cursor: wait; }
+.form-spinner { display: none; width: 18px; height: 18px; margin-left: 10px; border: 3px solid #ffffff70; border-top-color: #fffdf0; border-radius: 50%; vertical-align: -3px; }
+.is-busy .form-spinner { display: inline-block; animation: form-spin .9s linear infinite; }
+@keyframes form-spin { to { transform: rotate(360deg); } }
+@media (max-height: 540px) and (min-width: 560px) {
+  body.password-page { padding-top: 12px; padding-bottom: 12px; }
+  .password-panel { padding-top: 28px; }
+  .password-brand { margin-top: 0; margin-bottom: 10px; }
+  .password-brand .game-logo { width: 48px; height: 48px; border-radius: 12px; }
+}
+@media (max-width: 360px) {
+  .password-panel { padding-left: 18px; padding-right: 18px; }
+  .password-brand { gap: 10px; }
+  .password-brand .game-title { font-size: 1.35rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-busy .form-spinner { animation: none; }
+}

@@ -60,7 +60,7 @@ test('HTML is noncacheable and assets are explicitly mapped without remote depen
   assert.match(CSP, /default-src 'none'/u);
   assert.match(CSP, /script-src 'self'/u);
   assert.match(CSP, /frame-ancestors 'none'/u);
-  assert.deepEqual([...ASSETS.keys()], ['styles.css', 'callback.js', 'green-farm-3.png']);
+  assert.deepEqual([...ASSETS.keys()], ['styles.css', 'callback.js', 'password.js', 'green-farm-3.png']);
   assert.equal(ASSETS.get('../pages.mjs'), undefined);
   assert.equal(ASSETS.get('styles.css').contentType, 'text/css; charset=utf-8');
   assert.equal(ASSETS.get('callback.js').contentType, 'application/javascript; charset=utf-8');

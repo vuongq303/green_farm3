@@ -44,7 +44,7 @@ class SecureAccountStore(context: Context, private val expectedOrigin: String? =
     @Synchronized override fun attempt(): SocialAttempt? = read("attempt")?.let { value ->
         try {
             if (expectedOrigin != null) {
-                if (!SocialAuthClient.isAuthorizationUrl(value.getString("authorization_url"), expectedOrigin)) return@let null
+                if (!SocialAuthClient.isAuthorizationUrl(value.getString("authorization_url"), expectedOrigin, value.getString("provider"))) return@let null
             }
             SocialAttempt(value.getString("provider"), value.getString("state"), value.getString("verifier"),
                 value.getString("authorization_url"), value.getLong("expires_at"))

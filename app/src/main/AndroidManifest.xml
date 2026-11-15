@@ -26,6 +26,12 @@
             android:name="com.quanhoang.greenfarm3.migration.SaveTransferPreparationReceiver"
             android:exported="false"/>
         <activity
+            android:name="com.quanhoang.greenfarm3.S800x480.EmbeddedAccountActivity"
+            android:theme="@style/Theme.wrapper.black.notitlebar.fullscreen"
+            android:screenOrientation="sensorLandscape"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false"/>
+        <activity
             android:name="com.quanhoang.greenfarm3.S800x480.SocialAuthCallbackActivity"
             android:theme="@android:style/Theme.NoDisplay"
             android:launchMode="singleTop"

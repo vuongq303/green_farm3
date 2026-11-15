@@ -1,7 +1,8 @@
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { APP_REDIRECT_URI, authClientIp, secureAuthRequest } from './config.js';
 import { createProviderClient, ProviderError } from './providers.js';
-import { ASSETS, PAGE_HEADERS, renderError, renderSuccess } from '../../web/pages.mjs';
+import { ASSETS, PAGE_HEADERS, renderError, renderSuccess, renderPasswordForm } from '../../web/pages.mjs';
+import { hashPassword, normalizeIdentifier, PasswordError, registration, verifyPassword } from './passwords.js';
 
 const random = () => randomBytes(32).toString('base64url');
 const hash = value => createHash('sha256').update(value, 'utf8').digest();
@@ -25,7 +26,27 @@ const PUBLIC_MESSAGES = {
   method_not_allowed: 'Phương thức HTTP không được hỗ trợ.',
   json_required: 'Yêu cầu phải sử dụng JSON.',
   request_too_large: 'Yêu cầu vượt quá kích thước cho phép.',
+  invalid_credentials: 'Tên tài khoản/email hoặc mật khẩu không đúng.',
+  invalid_registration: 'Kiểm tra tên tài khoản, email và mật khẩu (12–128 ký tự); hai mật khẩu phải khớp.',
+  account_exists: 'Tên tài khoản hoặc email đã được sử dụng.',
+  csrf_failed: 'Phiên biểu mẫu không hợp lệ. Hãy đóng và mở lại đăng nhập từ trò chơi.',
+  password_unavailable: 'Máy chủ đang bận xử lý đăng nhập. Vui lòng chờ rồi thử lại.',
 };
+
+const WEB_COOKIE = '__Host-gf_auth_web';
+const WEB_COOKIE_OPTIONS = 'Path=/; Secure; HttpOnly; SameSite=Strict';
+function webCookie(request) {
+  const raw = request.headers.cookie;
+  if (typeof raw !== 'string' || raw.length > 4096) return undefined;
+  const entries = raw.split(';').map(part => part.trim()).filter(part => part.startsWith(WEB_COOKIE + '='));
+  if (entries.length !== 1) return undefined;
+  const parts = entries[0].slice(WEB_COOKIE.length + 1).split('.');
+  return parts.length === 2 && parts.every(part => TOKEN.test(part)) ? { session: parts[0], csrf: parts[1] } : undefined;
+}
+function sameText(first, second) {
+  const a = Buffer.from(first ?? '', 'utf8'), b = Buffer.from(second ?? '', 'utf8');
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 class AuthError extends Error {
   constructor(status, code) { super(code); this.status = status; this.code = code; }
@@ -121,11 +142,30 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
       expires_in: config.accessTtl, refresh_expires_in: config.refreshTtl, user: publicUser(user) };
   }
 
+  async function passwordWebSession(request, attemptId, csrf) {
+    const cookie = webCookie(request);
+    if (!cookie || !matches(TOKEN, attemptId) || !matches(TOKEN, csrf) ||
+        !sameText(cookie.csrf, csrf)) fail(403, 'csrf_failed');
+    const web = await store.getPasswordWebSession(hash(cookie.session), seconds());
+    if (!web || web.attempt.id !== attemptId) fail(400, 'attempt_expired');
+    if (!timingSafeEqual(hash(csrf), web.csrfHash)) fail(403, 'csrf_failed');
+    return { ...web, cookieHash: hash(cookie.session), csrfHash: hash(csrf) };
+  }
+
+  async function passwordReply(response, attempt, user, status) {
+    const code = random();
+    const issued = await store.issueCode({ attemptId: attempt.id, userId: user.id, codeHash: hash(code),
+      expiresAt: seconds() + config.codeTtl, now: seconds() });
+    if (!issued) fail(400, 'attempt_expired');
+    response.setHeader('Set-Cookie', WEB_COOKIE + '=; ' + WEB_COOKIE_OPTIONS + '; Max-Age=0');
+    jsonReply(response, status, { callback_url: callback(attempt, { code }) });
+  }
+
   async function handle(request, response, url) {
     const path = url.pathname;
     if (path !== '/auth' && !path.startsWith('/auth/')) return false;
     let browserAttempt;
-    const browser = path.startsWith('/auth/browser/') || path.startsWith('/auth/callback/');
+    const browser = path.startsWith('/auth/browser/') || path.startsWith('/auth/callback/') || path.startsWith('/auth/web/');
     try {
       if (path.startsWith('/auth/assets/')) {
         if (request.method !== 'GET') fail(405, 'method_not_allowed');
@@ -144,21 +184,76 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
         const body = await readJson(request);
         only(body, ['provider', 'state', 'code_challenge', 'redirect_uri']);
         const provider = path === '/auth/attempt' ? body.provider : path.slice('/auth/'.length);
-        if (!['facebook', 'google'].includes(provider) || (body.provider !== undefined && body.provider !== provider) ||
+        if (!['facebook', 'google', 'password'].includes(provider) || (body.provider !== undefined && body.provider !== provider) ||
             !matches(STATE, body.state) || !matches(TOKEN, body.code_challenge) || body.redirect_uri !== APP_REDIRECT_URI) fail(400, 'invalid_request');
         configured(provider);
         const id = random();
         await store.createAttempt({ id, provider, appState: body.state, codeChallenge: body.code_challenge,
           redirectUri: APP_REDIRECT_URI, createdAt: seconds(), expiresAt: seconds() + config.attemptTtl });
-        jsonReply(response, 201, { attempt_id: id, authorization_url: config.publicBaseUrl + '/auth/browser/start?id=' + id,
+        jsonReply(response, 201, { attempt_id: id, authorization_url: config.publicBaseUrl +
+          (provider === 'password' ? '/auth/web/login?attempt=' : '/auth/browser/start?id=') + id,
           expires_in: config.attemptTtl });
+      } else if (path === '/auth/web/login' || path === '/auth/web/register') {
+        if (request.method !== 'GET') fail(405, 'method_not_allowed');
+        rate(client, 'web-form', 60);
+        const id = url.searchParams.get('attempt');
+        if (!matches(TOKEN, id) || url.searchParams.getAll('attempt').length !== 1 ||
+            [...url.searchParams.keys()].some(key => key !== 'attempt')) fail(400, 'invalid_request');
+        const known = await store.getAttempt(id);
+        if (!known || known.provider !== 'password' || known.expiresAt <= seconds() || known.consumedAt != null) fail(400, 'attempt_expired');
+        let cookie = webCookie(request), attempt;
+        const web = cookie ? await store.getPasswordWebSession(hash(cookie.session), seconds()) : undefined;
+        if (web?.attempt.id === id && timingSafeEqual(hash(cookie.csrf), web.csrfHash)) {
+          attempt = web.attempt;
+        } else {
+          cookie = { session: random(), csrf: random() };
+          attempt = await store.startPasswordAttempt(id, hash(cookie.session), hash(cookie.csrf), seconds());
+          if (!attempt) fail(400, 'attempt_expired');
+          response.setHeader('Set-Cookie', WEB_COOKIE + '=' + cookie.session + '.' + cookie.csrf + '; ' +
+            WEB_COOKIE_OPTIONS + '; Max-Age=' + Math.max(1, Math.min(config.attemptTtl, attempt.expiresAt - seconds())));
+        }
+        pageReply(response, 200, renderPasswordForm({ mode: path.endsWith('/register') ? 'register' : 'login',
+          csrfToken: cookie.csrf, attemptId: id, closeUrl: callback(attempt, { error: 'access_denied' }) }));
+      } else if (path === '/auth/login' || path === '/auth/register') {
+        if (request.method !== 'POST') fail(405, 'method_not_allowed');
+        if (request.headers.origin !== config.publicBaseUrl ||
+            (request.headers['sec-fetch-site'] && request.headers['sec-fetch-site'] !== 'same-origin')) fail(403, 'csrf_failed');
+        rate(client, 'password', 30);
+        const body = await readJson(request);
+        const registering = path === '/auth/register';
+        only(body, registering ? ['csrf', 'attempt', 'username', 'email', 'password', 'password_confirmation'] :
+          ['csrf', 'attempt', 'login', 'password']);
+        const web = await passwordWebSession(request, body.attempt, body.csrf);
+        if (registering) {
+          const fields = registration(body);
+          rate(hash(fields.username).toString('hex'), 'register-identity', 6);
+          rate(hash(fields.email).toString('hex'), 'register-email', 6);
+          const passwordHash = await hashPassword(fields.password);
+          const registered = await store.registerPasswordAndClaim({ cookieHash: web.cookieHash, csrfHash: web.csrfHash,
+            providerUserId: random(), username: fields.username, email: fields.email, passwordHash, now: seconds() });
+          if (!registered) fail(400, 'attempt_expired');
+          if (registered.duplicate) fail(409, 'account_exists');
+          await passwordReply(response, registered.attempt, registered.user, 201);
+        } else {
+          const identifier = normalizeIdentifier(body.login);
+          if (!identifier || typeof body.password !== 'string' || Buffer.byteLength(body.password, 'utf8') > 512) fail(401, 'invalid_credentials');
+          rate(hash(identifier).toString('hex'), 'password-identity', 10);
+          const credential = await store.findPasswordCredential(identifier);
+          const verified = await verifyPassword(body.password, credential?.passwordHash);
+          if (!verified || !credential || credential.accountStatus !== 'active') fail(401, 'invalid_credentials');
+          const attempt = await store.claimPasswordAttempt(web.cookieHash, web.csrfHash, seconds());
+          if (!attempt) fail(400, 'attempt_expired');
+          const user = await store.loginPasswordUser(credential.userId, seconds());
+          if (!user) fail(401, 'invalid_credentials');
+          await passwordReply(response, attempt, user, 200);
+        }
       } else if (path === '/auth/browser/start') {
         if (request.method !== 'GET') fail(405, 'method_not_allowed');
         rate(client, 'browser', 40);
         const id = url.searchParams.get('id');
         if (!TOKEN.test(id ?? '') || url.searchParams.getAll('id').length !== 1) fail(400, 'invalid_request');
         const known = await store.getAttempt(id);
-        if (!known) fail(400, 'attempt_expired');
+        if (!known || !['facebook', 'google'].includes(known.provider)) fail(400, 'attempt_expired');
         configured(known.provider);
         const oauthState = random();
         const attempt = await store.startAttempt(id, { oauthStateHash: hash(oauthState), nonce: random(), providerVerifier: random() }, seconds());
@@ -229,6 +324,7 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
       if (response.headersSent || response.destroyed) return true;
       let failure = error instanceof AuthError ? error :
         error instanceof ProviderError ? new AuthError(502, error.code === 'provider_identity_invalid' ? 'authentication_failed' : 'provider_unavailable') :
+        error instanceof PasswordError ? new AuthError(error.code === 'password_unavailable' ? 503 : 400, error.code) :
         error?.code === 'DATABASE_UNAVAILABLE' ? new AuthError(503, 'database_unavailable') : new AuthError(500, 'authentication_failed');
       if (failure.status >= 500) {
         try { errorLog({ event: 'social_auth_error', status: failure.status, code: failure.code }); } catch { }

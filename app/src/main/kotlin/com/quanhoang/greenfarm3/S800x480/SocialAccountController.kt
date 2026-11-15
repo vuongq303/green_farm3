@@ -43,6 +43,18 @@ class SocialAccountController private constructor() {
                     override fun now() = System.currentTimeMillis()
                     override fun randomBytes(size: Int) = ByteArray(size).also { random.nextBytes(it) }
                     override fun execute(work: () -> Unit) { worker.execute(work) }
+                    override fun openEmbedded(url: String) {
+                        AuthWebViewPolicy(client.origin, url)
+                        val activity = MIDlet.cnA as Activity? ?: throw SocialAuthFailure("webview_unavailable")
+                        if (activity.isFinishing) throw SocialAuthFailure("webview_unavailable")
+                        activity.runOnUiThread {
+                            try {
+                                // The private Activity reads its pending URL from the encrypted vault.
+                                // No URL, password, code or token is carried in Intent extras.
+                                activity.startActivity(Intent(activity, EmbeddedAccountActivity::class.java))
+                            } catch (_: Exception) { flow?.embeddedFailed("webview_unavailable") }
+                        }
+                    }
                     override fun openBrowser(url: String) {
                         val activity = MIDlet.cnA as Activity? ?: throw SocialAuthFailure("browser_unavailable")
                         if (activity.isFinishing) throw SocialAuthFailure("browser_unavailable")
@@ -76,19 +88,55 @@ class SocialAccountController private constructor() {
         @JvmStatic fun busy(): Boolean = flow?.busy ?: false
 
         /** The callback Activity accepts no tokens and never trusts Intent extras. */
-        @JvmStatic fun recordCallback(context: Context, rawUri: String?): Boolean {
+        @JvmStatic fun recordCallback(context: Context, rawUri: String?): Boolean = receiveCallback(context, rawUri, false)
+
+        /** Only the non-exported WebView Activity may hand off a password-account code. */
+        @JvmStatic fun recordEmbeddedCallback(context: Context, rawUri: String?): Boolean = receiveCallback(context, rawUri, true)
+
+        private fun receiveCallback(context: Context, rawUri: String?, embedded: Boolean): Boolean {
             if (rawUri == null || rawUri.length > 2048) return rejectedCallback()
             if (Build.VERSION.SDK_INT < 23) return rejectedCallback()
             val callback = SocialAccountFlow.parseCallback(rawUri) ?: return rejectedCallback()
             return try {
-                val vault = SecureAccountStore(context)
+                val origin = SocialAuthClient.validateOrigin(LocalDevelopmentConfig.AUTH_BASE_URL)
+                val vault = SecureAccountStore(context, origin)
                 val expected = vault.attempt() ?: return rejectedCallback()
+                if ((expected.provider == "password") != embedded) return rejectedCallback()
                 if (System.currentTimeMillis() >= expected.expiresAt ||
                     !SocialAccountFlow.sameState(expected.state, callback.state)) return rejectedCallback()
                 vault.saveCallback(callback)
                 flow?.enqueueCallback()
                 true
             } catch (_: Exception) { rejectedCallback() }
+        }
+
+        /** Non-secret launch descriptor; the PKCE verifier stays in the encrypted vault. */
+        @JvmStatic fun embeddedPage(context: Context): Pair<String, Long>? = try {
+            if (Build.VERSION.SDK_INT < 23) null
+            else {
+                initialize(context, LocalDevelopmentConfig.AUTH_BASE_URL)
+                val origin = SocialAuthClient.validateOrigin(LocalDevelopmentConfig.AUTH_BASE_URL)
+                val vault = SecureAccountStore(context, origin)
+                val attempt = vault.attempt()
+                if (attempt == null || attempt.provider != "password" || vault.callback() != null ||
+                    System.currentTimeMillis() >= attempt.expiresAt) null
+                else {
+                    AuthWebViewPolicy(origin, attempt.authorizationUrl)
+                    Pair(attempt.authorizationUrl, attempt.expiresAt)
+                }
+            }
+        } catch (_: Exception) { null }
+
+        @JvmStatic fun closeEmbedded(context: Context, authorizationUrl: String, failure: String? = null) {
+            try {
+                val vault = SecureAccountStore(context, SocialAuthClient.validateOrigin(LocalDevelopmentConfig.AUTH_BASE_URL))
+                val attempt = vault.attempt() ?: return
+                if (attempt.provider != "password" || attempt.authorizationUrl != authorizationUrl) return
+                if (failure == null) {
+                    flow?.cancel()
+                    if (flow == null) vault.clearAttempt()
+                } else if (flow?.embeddedFailed(failure) != true) vault.clearAttempt()
+            } catch (_: Exception) { }
         }
 
         private fun rejectedCallback(): Boolean {

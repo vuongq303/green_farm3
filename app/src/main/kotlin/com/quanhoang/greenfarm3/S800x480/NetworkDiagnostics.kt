@@ -35,7 +35,7 @@ class NetworkDiagnostics private constructor() {
         @JvmStatic fun accountStartup(baseUrl: String) {
             val endpoint = safeUrl(baseUrl)
             val configured = endpoint != "<invalid-url>" && baseUrl.startsWith("https://")
-            write(!configured, "account_startup url=$endpoint configured=$configured mode=OAUTH" +
+            write(!configured, "account_startup url=$endpoint configured=$configured mode=ACCOUNT" +
                 if (configured) "" else " hint=Set AUTH_BASE_URL to the HTTPS authentication backend origin.")
         }
 
@@ -56,6 +56,7 @@ class NetworkDiagnostics private constructor() {
                         "/locate/storage", "/profiles/me/myprofile", "/users/me/compliance",
                         "/auth/attempt", "/auth/facebook", "/auth/google", "/auth/exchange",
                         "/auth/me", "/auth/logout", "/auth/refresh", "/auth/browser/start",
+                        "/auth/login", "/auth/register", "/auth/web/login", "/auth/web/register",
                         "/auth/callback/facebook", "/auth/callback/google") -> path
                     path.matches(Regex("/config/[^/]+/datacenters")) -> "/config/:client/datacenters"
                     path.matches(Regex("/config/[^/]+/datacenters/[^/]+/urls")) -> "/config/:client/datacenters/:name/urls"

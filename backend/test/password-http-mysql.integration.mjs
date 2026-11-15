@@ -1,0 +1,179 @@
+import assert from 'node:assert/strict';
+import { createServer } from 'node:http';
+import { createHash, randomBytes } from 'node:crypto';
+import { after, test } from 'node:test';
+import { loadDatabaseConfig, loadEnvironment } from '../src/config.js';
+import { createPoolFromConfig } from '../src/db/store.js';
+import { createSocialStore } from '../src/db/social-store.js';
+import { migrate } from '../src/db/migrate.js';
+import { APP_REDIRECT_URI, loadSocialAuthConfig } from '../src/auth/config.js';
+import { createSocialAuthRouter } from '../src/auth/router.js';
+
+loadEnvironment();
+const database = loadDatabaseConfig();
+database.database = process.env.TEST_DB_NAME ?? database.database;
+if (!database.database.endsWith('_test')) throw new Error('Password HTTP tests require a dedicated database ending in _test');
+const pool = createPoolFromConfig(database);
+after(() => pool.end());
+const value = () => randomBytes(32).toString('base64url');
+const challenge = text => createHash('sha256').update(text).digest('base64url');
+const password = 'actual MySQL password test 123';
+
+async function fixture(t, extra = {}) {
+  await migrate(pool);
+  const prefix = 'pw_' + randomBytes(8).toString('hex');
+  const config = loadSocialAuthConfig({ AUTH_PUBLIC_BASE_URL: 'https://accounts.example.test' });
+  const attempts = [], errors = [];
+  let server, origin;
+  async function start() {
+    const router = createSocialAuthRouter({ config, store: createSocialStore(pool), isSecureRequest: () => true,
+      errorLog: entry => errors.push(entry), ...extra });
+    server = createServer((req, res) => { void router.handle(req, res, new URL(req.url, 'http://test.invalid')); });
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    origin = 'http://127.0.0.1:' + server.address().port;
+  }
+  async function stop() { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
+  t.after(async () => {
+    if (server?.listening) await stop();
+    const [users] = await pool.execute('SELECT CAST(user_id AS CHAR) AS id FROM gf_password_accounts WHERE username LIKE ?', [prefix + '%']);
+    for (const { id } of users) {
+      await pool.execute('DELETE FROM gf_auth_session_families WHERE user_id = ?', [id]);
+      await pool.execute('DELETE FROM gf_auth_sessions WHERE user_id = ?', [id]);
+      await pool.execute('DELETE FROM gf_auth_codes WHERE user_id = ?', [id]);
+      await pool.execute('DELETE FROM users WHERE id = ?', [id]);
+    }
+    for (const id of attempts) {
+      await pool.execute('DELETE FROM gf_auth_codes WHERE attempt_id = ?', [id]);
+      await pool.execute('DELETE FROM gf_auth_attempts WHERE id = ?', [id]);
+    }
+  });
+  await start();
+  const get = (path, headers = {}) => fetch(origin + path, { redirect: 'manual', headers });
+  const post = (path, body, headers = {}) => fetch(origin + path, { method: 'POST', redirect: 'manual',
+    headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) });
+  async function form() {
+    const verifier = value(), state = value();
+    const response = await post('/auth/attempt', { provider: 'password', state, code_challenge: challenge(verifier), redirect_uri: APP_REDIRECT_URI });
+    assert.equal(response.status, 201);
+    const attempt = await response.json(); attempts.push(attempt.attempt_id);
+    assert.equal(attempt.authorization_url, config.publicBaseUrl + '/auth/web/login?attempt=' + attempt.attempt_id);
+    const page = await get('/auth/web/login?attempt=' + attempt.attempt_id);
+    assert.equal(page.status, 200);
+    const setCookie = page.headers.get('set-cookie');
+    assert.match(setCookie, /^__Host-gf_auth_web=[A-Za-z0-9_-]{43}\.[A-Za-z0-9_-]{43}; Path=\/; Secure; HttpOnly; SameSite=Strict; Max-Age=/u);
+    assert.equal(page.headers.get('cache-control'), 'no-store');
+    const cookie = setCookie.split(';')[0], html = await page.text();
+    const csrf = html.match(/name="csrf" value="([A-Za-z0-9_-]{43})"/u)[1];
+    assert.ok(!html.includes('access_token') && !html.includes('refresh_token'));
+    return { verifier, state, attempt: attempt.attempt_id, cookie, csrf,
+      headers: { Cookie: cookie, Origin: config.publicBaseUrl, 'Sec-Fetch-Site': 'same-origin' } };
+  }
+  async function exchange(form, response) {
+    assert.equal(response.headers.get('set-cookie'), '__Host-gf_auth_web=; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=0');
+    const result = await response.json();
+    assert.deepEqual(Object.keys(result), ['callback_url']);
+    const target = new URL(result.callback_url);
+    assert.equal(target.protocol, 'com.quanhoang.greenfarm3:');
+    assert.equal(target.searchParams.get('state'), form.state);
+    assert.deepEqual([...target.searchParams.keys()].sort(), ['code', 'state']);
+    const code = target.searchParams.get('code');
+    assert.equal((await post('/auth/exchange', { code, code_verifier: value(), redirect_uri: APP_REDIRECT_URI })).status, 400);
+    const exchanged = await post('/auth/exchange', { code, code_verifier: form.verifier, redirect_uri: APP_REDIRECT_URI });
+    assert.equal(exchanged.status, 200);
+    assert.equal((await post('/auth/exchange', { code, code_verifier: form.verifier, redirect_uri: APP_REDIRECT_URI })).status, 400);
+    return exchanged.json();
+  }
+  return { prefix, config, errors, get, post, form, exchange, restart: async () => { await stop(); await start(); } };
+}
+
+test('real password website/HTTP/MySQL register, PKCE exchange, restart, remembered identity, refresh and logout', async t => {
+  const f = await fixture(t), form = await f.form();
+  let response = await f.get('/auth/web/register?attempt=' + form.attempt, { Cookie: form.cookie });
+  assert.equal(response.status, 200, 'mode switching reuses the bound HttpOnly cookie');
+  assert.ok((await response.text()).includes('name="password_confirmation"'));
+  response = await f.post('/auth/register', { attempt: form.attempt, csrf: form.csrf, username: f.prefix.toUpperCase(),
+    email: f.prefix + '@Example.TEST', password, password_confirmation: password }, form.headers);
+  assert.equal(response.status, 201);
+  const registered = await f.exchange(form, response);
+  assert.equal(registered.user.provider, 'password');
+  assert.match(registered.user.game_id, /^GF[0-9]{6,}$/u);
+  const [[stored]] = await pool.execute('SELECT password_hash, username, email FROM gf_password_accounts WHERE username = ?', [f.prefix]);
+  assert.match(stored.password_hash, /^\$argon2id\$v=19\$m=65536,t=3,p=1\$/u);
+  assert.ok(!stored.password_hash.includes(password));
+  assert.equal(stored.email, f.prefix + '@example.test');
+  await f.restart();
+  assert.deepEqual((await (await f.get('/auth/me', { Authorization: 'Bearer ' + registered.access_token })).json()).user, registered.user);
+  const login = await f.form();
+  response = await f.post('/auth/login', { attempt: login.attempt, csrf: login.csrf,
+    login: f.prefix + '@EXAMPLE.test', password }, login.headers);
+  assert.equal(response.status, 200);
+  const repeated = await f.exchange(login, response);
+  assert.equal(repeated.user.game_id, registered.user.game_id);
+  response = await f.post('/auth/refresh', { refresh_token: repeated.refresh_token });
+  assert.equal(response.status, 200);
+  const rotated = await response.json();
+  assert.equal((await f.get('/auth/me', { Authorization: 'Bearer ' + repeated.access_token })).status, 401);
+  assert.equal((await f.post('/auth/logout', { refresh_token: repeated.refresh_token }, { Authorization: 'Bearer ' + repeated.access_token })).status, 204);
+  assert.equal((await f.get('/auth/me', { Authorization: 'Bearer ' + rotated.access_token })).status, 401);
+  assert.equal((await f.post('/auth/refresh', { refresh_token: rotated.refresh_token })).status, 401);
+  assert.equal((await f.get('/auth/me', { Authorization: 'Bearer ' + registered.access_token })).status, 200);
+});
+
+test('password HTTP rejects cross-origin/CSRF and duplicate accounts, keeps wrong-login retry, and enforces disabled status', async t => {
+  const f = await fixture(t), form = await f.form();
+  const body = { attempt: form.attempt, csrf: form.csrf, username: f.prefix,
+    email: f.prefix + '@example.test', password, password_confirmation: password };
+  let response = await f.post('/auth/register', body, { ...form.headers, Origin: 'https://attacker.invalid' });
+  assert.equal(response.status, 403);
+  response = await f.post('/auth/register', { ...body, csrf: value() }, form.headers);
+  assert.equal(response.status, 403);
+  response = await f.post('/auth/register', body, { Origin: f.config.publicBaseUrl });
+  assert.equal(response.status, 403);
+  response = await f.post('/auth/register', body, form.headers);
+  assert.equal(response.status, 201);
+  const account = await f.exchange(form, response);
+  const duplicate = await f.form();
+  response = await f.post('/auth/register', { ...body, attempt: duplicate.attempt, csrf: duplicate.csrf }, duplicate.headers);
+  assert.equal(response.status, 409);
+  assert.equal((await response.json()).error.code, 'account_exists');
+  response = await f.post('/auth/login', { attempt: duplicate.attempt, csrf: duplicate.csrf, login: f.prefix, password: password + '-wrong' }, duplicate.headers);
+  assert.equal(response.status, 401);
+  const invalid = await response.json();
+  response = await f.post('/auth/login', { attempt: duplicate.attempt, csrf: duplicate.csrf, login: f.prefix + '_missing', password }, duplicate.headers);
+  assert.equal(response.status, 401);
+  assert.deepEqual(await response.json(), invalid, 'unknown and wrong-password responses do not enumerate accounts');
+  response = await f.post('/auth/login', { attempt: duplicate.attempt, csrf: duplicate.csrf, login: f.prefix, password }, duplicate.headers);
+  assert.equal(response.status, 200, 'duplicates and wrong passwords leave the same form usable');
+  const pendingCode = await response.json();
+  await pool.execute("UPDATE gf_password_accounts SET account_status = 'disabled' WHERE username = ?", [f.prefix]);
+  assert.equal((await f.get('/auth/me', { Authorization: 'Bearer ' + account.access_token })).status, 401);
+  assert.equal((await f.post('/auth/refresh', { refresh_token: account.refresh_token })).status, 401);
+  assert.equal((await f.post('/auth/exchange', { code: new URL(pendingCode.callback_url).searchParams.get('code'),
+    code_verifier: duplicate.verifier, redirect_uri: APP_REDIRECT_URI })).status, 400);
+  const disabled = await f.form();
+  response = await f.post('/auth/login', { attempt: disabled.attempt, csrf: disabled.csrf, login: f.prefix, password }, disabled.headers);
+  assert.equal(response.status, 401);
+  assert.deepEqual(await response.json(), invalid);
+});
+
+test('password route requires HTTPS, bounds brute force, expires forms and never enables browser OAuth for password', async t => {
+  const insecure = await fixture(t, { isSecureRequest: () => false });
+  const refused = await insecure.post('/auth/attempt', { provider: 'password', state: value(), code_challenge: value(), redirect_uri: APP_REDIRECT_URI });
+  assert.equal(refused.status, 400);
+  assert.equal((await refused.json()).error.code, 'https_required');
+  const f = await fixture(t), form = await f.form();
+  assert.equal((await f.get('/auth/browser/start?id=' + form.attempt)).status, 400);
+  assert.equal((await f.get('/auth/web/login?attempt=' + form.attempt + '&next=https://attacker.invalid', { Cookie: form.cookie })).status, 400);
+  for (let i = 0; i < 10; i++) {
+    const response = await f.post('/auth/login', { attempt: form.attempt, csrf: form.csrf, login: f.prefix + '_missing', password }, form.headers);
+    assert.equal(response.status, 401);
+  }
+  const limited = await f.post('/auth/login', { attempt: form.attempt, csrf: form.csrf, login: f.prefix + '_missing', password }, form.headers);
+  assert.equal(limited.status, 429);
+  assert.equal(limited.headers.get('retry-after'), '900');
+  await pool.execute('UPDATE gf_auth_attempts SET expires_at = 1 WHERE id = ?', [form.attempt]);
+  assert.equal((await f.get('/auth/web/login?attempt=' + form.attempt, { Cookie: form.cookie })).status, 400);
+  const expired = await f.post('/auth/login', { attempt: form.attempt, csrf: form.csrf, login: f.prefix + '_missing', password }, form.headers);
+  assert.equal(expired.status, 400);
+  assert.equal((await expired.json()).error.code, 'attempt_expired');
+});

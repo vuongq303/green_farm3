@@ -9,12 +9,14 @@ Application ID và namespace chính hiện là **`com.quanhoang.greenfarm3`**.
 [hướng dẫn xuất/nhập save](docs/SAVE_TRANSFER_KOTLIN.md), dùng đúng khóa ký của bản
 cũ cho APK cầu nối. Không gỡ bản cũ trước khi kiểm tra bản nhập.
 
-Luồng tài khoản mới mặc định dùng Facebook/Google qua OAuth chính thức, tái sử
-dụng box đăng nhập gốc và bỏ qua màn tuổi/giới tính. Cấu hình `AUTH_BASE_URL`
-trong Gradle cùng `AUTH_PUBLIC_BASE_URL` và OAuth phía server; xác thực cần HTTPS.
-Hiện chưa có domain/OAuth nên cấu hình được để trống và chưa thể đăng nhập thật.
-Xem [báo cáo bàn giao, APK và kiểm thử](docs/SOCIAL_AUTH_REPORT.md) cùng
-[hướng dẫn backend tài khoản](backend/SOCIAL_AUTH.md). SQLite nông trại vẫn cục bộ.
+Luồng tài khoản mặc định tái sử dụng box đăng nhập gốc và bỏ qua màn tuổi/giới
+tính. Nút Facebook giữ OAuth chính thức qua trình duyệt; nút Đăng nhập bên phải
+mở website tài khoản riêng ngay trong WebView của game, thay cho Google Login.
+Cấu hình `AUTH_BASE_URL` trong Gradle cùng `AUTH_PUBLIC_BASE_URL` phía server;
+tài khoản riêng chỉ cần HTTPS và MySQL, không cần Google OAuth. Hiện chưa có
+domain HTTPS nên cấu hình được để trống; cần bổ sung trước khi đăng nhập trên thiết bị.
+Xem [báo cáo WebView, APK và kiểm thử](docs/EMBEDDED_AUTH_REPORT.md) cùng
+[hướng dẫn backend tài khoản](backend/EMBEDDED_AUTH.md). SQLite nông trại vẫn cục bộ.
 
 Pipeline chuẩn khôi phục resource, biên dịch Java/Kotlin được chọn và các helper,
 ghép runtime DEX còn lại, đổi package/symbol có kiểm chứng, cập nhật metadata
@@ -59,7 +61,7 @@ nghiên cứu này.
 BACKEND_BASE_URL=http://10.61.217.55:8787/
 ```
 
-Đây là URL LAN legacy đang cấu hình, không phải URL OAuth mới. Đổi IP/port phải sửa biến này, khởi động
+Đây là URL LAN legacy đang cấu hình, không phải URL tài khoản HTTPS. Đổi IP/port phải sửa biến này, khởi động
 lại backend, **build và cài lại APK**. Không có fallback localhost/`10.0.2.2`;
 không dùng `localBackendUrl` nữa. Backend đọc trực tiếp cùng file properties.
 
@@ -78,7 +80,7 @@ npm start
 ```
 
 Listener mặc định `HOST=0.0.0.0`, `PORT=8787`. Giao thức legacy dùng HTTP;
-xác thực Facebook/Google dùng HTTPS qua reverse proxy. Thông tin MySQL
+xác thực Facebook và tài khoản riêng dùng HTTPS qua reverse proxy. Thông tin MySQL
 chỉ ở `backend/.env`, không nằm trong APK. Kiểm tra từ Windows **và** emulator:
 `http://10.61.217.55:8787/health`. Backend kiểm tra MySQL/schema trước khi mở
 cổng; lỗi thì báo rõ và thoát mã 1. Nếu DB mất kết nối sau khi đã chạy, endpoint
@@ -91,7 +93,7 @@ MySQL. Gameplay/save nông trại chuyển sang SQLite bền vững trên thiế
 Snapshot giữ codec gốc, gồm tutorial, quest, kho, farm, timestamp, thưởng đang chờ
 và hướng sprite. Snapshot tại cuối frame được gom500/2000ms (debounce/max wait, tối đa50 dấu thay đổi) rồi ghi bằng một
 worker SQLite; lỗi đọc dừng tải, lỗi ghi giữ snapshot chờ và retry có kiểm soát. Đặt/di chuyển có ✓/✕, preview không được lưu như vị trí đã
-xác nhận. Chưa triển khai cloud farm save; tài khoản Facebook/Google mới chỉ
+xác nhận. Chưa triển khai cloud farm save; tài khoản backend chỉ
 xác thực và cấp GAME_ID, không đồng bộ hoặc gắn lại nông trại.
 
 [Báo cáo ổn định tải tài nguyên và bắt buộc restart ngôn ngữ](docs/REOPEN_STABILITY_REPORT.md).

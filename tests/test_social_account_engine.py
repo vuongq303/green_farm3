@@ -86,9 +86,9 @@ static void testNativeUiAndButtons(){
  ok(ate[29][3].equals("Vui lòng đăng nhập tài khoản để tiếp tục")&&ate[29][9].equals("Facebook")&&ate[29][10].equals("Đăng nhập"),"requested native dialog wording");
  aYU=7;configureSocialAccountUi();ok(atc[29][1][5]==50,"Japanese keeps its original localized logo sprite");
  aYU=16;configureSocialAccountUi();ok(atc[29][1][5]==49,"other languages keep the original standard logo sprite");
- CM();ok(SocialAccountController.facebook==1&&SocialAccountController.google==0,"left native button starts Facebook");
- reset();CN();ok(SocialAccountController.facebook==1&&SocialAccountController.google==0,"Facebook icon shares left action");
- reset();CL();ok(SocialAccountController.google==1&&SocialAccountController.facebook==0,"old No button now starts Google");
+ CM();ok(SocialAccountController.facebook==1&&SocialAccountController.password==0,"left native button starts Facebook");
+ reset();CN();ok(SocialAccountController.facebook==1&&SocialAccountController.password==0,"Facebook icon shares left action");
+ reset();CL();ok(SocialAccountController.password==1&&SocialAccountController.facebook==0,"right native button starts the embedded account flow");
  reset();SocialAccountController.state=SocialAccountController.WELCOME;configureSocialAccountUi();
  ok(ate[29][3].contains("Chào mừng GF000123 trở lại!")&&ate[29][3].contains("thiết bị"),"welcome identifies account without claiming cloud farm synchronization");
  ok(ate[29][9].equals("Đăng nhập")&&ate[29][10].equals("Đăng xuất")&&!shown[29][7],"welcome reuses buttons and hides provider-specific mark");
@@ -99,7 +99,7 @@ static void testNativeUiAndButtons(){
  ok(!enabled[29][6]&&!enabled[29][7]&&!enabled[29][8]&&sounds==0&&SocialAccountController.actions()==0,"busy button repeats cannot create requests");
  reset();SocialAccountController.state=SocialAccountController.ERROR;configureSocialAccountUi();
  ok(enabled[29][6]&&enabled[29][8]&&ate[29][3].equals("Mất kết nối. Vui lòng thử lại."),"native error text and retry actions restored");
- socialAccountRight();ok(SocialAccountController.google==1,"failed authorization can be retried");
+ socialAccountRight();ok(SocialAccountController.password==1,"failed authorization can be retried");
 }
 static void testGateAndBusyRendering(){
  reset();socialAccountScreen(0);socialAccountScreen(1);
@@ -113,8 +113,8 @@ static void testGateAndBusyRendering(){
  ok(SocialAccountController.cancels==1&&GloftGF2F.minimizes==0&&transitions==0,"Back cancels pending authentication only");
  ok(enabled[29][6]&&enabled[29][8],"Back cancellation restores retry controls");
  reset();GameRuntime.key=19;socialAccountScreen(2);ok(GloftGF2F.minimizes==1&&transitions==0,"idle Back retains minimize behavior");
- reset();socialAccountScreen(3);ok(GameRuntime.drawnGui==1&&SocialAccountArtwork.draws==1&&GameRuntime.busyArtwork==0,"normal login uses native box and existing Google mark");
- SocialAccountController.state=SocialAccountController.WELCOME;socialAccountScreen(3);ok(SocialAccountArtwork.draws==1,"welcome removes Google mark");
+ reset();socialAccountScreen(3);ok(GameRuntime.drawnGui==1&&SocialAccountArtwork.draws==1&&GameRuntime.busyArtwork==0,"normal login uses native box and original native account mark");
+ SocialAccountController.state=SocialAccountController.WELCOME;socialAccountScreen(3);ok(SocialAccountArtwork.draws==1,"welcome removes account mark");
  SocialAccountController.inProgress=true;socialAccountScreen(3);
  ok(GameRuntime.lastAlpha==0x66000000&&GameRuntime.busyArtwork==2&&GameRuntime.fill>=48&&GameRuntime.fill<416,"busy rendering uses original loading art over translucent overlay");
  ok(socialAccountScreen(8),"busy modal consumes additional pointer input");SocialAccountController.inProgress=false;ok(!socialAccountScreen(8),"idle native buttons receive pointer input");
@@ -165,15 +165,15 @@ class LocalDevelopmentConfig {static boolean ONLINE_ACCOUNTS=true;}
 class LocalDevelopmentMode {static boolean skipLegacyBackend(){return LocalDevelopmentConfig.ONLINE_ACCOUNTS;}}
 class SocialAccountController {
  static final int SIGNED_OUT=0,CHECKING=1,BROWSER=2,EXCHANGING=3,WELCOME=4,READY=5,ERROR=6,LOGGING_OUT=7;
- static int state,startups,ticks,facebook,google,continues,logouts,cancels;static boolean inProgress;
+ static int state,startups,ticks,facebook,password,continues,logouts,cancels;static boolean inProgress;
  static String errorMessage,savedGameId;
- static void reset(){state=SIGNED_OUT;startups=ticks=facebook=google=continues=logouts=cancels=0;inProgress=false;errorMessage="Mất kết nối. Vui lòng thử lại.";savedGameId="GF000123";}
+ static void reset(){state=SIGNED_OUT;startups=ticks=facebook=password=continues=logouts=cancels=0;inProgress=false;errorMessage="Mất kết nối. Vui lòng thử lại.";savedGameId="GF000123";}
  static boolean busy(){return inProgress;}static int status(){return state;}
  static String gameId(){return savedGameId;}static String message(){return errorMessage;}
  static void startupGate(){startups++;}static void tick(){ticks++;}
- static void choose(String provider){if(provider.equals("facebook"))facebook++;else if(provider.equals("google"))google++;else throw new AssertionError();inProgress=true;state=BROWSER;}
+ static void choose(String provider){if(provider.equals("facebook"))facebook++;else if(provider.equals("password"))password++;else throw new AssertionError();inProgress=true;state=BROWSER;}
  static void continueSaved(){continues++;inProgress=true;state=CHECKING;}static void logout(){logouts++;inProgress=true;state=LOGGING_OUT;}
- static void cancel(){cancels++;inProgress=false;state=ERROR;}static int actions(){return facebook+google+continues+logouts;}
+ static void cancel(){cancels++;inProgress=false;state=ERROR;}static int actions(){return facebook+password+continues+logouts;}
 }
 class GloftGF2F {static GloftGF2F acw=new GloftGF2F(),acx=acw;static int language,minimizes;
  int kR(){return language;}String bY(String key){return "on";}void jf(String value){if(!value.equals("MIDlet://minimize"))throw new AssertionError();minimizes++;}}
@@ -181,7 +181,7 @@ class bt {static boolean nY(){return false;}static void nT(){throw new Assertion
 class Sprite {void a(Object graphics,int frame,float x,float y,int transform){}}
 class w {static int screenWidth=800,screenHeight=480;}
 class SystemClock {static long uptimeMillis(){return 1000L;}}
-class SocialAccountArtwork {static int draws;static boolean drawGoogleIcon(int x,int y,int size){if(x!=505||y!=408||size!=32)throw new AssertionError("original icon footprint");draws++;return true;}}
+class SocialAccountArtwork {static int draws;static boolean drawAccountIcon(int x,int y,int size){if(x!=505||y!=408||size!=32)throw new AssertionError("original icon footprint");draws++;return true;}}
 class GameRuntime {static final Object Qj=new Object();static int key,drawnGui,busyArtwork,lastAlpha,fill;
  static void reset(){key=-1;drawnGui=busyArtwork=lastAlpha=fill=0;}static int jO(){return key;}
  static void dl(int color){lastAlpha=color;}static void dk(int color){if(color!=26856)throw new AssertionError("native loading color");}
