@@ -6,7 +6,9 @@
   const status = document.getElementById('account-status');
   const close = document.getElementById('close-account');
   const alternate = document.getElementById('account-mode-link');
-  if (!form || !fields || !status || !close || !alternate) return;
+  const returnToGame = document.getElementById('return-to-game');
+  const returnStatus = document.getElementById('return-status');
+  if (!form || !fields || !status || !close || !alternate || !returnToGame || !returnStatus) return;
   const mode = form.getAttribute('data-mode');
   const endpoint = form.getAttribute('data-endpoint');
   if (!['login', 'register'].includes(mode) || endpoint !== '/auth/' + mode) return;
@@ -22,6 +24,8 @@
   } catch { return; }
   let busy = false;
   let closed = false;
+  let completed = false;
+  let requestId = 0;
   let controller = null;
   function clearPasswords() {
     form.querySelectorAll('input[type="password"]').forEach(input => { input.value = ''; });
@@ -47,20 +51,31 @@
   alternate.addEventListener('click', event => { if (busy) event.preventDefault(); });
   close.addEventListener('click', () => {
     closed = true;
+    ++requestId;
     if (controller) controller.abort();
     clearPasswords();
   });
   window.addEventListener('pagehide', () => {
     closed = true;
+    ++requestId;
     if (controller) controller.abort();
     clearPasswords();
+  });
+  // Browser back/forward cache can restore this exact form without reloading.
+  // Ignore any response from the aborted visit before accepting another submit.
+  window.addEventListener('pageshow', event => {
+    if (!event.persisted || completed) return;
+    closed = false;
+    clearPasswords();
+    setBusy(false);
+    status.textContent = '';
   });
   form.addEventListener('submit', async event => {
     event.preventDefault();
     if (busy || closed) return;
     if (!form.reportValidity()) return;
     if (typeof AbortController !== 'function' || typeof fetch !== 'function') {
-      status.textContent = 'WebView cần được cập nhật để đăng nhập an toàn. Hãy đóng trang và thử lại.';
+      status.textContent = 'Hãy cập nhật trình duyệt để đăng nhập an toàn, rồi mở lại đăng nhập từ trò chơi.';
       return;
     }
     const names = mode === 'register' ? ['csrf', 'attempt', 'username', 'email', 'password', 'password_confirmation'] :
@@ -75,6 +90,7 @@
     status.textContent = mode === 'register' ? 'Đang tạo tài khoản...' : 'Đang đăng nhập...';
     controller = new AbortController();
     const requestController = controller;
+    const activeRequest = ++requestId;
     const timeout = window.setTimeout(() => requestController.abort(), 20000);
     try {
       const response = await fetch(endpoint, {
@@ -83,8 +99,8 @@
         body: JSON.stringify(body), signal: requestController.signal,
       });
       const reply = await response.json();
+      if (closed || activeRequest !== requestId) return;
       clearPasswords();
-      if (closed) return;
       if (!response.ok) {
         status.textContent = reply && reply.error && typeof reply.error.message === 'string' ?
           reply.error.message.slice(0, 600) : 'Không thể đăng nhập. Hãy kiểm tra thông tin và thử lại.';
@@ -96,17 +112,28 @@
       }
       const target = appCode(reply.callback_url);
       status.textContent = 'Thành công! Đang quay lại trò chơi để hoàn tất đăng nhập...';
+      // An async fetch may outlive the browser's user-activation window. Keep a
+      // real user-gesture link available if Android blocks automatic navigation.
+      returnToGame.href = target;
+      returnToGame.hidden = false;
+      returnStatus.hidden = false;
+      close.href = target;
+      form.hidden = true;
+      alternate.hidden = true;
+      completed = true;
       closed = true;
       window.location.replace(target);
     } catch (error) {
-      if (!closed) status.textContent = error && error.name === 'AbortError' ?
+      if (!closed && activeRequest === requestId) status.textContent = error && error.name === 'AbortError' ?
         'Kết nối hết thời gian. Hãy kiểm tra mạng và thử lại.' :
         'Không thể kết nối an toàn hoặc phản hồi không hợp lệ. Hãy thử lại.';
     } finally {
       window.clearTimeout(timeout);
-      controller = null;
-      clearPasswords();
-      if (!closed) setBusy(false);
+      if (controller === requestController) controller = null;
+      if (activeRequest === requestId) {
+        clearPasswords();
+        if (!closed) setBusy(false);
+      }
     }
   });
 })();

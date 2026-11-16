@@ -11,7 +11,9 @@ cũ cho APK cầu nối. Không gỡ bản cũ trước khi kiểm tra bản nh�
 
 Luồng tài khoản mặc định tái sử dụng box đăng nhập gốc và bỏ qua màn tuổi/giới
 tính. Nút Facebook giữ OAuth chính thức qua trình duyệt; nút Đăng nhập bên phải
-mở website tài khoản riêng ngay trong WebView của game, thay cho Google Login.
+mở website tài khoản riêng bằng trình duyệt mặc định, thay cho Google Login.
+Sau khi đăng nhập/đăng ký, website trả mã một lần qua deep link để game kiểm tra
+state/PKCE, rồi hiển thị tên tài khoản trên màn chào mừng hiện có.
 Cấu hình `AUTH_BASE_URL` trong Gradle cùng `AUTH_PUBLIC_BASE_URL` phía server;
 tài khoản riêng chỉ cần HTTPS và MySQL, không phụ thuộc cấu hình/token Facebook
 hoặc Google. URL đọc từ cấu hình Gradle, hỗ trợ tên miền, IPv4 và IPv6.

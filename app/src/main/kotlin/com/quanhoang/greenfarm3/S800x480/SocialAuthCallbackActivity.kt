@@ -20,8 +20,11 @@ class SocialAuthCallbackActivity : Activity() {
 
     private fun receive(callback: Intent?) {
         if (SocialAccountController.recordCallback(this, callback?.data?.toString())) {
-            startActivity(Intent(this, Start::class.java).addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
+            // The launcher can sit below GloftGF2F in the existing task. CLEAR_TOP
+            // on Start would destroy the live gameplay Activity above it.
+            val target = SocialAccountController.hostActivity()?.javaClass ?: Start::class.java
+            startActivity(Intent(this, target).addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP))
         }
         finish()
     }

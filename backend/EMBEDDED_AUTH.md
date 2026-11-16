@@ -1,4 +1,4 @@
-# Embedded account login
+# Website account login in the system browser
 
 Website authentication is independent of optional Facebook/Google configuration.
 Missing or malformed OAuth settings disable only that provider; the password
@@ -7,10 +7,9 @@ while `oauth_not_configured` applies only when an OAuth provider is selected.
 See [the current fix report](../docs/WEBSITE_AUTH_ISOLATION.md).
 
 The right-hand account button now uses a project-owned username/email/password
-website inside an Android WebView. Facebook keeps its existing official browser
+website in the device’s default browser. Facebook keeps its existing official browser
 OAuth flow. Google identities, sessions and server OAuth routes remain intact;
-the right-hand button no longer starts Google OAuth. No provider OAuth page is
-loaded inside the WebView.
+the right-hand button no longer starts Google OAuth. Website authentication no longer uses an Android WebView.
 
 This backend stores authentication only. It does not read, upload, bind, migrate
 or reset Android gameplay SQLite. Accounts on one installation continue to use
@@ -21,14 +20,14 @@ that installation's local farm; changing accounts is not cloud-save switching.
 ```mermaid
 sequenceDiagram
     participant App as Native Green Farm UI
-    participant Web as Restricted WebView
+    participant Web as System browser
     participant API as HTTPS Node backend
     participant DB as MySQL accounts
     App->>App: Create random state and PKCE verifier
     App->>API: POST /auth/attempt provider=password, S256 challenge
     API->>DB: Save short-lived attempt
     API-->>App: /auth/web/login?attempt=opaque-id
-    App->>Web: Open the exact pending URL
+    App->>Web: ACTION_VIEW: open the exact pending HTTPS URL
     Web->>API: GET login/register form
     API->>DB: Bind hashed cookie and CSRF to attempt
     API-->>Web: Secure HttpOnly SameSite=Strict cookie; escaped form
@@ -36,18 +35,26 @@ sequenceDiagram
     API->>API: Validate input, rate limits, Argon2id
     API->>DB: Verify/create active password identity; consume attempt
     API-->>Web: Fixed app callback with one-use code and original state
-    Web->>App: Native intercept; no external Intent/JS bridge
+    Web->>App: Deep link to exported callback Activity; code + state only
     App->>API: POST /auth/exchange code + PKCE verifier
     API-->>App: Existing access/refresh session and GAME_ID
     App->>App: Keystore storage; original world-loading flow
 ```
 
-The WebView never receives an access token or refresh token. Login/register JSON
+The website never receives an app access token or refresh token. Login/register JSON
 success contains only `callback_url`, whose fixed custom scheme carries a
 60-second one-use code and the original app state. Knowing a `GAME_ID` or code
 alone cannot authenticate: Android must validate state and exchange the code
 with the pending PKCE verifier over HTTPS. Existing access/refresh rotation,
-session-family logout and remembered-account welcome are reused.
+session-family logout and remembered-account welcome are reused. Login and
+registration both attempt automatic navigation to the fixed deep link and keep a
+visible return button if the browser requires a tap. Android validates the
+pending encrypted state, expiry and callback shape before exchanging the code.
+A successful Website exchange shows the verified account name in the existing
+welcome screen; Continue uses the unchanged world-loading path. A warm callback
+returns to the existing game Activity without clearing its task. A cold callback
+starts the launcher and recovers the encrypted pending attempt. Closing the
+browser without finishing leaves no authenticated session and allows retry.
 
 An attempt expires after five minutes. Cookie `__Host-gf_auth_web` has `Path=/`,
 no Domain, `Secure`, `HttpOnly`, `SameSite=Strict`, and a Max-Age no longer than
@@ -55,7 +62,8 @@ the remaining attempt. Its random session and CSRF components are stored only
 as SHA-256 hashes in MySQL. The CSRF token is rendered in the escaped form;
 POST additionally requires the exact configured `Origin`, a same-origin fetch
 when that header is available, a matching hidden CSRF token and pending attempt.
-The cookie is cleared after success and by the Android account WebView cleanup.
+The cookie is cleared by the backend after success; unused browser cookies expire
+with the attempt. Android does not clear the browser’s cookies or storage.
 It is separate from Facebook/browser and gameplay data.
 
 Wrong credentials leave the form usable. Registration uniqueness failures roll
@@ -232,9 +240,9 @@ prepared SQL with real MySQL. They cover creation, duplicate rollback, same-atte
 registration races, case-insensitive login, wrong/unknown/disabled accounts,
 cookie/CSRF/Origin, HTTPS rejection, PKCE/replay, restart, refresh, logout and
 existing provider regressions. HTTP test fixtures inject a TLS predicate on a
-loopback listener; they are not a deployed HTTPS website or a real Android WebView.
+loopback listener; they are not a deployed HTTPS website or a real Android browser round trip.
 
-Actual hosted HTTPS, device WebView/Keystore/touch behavior and real Facebook
+Actual hosted HTTPS, device browser/Keystore/touch behavior and real Facebook
 OAuth still require the configured domain/provider and connected Android device.
 No provider account or production login is claimed to have succeeded without
 that verification.

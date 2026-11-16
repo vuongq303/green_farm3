@@ -185,6 +185,36 @@ test('real password website/HTTP/MySQL register, PKCE exchange, restart, remembe
   assert.equal((await f.get('/auth/me', { Authorization: 'Bearer ' + registered.access_token })).status, 200);
 });
 
+test('browser password handoff survives a backend restart but its code expires after sixty seconds', async t => {
+  let clock = Date.now();
+  const f = await fixture(t, { now: () => clock }), signup = await f.form();
+  const response = await f.post('/auth/register', { attempt: signup.attempt, csrf: signup.csrf,
+    username: f.prefix, email: f.prefix + '@example.test', password, password_confirmation: password }, signup.headers);
+  assert.equal(response.status, 201);
+  const result = await response.json();
+  assert.deepEqual(Object.keys(result), ['callback_url']);
+  const callback = new URL(result.callback_url);
+  assert.equal(callback.origin, 'null', 'handoff uses the fixed app deep link, not an arbitrary website');
+  assert.equal(callback.protocol + '//' + callback.host + callback.pathname, APP_REDIRECT_URI);
+  assert.equal(callback.searchParams.get('state'), signup.state);
+  assert.deepEqual([...callback.searchParams.keys()].sort(), ['code', 'state']);
+  const body = { code: callback.searchParams.get('code'), code_verifier: signup.verifier, redirect_uri: APP_REDIRECT_URI };
+  await f.restart();
+  clock += 60_000;
+  const expired = await f.post('/auth/exchange', body);
+  assert.equal(expired.status, 400);
+  assert.equal((await expired.json()).error.code, 'invalid_code');
+  const [[sessions]] = await pool.execute(`SELECT COUNT(*) AS total FROM gf_auth_sessions s
+    JOIN users u ON u.id = s.user_id WHERE u.display_name = ?`, [f.prefix]);
+  assert.equal(Number(sessions.total), 0, 'expiry cannot create or persist an app session');
+  // The real registered identity is retained; only the short-lived handoff expired.
+  const login = await f.form();
+  const signedIn = await f.post('/auth/login', { attempt: login.attempt, csrf: login.csrf,
+    login: f.prefix, password }, login.headers);
+  assert.equal(signedIn.status, 200);
+  assert.equal((await f.exchange(login, signedIn)).user.display_name, f.prefix);
+});
+
 test('password HTTP rejects cross-origin/CSRF and duplicate accounts, keeps wrong-login retry, and enforces disabled status', async t => {
   const f = await fixture(t), form = await f.form();
   const body = { attempt: form.attempt, csrf: form.csrf, username: f.prefix,

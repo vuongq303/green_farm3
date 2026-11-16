@@ -10,7 +10,7 @@ const code = 'c'.repeat(43);
 const closeUrl = `com.quanhoang.greenfarm3://oauth/callback?error=access_denied&state=${state}`;
 const callback = `com.quanhoang.greenfarm3://oauth/callback?code=${code}&state=${state}`;
 
-test('embedded forms reuse local farm assets, keep validated context and contain no provider flow', () => {
+test('browser forms reuse local farm assets, keep validated context and contain no provider flow', () => {
   for (const mode of ['login', 'register']) {
     const page = renderPasswordForm({ mode, csrfToken: csrf, attemptId: attempt, closeUrl });
     assert.equal(page.csp, PASSWORD_CSP);
@@ -19,6 +19,7 @@ test('embedded forms reuse local farm assets, keep validated context and contain
     assert.match(CSP, /connect-src 'none'/u);
     assert.match(page.html, /password\.js" defer/u);
     assert.match(page.html, /id="close-account"/u);
+    assert.match(page.html, /id="return-to-game" class="farm-button" hidden/u);
     assert.match(page.html, /aria-live="polite"/u);
     assert.ok(page.html.includes(`name="csrf" value="${csrf}"`));
     assert.ok(page.html.includes(`name="attempt" value="${attempt}"`));
@@ -53,7 +54,8 @@ test('form context rejects XSS, arbitrary redirects and non-cancel close callbac
 });
 
 const script = ASSETS.get('password.js').body.toString();
-function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async () => ({ callback_url: callback }) }) } = {}) {
+function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async () => ({ callback_url: callback }) }),
+  navigate = () => {} } = {}) {
   const listeners = {};
   const navigation = [];
   const requests = [];
@@ -78,8 +80,10 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
   const close = { href: closeUrl, addEventListener: (event, fn) => { listeners['close:' + event] = fn; } };
   const alternate = { setAttribute: (key, value) => { attributes['alternate:' + key] = value; },
     addEventListener: (event, fn) => { listeners['alternate:' + event] = fn; } };
+  const returnToGame = { hidden: true };
+  const returnStatus = { hidden: true };
   const nodes = { 'account-form': form, 'account-fields': fields, 'account-status': status,
-    'close-account': close, 'account-mode-link': alternate };
+    'close-account': close, 'account-mode-link': alternate, 'return-to-game': returnToGame, 'return-status': returnStatus };
   class AbortController {
     signal = { aborted: false };
     abort() { this.signal.aborted = true; this.signal.onabort?.(); }
@@ -92,11 +96,12 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
       addEventListener: (event, fn) => { listeners['window:' + event] = fn; },
       setTimeout: (fn, milliseconds) => { const id = timers.size + 1; timers.set(id, { fn, milliseconds }); return id; },
       clearTimeout: id => clearedTimers.push(id),
-      location: { replace: target => navigation.push(target) },
+      location: { replace: target => { navigation.push(target); navigate(target); } },
     },
   });
   const event = () => ({ prevented: false, preventDefault() { this.prevented = true; } });
   return { listeners, navigation, requests, timers, clearedTimers, attributes, values, fields, status,
+    form, alternate, close, returnToGame, returnStatus,
     submit: () => listeners['form:submit'](event()), event };
 }
 
@@ -122,6 +127,11 @@ test('login posts only credentials/CSRF through same-origin JSON, blocks repeats
   finish({ ok: true, json: async () => ({ callback_url: callback }) });
   await pending;
   assert.deepEqual(result.navigation, [callback]);
+  assert.equal(result.returnToGame.href, callback);
+  assert.equal(result.returnToGame.hidden, false);
+  assert.equal(result.returnStatus.hidden, false);
+  assert.equal(result.form.hidden, true);
+  assert.equal(result.alternate.hidden, true);
   assert.equal(result.values.password.value, '');
   assert.equal(result.values.password_confirmation.value, '');
   assert.deepEqual(result.clearedTimers, [1]);
@@ -139,6 +149,26 @@ test('registration checks confirmation before sending and uses only the dedicate
   assert.deepEqual(JSON.parse(result.requests[0].options.body), { csrf, attempt, username: 'Player123',
     email: 'player@example.test', password: '  secret farm password  ', password_confirmation: '  secret farm password  ' });
   assert.deepEqual(result.navigation, [callback]);
+});
+
+test('both browser forms keep a real code-only return link when automatic app navigation is blocked', async () => {
+  for (const mode of ['login', 'register']) {
+    for (const navigate of [() => {}, () => { throw new Error('Browser requires user gesture'); }]) {
+      const result = web({ mode, navigate });
+      await result.submit();
+      assert.deepEqual(result.navigation, [callback]);
+      assert.equal(result.returnToGame.href, callback);
+      assert.equal(result.returnToGame.hidden, false);
+      assert.equal(result.returnStatus.hidden, false);
+      assert.equal(result.close.href, callback, 'close must not cancel an already-issued successful code');
+      assert.equal(result.form.hidden, true);
+      assert.equal(result.fields.disabled, true);
+      assert.equal(result.values.password.value, '');
+      result.listeners['window:pageshow']({ persisted: true });
+      await result.submit();
+      assert.equal(result.requests.length, 1, 'back cache must not resubmit consumed credentials');
+    }
+  }
 });
 
 test('public credential errors use text and restore retry without retaining passwords', async () => {
@@ -169,10 +199,28 @@ test('success refuses other origins, extra credentials, duplicate codes and mism
     const result = web({ fetchReply: async () => ({ ok: true, json: async () => reply }) });
     await result.submit();
     assert.deepEqual(result.navigation, []);
+    assert.equal(result.returnToGame.hidden, true);
+    assert.equal(result.returnToGame.href, undefined);
     assert.equal(result.fields.disabled, false);
     assert.equal(result.values.password.value, '');
     assert.match(result.status.textContent, /không hợp lệ/u);
   }
+});
+
+test('browser back cache restores an unfinished form but never accepts a late reply from its previous visit', async () => {
+  let finish;
+  const result = web({ fetchReply: () => new Promise(resolve => { finish = resolve; }) });
+  const previousVisit = result.submit();
+  result.listeners['window:pagehide']();
+  result.listeners['window:pageshow']({ persisted: true });
+  assert.equal(result.fields.disabled, false);
+  result.values.password.value = 'new visit password';
+  finish({ ok: true, json: async () => ({ callback_url: callback }) });
+  await previousVisit;
+  assert.deepEqual(result.navigation, []);
+  assert.equal(result.returnToGame.hidden, true);
+  assert.equal(result.values.password.value, 'new visit password');
+  assert.equal(result.fields.disabled, false);
 });
 
 test('timeout and leaving abort requests; late success cannot navigate after closing', async () => {

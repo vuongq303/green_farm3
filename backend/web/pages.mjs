@@ -178,6 +178,8 @@ export function renderPasswordForm({ mode, csrfToken, attemptId, closeUrl } = {}
       </fieldset>
     </form>
     <p id="account-status" class="form-status" role="status" aria-live="polite"></p>
+    <a id="return-to-game" class="farm-button" hidden>Quay lại Green Farm 3</a>
+    <p id="return-status" class="hint" hidden>Nếu trình duyệt chưa tự mở trò chơi, hãy chạm nút ở trên. Mã xác thực chỉ có hiệu lực trong thời gian ngắn.</p>
     <a id="account-mode-link" class="account-mode-link" href="${escapeHtml(alternate)}">${register ? 'Đã có tài khoản? Đăng nhập' : 'Chưa có tài khoản? Đăng ký'}</a>
     <p class="account-note">Nông trại hiện được lưu trên thiết bị này. Đăng nhập không đồng bộ dữ liệu nông trại.</p>
     <noscript><p class="form-status">Trang đăng nhập cần JavaScript. Hãy đóng trang và thử lại từ trò chơi.</p></noscript>

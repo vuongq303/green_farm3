@@ -5,17 +5,21 @@ import android.content.res.Configuration
 import android.os.Bundle
 import javax.microedition.midlet.v
 
-/** Owns only the original Facebook SDK lifecycle; online accounts use their official browser flow. */
+/** Preserves legacy SDK ownership and forwards the real game host lifecycle to browser accounts. */
 class LegacyFacebookLifecycle private constructor() {
     companion object {
         private fun enabled() = !LocalDevelopmentConfig.ONLINE_ACCOUNTS
 
         @JvmStatic fun onCreate(bundle: Bundle?) { if (enabled()) v.onCreate(bundle) }
         @JvmStatic fun onDestroy() { if (enabled()) v.onDestroy() }
-        @JvmStatic fun onPause() { if (enabled()) v.onPause() }
+        @JvmStatic fun onPause() {
+            if (enabled()) v.onPause() else SocialAccountController.onHostPaused()
+        }
         @JvmStatic fun onSaveInstanceState(bundle: Bundle?) { if (enabled()) v.onSaveInstanceState(bundle) }
         @JvmStatic fun onRestart() { if (enabled()) v.onRestart() }
-        @JvmStatic fun onResume() { if (enabled()) v.onResume() }
+        @JvmStatic fun onResume() {
+            if (enabled()) v.onResume() else SocialAccountController.onHostResumed()
+        }
         @JvmStatic fun onStart() { if (enabled()) v.onStart() }
         @JvmStatic fun onStop() { if (enabled()) v.onStop() }
         @JvmStatic fun onNewIntent(intent: Intent?) { if (enabled()) v.onNewIntent(intent) }

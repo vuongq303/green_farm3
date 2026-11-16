@@ -22,6 +22,9 @@ JAVA = {
     'android/content/res/Configuration.java': 'package android.content.res; public class Configuration {}',
     'com/quanhoang/greenfarm3/S800x480/LocalDevelopmentConfig.java': '''package com.quanhoang.greenfarm3.S800x480;
         public class LocalDevelopmentConfig {public static boolean ONLINE_ACCOUNTS=true;}''',
+    'com/quanhoang/greenfarm3/S800x480/SocialAccountController.java': """package com.quanhoang.greenfarm3.S800x480;
+        public class SocialAccountController {public static int pauses,resumes;
+          public static void onHostPaused(){pauses++;} public static void onHostResumed(){resumes++;}}""",
     'javax/microedition/midlet/Recorder.java': '''package javax.microedition.midlet;
         import java.util.*;
         public class Recorder {public static int classLoads;
@@ -51,6 +54,7 @@ JAVA = {
 HARNESS = r'''
 import com.quanhoang.greenfarm3.S800x480.LegacyFacebookLifecycle
 import com.quanhoang.greenfarm3.S800x480.LocalDevelopmentConfig
+import com.quanhoang.greenfarm3.S800x480.SocialAccountController
 import javax.microedition.midlet.Recorder
 
 fun main(){
@@ -71,9 +75,11 @@ fun main(){
  }
  callbacks()
  check(Recorder.classLoads==0&&Recorder.events.isEmpty()) {"Online website/browser accounts touched the legacy Facebook SDK"}
+ check(SocialAccountController.pauses==1&&SocialAccountController.resumes==1){"The actual MIDlet bridge must forward each online host pause/resume once"}
  LocalDevelopmentConfig.ONLINE_ACCOUNTS=false
  callbacks()
  check(Recorder.classLoads==1)
+ check(SocialAccountController.pauses==1&&SocialAccountController.resumes==1){"Legacy callbacks must not enter online auth"}
  check(Recorder.events==listOf("create","start","resume","save","pause","stop","restart","intent","result","focus","configuration","destroy"))
  check(Recorder.arguments[0][0]===bundle&&Recorder.arguments[3][0]===bundle)
  check(Recorder.arguments[7][0]===intent&&Recorder.arguments[8]==listOf(73,-1,intent))
@@ -86,6 +92,7 @@ fun main(){
  LocalDevelopmentConfig.ONLINE_ACCOUNTS=true
  val calls=Recorder.events.size;callbacks()
  check(Recorder.events.size==calls) {"SDK callbacks resumed in online mode"}
+ check(SocialAccountController.pauses==2&&SocialAccountController.resumes==2)
  println("PASS actual legacy Facebook lifecycle: no SDK initialization in online accounts; original callbacks/arguments retained in legacy mode")
 }
 '''

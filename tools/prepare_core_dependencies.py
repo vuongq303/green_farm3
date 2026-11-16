@@ -38,7 +38,6 @@ ADDED_CORE_SOURCES = frozenset({
     'NetworkDiagnostics',
     'SocialAccountFlow', 'SocialAccountController', 'SocialAuthClient',
     'SecureAccountStore', 'SocialAuthCallbackActivity', 'SocialAccountArtwork',
-    'EmbeddedAccountActivity', 'AuthWebViewPolicy',
     'LegacyFacebookLifecycle',
 })
 CORE_PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480/'
