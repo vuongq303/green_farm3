@@ -27,6 +27,26 @@ class SocialAccountController private constructor() {
         @Volatile private var initializationError = "configuration_required"
         private var application: Context? = null
         private var configuredBaseUrl = ""
+        // Owned by Android's UI thread. Website login overlays the live game window.
+        private var embedded: EmbeddedAccountOverlay? = null
+
+        private fun websiteOverlay(activity: Activity): EmbeddedAccountOverlay {
+            embedded?.takeIf { it.isShowing }?.let { existing ->
+                if (existing.ownerActivity === activity) return existing
+                existing.dismiss()
+                throw SocialAuthFailure("webview_unavailable")
+            }
+            return EmbeddedAccountOverlay(activity).also { overlay ->
+                embedded = overlay
+                overlay.setOnDismissListener { if (embedded === overlay) embedded = null }
+                try { overlay.show() }
+                catch (failure: Exception) {
+                    if (embedded === overlay) embedded = null
+                    overlay.dismiss()
+                    throw failure
+                }
+            }
+        }
 
         @JvmStatic @Synchronized fun initialize(context: Context, authBaseUrl: String) {
             application = context.applicationContext
@@ -46,13 +66,16 @@ class SocialAccountController private constructor() {
                     override fun openEmbedded(url: String) {
                         AuthWebViewPolicy(client.origin, url)
                         val activity = MIDlet.cnA as Activity? ?: throw SocialAuthFailure("webview_unavailable")
-                        if (activity.isFinishing) throw SocialAuthFailure("webview_unavailable")
+                        if (activity.isFinishing || activity.isDestroyed) throw SocialAuthFailure("webview_unavailable")
                         activity.runOnUiThread {
-                            try {
-                                // The private Activity reads its pending URL from the encrypted vault.
-                                // No URL, password, code or token is carried in Intent extras.
-                                activity.startActivity(Intent(activity, EmbeddedAccountActivity::class.java))
-                            } catch (_: Exception) { flow?.embeddedFailed("webview_unavailable") }
+                            flow?.withEmbeddedAttempt(url) { expiresAt ->
+                                try {
+                                    if (activity.isFinishing || activity.isDestroyed || MIDlet.cnA !== activity) {
+                                        throw SocialAuthFailure("webview_unavailable")
+                                    }
+                                    websiteOverlay(activity).open(url, expiresAt)
+                                } catch (_: Exception) { flow?.embeddedFailed("webview_unavailable") }
+                            }
                         }
                     }
                     override fun openBrowser(url: String) {
@@ -72,7 +95,25 @@ class SocialAccountController private constructor() {
 
         @JvmStatic fun startupGate(): Boolean = flow?.startupGate() ?: true
         @JvmStatic fun tick() { flow?.tick() }
-        @JvmStatic fun choose(provider: String) { flow?.choose(provider) }
+        @JvmStatic fun choose(provider: String) {
+            val active = flow ?: return
+            if (provider != "password") { active.choose(provider); return }
+            val activity = MIDlet.cnA as Activity? ?: run {
+                active.embeddedFailed("webview_unavailable")
+                return
+            }
+            activity.runOnUiThread {
+                if (active.status != SIGNED_OUT && active.status != ERROR) return@runOnUiThread
+                if (activity.isFinishing || activity.isDestroyed || MIDlet.cnA !== activity) {
+                    active.embeddedFailed("webview_unavailable"); return@runOnUiThread
+                }
+                try {
+                    // Mount the touch-blocking spinner before any asynchronous account work.
+                    websiteOverlay(activity)
+                    active.choose(provider)
+                } catch (_: Exception) { active.embeddedFailed("webview_unavailable") }
+            }
+        }
         @JvmStatic fun continueSaved() { flow?.continueSaved() }
         @JvmStatic fun logout() { flow?.logout() }
         @JvmStatic fun cancel() { flow?.cancel() }
@@ -91,7 +132,7 @@ class SocialAccountController private constructor() {
         /** The callback Activity accepts no tokens and never trusts Intent extras. */
         @JvmStatic fun recordCallback(context: Context, rawUri: String?): Boolean = receiveCallback(context, rawUri, false)
 
-        /** Only the non-exported WebView Activity may hand off a password-account code. */
+        /** Only the in-process website overlay may hand off a password-account code. */
         @JvmStatic fun recordEmbeddedCallback(context: Context, rawUri: String?): Boolean = receiveCallback(context, rawUri, true)
 
         private fun receiveCallback(context: Context, rawUri: String?, embedded: Boolean): Boolean {

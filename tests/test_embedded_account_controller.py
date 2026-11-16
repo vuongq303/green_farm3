@@ -1,6 +1,6 @@
 """Run the production callback/launch adapter with in-memory Android/vault peers.
 
-This verifies the public/private callback boundary and Intent ownership. It does
+This verifies immediate overlay ownership, duplicate taps and callback boundaries. It does
 not replace a real WebView, Android Keystore, or live-backend device test.
 """
 from pathlib import Path
@@ -20,8 +20,12 @@ JAVA = {
     'android/content/Context.java': '''package android.content; public class Context {
         public Context getApplicationContext(){return this;}}''',
     'android/app/Activity.java': '''package android.app; public class Activity extends android.content.Context {
-        public android.content.Intent launched; public boolean isFinishing(){return false;}
-        public void runOnUiThread(Runnable r){r.run();} public void startActivity(android.content.Intent i){launched=i;}}''',
+        public android.content.Intent launched; public boolean isFinishing(){return false;} public boolean isDestroyed(){return false;}
+        public boolean queueUi=false;
+        public final java.util.ArrayDeque<Runnable> uiJobs=new java.util.ArrayDeque<>();
+        public void runOnUiThread(Runnable r){if(queueUi)uiJobs.add(r);else r.run();}
+        public void drainUi(){while(!uiJobs.isEmpty())uiJobs.remove().run();}
+        public void startActivity(android.content.Intent i){launched=i;}}''',
     'android/content/Intent.java': '''package android.content; public class Intent {
         public static final String ACTION_VIEW="android.intent.action.VIEW",CATEGORY_BROWSABLE="android.intent.category.BROWSABLE";
         public String action; public android.net.Uri uri; public Class<?> target;
@@ -36,12 +40,28 @@ JAVA = {
         public static android.app.Activity cnA=new android.app.Activity();}''',
     'com/quanhoang/greenfarm3/S800x480/LocalDevelopmentConfig.java': '''package com.quanhoang.greenfarm3.S800x480;
         public class LocalDevelopmentConfig {public static final String AUTH_BASE_URL="https://auth.example/";}''',
-    'com/quanhoang/greenfarm3/S800x480/EmbeddedAccountActivity.java': '''package com.quanhoang.greenfarm3.S800x480;
-        public class EmbeddedAccountActivity extends android.app.Activity {}''',
 }
 
 PEERS = r'''
 package com.quanhoang.greenfarm3.S800x480
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+class EmbeddedAccountOverlay(val host:android.app.Activity) {
+ val ownerActivity=host
+ companion object {
+  var constructions=0;var shows=0;var opens=0;var latest:EmbeddedAccountOverlay?=null
+  var throwOnShow=false;var dismisses=0
+ }
+ var isShowing=false
+ var url=""
+ var expiresAt=0L
+ private var dismissed:((Any?)->Unit)?=null
+ init {constructions++;latest=this}
+ fun show(){check(!isShowing);if(throwOnShow)error("fixture window unavailable");isShowing=true;shows++}
+ fun open(url:String,expiresAt:Long){check(isShowing);this.url=url;this.expiresAt=expiresAt;opens++}
+ fun setOnDismissListener(listener:(Any?)->Unit){dismissed=listener}
+ fun dismiss(){isShowing=false;dismisses++;dismissed?.invoke(null)}
+}
 class SecureAccountStore(context:android.content.Context, origin:String?=null):SocialAccountFlow.Vault {
  companion object {var pending:SocialAttempt?=null;var returned:SocialCallback?=null;var saved:SocialSession?=null}
  override fun session()=saved
@@ -55,10 +75,17 @@ class SecureAccountStore(context:android.content.Context, origin:String?=null):S
 }
 class SocialAuthClient(base:String):SocialAccountFlow.Backend {
  val origin=validateOrigin(base)
- companion object {fun validateOrigin(base:String):String {check(base=="https://auth.example/");return base}}
+ companion object {
+  @Volatile var attempts=0
+  @Volatile var blockAttempts=false
+  var attemptGate=CountDownLatch(1)
+  fun validateOrigin(base:String):String {check(base=="https://auth.example/");return base}
+ }
  private var provider="password"
  override fun attempt(provider:String,state:String,challenge:String):SocialAttemptReply {
   this.provider=provider
+  attempts++
+  if(blockAttempts) check(attemptGate.await(5,TimeUnit.SECONDS)){"attempt fixture was never released"}
   return SocialAttemptReply(origin+(if(provider=="password")"auth/web/login?attempt=" else "auth/browser/start?id=")+"a".repeat(43),300)
  }
  override fun exchange(code:String,verifier:String)=SocialSession("access", "refresh",System.currentTimeMillis()+900000,
@@ -104,19 +131,54 @@ fun main(){
  SecureAccountStore.pending=null
  SocialAccountController.initialize(ctx,"https://auth.example/")
  SocialAccountController.startupGate();settle(SocialAccountController.SIGNED_OUT)
- SocialAccountController.choose("password");settle(SocialAccountController.BROWSER)
- val embedded=MIDlet.cnA.launched!!
- check(embedded.target==EmbeddedAccountActivity::class.java&&embedded.action==null&&embedded.uri==null){"Password login escaped into a public browser Intent"}
+ EmbeddedAccountOverlay.throwOnShow=true
+ val attemptsBeforeFailure=SocialAuthClient.attempts
+ SocialAccountController.choose("password")
+ check(SocialAccountController.status()==SocialAccountController.ERROR){"Failed overlay did not report an account error"}
+ check(SocialAuthClient.attempts==attemptsBeforeFailure&&SecureAccountStore.pending==null){"Failed overlay started an auth request"}
+ check(MIDlet.cnA.launched==null){"Failed overlay escaped into an external Activity"}
+ check(!EmbeddedAccountOverlay.latest!!.isShowing&&EmbeddedAccountOverlay.dismisses==1){"Failed overlay retained a stale window"}
+ EmbeddedAccountOverlay.throwOnShow=false
+ val constructionsBeforeRetry=EmbeddedAccountOverlay.constructions
+ SocialAuthClient.blockAttempts=true
+ SocialAccountController.choose("password")
+ val embedded=EmbeddedAccountOverlay.latest?:error("Website tap did not show an overlay immediately")
+ check(embedded.host===MIDlet.cnA&&embedded.isShowing&&EmbeddedAccountOverlay.shows==1)
+ check(MIDlet.cnA.launched==null){"Password login launched an Activity or external browser"}
+ repeat(10){SocialAccountController.choose("password")}
+ check(EmbeddedAccountOverlay.constructions==constructionsBeforeRetry+1&&EmbeddedAccountOverlay.shows==1){"Repeated taps stacked overlays"}
+ check(EmbeddedAccountOverlay.opens==0){"Attempt-dependent form opened before its secure descriptor existed"}
+ SocialAuthClient.blockAttempts=false
+ SocialAuthClient.attemptGate.countDown()
+ settle(SocialAccountController.BROWSER)
+ check(EmbeddedAccountOverlay.latest===embedded&&EmbeddedAccountOverlay.opens==1)
+ check(embedded.url==url&&embedded.expiresAt>System.currentTimeMillis())
  val descriptor=SocialAccountController.embeddedPage(ctx)!!
  check(descriptor.first==url&&!descriptor.toString().contains(SecureAccountStore.pending!!.verifier))
  SocialAccountController.closeEmbedded(ctx,url+"x");check(SocialAccountController.status()==SocialAccountController.BROWSER)
  SocialAccountController.closeEmbedded(ctx,url);check(SocialAccountController.status()==SocialAccountController.SIGNED_OUT&&SecureAccountStore.pending==null)
+ embedded.dismiss()
+ // Queue the Android launch after the secure descriptor is prepared, then cancel
+ // before the UI thread handles it. A stale callback must not recreate a window.
+ SocialAccountController.choose("password")
+ MIDlet.cnA.queueUi=true
+ val opensBeforeCancel=EmbeddedAccountOverlay.opens
+ settle(SocialAccountController.BROWSER)
+ check(MIDlet.cnA.uiJobs.size==1&&EmbeddedAccountOverlay.opens==opensBeforeCancel)
+ SocialAccountController.cancel()
+ EmbeddedAccountOverlay.latest!!.dismiss()
+ val windowsBeforeDrain=EmbeddedAccountOverlay.constructions
+ MIDlet.cnA.queueUi=false
+ MIDlet.cnA.drainUi()
+ check(SocialAccountController.status()==SocialAccountController.SIGNED_OUT&&SecureAccountStore.pending==null)
+ check(EmbeddedAccountOverlay.opens==opensBeforeCancel&&EmbeddedAccountOverlay.constructions==windowsBeforeDrain){"Canceled queued launch reopened Website login"}
  SocialAccountController.choose("password");settle(SocialAccountController.BROWSER)
- check(MIDlet.cnA.launched!!.target==EmbeddedAccountActivity::class.java&&SocialAccountController.accountName()=="")
+ check(MIDlet.cnA.launched==null&&EmbeddedAccountOverlay.latest!!.isShowing&&SocialAccountController.accountName()=="")
  val ownCallback=SocialAccountFlow.REDIRECT_URI+"?state="+SecureAccountStore.pending!!.state+"&code=$code"
  check(!SocialAccountController.recordCallback(ctx,ownCallback))
  check(SocialAccountController.recordEmbeddedCallback(ctx,ownCallback));settle(SocialAccountController.READY)
  check(SocialAccountController.accountName()=="Player"&&SocialAccountController.gameId()=="GF000001")
+ EmbeddedAccountOverlay.latest!!.dismiss()
  SocialAccountController.logout();settle(SocialAccountController.SIGNED_OUT)
  check(SocialAccountController.accountName()==""&&SecureAccountStore.saved==null)
  SocialAccountController.choose("facebook");settle(SocialAccountController.BROWSER)
@@ -127,7 +189,7 @@ fun main(){
  settle(SocialAccountController.READY)
  check(SocialAccountController.gameId()=="GF000001"&&SocialAccountController.accountName()=="Player")
  check(!Log.joined().contains(state)&&!Log.joined().contains(code)&&!Log.joined().contains(verifier))
- println("PASS production controller: private embedded launch, official external Facebook, bound callbacks and no credential Intents/logs")
+ println("PASS production controller: immediate single game overlay, failed-show recovery, canceled-launch suppression, official external Facebook, bound callbacks and no credential Intents/logs")
 }
 '''
 
@@ -158,10 +220,9 @@ class EmbeddedAccountControllerTest(unittest.TestCase):
             self.assertIn('PASS production controller', result.stdout)
         manifest = ET.parse(ROOT / 'app/src/main/AndroidManifest.xml')
         attr = '{http://schemas.android.com/apk/res/android}'
-        activity = next(item for item in manifest.findall('./application/activity')
-                        if item.get(attr + 'name', '').endswith('.EmbeddedAccountActivity'))
-        self.assertEqual(activity.get(attr + 'exported'), 'false')
-        self.assertEqual(activity.findall('intent-filter'), [])
+        activities = [item.get(attr + 'name', '') for item in manifest.findall('./application/activity')]
+        self.assertFalse(any(name.endswith('.EmbeddedAccountActivity') for name in activities),
+                         'Website overlay must remain in the host game Activity')
 
 
 if __name__ == '__main__':

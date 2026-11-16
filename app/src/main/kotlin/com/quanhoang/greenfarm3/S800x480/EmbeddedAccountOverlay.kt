@@ -1,22 +1,21 @@
 package com.quanhoang.greenfarm3.S800x480
 
 import android.app.Activity
-import android.graphics.Canvas
+import android.app.Dialog
+import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.Window
 import android.webkit.ClientCertRequest
 import android.webkit.CookieManager
 import android.webkit.GeolocationPermissions
@@ -38,16 +37,20 @@ import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.ProgressBar
 import java.io.ByteArrayInputStream
 import java.util.concurrent.atomic.AtomicBoolean
 
 /** Private own-account website only. Facebook authentication never enters this WebView. */
-class EmbeddedAccountActivity : Activity() {
+class EmbeddedAccountOverlay(private val host: Activity) : Dialog(host) {
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var root: FrameLayout
     private lateinit var overlay: FrameLayout
     private lateinit var message: TextView
     private lateinit var retry: TextView
+    private lateinit var close: TextView
+    private lateinit var spinner: ProgressBar
+    private lateinit var errorPanel: LinearLayout
     private var web: WebView? = null
     private var policy: AuthWebViewPolicy? = null
     private var pendingUrl = ""
@@ -57,26 +60,81 @@ class EmbeddedAccountActivity : Activity() {
     private var destroyed = false
     private var loadFailed = false
     private var cookieLease = false
+    private var pageGeneration = 0L
+    private var retryNewAttempt = false
     private val loadTimeout = Runnable { showError("Không tải được trang tài khoản trong thời gian chờ. Kiểm tra mạng và thử lại.") }
-    private val attemptTimeout = Runnable { failAccount("attempt_expired") }
+    private val attemptTimeout = Runnable { showError("Yêu cầu đăng nhập đã hết hạn. Hãy thử lại.", true) }
+    private val accountPoll = object : Runnable {
+        override fun run() {
+            if (closed || destroyed) return
+            SocialAccountController.tick()
+            renderAccountState(SocialAccountController.status(), SocialAccountController.message())
+            if (!closed && !destroyed) handler.postDelayed(this, 100L)
+        }
+    }
 
-    override fun onCreate(state: Bundle?) {
-        super.onCreate(state)
-        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        val page = SocialAccountController.embeddedPage(this)
-        if (page == null) { finish(); return }
-        pendingUrl = page.first
-        expiresAt = page.second
-        policy = try { AuthWebViewPolicy(SocialAuthClient.validateOrigin(LocalDevelopmentConfig.AUTH_BASE_URL), pendingUrl) }
-            catch (_: Exception) { null }
-        if (policy == null) { finish(); return }
+    init {
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        setOwnerActivity(host)
+        setCanceledOnTouchOutside(false)
         buildShell()
+        window?.apply {
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            addFlags(WindowManager.LayoutParams.FLAG_SECURE or WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            addFlags(host.window.attributes.flags and WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            decorView.systemUiVisibility = host.window.decorView.systemUiVisibility
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            attributes = attributes.apply { dimAmount = 0.26f }
+            // API 31 blur is optional. The dim layer remains on devices without compositor blur.
+            if (Build.VERSION.SDK_INT >= 31) try {
+                val params = attributes
+                params.javaClass.getMethod("setBlurBehindRadius", Int::class.javaPrimitiveType).invoke(params, dp(14))
+                attributes = params
+                addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND)
+            } catch (_: Exception) { }
+        }
+    }
+
+    override fun show() {
+        if (closed || destroyed || isShowing) return
+        showLoading()
+        super.show()
+        window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        root.post {
+            if (!closed && !destroyed && !loadFailed && web == null) try {
+                web = createWebView()
+            } catch (_: Exception) {
+                showError("Không mở được trang tài khoản. Cập nhật Android System WebView rồi thử lại.")
+            }
+        }
+        handler.postDelayed(accountPoll, 100L)
+    }
+
+    /** Called on the host UI thread after the secure pending descriptor has been persisted. */
+    fun open(url: String, expiresAt: Long) {
+        if (closed || destroyed) return
+        if (pendingUrl == url && web != null) return
+        policy = try { AuthWebViewPolicy(SocialAuthClient.validateOrigin(LocalDevelopmentConfig.AUTH_BASE_URL), url) }
+            catch (_: Exception) { null }
+        if (policy == null) { showError("Địa chỉ trang tài khoản không hợp lệ.", true); return }
+        pendingUrl = url
+        this.expiresAt = expiresAt
+        // A late descriptor must not silently erase the timeout/error already shown to the player.
+        if (loadFailed) { retryNewAttempt = true; return }
+        handler.removeCallbacks(attemptTimeout)
         handler.postDelayed(attemptTimeout, maxOf(1L, expiresAt - System.currentTimeMillis()))
         loadPage()
     }
 
-    private fun dp(value: Int) = (value * resources.displayMetrics.density + 0.5f).toInt()
+    /** Session verification, not receipt of a web callback, controls successful dismissal. */
+    fun renderAccountState(status: Int, value: String) {
+        if (closed || destroyed) return
+        if (accepted && status == SocialAccountController.READY) closeAccount()
+        else if (status == SocialAccountController.ERROR &&
+            (!loadFailed || !retryNewAttempt || message.text.toString() != value)) showError(value, true)
+    }
+
+    private fun dp(value: Int) = (value * host.resources.displayMetrics.density + 0.5f).toInt()
 
     private fun panel(color: Int, radius: Int = 14): GradientDrawable = GradientDrawable().apply {
         setColor(color)
@@ -84,7 +142,7 @@ class EmbeddedAccountActivity : Activity() {
         setStroke(dp(2), Color.rgb(76, 112, 39))
     }
 
-    private fun text(value: String, size: Float, color: Int): TextView = TextView(this).apply {
+    private fun text(value: String, size: Float, color: Int): TextView = TextView(context).apply {
         text = value
         textSize = size
         setTextColor(color)
@@ -93,43 +151,54 @@ class EmbeddedAccountActivity : Activity() {
     }
 
     private fun buildShell() {
-        root = FrameLayout(this).apply { setBackgroundColor(Color.rgb(24, 69, 33)) }
-        val brand = text("Green Farm 3", 19f, Color.rgb(255, 240, 187)).apply { setTypeface(typeface, Typeface.BOLD) }
-        root.addView(brand, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(52), Gravity.TOP or Gravity.START))
-        val close = text("Đóng", 15f, Color.rgb(33, 83, 29)).apply {
+        root = FrameLayout(context).apply {
+            isClickable = true
+            isFocusable = true
+        }
+        overlay = FrameLayout(context).apply { isClickable = true; isFocusable = true }
+        spinner = ProgressBar(context).apply {
+            isIndeterminate = true
+            contentDescription = "Đang tải trang tài khoản"
+            if (Build.VERSION.SDK_INT >= 21) indeterminateTintList = ColorStateList.valueOf(Color.rgb(255, 239, 190))
+        }
+        overlay.addView(spinner, FrameLayout.LayoutParams(dp(44), dp(44), Gravity.CENTER))
+        errorPanel = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(dp(18), dp(14), dp(18), dp(14))
+            background = panel(Color.rgb(255, 243, 205), 14)
+            visibility = View.GONE
+        }
+        message = text("", 16f, Color.rgb(41, 87, 32))
+        errorPanel.addView(message, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        retry = text("Thử lại", 16f, Color.WHITE).apply {
+            background = panel(Color.rgb(83, 133, 43), 12)
+            setOnClickListener { retryPage() }
+        }
+        errorPanel.addView(retry, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(44)))
+        val cancel = text("Đóng", 16f, Color.rgb(33, 83, 29)).apply { setOnClickListener { closeAccount() } }
+        errorPanel.addView(cancel, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(44)))
+        overlay.addView(errorPanel, FrameLayout.LayoutParams(minOf(dp(360), host.resources.displayMetrics.widthPixels - dp(32)),
+            ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
+        root.addView(overlay, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        close = text("Đóng", 15f, Color.rgb(33, 83, 29)).apply {
             background = panel(Color.rgb(255, 239, 190), 10)
             contentDescription = "Đóng trang tài khoản và quay lại trò chơi"
+            visibility = View.GONE
             setOnClickListener { closeAccount() }
         }
         root.addView(close, FrameLayout.LayoutParams(dp(88), dp(38), Gravity.TOP or Gravity.END).apply {
             topMargin = dp(7); rightMargin = dp(12)
         })
-        overlay = FrameLayout(this).apply { setBackgroundColor(0xCC12351B.toInt()) }
-        val card = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            setPadding(dp(18), dp(14), dp(18), dp(14))
-            background = panel(Color.rgb(255, 243, 205), 20)
-        }
-        card.addView(FarmSpinner(), LinearLayout.LayoutParams(dp(46), dp(46)))
-        message = text("Đang tải trang tài khoản...", 16f, Color.rgb(41, 87, 32))
-        card.addView(message, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
-        retry = text("Thử lại", 16f, Color.WHITE).apply {
-            background = panel(Color.rgb(83, 133, 43), 12)
-            visibility = View.GONE
-            setOnClickListener { loadPage() }
-        }
-        card.addView(retry, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(44)).apply { topMargin = dp(8) })
-        overlay.addView(card, FrameLayout.LayoutParams(minOf(dp(360), resources.displayMetrics.widthPixels - dp(32)),
-            ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
-        root.addView(overlay, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT).apply { topMargin = dp(52) })
         setContentView(root)
     }
 
     @Suppress("DEPRECATION")
     private fun createWebView(): WebView {
-        val view = WebView(this)
+        val view = WebView(context)
         view.isSaveEnabled = false
+        view.alpha = 0f
+        view.setBackgroundColor(Color.WHITE)
         if (Build.VERSION.SDK_INT >= 26) view.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
         WebView.setWebContentsDebuggingEnabled(false)
         view.settings.apply {
@@ -173,11 +242,20 @@ class EmbeddedAccountActivity : Activity() {
                 if (policy?.allowMainFrame(url) != true) { view?.stopLoading(); showError("Đã chặn điều hướng không hợp lệ."); return }
                 showLoading()
             }
+            override fun onPageCommitVisible(view: WebView?, url: String?) {
+                if (Build.VERSION.SDK_INT >= 23 && view != null && url != null) {
+                    val generation = pageGeneration
+                    view.postVisualStateCallback(generation, object : WebView.VisualStateCallback() {
+                        override fun onComplete(requestId: Long) { revealPage(view, url, generation) }
+                    })
+                }
+            }
             override fun onPageFinished(view: WebView?, url: String?) {
-                if (!destroyed && !loadFailed && url != null && policy?.allowMainFrame(url) == true) {
-                    handler.removeCallbacks(loadTimeout)
-                    try { CookieManager.getInstance().flush() } catch (_: Exception) { }
-                    overlay.visibility = View.GONE
+                // Older WebViews lack commit-visible/frame callbacks. Wait for a posted draw frame,
+                // nonzero document height and a live trusted URL before showing their content.
+                if (Build.VERSION.SDK_INT < 23 && view != null && url != null) {
+                    val generation = pageGeneration
+                    view.postOnAnimation { if (view.contentHeight > 0) revealPage(view, url, generation) }
                 }
             }
             override fun onReceivedError(view: WebView?, request: WebResourceRequest, error: WebResourceError?) {
@@ -193,8 +271,8 @@ class EmbeddedAccountActivity : Activity() {
                     return // Credential/API failures remain owned by the form script.
                 }
                 when (response?.statusCode) {
-                    400, 401, 403, 410 -> failAccount("attempt_expired")
-                    429 -> failAccount("rate_limited")
+                    400, 401, 403, 410 -> showError("Yêu cầu đăng nhập đã hết hạn. Hãy thử lại.", true)
+                    429 -> showError("Bạn đã thử quá nhiều lần. Vui lòng đợi rồi thử lại.", true)
                     else -> showError("Máy chủ tài khoản chưa sẵn sàng. Kiểm tra cấu hình HTTPS và thử lại.")
                 }
             }
@@ -215,7 +293,7 @@ class EmbeddedAccountActivity : Activity() {
             }
         }
         view.setDownloadListener { _, _, _, _, _ -> showError("Trang tài khoản không hỗ trợ tải tệp.") }
-        root.addView(view, 1, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT).apply { topMargin = dp(52) })
+        root.addView(view, 0, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         return view
     }
 
@@ -225,11 +303,14 @@ class EmbeddedAccountActivity : Activity() {
     private fun navigate(url: String, mainFrame: Boolean): Boolean {
         if (destroyed || closed) return true
         if (mainFrame && policy?.isCallback(url) == true) {
-            if (SocialAccountController.recordEmbeddedCallback(this, url)) {
+            if (SocialAccountController.recordEmbeddedCallback(context, url)) {
                 accepted = true
-                closeAccount()
+                showLoading()
+                // Verification owns its existing native deadline; the page-load timeout no longer applies.
+                handler.removeCallbacks(loadTimeout)
+                handler.removeCallbacks(attemptTimeout)
             } else {
-                failAccount("invalid_callback")
+                showError("Kết quả đăng nhập không hợp lệ. Hãy thử lại.", true)
             }
             return true
         }
@@ -240,22 +321,51 @@ class EmbeddedAccountActivity : Activity() {
 
     private fun showLoading() {
         if (destroyed || closed) return
+        pageGeneration++
         loadFailed = false
-        message.text = "Đang tải trang tài khoản..."
-        retry.visibility = View.GONE
+        retryNewAttempt = false
+        web?.alpha = 0f
+        spinner.visibility = View.VISIBLE
+        errorPanel.visibility = View.GONE
+        close.visibility = View.GONE
         overlay.visibility = View.VISIBLE
         handler.removeCallbacks(loadTimeout)
         handler.postDelayed(loadTimeout, 30_000L)
     }
 
-    private fun showError(value: String) {
+    private fun revealPage(view: WebView, url: String, generation: Long) {
+        if (destroyed || closed || accepted || loadFailed || generation != pageGeneration || view !== web ||
+            policy?.allowMainFrame(url) != true || view.url != url) return
+        handler.removeCallbacks(loadTimeout)
+        try { CookieManager.getInstance().flush() } catch (_: Exception) { }
+        view.alpha = 1f
+        spinner.visibility = View.GONE
+        overlay.visibility = View.GONE
+        close.visibility = View.VISIBLE
+    }
+
+    private fun showError(value: String, newAttempt: Boolean = false) {
         if (destroyed || closed || !::overlay.isInitialized) return
+        pageGeneration++
         loadFailed = true
+        retryNewAttempt = newAttempt || accepted || pendingUrl.isEmpty()
         web?.stopLoading()
+        web?.alpha = 0f
         handler.removeCallbacks(loadTimeout)
         message.text = value
-        retry.visibility = View.VISIBLE
+        spinner.visibility = View.GONE
+        errorPanel.visibility = View.VISIBLE
+        close.visibility = View.GONE
         overlay.visibility = View.VISIBLE
+    }
+
+    private fun retryPage() {
+        if (closed || destroyed) return
+        if (retryNewAttempt) {
+            accepted = false
+            closeAccount()
+            SocialAccountController.choose("password")
+        } else loadPage()
     }
 
     private fun loadPage() {
@@ -276,6 +386,11 @@ class EmbeddedAccountActivity : Activity() {
 
     @Suppress("DEPRECATION")
     override fun onBackPressed() {
+        if (accepted) {
+            accepted = false
+            closeAccount()
+            return
+        }
         val view = web
         if (!loadFailed && view != null && view.canGoBack()) {
             val history = view.copyBackForwardList()
@@ -290,13 +405,22 @@ class EmbeddedAccountActivity : Activity() {
         if (closed) return
         closed = true
         handler.removeCallbacksAndMessages(null)
-        if (!accepted && pendingUrl.isNotEmpty()) SocialAccountController.closeEmbedded(this, pendingUrl)
-        finish()
+        if (!(accepted && SocialAccountController.status() == SocialAccountController.READY)) {
+            if (pendingUrl.isNotEmpty()) SocialAccountController.closeEmbedded(context, pendingUrl)
+            // The encrypted attempt is consumed before exchange; cancellation must also invalidate
+            // an in-flight exchange whose attempt is no longer present in the vault.
+            SocialAccountController.cancel()
+        }
+        dispose()
+        super.dismiss()
     }
 
-    private fun failAccount(reason: String) {
-        SocialAccountController.closeEmbedded(this, pendingUrl, reason)
+    override fun dismiss() { closeAccount() }
+
+    override fun onDetachedFromWindow() {
         closeAccount()
+        dispose()
+        super.onDetachedFromWindow()
     }
 
     private fun destroyWebView() {
@@ -312,18 +436,15 @@ class EmbeddedAccountActivity : Activity() {
         web = null
     }
 
-    override fun onDestroy() {
+    private fun dispose() {
+        if (destroyed) return
         destroyed = true
         handler.removeCallbacksAndMessages(null)
-        if (isFinishing && !closed && !accepted && pendingUrl.isNotEmpty()) {
-            SocialAccountController.closeEmbedded(this, pendingUrl)
-        }
         if (cookieLease) {
             cookieLease = false
-            releaseCookieAcceptance(if (isFinishing || closed || accepted) policy?.origin else null)
+            releaseCookieAcceptance(policy?.origin)
         }
         destroyWebView()
-        super.onDestroy()
     }
 
     companion object {
@@ -362,16 +483,4 @@ class EmbeddedAccountActivity : Activity() {
         }
     }
 
-    private inner class FarmSpinner : View(this@EmbeddedAccountActivity) {
-        private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = dp(4).toFloat(); strokeCap = Paint.Cap.ROUND }
-        override fun onDraw(canvas: Canvas) {
-            super.onDraw(canvas)
-            val margin = dp(6).toFloat()
-            paint.color = Color.rgb(221, 196, 108)
-            canvas.drawArc(margin, margin, width - margin, height - margin, 0f, 360f, false, paint)
-            paint.color = Color.rgb(75, 128, 41)
-            canvas.drawArc(margin, margin, width - margin, height - margin, (SystemClock.uptimeMillis() % 1000L) * 0.36f, 95f, false, paint)
-            if (!destroyed && !closed && isShown) postInvalidateDelayed(32L)
-        }
-    }
 }

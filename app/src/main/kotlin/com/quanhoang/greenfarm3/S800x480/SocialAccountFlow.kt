@@ -24,7 +24,7 @@ data class SocialAttemptReply(val authorizationUrl: String, val expiresIn: Long)
 }
 class SocialAuthFailure(val code: String) : RuntimeException(code)
 
-/** Deterministic flow; platform/network results are only applied by tick on the game thread. */
+/** Deterministic flow; synchronized tick serializes game/overlay application of network results. */
 class SocialAccountFlow(private val vault: Vault, private val backend: Backend, private val platform: Platform) {
     interface Vault {
         fun session(): SocialSession?
@@ -143,8 +143,8 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
     private var browserWasPaused = false
     private var resumedAt = 0L
     private var operationDeadline = 0L
-    var status: Int = SIGNED_OUT; private set
-    var message: String = "Vui lòng đăng nhập tài khoản để tiếp tục"; private set
+    @Volatile var status: Int = SIGNED_OUT; private set
+    @Volatile var message: String = "Vui lòng đăng nhập tài khoản để tiếp tục"; private set
     val gameId: String get() = currentSession?.user?.gameId ?: ""
     /** A remembered name is visible only after this process verifies the session with the backend. */
     val accountName: String get() = if (status == WELCOME || status == READY)
@@ -416,8 +416,19 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
     }
 
     @Synchronized fun embeddedFailed(code: String): Boolean {
-        if (status != BROWSER || pending?.provider != "password") return false
+        // The overlay can fail before any request or pending attempt exists.
+        if (status != SIGNED_OUT && status != ERROR &&
+            (status != BROWSER || pending?.provider != "password")) return false
         failPending(code)
+        return true
+    }
+
+    /** A queued Android launch must not reopen a canceled or superseded attempt. */
+    @Synchronized fun withEmbeddedAttempt(url: String, open: (Long) -> Unit): Boolean {
+        val attempt = pending ?: return false
+        if (status != BROWSER || attempt.provider != "password" || attempt.authorizationUrl != url ||
+            platform.now() >= attempt.expiresAt) return false
+        open(attempt.expiresAt)
         return true
     }
 
