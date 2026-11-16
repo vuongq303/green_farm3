@@ -2,7 +2,7 @@
 
 Luồng Website độc lập với cấu hình/token Facebook; xem bản sửa và kiểm thử tại
 [WEBSITE_AUTH_ISOLATION.md](../docs/WEBSITE_AUTH_ISOLATION.md).
-Đăng ký/đăng nhập tài khoản riêng bằng WebView, migration MySQL và cấu hình HTTPS/
+Đăng ký/đăng nhập tài khoản riêng bằng trình duyệt ngoài, migration MySQL và cấu hình HTTPS/
 Cloudflare Tunnel được mô tả trong [EMBEDDED_AUTH.md](EMBEDDED_AUTH.md). Nút Facebook
 giữ OAuth chính thức; dữ liệu và API Google cũ được bảo toàn, xem
 [SOCIAL_AUTH.md](SOCIAL_AUTH.md). Dữ liệu nông trại vẫn ở SQLite

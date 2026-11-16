@@ -61,7 +61,8 @@ footer { margin-top: 24px; color: #24451b; text-align: center; font: .8rem Arial
   .farm-button:active { transform: none; }
 }
 
-/* Embedded first-party account forms; original OAuth handoff layout stays above. */
+/* First-party browser account forms; original OAuth handoff layout stays above. */
+.password-panel [hidden] { display: none !important; }
 body.password-page { padding: 22px 14px; justify-content: flex-start; }
 .password-panel { position: relative; width: min(100%, 520px); margin: auto 0; padding: 38px 28px 24px; }
 .password-brand { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 8px 0 18px; }

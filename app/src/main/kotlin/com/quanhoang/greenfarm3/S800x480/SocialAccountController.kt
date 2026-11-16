@@ -43,21 +43,8 @@ class SocialAccountController private constructor() {
                     override fun now() = System.currentTimeMillis()
                     override fun randomBytes(size: Int) = ByteArray(size).also { random.nextBytes(it) }
                     override fun execute(work: () -> Unit) { worker.execute(work) }
-                    override fun openEmbedded(url: String) {
-                        AuthWebViewPolicy(client.origin, url)
-                        val activity = MIDlet.cnA as Activity? ?: throw SocialAuthFailure("webview_unavailable")
-                        if (activity.isFinishing) throw SocialAuthFailure("webview_unavailable")
-                        activity.runOnUiThread {
-                            try {
-                                // The private Activity reads its pending URL from the encrypted vault.
-                                // No URL, password, code or token is carried in Intent extras.
-                                activity.startActivity(Intent(activity, EmbeddedAccountActivity::class.java))
-                            } catch (_: Exception) { flow?.embeddedFailed("webview_unavailable") }
-                        }
-                    }
                     override fun openBrowser(url: String) {
-                        val activity = MIDlet.cnA as Activity? ?: throw SocialAuthFailure("browser_unavailable")
-                        if (activity.isFinishing) throw SocialAuthFailure("browser_unavailable")
+                        val activity = hostActivity() ?: throw SocialAuthFailure("browser_unavailable")
                         activity.runOnUiThread {
                             try {
                                 activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addCategory(Intent.CATEGORY_BROWSABLE))
@@ -88,13 +75,16 @@ class SocialAccountController private constructor() {
         @JvmStatic fun accountName(): String = flow?.accountName ?: ""
         @JvmStatic fun busy(): Boolean = flow?.busy ?: false
 
+        /** cnA belongs to the launcher; cnz is the running MIDlet/game Activity. */
+        internal fun hostActivity(): Activity? {
+            val game = MIDlet.cnz as Activity?
+            if (game != null && !game.isFinishing && !game.isDestroyed) return game
+            val launcher = MIDlet.cnA as Activity?
+            return if (launcher != null && !launcher.isFinishing && !launcher.isDestroyed) launcher else null
+        }
+
         /** The callback Activity accepts no tokens and never trusts Intent extras. */
-        @JvmStatic fun recordCallback(context: Context, rawUri: String?): Boolean = receiveCallback(context, rawUri, false)
-
-        /** Only the non-exported WebView Activity may hand off a password-account code. */
-        @JvmStatic fun recordEmbeddedCallback(context: Context, rawUri: String?): Boolean = receiveCallback(context, rawUri, true)
-
-        private fun receiveCallback(context: Context, rawUri: String?, embedded: Boolean): Boolean {
+        @JvmStatic fun recordCallback(context: Context, rawUri: String?): Boolean {
             if (rawUri == null || rawUri.length > 2048) return rejectedCallback()
             if (Build.VERSION.SDK_INT < 23) return rejectedCallback()
             val callback = SocialAccountFlow.parseCallback(rawUri) ?: return rejectedCallback()
@@ -102,42 +92,15 @@ class SocialAccountController private constructor() {
                 val origin = SocialAuthClient.validateOrigin(LocalDevelopmentConfig.AUTH_BASE_URL)
                 val vault = SecureAccountStore(context, origin)
                 val expected = vault.attempt() ?: return rejectedCallback()
-                if ((expected.provider == "password") != embedded) return rejectedCallback()
-                if (System.currentTimeMillis() >= expected.expiresAt ||
+                if (expected.provider !in arrayOf("password", "facebook") ||
+                    System.currentTimeMillis() >= expected.expiresAt ||
                     !SocialAccountFlow.sameState(expected.state, callback.state)) return rejectedCallback()
+                // Persist before waking the host. A cold process recovers the same state/PKCE attempt.
+                // Only exchangeSaved may turn this one-use code into a verified session.
                 vault.saveCallback(callback)
                 flow?.enqueueCallback()
                 true
             } catch (_: Exception) { rejectedCallback() }
-        }
-
-        /** Non-secret launch descriptor; the PKCE verifier stays in the encrypted vault. */
-        @JvmStatic fun embeddedPage(context: Context): Pair<String, Long>? = try {
-            if (Build.VERSION.SDK_INT < 23) null
-            else {
-                initialize(context, LocalDevelopmentConfig.AUTH_BASE_URL)
-                val origin = SocialAuthClient.validateOrigin(LocalDevelopmentConfig.AUTH_BASE_URL)
-                val vault = SecureAccountStore(context, origin)
-                val attempt = vault.attempt()
-                if (attempt == null || attempt.provider != "password" || vault.callback() != null ||
-                    System.currentTimeMillis() >= attempt.expiresAt) null
-                else {
-                    AuthWebViewPolicy(origin, attempt.authorizationUrl)
-                    Pair(attempt.authorizationUrl, attempt.expiresAt)
-                }
-            }
-        } catch (_: Exception) { null }
-
-        @JvmStatic fun closeEmbedded(context: Context, authorizationUrl: String, failure: String? = null) {
-            try {
-                val vault = SecureAccountStore(context, SocialAuthClient.validateOrigin(LocalDevelopmentConfig.AUTH_BASE_URL))
-                val attempt = vault.attempt() ?: return
-                if (attempt.provider != "password" || attempt.authorizationUrl != authorizationUrl) return
-                if (failure == null) {
-                    flow?.cancel()
-                    if (flow == null) vault.clearAttempt()
-                } else if (flow?.embeddedFailed(failure) != true) vault.clearAttempt()
-            } catch (_: Exception) { }
         }
 
         private fun rejectedCallback(): Boolean {

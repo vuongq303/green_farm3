@@ -94,7 +94,7 @@ static void testNativeUiAndButtons(){
  aYU=16;configureSocialAccountUi();ok(atc[29][1][5]==49,"other languages keep the original standard logo sprite");
  CM();ok(SocialAccountController.facebook==1&&SocialAccountController.password==0,"left native button starts Facebook");
  reset();CN();ok(SocialAccountController.facebook==1&&SocialAccountController.password==0,"Facebook icon shares left action");
- reset();CL();ok(SocialAccountController.password==1&&SocialAccountController.facebook==0,"right native button starts the embedded account flow");
+ reset();CL();ok(SocialAccountController.password==1&&SocialAccountController.facebook==0,"right native button starts the Website browser flow");
  reset();SocialAccountController.state=SocialAccountController.WELCOME;configureSocialAccountUi();
  ok(ate[29][3].contains("Chào mừng GF000123 trở lại!")&&ate[29][3].contains("thiết bị"),"welcome identifies account without claiming cloud farm synchronization");
  ok(ate[29][9].equals("Đăng nhập")&&ate[29][10].equals("Đăng xuất")&&!shown[29][7],"welcome reuses buttons and hides provider-specific mark");
