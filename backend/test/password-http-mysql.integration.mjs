@@ -23,12 +23,12 @@ const password = 'actual MySQL password test 123';
 async function fixture(t, extra = {}) {
   await migrate(pool);
   const prefix = 'pw_' + randomBytes(8).toString('hex');
-  const { authEnvironment = {}, ...routerOptions } = extra;
+  const { authEnvironment = {}, transformStore = store => store, ...routerOptions } = extra;
   const config = loadSocialAuthConfig({ AUTH_PUBLIC_BASE_URL: 'https://accounts.example.test', ...authEnvironment });
   const attempts = [], errors = [];
   let server, origin;
   async function start() {
-    const router = createSocialAuthRouter({ config, store: createSocialStore(pool), isSecureRequest: () => true,
+    const router = createSocialAuthRouter({ config, store: transformStore(createSocialStore(pool)), isSecureRequest: () => true,
       errorLog: entry => errors.push(entry), ...routerOptions });
     server = createServer((req, res) => { void router.handle(req, res, new URL(req.url, 'http://test.invalid')); });
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -87,6 +87,44 @@ async function fixture(t, extra = {}) {
   }
   return { prefix, config, errors, get, post, form, exchange, attempts, restart: async () => { await stop(); await start(); } };
 }
+
+async function publicError(response, status, code, message) {
+  assert.equal(response.status, status);
+  assert.match(response.headers.get('content-type'), /^application\/json/u);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+  const result = await response.json();
+  assert.deepEqual(result, { error: { code, message } });
+  return result;
+}
+
+test('real password API returns public errors and keeps the pending form usable after validation or temporary database failure', async t => {
+  let unavailable = false;
+  const f = await fixture(t, { transformStore: store => ({ ...store,
+    async getPasswordWebSession(...args) {
+      if (unavailable) throw Object.assign(new Error('private database connection diagnostic'), { code: 'DATABASE_UNAVAILABLE' });
+      return store.getPasswordWebSession(...args);
+    },
+  }) });
+  const form = await f.form();
+  const body = { attempt: form.attempt, csrf: form.csrf, username: f.prefix,
+    email: f.prefix + '@example.test', password, password_confirmation: password };
+  for (const invalid of [{ username: '' }, { email: '' }, { password: 'short', password_confirmation: 'short' },
+    { password_confirmation: password + '-different' }]) {
+    await publicError(await f.post('/auth/register', { ...body, ...invalid }, form.headers), 400,
+      'invalid_registration', 'Kiểm tra tên tài khoản, email và mật khẩu (12–128 ký tự); hai mật khẩu phải khớp.');
+  }
+  await publicError(await f.post('/auth/register', { ...body, csrf: value() }, form.headers), 403,
+    'csrf_failed', 'Phiên biểu mẫu không hợp lệ. Hãy đóng và mở lại đăng nhập từ trò chơi.');
+  unavailable = true;
+  await publicError(await f.post('/auth/register', body, form.headers), 503, 'database_unavailable',
+    'Máy chủ tài khoản tạm thời không sẵn sàng. Hãy thử lại.');
+  assert.deepEqual(f.errors, [{ event: 'social_auth_error', status: 503, code: 'database_unavailable' }],
+    'neither the public error nor structured server log includes database diagnostics');
+  unavailable = false;
+  const registered = await f.post('/auth/register', body, form.headers);
+  assert.equal(registered.status, 201, 'retries reuse the original unconsumed form and real database');
+  assert.equal((await f.exchange(form, registered)).user.display_name, f.prefix);
+});
 
 for (const [description, authEnvironment, facebookConfigured] of [
   ['incomplete and invalid Facebook/Google configuration', {
@@ -230,11 +268,10 @@ test('password HTTP rejects cross-origin/CSRF and duplicate accounts, keeps wron
   const account = await f.exchange(form, response);
   const duplicate = await f.form();
   response = await f.post('/auth/register', { ...body, attempt: duplicate.attempt, csrf: duplicate.csrf }, duplicate.headers);
-  assert.equal(response.status, 409);
-  assert.equal((await response.json()).error.code, 'account_exists');
+  await publicError(response, 409, 'account_exists', 'Tên tài khoản hoặc email đã được sử dụng.');
   response = await f.post('/auth/login', { attempt: duplicate.attempt, csrf: duplicate.csrf, login: f.prefix, password: password + '-wrong' }, duplicate.headers);
   assert.equal(response.status, 401);
-  const invalid = await response.json();
+  const invalid = await publicError(response, 401, 'invalid_credentials', 'Tên tài khoản/email hoặc mật khẩu không đúng.');
   response = await f.post('/auth/login', { attempt: duplicate.attempt, csrf: duplicate.csrf, login: f.prefix + '_missing', password }, duplicate.headers);
   assert.equal(response.status, 401);
   assert.deepEqual(await response.json(), invalid, 'unknown and wrong-password responses do not enumerate accounts');
@@ -265,11 +302,10 @@ test('password route requires HTTPS, bounds brute force, expires forms and never
     assert.equal(response.status, 401);
   }
   const limited = await f.post('/auth/login', { attempt: form.attempt, csrf: form.csrf, login: f.prefix + '_missing', password }, form.headers);
-  assert.equal(limited.status, 429);
   assert.equal(limited.headers.get('retry-after'), '900');
+  await publicError(limited, 429, 'rate_limited', 'Có quá nhiều yêu cầu đăng nhập. Hãy chờ rồi thử lại.');
   await pool.execute('UPDATE gf_auth_attempts SET expires_at = 1 WHERE id = ?', [form.attempt]);
   assert.equal((await f.get('/auth/web/login?attempt=' + form.attempt, { Cookie: form.cookie })).status, 400);
   const expired = await f.post('/auth/login', { attempt: form.attempt, csrf: form.csrf, login: f.prefix + '_missing', password }, form.headers);
-  assert.equal(expired.status, 400);
-  assert.equal((await expired.json()).error.code, 'attempt_expired');
+  await publicError(expired, 400, 'attempt_expired', 'Yêu cầu đăng nhập đã hết hạn hoặc đã được sử dụng. Hãy thử lại từ trò chơi.');
 });

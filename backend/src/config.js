@@ -53,7 +53,7 @@ export function loadDatabaseConfig(env = process.env) {
     port: integer(env, 'DB_PORT', 3306, 1, 65535),
     database: env.DB_NAME,
     user: env.DB_USER,
-    password: "",
+    password: env.DB_PASSWORD,
     connectionLimit: integer(env, 'DB_POOL_SIZE', 5, 1, 50),
     connectTimeout: integer(env, 'DB_CONNECT_TIMEOUT_MS', 5000, 100, 30000),
   };

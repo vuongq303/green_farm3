@@ -11,11 +11,15 @@
     "dev": "node --watch src/main.js",
     "migrate": "node scripts/migrate.js",
     "test": "node --test test/*.test.mjs",
+    "test:browser": "bash scripts/test-password-browser.sh",
     "test:mysql": "node --test --test-concurrency=1 test/mysql.integration.mjs test/http-mysql.integration.mjs test/social-mysql.integration.mjs test/social-http-mysql.integration.mjs test/password-mysql.integration.mjs test/password-http-mysql.integration.mjs"
   },
   "dependencies": {
     "argon2": "0.45.2",
     "mysql2": "3.24.6",
     "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
   }
 }

@@ -89,6 +89,10 @@ body.password-page { padding: 22px 14px; justify-content: flex-start; }
 .password-panel button.farm-button { cursor: pointer; margin-top: 24px; }
 .password-panel .farm-button:disabled { cursor: wait; opacity: .8; }
 .form-status { min-height: 1.5em; margin: 20px 0 14px; color: #863d24; font: .95rem/1.5 Arial, sans-serif; overflow-wrap: anywhere; }
+.form-status[data-state] { padding: 12px; border: 2px solid #b66b43; border-radius: 12px; background: #fff9e9; }
+.form-status[data-state="success"] { color: #295c21; border-color: #649332; background: #eff8d9; }
+.form-status[data-state="loading"] { color: #53381d; border-color: #bfa16c; }
+.form-status:focus { outline: 2px solid #244f7c; outline-offset: 3px; }
 .account-mode-link { display: inline-block; padding: 6px 0; color: #35621d; font-weight: bold; text-underline-offset: 3px; }
 .account-mode-link[aria-disabled="true"] { opacity: .6; cursor: wait; }
 .form-spinner { display: none; width: 18px; height: 18px; margin-left: 10px; border: 3px solid #ffffff70; border-top-color: #fffdf0; border-radius: 50%; vertical-align: -3px; }

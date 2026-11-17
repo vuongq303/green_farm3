@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 
 const CALLBACK_PROTOCOL = 'com.quanhoang.greenfarm3:';
 const CALLBACK_HOST = 'oauth';
@@ -6,7 +7,11 @@ const CALLBACK_PATH = '/callback';
 const BASE64URL = /^[A-Za-z0-9_-]+$/u;
 
 export const CSP = "default-src 'none'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'";
-export const PASSWORD_CSP = CSP.replace("connect-src 'none'", "connect-src 'self'");
+// Custom protocols have opaque origins: CSP must use the scheme source.
+// JavaScript still validates the exact callback host/path and code/state.
+// Keep the form document visible when a browser has no custom-protocol handler.
+export const PASSWORD_CSP = CSP.replace("connect-src 'none'",
+  "connect-src 'self'; frame-src com.quanhoang.greenfarm3:");
 
 /** Callback pages must never be cached or leak their provider query in Referer. */
 export const PAGE_HEADERS = Object.freeze({
@@ -31,6 +36,13 @@ export const ASSETS = new Map([
   ['password.js', asset('password.js', 'application/javascript; charset=utf-8')],
   ['green-farm-3.png', asset('green-farm-3.png', 'image/png')],
 ]);
+
+// Keep the one-hour asset cache while new password pages always load the exact
+// script/style shipped by this server, rather than a previous deployment.
+const passwordAssetUrl = filename => '/auth/assets/' + filename + '?v=' +
+  createHash('sha256').update(ASSETS.get(filename).body).digest('hex');
+const PASSWORD_STYLE_URL = passwordAssetUrl('styles.css');
+const PASSWORD_SCRIPT_URL = passwordAssetUrl('password.js');
 
 export function escapeHtml(value) {
   return String(value).replace(/[&<>"']/gu, character => ({
@@ -158,8 +170,8 @@ export function renderPasswordForm({ mode, csrfToken, attemptId, closeUrl } = {}
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex, nofollow">
   <title>${heading} · Green Farm 3</title>
-  <link rel="stylesheet" href="/auth/assets/styles.css">
-  <script src="/auth/assets/password.js" defer></script>
+  <link rel="stylesheet" href="${PASSWORD_STYLE_URL}">
+  <script src="${PASSWORD_SCRIPT_URL}" defer></script>
 </head>
 <body class="password-page">
   <main class="farm-panel password-panel" aria-labelledby="page-heading">
@@ -170,14 +182,14 @@ export function renderPasswordForm({ mode, csrfToken, attemptId, closeUrl } = {}
     </header>
     <h1 id="page-heading">${heading}</h1>
     <p class="password-intro">${register ? 'Tạo tài khoản để bắt đầu chuyến phiêu lưu nông trại.' : 'Chào bạn! Đăng nhập để tiếp tục vào trò chơi.'}</p>
-    <form id="account-form" data-endpoint="${target}" data-mode="${mode}" method="post" action="${target}">
+    <form id="account-form" data-endpoint="${target}" data-mode="${mode}" novalidate method="post" action="${target}">
       <fieldset id="account-fields">
         <input type="hidden" name="csrf" value="${escapeHtml(csrfToken)}">
         <input type="hidden" name="attempt" value="${escapeHtml(attemptId)}">${fields}
         <button id="account-submit" class="farm-button" type="submit"><span class="submit-label">${register ? 'Đăng ký' : 'Đăng nhập'}</span><span class="form-spinner" aria-hidden="true"></span></button>
       </fieldset>
     </form>
-    <p id="account-status" class="form-status" role="status" aria-live="polite"></p>
+    <p id="account-status" class="form-status" role="status" aria-live="polite" tabindex="-1" aria-atomic="true"></p>
     <a id="return-to-game" class="farm-button" hidden>Quay lại Green Farm 3</a>
     <p id="return-status" class="hint" hidden>Nếu trình duyệt chưa tự mở trò chơi, hãy chạm nút ở trên. Mã xác thực chỉ có hiệu lực trong thời gian ngắn.</p>
     <a id="account-mode-link" class="account-mode-link" href="${escapeHtml(alternate)}">${register ? 'Đã có tài khoản? Đăng nhập' : 'Chưa có tài khoản? Đăng ký'}</a>
