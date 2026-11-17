@@ -32,6 +32,11 @@ test('social config requires HTTPS and isolates incomplete provider configuratio
   request.socket.remoteAddress = '::ffff:127.0.0.1';
   assert.equal(secureAuthRequest(request, config), true);
   assert.equal(authClientIp(request, config), '1.2.3.4');
+  request.socket.remoteAddress = '::1';
+  assert.equal(secureAuthRequest(request, config), true, 'local tunnel may use IPv6 loopback');
+  request.headers['x-forwarded-proto'] = 'http';
+  assert.equal(secureAuthRequest(request, config), false, 'trusted proxy still must attest HTTPS');
+  request.headers['x-forwarded-proto'] = 'https';
   request.headers['x-forwarded-for'] = '1.2.3.4, 9.9.9.9';
   assert.equal(authClientIp(request, config), '127.0.0.1', 'proxy must overwrite instead of accepting a forwarded chain');
 });
