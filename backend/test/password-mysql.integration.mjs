@@ -180,7 +180,7 @@ test('registration and WebView claim are atomic across duplicate credentials and
   await store.createAttempt(record);
   await store.startPasswordAttempt(record.id, cookieHash, csrfHash, f.now);
   assert.deepEqual(await store.registerPasswordAndClaim({ ...f.record('-dup', { username: existing.username }),
-    cookieHash, csrfHash }), { duplicate: true });
+    cookieHash, csrfHash }), { duplicate: true, conflicts: ['username'] });
   assert.ok(await store.getPasswordWebSession(cookieHash, f.now), 'duplicate credentials roll back attempt consumption');
   assert.equal(await store.registerPasswordAndClaim({ ...f.record('-csrf'), cookieHash, csrfHash: hash(token()) }), undefined);
   const candidates = [f.record('-new-a'), f.record('-new-b')];
@@ -215,3 +215,56 @@ test('expired or already-consumed WebView cannot register any account', async t 
   const [[count]] = await pool.execute('SELECT COUNT(*) AS total FROM users WHERE provider_user_id LIKE ?', [f.prefix + '%']);
   assert.equal(Number(count.total), 0);
 });
+
+for (const conflicts of [['username'], ['email'], ['username', 'email']]) {
+  test(`concurrent password registrations classify ${conflicts.join('/')} UNIQUE conflicts after rollback`, { timeout: 15000 }, async t => {
+    const f = fixture(t);
+    let checks = 0, duplicateErrors = 0, releaseChecks;
+    const bothChecked = new Promise(resolve => { releaseChecks = resolve; });
+    t.after(() => releaseChecks());
+    // Real MySQL connections and results, with a barrier only to guarantee both
+    // transactions pass the precheck before either inserts. This exercises the
+    // actual ER_DUP_ENTRY recovery path instead of merely pre-existing rows.
+    const racingStore = createSocialStore({
+      execute: (...args) => pool.execute(...args),
+      async getConnection() {
+        const connection = await pool.getConnection();
+        return new Proxy(connection, { get(target, name) {
+          if (name === 'execute') return async (...args) => {
+            let result;
+            try { result = await target.execute(...args); }
+            catch (error) { if (error.code === 'ER_DUP_ENTRY') ++duplicateErrors; throw error; }
+            if (args[0].startsWith('SELECT username, email FROM gf_password_accounts')) {
+              assert.equal(result[0].length, 0);
+              if (++checks === 2) releaseChecks();
+              await bothChecked;
+            }
+            return result;
+          };
+          const value = target[name];
+          return typeof value === 'function' ? value.bind(target) : value;
+        } });
+      },
+    });
+    const candidates = [];
+    for (const suffix of ['-a', '-b']) {
+      const record = f.attempt(), cookieHash = hash(token()), csrfHash = hash(token());
+      await store.createAttempt(record);
+      await store.startPasswordAttempt(record.id, cookieHash, csrfHash, f.now);
+      candidates.push({ ...f.record(suffix, {
+        ...(conflicts.includes('username') ? { username: f.prefix } : {}),
+        ...(conflicts.includes('email') ? { email: f.prefix + '@example.test' } : {}),
+      }), cookieHash, csrfHash, attemptId: record.id });
+    }
+    const results = await Promise.all(candidates.map(candidate => racingStore.registerPasswordAndClaim(candidate)));
+    assert.equal(checks, 2);
+    assert.equal(duplicateErrors, 1, 'MySQL UNIQUE constraints remain the concurrency authority');
+    assert.equal(results.filter(result => result?.user).length, 1);
+    assert.deepEqual(results.find(result => result?.duplicate), { duplicate: true, conflicts });
+    const loser = candidates[results.findIndex(result => result?.duplicate)];
+    assert.ok(await store.getPasswordWebSession(loser.cookieHash, f.now), 'losing form can be corrected and retried');
+    assert.equal((await store.getAttempt(loser.attemptId)).consumedAt, null);
+    const [[count]] = await pool.execute('SELECT COUNT(*) AS total FROM users WHERE provider_user_id LIKE ?', [f.prefix + '%']);
+    assert.equal(Number(count.total), 1, 'rollback removes the losing users row as well as the duplicate credential');
+  });
+}

@@ -35,6 +35,9 @@
     if (kind !== 'loading') {
       status.focus({ preventScroll: true });
       status.scrollIntoView({ block: 'nearest' });
+      // A native alert is the acknowledgement for this outcome. It blocks until
+      // dismissed, so a successful callback cannot start behind the dialog.
+      window.alert(message);
     }
   }
   function publicError(response, reply) {
@@ -47,6 +50,16 @@
       attempt_expired: 'Phiên xác thực đã hết hạn. Hãy mở lại đăng nhập từ Green Farm 3.',
       rate_limited: 'Bạn đã gửi quá nhiều yêu cầu. Vui lòng chờ một lúc rồi thử lại.',
     };
+    if (code === 'account_exists') {
+      const conflicts = reply.error.conflicts;
+      if (Array.isArray(conflicts) && conflicts.length >= 1 && conflicts.length <= 2 &&
+          new Set(conflicts).size === conflicts.length &&
+          conflicts.every(field => field === 'username' || field === 'email')) {
+        if (conflicts.length === 2) return 'Tên tài khoản và email đã được sử dụng.';
+        return conflicts[0] === 'username' ? 'Tên tài khoản đã tồn tại. Vui lòng chọn tên khác.' :
+          'Email đã được đăng ký. Vui lòng sử dụng email khác.';
+      }
+    }
     if (Object.prototype.hasOwnProperty.call(messages, code)) return messages[code];
     if (response.status === 403) return messages.csrf_failed;
     if (response.status === 429) return messages.rate_limited;

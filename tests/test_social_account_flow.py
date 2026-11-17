@@ -17,17 +17,20 @@ import java.util.ArrayDeque
 class Vault : SocialAccountFlow.Vault {
  var saved:SocialSession?=null;var pending:SocialAttempt?=null;var returned:SocialCallback?=null
  var writes=0;var clears=0;var attemptRead:(()->Unit)?=null
- override fun session()=saved
- override fun saveSession(value:SocialSession){saved=value;writes++}
- override fun clearSession(){saved=null;clears++}
+ var callbackFailure:String?=null;var sessionFailure:String?=null;var saveFailure:String?=null;var pendingClears=0
+ override fun session():SocialSession?{sessionFailure?.let{throw SocialAuthFailure(it)};return saved}
+ override fun saveSession(value:SocialSession){saveFailure?.let{throw SocialAuthFailure(it)};saved=value;writes++}
+ override fun clearSession(){saved=null;sessionFailure=null;clears++}
  override fun attempt():SocialAttempt? {attemptRead?.invoke();return pending}
  override fun saveAttempt(value:SocialAttempt){pending=value}
- override fun callback()=returned
+ override fun callback():SocialCallback?{callbackFailure?.let{throw SocialAuthFailure(it)};return returned}
  override fun saveCallback(value:SocialCallback){returned=value}
- override fun clearAttempt(){pending=null;returned=null}
+ override fun clearAttempt(){pending=null;returned=null;callbackFailure=null;pendingClears++}
 }
 class Platform:SocialAccountFlow.Platform {
  var time=1_700_000_000_000L;var random=0;var opened=0;var browsers=0;val jobs=ArrayDeque<()->Unit>()
+ val recoveries=mutableListOf<String>()
+ override fun authRecovery(stage:String,reason:String){recoveries.add("$stage:$reason")}
  override fun now()=time
  override fun randomBytes(size:Int)=ByteArray(size){(++random).toByte()}
  override fun execute(work:()->Unit){jobs.add(work)}
@@ -53,7 +56,7 @@ class Backend(val platform:Platform):SocialAccountFlow.Backend {
   checks++;checkAction?.invoke();checkFailure?.let{val code=it;checkFailure=null;throw SocialAuthFailure(code)};return user
  }
  override fun refresh(refreshToken:String):SocialSession{
-  refreshes++;refreshFailure?.let{throw SocialAuthFailure(it)};return session("refreshed-access")
+  refreshes++;refreshFailure?.let{throw SocialAuthFailure(it)};return session("refreshed-access").copy(refreshToken="rotated-refresh-$refreshes")
  }
  override fun logout(accessToken:String,refreshToken:String){revokes++;if(offlineLogout)throw SocialAuthFailure("network_error")}
 }
@@ -163,7 +166,7 @@ fun main(){
  }
  run{
   val v=Vault();val p=Platform();val b=Backend(p);v.saved=b.session();b.user=SocialIdentity("GF000999","google","Wrong")
-  val f=SocialAccountFlow(v,b,p);f.startupGate();pump(f,p);check(f.status==SocialAccountFlow.ERROR&&f.needsGate)
+  val f=SocialAccountFlow(v,b,p);f.startupGate();pump(f,p);check(f.status==SocialAccountFlow.SIGNED_OUT&&f.needsGate&&v.saved==null)
  }
  run{
   val v=Vault();val p=Platform();val b=Backend(p);val f=SocialAccountFlow(v,b,p)
@@ -233,6 +236,61 @@ fun main(){
   f.onHostPaused();f.onHostResumed();p.time+=2001
   v.returned=SocialCallback(v.pending!!.state,code,null);f.enqueueCallback();f.tick();pump(f,p)
   check(f.status==SocialAccountFlow.WELCOME&&b.exchanges==1){"A persisted callback wins over the return timer"}
+ }
+
+ run{
+  val v=Vault();val p=Platform();val b=Backend(p);val original=b.session();v.saved=original
+  v.callbackFailure="auth_record_unreadable"
+  val f=SocialAccountFlow(v,b,p);f.startupGate();pump(f,p)
+  check(f.status==SocialAccountFlow.WELCOME&&f.accountName=="Player"&&v.saved==original&&v.clears==0)
+  check(v.pendingClears==1&&p.recoveries==listOf("pending:auth_record_unreadable"))
+ }
+ run{
+  val v=Vault();val p=Platform();val b=Backend(p);v.saved=b.session();v.sessionFailure="auth_record_unreadable"
+  val f=SocialAccountFlow(v,b,p);f.startupGate();pump(f,p)
+  check(f.status==SocialAccountFlow.SIGNED_OUT&&f.needsGate&&f.accountName==""&&v.saved==null&&v.clears==1)
+  check(f.message.contains("nông trại")&&p.recoveries==listOf("session:auth_record_unreadable"))
+  f.retry();pump(f,p);check(f.status==SocialAccountFlow.SIGNED_OUT&&v.clears==1&&b.checks==0)
+  f.choose("password");pump(f,p);complete(f,v,p);check(f.status==SocialAccountFlow.WELCOME)
+ }
+ run{
+  val v=Vault();val p=Platform();val b=Backend(p);val original=b.session();v.saved=original
+  v.callbackFailure="storage_error"
+  val f=SocialAccountFlow(v,b,p);f.startupGate();pump(f,p)
+  check(f.status==SocialAccountFlow.ERROR&&v.saved==original&&v.pendingClears==0&&v.clears==0)
+  v.callbackFailure=null;v.sessionFailure="storage_error";f.retry();pump(f,p)
+  check(f.status==SocialAccountFlow.ERROR&&v.saved==original&&v.clears==0)
+  v.sessionFailure=null;b.checkFailure="network_error";f.retry();pump(f,p)
+  check(f.status==SocialAccountFlow.ERROR&&v.saved==original&&v.clears==0)
+  f.retry();pump(f,p);check(f.status==SocialAccountFlow.WELCOME&&v.saved==original)
+ }
+ run{
+  val v=Vault();val p=Platform();val b=Backend(p);val original=b.session();v.saved=original;v.saveFailure="storage_error"
+  val f=SocialAccountFlow(v,b,p);f.startupGate();pump(f,p)
+  check(f.status==SocialAccountFlow.ERROR&&v.saved==original&&v.clears==0&&p.recoveries.isEmpty())
+ }
+ for(code in listOf("invalid_session","session_expired","invalid_refresh_token")){
+  val v=Vault();val p=Platform();val b=Backend(p);v.saved=b.session().copy(accessExpiresAt=p.time-1)
+  b.refreshFailure=code;val f=SocialAccountFlow(v,b,p);f.startupGate();pump(f,p)
+  check(f.status==SocialAccountFlow.SIGNED_OUT&&f.accountName==""&&v.saved==null&&v.clears==1)
+  check(p.recoveries==listOf("session_validation:$code")&&b.checks==0)
+ }
+
+ for(accessExpired in listOf(true,false)){
+  val v=Vault();val p=Platform();val b=Backend(p);val original=b.session()
+  v.saved=if(accessExpired)original.copy(accessExpiresAt=p.time-1)else original
+  b.checkAction={b.checkFailure=when(b.checks){1->if(accessExpired)"network_error" else "invalid_session";2->if(accessExpired)null else "network_error";else->null}}
+  val f=SocialAccountFlow(v,b,p);f.startupGate();pump(f,p)
+  check(f.status==SocialAccountFlow.ERROR&&b.refreshes==1&&v.clears==0)
+  check(v.saved!!.refreshToken=="rotated-refresh-1"&&v.saved!!.accessToken=="refreshed-access")
+  val recovered=SocialAccountFlow(v,b,p);recovered.startupGate();pump(recovered,p)
+  check(recovered.status==SocialAccountFlow.WELCOME&&b.refreshes==1&&recovered.accountName=="Player")
+ }
+ run{
+  val v=Vault();val p=Platform();val b=Backend(p);v.saved=b.session().copy(accessExpiresAt=p.time-1)
+  b.user=SocialIdentity("GF000999","password","Other")
+  val f=SocialAccountFlow(v,b,p);f.startupGate();pump(f,p)
+  check(f.status==SocialAccountFlow.SIGNED_OUT&&v.saved==null&&v.writes==0&&b.checks==0)
  }
  println("PASS production social account flow: PKCE/state/callback validation, browser cancellation/timeouts, process recovery, welcome/refresh/logout and account isolation")
 }

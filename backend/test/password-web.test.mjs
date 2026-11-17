@@ -58,10 +58,11 @@ test('form context rejects XSS, arbitrary redirects and non-cancel close callbac
 
 const script = ASSETS.get('password.js').body.toString();
 function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async () => ({ callback_url: callback }) }),
-  navigate = () => {} } = {}) {
+  navigate = () => {}, onAlert = () => {} } = {}) {
   const listeners = {};
   const navigation = [];
   const topNavigation = [];
+  const alerts = [];
   const frames = [];
   const requests = [];
   const timers = new Map();
@@ -110,6 +111,7 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
       return reply;
     }); },
     window: {
+      alert: message => { alerts.push(message); onAlert(message, { navigation, timers, alerts }); },
       addEventListener: (event, fn) => { listeners['window:' + event] = fn; },
       setTimeout: (fn, milliseconds) => { const id = ++timerId; timers.set(id, { fn, milliseconds }); return id; },
       clearTimeout: id => clearedTimers.push(id),
@@ -122,7 +124,7 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
     }
   };
   const event = () => ({ prevented: false, preventDefault() { this.prevented = true; } });
-  return { listeners, navigation, topNavigation, frames, requests, timers, clearedTimers, attributes, values, fields, status,
+  return { listeners, navigation, topNavigation, frames, alerts, requests, timers, clearedTimers, attributes, values, fields, status,
     form, alternate, close, returnToGame, returnStatus,
     submitWithoutHandoff: () => listeners['form:submit'](event()), openGame,
     submit: async () => { await listeners['form:submit'](event()); openGame(); }, event };
@@ -420,5 +422,75 @@ test('password form asset URLs use hashes of shipped bytes to bypass an old depl
     }
     assert.equal(renderPasswordForm(context).html, html, 'asset versions must be deterministic');
     assert.ok(!html.includes('password.js"'), 'do not leave an unversioned cached script on password pages');
+  }
+});
+
+
+test('native alerts acknowledge validation, API and connection failures exactly once without duplicate loading alerts', async () => {
+  const invalid = web({ mode: 'register' });
+  invalid.values.username.value = '';
+  await invalid.submit();
+  assert.deepEqual(invalid.alerts, ['Vui lòng nhập tên tài khoản.']);
+  assert.equal(invalid.requests.length, 0);
+  let finish;
+  const pending = web({ fetchReply: () => new Promise(resolve => { finish = resolve; }) });
+  const submission = pending.submit();
+  assert.deepEqual(pending.alerts, [], 'loading must remain nonblocking');
+  await pending.submit();
+  assert.deepEqual(pending.alerts, []);
+  finish({ ok: false, status: 401, json: async () => ({ error: { code: 'invalid_credentials' } }) });
+  await submission;
+  assert.deepEqual(pending.alerts, ['Tên tài khoản/email hoặc mật khẩu không đúng.']);
+  assert.equal(pending.requests.length, 1);
+  assert.equal(pending.fields.disabled, false);
+  const failedConnection = web({ fetchReply: async () => { throw new TypeError('private diagnostic'); } });
+  await failedConnection.submit();
+  assert.equal(failedConnection.alerts.length, 1);
+  assert.match(failedConnection.alerts[0], /Không thể kết nối/u);
+  assert.doesNotMatch(failedConnection.alerts[0], /private/u);
+});
+
+test('one success alert finishes before scheduling the callback and cannot repeat on back cache or resubmit', async () => {
+  for (const mode of ['login', 'register']) {
+    let acknowledged = false;
+    const result = web({ mode, onAlert: (message, browser) => {
+      assert.match(message, mode === 'register' ? /Đăng ký thành công/u : /Đăng nhập thành công/u);
+      assert.deepEqual(browser.navigation, []);
+      assert.equal([...browser.timers.values()].filter(timer => timer.milliseconds === 350).length, 0,
+        'do not schedule app launch while the success alert is open');
+      acknowledged = true; // Returning models dismissal of the blocking native dialog.
+    }, navigate: () => assert.equal(acknowledged, true) });
+    await result.submitWithoutHandoff();
+    assert.equal(result.alerts.length, 1);
+    result.openGame();
+    assert.deepEqual(result.navigation, [callback]);
+    result.listeners['window:pageshow']({ persisted: true });
+    await result.submit();
+    result.openGame();
+    assert.equal(result.alerts.length, 1);
+    assert.equal(result.requests.length, 1);
+    assert.deepEqual(result.navigation, [callback]);
+  }
+});
+
+test('duplicate alerts distinguish only allowlisted username/email conflicts with backwards-compatible fallback', async () => {
+  for (const [conflicts, expected] of [
+    [['username'], 'Tên tài khoản đã tồn tại. Vui lòng chọn tên khác.'],
+    [['email'], 'Email đã được đăng ký. Vui lòng sử dụng email khác.'],
+    [['username', 'email'], 'Tên tài khoản và email đã được sử dụng.'],
+    [['email', 'username'], 'Tên tài khoản và email đã được sử dụng.'],
+    [undefined, 'Tên tài khoản hoặc email đã được sử dụng.'],
+    [['email', 'email'], 'Tên tài khoản hoặc email đã được sử dụng.'],
+    [['private_column'], 'Tên tài khoản hoặc email đã được sử dụng.'],
+  ]) {
+    const result = web({ mode: 'register', fetchReply: async () => ({ ok: false, status: 409,
+      json: async () => ({ error: { code: 'account_exists', conflicts, message: 'SQL private exception' } }) }) });
+    await result.submit();
+    assert.deepEqual(result.alerts, [expected]);
+    assert.equal(result.status.textContent, expected);
+    assert.equal(result.values.username.value, 'Player123');
+    assert.equal(result.values.email.value, 'player@example.test');
+    assert.equal(result.fields.disabled, false);
+    assert.deepEqual(result.navigation, []);
   }
 });

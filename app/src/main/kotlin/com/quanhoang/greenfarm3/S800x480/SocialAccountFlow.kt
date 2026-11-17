@@ -50,6 +50,8 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
         fun execute(work: () -> Unit)
         /** Open the system browser; implementations marshal this operation to Android's UI thread. */
         fun openBrowser(url: String)
+        /** Controlled stage/reason only; never pass exception text or stored credentials. */
+        fun authRecovery(stage: String, reason: String) { }
     }
 
     companion object {
@@ -116,6 +118,7 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
             "database_unavailable" -> "Máy chủ tài khoản tạm thời không sẵn sàng. Vui lòng thử lại."
             "unsupported_device" -> "Đăng nhập an toàn cần Android 6.0 trở lên. Dữ liệu nông trại vẫn được giữ nguyên."
             "storage_error" -> "Không thể đọc hoặc lưu phiên đăng nhập an toàn. Hãy thử đăng nhập lại."
+            "auth_record_unreadable" -> "Không thể khôi phục phiên đăng nhập trên thiết bị. Vui lòng đăng nhập lại. Dữ liệu nông trại vẫn được giữ nguyên."
             "invalid_callback" -> "Kết quả đăng nhập không hợp lệ. Hãy thử lại."
             "access_denied" -> "Bạn đã hủy đăng nhập. Có thể thử lại."
             "authentication_failed" -> "Không thể xác thực tài khoản. Vui lòng thử lại."
@@ -309,8 +312,18 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
         platform.execute {
             if (generation != id) return@execute
             try {
-                val callback = vault.callback()
-                val attempt = vault.attempt()
+                val (callback, attempt) = try {
+                    Pair(vault.callback(), vault.attempt())
+                } catch (failure: SocialAuthFailure) {
+                    if (failure.code != "auth_record_unreadable") throw failure
+                    synchronized(this) {
+                        if (generation != id) return@execute
+                        // A stale browser record must not make a valid remembered session unreadable.
+                        vault.clearAttempt()
+                    }
+                    platform.authRecovery("pending", failure.code)
+                    Pair(null, null)
+                }
                 if (callback != null && attempt != null) {
                     publish(id) {
                         pending = attempt
@@ -331,10 +344,23 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                     return@execute
                 }
                 if (attempt != null) vault.clearAttempt()
-                val session = vault.session()
+                var unreadableSession = false
+                val session = try { vault.session() }
+                catch (failure: SocialAuthFailure) {
+                    if (failure.code != "auth_record_unreadable") throw failure
+                    synchronized(this) {
+                        if (generation != id) return@execute
+                        vault.clearSession()
+                    }
+                    unreadableSession = true
+                    platform.authRecovery("session", failure.code)
+                    null
+                }
                 if (session == null) publish(id) {
+                    currentSession = null
                     status = SIGNED_OUT
-                    message = "Vui lòng đăng nhập tài khoản để tiếp tục"
+                    message = if (unreadableSession) messageFor("auth_record_unreadable")
+                        else "Vui lòng đăng nhập tài khoản để tiếp tục"
                 } else validateSession(id, session, false)
             } catch (failure: Exception) { publishFailure(id, failure) }
         }
@@ -347,12 +373,12 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                 var active = session
                 if (platform.now() >= active.refreshExpiresAt) throw SocialAuthFailure("session_expired")
                 if (platform.now() >= active.accessExpiresAt - 30_000L) {
-                    active = backend.refresh(active.refreshToken)
+                    active = refreshSavedSession(id, session, active.refreshToken) ?: return@execute
                 }
                 val user = try { backend.me(active.accessToken) }
                 catch (failure: SocialAuthFailure) {
                     if (failure.code != "invalid_session" && failure.code != "session_expired") throw failure
-                    active = backend.refresh(active.refreshToken)
+                    active = refreshSavedSession(id, session, active.refreshToken) ?: return@execute
                     backend.me(active.accessToken)
                 }
                 if (user.gameId != session.user.gameId || user.provider != session.user.provider ||
@@ -370,8 +396,38 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                     status = if (enter) READY else WELCOME
                     message = "Chào mừng ${verified.user.gameId} trở lại!"
                 }
-            } catch (failure: Exception) { publishFailure(id, failure) }
+            } catch (failure: Exception) {
+                if (failure is SocialAuthFailure && failure.code in arrayOf(
+                        "invalid_session", "session_expired", "invalid_refresh_token")) {
+                    try {
+                        synchronized(this) {
+                            if (generation != id) return@execute
+                            vault.clearSession()
+                        }
+                        platform.authRecovery("session_validation", failure.code)
+                        publish(id) {
+                            currentSession = null
+                            status = SIGNED_OUT
+                            message = messageFor(failure.code)
+                        }
+                    } catch (storageFailure: Exception) { publishFailure(id, storageFailure) }
+                } else publishFailure(id, failure)
+            }
         }
+    }
+
+    private fun refreshSavedSession(id: Long, original: SocialSession, token: String): SocialSession? {
+        val refreshed = backend.refresh(token)
+        if (refreshed.user.gameId != original.user.gameId || refreshed.user.provider != original.user.provider) {
+            throw SocialAuthFailure("invalid_session")
+        }
+        synchronized(this) {
+            if (generation != id || platform.now() >= operationDeadline) return null
+            // The server has consumed the old refresh token. Retain its replacement
+            // before /me, so a later network failure cannot strand the next cold start.
+            vault.saveSession(refreshed)
+        }
+        return refreshed
     }
 
     private fun exchangeSaved(id: Long) {

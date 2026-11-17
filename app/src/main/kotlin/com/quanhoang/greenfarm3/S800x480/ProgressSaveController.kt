@@ -217,10 +217,11 @@ object ProgressSaveController {
         // including header-only snapshots captured before this failure.
         GameSaveStore.failLoad("Restore failed; original save retained", failure)
         loadError = "Không thể đọc tiến độ. Bản lưu cũ được giữ nguyên."
-        val code = SaveRestoreException.classify(failure, SaveRestoreException.Code.ENGINE_RESTORE_FAILED)
-        Log.e("GreenFarmSave", "load_failed step=$step result=$code" +
+        Log.e("GreenFarmSave", "load_failed method=ProgressSaveController.loadingFailed phase=gameplay_load step=$step" +
+            " database=greenfarm-progress.db slot=device-local records=${SaveRestoreException.recordsForLoadStep(step)} " +
+            SaveRestoreException.diagnostics(failure, SaveRestoreException.Code.ENGINE_RESTORE_FAILED) +
             " db_status=${GameSaveStore.status()} generation=${GameSaveStore.generation()}" +
-            " local_mode=${LocalDevelopmentMode.isEnabled()}", failure)
+            " local_mode=${LocalDevelopmentMode.isEnabled()}", null)
         showLoadError()
     }
 
@@ -293,7 +294,8 @@ object ProgressSaveController {
             try {
                 FarmGameEngine.progressSaveCommitted()
             } catch (legacyFailure: RuntimeException) {
-                Log.w("GreenFarmSave", "legacy_save_callback_failed", legacyFailure)
+                Log.w("GreenFarmSave", "legacy_save_callback_failed " +
+                    SaveRestoreException.diagnostics(legacyFailure, SaveRestoreException.Code.ENGINE_RESTORE_FAILED), null)
             }
         }
         if (loadBlocked && retryLoad && failedLoadStep == -1 && globalLoaded && ownFarmLoaded) {
@@ -402,7 +404,8 @@ object ProgressSaveController {
             GameSaveStore.abortCapture()
             captureFailed = true
             saveFailed()
-            Log.e("GreenFarmSave", "capture_failed", failure)
+            Log.e("GreenFarmSave", "capture_failed " +
+                SaveRestoreException.diagnostics(failure, SaveRestoreException.Code.SQLITE_WRITE_FAILED), null)
             return -1L
         } finally {
             forcedCheckpoint = false
@@ -427,7 +430,8 @@ object ProgressSaveController {
                 saveFailure = false
             } else {
                 saveFailed()
-                Log.e("GreenFarmSave", "write_failed; absolute snapshot retained for retry", result.failure)
+                Log.e("GreenFarmSave", "write_failed; absolute snapshot retained for retry " +
+                    SaveRestoreException.diagnostics(result.failure, SaveRestoreException.Code.SQLITE_WRITE_FAILED), null)
             }
             val checkpoint = result.checkpoint
             if (checkpoint is LanguageRollback) {
@@ -521,7 +525,8 @@ object ProgressSaveController {
                 sequence, LanguageRollback(language))
             language.rollbackSequence = sequence
         } catch (failure: RuntimeException) {
-            Log.e("GreenFarmSave", "language_rollback_capture_failed", failure)
+            Log.e("GreenFarmSave", "language_rollback_capture_failed " +
+                SaveRestoreException.diagnostics(failure, SaveRestoreException.Code.SQLITE_WRITE_FAILED), null)
             saveFailed()
         }
     }
@@ -660,7 +665,8 @@ object ProgressSaveController {
         sqliteWriteQueue!!.submit(snapshot, sequence, request)
         sequence
     } catch (failure: RuntimeException) {
-        Log.e("GreenFarmSave", "language_checkpoint_failed", failure)
+        Log.e("GreenFarmSave", "language_checkpoint_failed " +
+            SaveRestoreException.diagnostics(failure, SaveRestoreException.Code.SQLITE_WRITE_FAILED), null)
         -1L
     }
 
