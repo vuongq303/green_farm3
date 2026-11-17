@@ -5,6 +5,7 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import android.util.Log
 import java.nio.charset.StandardCharsets
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -28,8 +29,15 @@ class SecureAccountStore(context: Context, private val expectedOrigin: String? =
             val user = value.getJSONObject("user")
             SocialSession(value.getString("access_token"), value.getString("refresh_token"),
                 value.getLong("access_expires_at"), value.getLong("refresh_expires_at"),
-                SocialIdentity(user.getString("game_id"), user.getString("provider"), user.getString("display_name")))
-        } catch (_: Exception) { throw SocialAuthFailure("storage_error") }
+                // display_name is optional in the public backend contract.
+                // A missing/null name must not make an otherwise valid remembered
+                // session unreadable on the next launch.
+                SocialIdentity(user.getString("game_id"), user.getString("provider"),
+                    if (user.isNull("display_name")) "" else user.optString("display_name", "")))
+        } catch (failure: Exception) {
+            Log.w("GreenFarmAccount", "stored_session_parse_failed cause=${failure.javaClass.simpleName}")
+            throw SocialAuthFailure("storage_error")
+        }
     }
 
     @Synchronized override fun saveSession(value: SocialSession) = write("session", JSONObject()
@@ -107,6 +115,10 @@ class SecureAccountStore(context: Context, private val expectedOrigin: String? =
             cipher.init(Cipher.DECRYPT_MODE, key(), GCMParameterSpec(128, iv))
             cipher.updateAAD((packageName + ":" + name).toByteArray(StandardCharsets.UTF_8))
             return JSONObject(String(cipher.doFinal(Base64.decode(parts[2], Base64.NO_WRAP)), StandardCharsets.UTF_8))
-        } catch (_: Exception) { throw SocialAuthFailure("storage_error") }
+        } catch (failure: Exception) {
+            // No exception message, plaintext, token or encrypted content in logs.
+            Log.w("GreenFarmAccount", "secure_auth_record_read_failed type=$name cause=${failure.javaClass.simpleName}")
+            throw SocialAuthFailure("storage_error")
+        }
     }
 }
