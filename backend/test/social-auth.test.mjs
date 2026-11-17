@@ -38,7 +38,7 @@ test('social config requires HTTPS and isolates incomplete provider configuratio
   assert.equal(secureAuthRequest(request, config), false, 'trusted proxy still must attest HTTPS');
   request.headers['x-forwarded-proto'] = 'https';
   request.headers['x-forwarded-for'] = '1.2.3.4, 9.9.9.9';
-  assert.equal(authClientIp(request, config), '127.0.0.1', 'proxy must overwrite instead of accepting a forwarded chain');
+  assert.equal(authClientIp(request, config), '::1', 'reject a forwarded chain and retain the actual IPv6 peer');
 });
 
 const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });

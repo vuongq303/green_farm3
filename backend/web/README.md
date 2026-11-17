@@ -51,8 +51,18 @@ the Origin header. Login posts `{csrf, attempt, login, password}` to
 `/auth/login`. Registration posts `{csrf, attempt, username, email, password,
 password_confirmation}` to `/auth/register`.
 
-`password.js` submits JSON, disables duplicate submissions, bounds each request
-to 20 seconds, and shows public server errors as text. Password fields are cleared
+Password form script and stylesheet URLs include SHA-256 versions of their
+served bytes. After a backend restart/deploy, new forms therefore fetch the new
+assets even if a browser cached an earlier release for an hour. The existing
+OAuth handoff page URLs are unchanged.
+
+`password.js` validates required fields into a persistent on-page status (rather
+than relying on transient browser bubbles), submits JSON and disables duplicate
+submissions. Its 20-second deadline covers both the response and JSON body.
+Known error codes and HTTP statuses map to public Vietnamese messages, including
+non-JSON proxy failures; raw internal exception text is never displayed. Status
+feedback receives focus and scrolls into view on mobile without clearing the
+username/email. Errors clear password inputs and restore retry. Password fields are cleared
 after responses and when closing/leaving. No password, token or user profile is
 stored in browser storage or sent through a JavaScript bridge. Registration
 accepts an ASCII username of 3–32 letters/digits/underscores, an email, and a
@@ -61,7 +71,14 @@ authority for validation and account uniqueness.
 
 Success returns only `{callback_url}` with a 60-second one-use authorization code and
 the pending state. The script validates the fixed app callback, checks the
-pending state and automatically navigates to the app deep link. Android checks
+pending state and requires HTTP 201 for registration or HTTP 200 for login.
+After rendering a distinct registration/login success message, it tries the app
+deep link once after 350 ms so the browser can paint the status first. The
+attempt uses a hidden sandboxed iframe restricted by CSP to the app scheme
+(custom protocols have opaque origins), with JavaScript enforcing the exact
+callback host/path and code/state; a blocked external-protocol navigation therefore cannot replace the
+form document with a browser error page. The visible return link remains an
+ordinary top-level link requiring a user gesture. Android checks
 the callback against its retained state before exchanging the code using its
 encrypted PKCE verifier, including when Android has recreated the app process.
 The page never receives app access/refresh tokens and cannot authenticate merely
