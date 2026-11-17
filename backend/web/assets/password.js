@@ -35,12 +35,17 @@
     if (kind !== 'loading') {
       status.focus({ preventScroll: true });
       status.scrollIntoView({ block: 'nearest' });
+      // Native browser alert for explicit success/failure; keep the page status
+      // for accessibility and browsers that suppress alert dialogs.
+      try { if (typeof window.alert === 'function') window.alert(message); } catch { /* Inline fallback. */ }
     }
   }
   function publicError(response, reply) {
     const code = reply && reply.error && reply.error.code;
     const messages = {
       account_exists: 'Tên tài khoản hoặc email đã được sử dụng.',
+      username_exists: 'Tên tài khoản đã được sử dụng. Hãy chọn tên khác.',
+      email_exists: 'Email đã được đăng ký. Hãy dùng email khác hoặc đăng nhập.',
       invalid_credentials: 'Tên tài khoản/email hoặc mật khẩu không đúng.',
       invalid_registration: 'Thông tin đăng ký không hợp lệ. Kiểm tra tên tài khoản, email và mật khẩu 12–128 ký tự.',
       csrf_failed: 'Phiên biểu mẫu không hợp lệ hoặc đã hết hạn. Hãy mở lại đăng nhập từ Green Farm 3.',
