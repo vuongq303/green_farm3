@@ -127,6 +127,17 @@ export function createSocialStore(pool) {
       return transaction(async connection => {
         const row = await lockPasswordWebAttempt(connection, cookieHash, csrfHash, now);
         if (!row) return undefined;
+        // A safe UX distinction for already-registered identifiers. The UNIQUE
+        // indexes remain authoritative for concurrent registrations; ER_DUP_ENTRY
+        // still falls back to the generic duplicate result if a race occurs.
+        const [existing] = await connection.execute(
+          'SELECT username, email FROM gf_password_accounts WHERE username = ? OR email = ? LIMIT 2',
+          [username, email]);
+        const usernameTaken = existing.some(value => value.username === username);
+        const emailTaken = existing.some(value => value.email === email);
+        if (usernameTaken || emailTaken) {
+          return { duplicate: true, field: usernameTaken && emailTaken ? 'both' : usernameTaken ? 'username' : 'email' };
+        }
         const account = await insertPasswordUser(connection, { providerUserId, username, email, passwordHash, now });
         await connection.execute('UPDATE gf_auth_attempts SET consumed_at = ? WHERE id = ?', [now, row.id]);
         return { user: account, attempt: attempt({ ...row, consumed_at: now }) };
