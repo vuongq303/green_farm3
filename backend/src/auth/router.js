@@ -56,15 +56,17 @@ class AuthError extends Error {
 function fail(status, code) { throw new AuthError(status, code); }
 function only(object, keys) {
   if (!object || typeof object !== 'object' || Array.isArray(object) ||
-      Object.keys(object).some(key => !keys.includes(key))) fail(400, 'invalid_request');
+    Object.keys(object).some(key => !keys.includes(key))) fail(400, 'invalid_request');
 }
 function token(value) { if (typeof value !== 'string' || !TOKEN.test(value)) fail(401, 'invalid_session'); return value; }
 function publicUser(user) { return { game_id: user.game_id, provider: user.provider, display_name: user.display_name ?? null }; }
 
 function jsonReply(response, status, value) {
   const body = value === undefined ? '' : JSON.stringify(value);
-  response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': Buffer.byteLength(body),
-    'Cache-Control': 'no-store', Pragma: 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' });
+  response.writeHead(status, {
+    'Content-Type': 'application/json; charset=utf-8', 'Content-Length': Buffer.byteLength(body),
+    'Cache-Control': 'no-store', Pragma: 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer'
+  });
   response.end(body);
 }
 function pageReply(response, status, page) {
@@ -119,7 +121,7 @@ function limiter(now) {
 }
 
 export function createSocialAuthRouter({ config, store, providers = createProviderClient(), now = Date.now,
-  isSecureRequest = secureAuthRequest, errorLog = () => {} } = {}) {
+  isSecureRequest = secureAuthRequest, errorLog = () => { } } = {}) {
   const rate = limiter(now);
   const seconds = () => Math.floor(now() / 1000);
 
@@ -139,18 +141,24 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
   function newSession() {
     const access = random(), refresh = random();
     const time = seconds();
-    return { access, refresh, record: { id: random(), accessHash: hash(access), refreshHash: hash(refresh), issuedAt: time,
-      accessExpiresAt: time + config.accessTtl, refreshExpiresAt: time + config.refreshTtl } };
+    return {
+      access, refresh, record: {
+        id: random(), accessHash: hash(access), refreshHash: hash(refresh), issuedAt: time,
+        accessExpiresAt: time + config.accessTtl, refreshExpiresAt: time + config.refreshTtl
+      }
+    };
   }
   function sessionReply(session, user) {
-    return { access_token: session.access, refresh_token: session.refresh, token_type: 'Bearer',
-      expires_in: config.accessTtl, refresh_expires_in: config.refreshTtl, user: publicUser(user) };
+    return {
+      access_token: session.access, refresh_token: session.refresh, token_type: 'Bearer',
+      expires_in: config.accessTtl, refresh_expires_in: config.refreshTtl, user: publicUser(user)
+    };
   }
 
   async function passwordWebSession(request, attemptId, csrf) {
     const cookie = webCookie(request);
     if (!cookie || !matches(TOKEN, attemptId) || !matches(TOKEN, csrf) ||
-        !sameText(cookie.csrf, csrf)) fail(403, 'csrf_failed');
+      !sameText(cookie.csrf, csrf)) fail(403, 'csrf_failed');
     const web = await store.getPasswordWebSession(hash(cookie.session), seconds());
     if (!web || web.attempt.id !== attemptId) fail(400, 'attempt_expired');
     if (!timingSafeEqual(hash(csrf), web.csrfHash)) fail(403, 'csrf_failed');
@@ -159,14 +167,18 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
 
   async function passwordReply(response, attempt, user, status) {
     const code = random();
-    const issued = await store.issueCode({ attemptId: attempt.id, userId: user.id, codeHash: hash(code),
-      expiresAt: seconds() + config.codeTtl, now: seconds() });
+    const issued = await store.issueCode({
+      attemptId: attempt.id, userId: user.id, codeHash: hash(code),
+      expiresAt: seconds() + config.codeTtl, now: seconds()
+    });
     if (!issued) fail(400, 'attempt_expired');
     response.setHeader('Set-Cookie', WEB_COOKIE + '=; ' + WEB_COOKIE_OPTIONS + '; Max-Age=0');
     jsonReply(response, status, { callback_url: callback(attempt, { code }) });
   }
 
   async function handle(request, response, url) {
+    console.log('Auth request', request.method, url.pathname, request.headers['user-agent']);
+    console.log('response headers', response.body, response.headers);
     const path = url.pathname;
     if (path !== '/auth' && !path.startsWith('/auth/')) return false;
     let browserAttempt;
@@ -176,8 +188,10 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
         if (request.method !== 'GET') fail(405, 'method_not_allowed');
         const asset = ASSETS.get(path.slice('/auth/assets/'.length));
         if (!asset) fail(404, 'route_not_found');
-        response.writeHead(200, { 'Content-Type': asset.contentType, 'Content-Length': asset.body.length,
-          'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff' });
+        response.writeHead(200, {
+          'Content-Type': asset.contentType, 'Content-Length': asset.body.length,
+          'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff'
+        });
         response.end(asset.body); return true;
       }
       configured();
@@ -190,20 +204,24 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
         only(body, ['provider', 'state', 'code_challenge', 'redirect_uri']);
         const provider = path === '/auth/attempt' ? body.provider : path.slice('/auth/'.length);
         if (!['facebook', 'google', 'password'].includes(provider) || (body.provider !== undefined && body.provider !== provider) ||
-            !matches(STATE, body.state) || !matches(TOKEN, body.code_challenge) || body.redirect_uri !== APP_REDIRECT_URI) fail(400, 'invalid_request');
+          !matches(STATE, body.state) || !matches(TOKEN, body.code_challenge) || body.redirect_uri !== APP_REDIRECT_URI) fail(400, 'invalid_request');
         configured(provider);
         const id = random();
-        await store.createAttempt({ id, provider, appState: body.state, codeChallenge: body.code_challenge,
-          redirectUri: APP_REDIRECT_URI, createdAt: seconds(), expiresAt: seconds() + config.attemptTtl });
-        jsonReply(response, 201, { attempt_id: id, authorization_url: config.publicBaseUrl +
-          (provider === 'password' ? '/auth/web/login?attempt=' : '/auth/browser/start?id=') + id,
-          expires_in: config.attemptTtl });
+        await store.createAttempt({
+          id, provider, appState: body.state, codeChallenge: body.code_challenge,
+          redirectUri: APP_REDIRECT_URI, createdAt: seconds(), expiresAt: seconds() + config.attemptTtl
+        });
+        jsonReply(response, 201, {
+          attempt_id: id, authorization_url: config.publicBaseUrl +
+            (provider === 'password' ? '/auth/web/login?attempt=' : '/auth/browser/start?id=') + id,
+          expires_in: config.attemptTtl
+        });
       } else if (path === '/auth/web/login' || path === '/auth/web/register') {
         if (request.method !== 'GET') fail(405, 'method_not_allowed');
         rate(client, 'web-form', 60);
         const id = url.searchParams.get('attempt');
         if (!matches(TOKEN, id) || url.searchParams.getAll('attempt').length !== 1 ||
-            [...url.searchParams.keys()].some(key => key !== 'attempt')) fail(400, 'invalid_request');
+          [...url.searchParams.keys()].some(key => key !== 'attempt')) fail(400, 'invalid_request');
         const known = await store.getAttempt(id);
         if (!known || known.provider !== 'password' || known.expiresAt <= seconds() || known.consumedAt != null) fail(400, 'attempt_expired');
         let cookie = webCookie(request), attempt;
@@ -217,12 +235,14 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
           response.setHeader('Set-Cookie', WEB_COOKIE + '=' + cookie.session + '.' + cookie.csrf + '; ' +
             WEB_COOKIE_OPTIONS + '; Max-Age=' + Math.max(1, Math.min(config.attemptTtl, attempt.expiresAt - seconds())));
         }
-        pageReply(response, 200, renderPasswordForm({ mode: path.endsWith('/register') ? 'register' : 'login',
-          csrfToken: cookie.csrf, attemptId: id, closeUrl: callback(attempt, { error: 'access_denied' }) }));
+        pageReply(response, 200, renderPasswordForm({
+          mode: path.endsWith('/register') ? 'register' : 'login',
+          csrfToken: cookie.csrf, attemptId: id, closeUrl: callback(attempt, { error: 'access_denied' })
+        }));
       } else if (path === '/auth/login' || path === '/auth/register') {
         if (request.method !== 'POST') fail(405, 'method_not_allowed');
         if (request.headers.origin !== config.publicBaseUrl ||
-            (request.headers['sec-fetch-site'] && request.headers['sec-fetch-site'] !== 'same-origin')) fail(403, 'csrf_failed');
+          (request.headers['sec-fetch-site'] && request.headers['sec-fetch-site'] !== 'same-origin')) fail(403, 'csrf_failed');
         rate(client, 'password', 30);
         const body = await readJson(request);
         const registering = path === '/auth/register';
@@ -234,8 +254,10 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
           rate(hash(fields.username).toString('hex'), 'register-identity', 6);
           rate(hash(fields.email).toString('hex'), 'register-email', 6);
           const passwordHash = await hashPassword(fields.password);
-          const registered = await store.registerPasswordAndClaim({ cookieHash: web.cookieHash, csrfHash: web.csrfHash,
-            providerUserId: random(), username: fields.username, email: fields.email, passwordHash, now: seconds() });
+          const registered = await store.registerPasswordAndClaim({
+            cookieHash: web.cookieHash, csrfHash: web.csrfHash,
+            providerUserId: random(), username: fields.username, email: fields.email, passwordHash, now: seconds()
+          });
           if (!registered) fail(400, 'attempt_expired');
           if (registered.duplicate) fail(409, 'account_exists');
           await passwordReply(response, registered.attempt, registered.user, 201);
@@ -263,8 +285,10 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
         const oauthState = random();
         const attempt = await store.startAttempt(id, { oauthStateHash: hash(oauthState), nonce: random(), providerVerifier: random() }, seconds());
         if (!attempt) fail(400, 'attempt_expired');
-        response.writeHead(302, { Location: providers.authorizationUrl(attempt.provider, attempt, oauthState, config),
-          'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' });
+        response.writeHead(302, {
+          Location: providers.authorizationUrl(attempt.provider, attempt, oauthState, config),
+          'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer'
+        });
         response.end();
       } else if (path === '/auth/callback/google' || path === '/auth/callback/facebook') {
         if (request.method !== 'GET') fail(405, 'method_not_allowed');
@@ -273,7 +297,7 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
         configured(provider);
         const state = url.searchParams.get('state');
         if (!TOKEN.test(state ?? '') || url.searchParams.getAll('state').length !== 1 ||
-            url.searchParams.getAll('code').length > 1 || url.searchParams.getAll('error').length > 1) fail(400, 'invalid_request');
+          url.searchParams.getAll('code').length > 1 || url.searchParams.getAll('error').length > 1) fail(400, 'invalid_request');
         browserAttempt = await store.claimOAuthAttempt(hash(state), provider, seconds());
         if (!browserAttempt) fail(400, 'attempt_expired');
         if (url.searchParams.has('error')) fail(400, 'access_denied');
@@ -283,8 +307,10 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
         if (!identity || typeof identity.providerUserId !== 'string' || !identity.providerUserId || identity.providerUserId.length > 255) fail(400, 'authentication_failed');
         const user = await store.upsertUser(provider, identity.providerUserId, identity.displayName, seconds());
         const code = random();
-        const issued = await store.issueCode({ attemptId: browserAttempt.id, userId: user.id, codeHash: hash(code),
-          expiresAt: seconds() + config.codeTtl, now: seconds() });
+        const issued = await store.issueCode({
+          attemptId: browserAttempt.id, userId: user.id, codeHash: hash(code),
+          expiresAt: seconds() + config.codeTtl, now: seconds()
+        });
         if (!issued) fail(400, 'attempt_expired');
         pageReply(response, 200, renderSuccess(callback(browserAttempt, { code })));
       } else if (path === '/auth/exchange') {
@@ -294,8 +320,10 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
         only(body, ['code', 'code_verifier', 'redirect_uri']);
         if (!matches(TOKEN, body.code) || !matches(VERIFIER, body.code_verifier) || body.redirect_uri !== APP_REDIRECT_URI) fail(400, 'invalid_code');
         const session = newSession();
-        const user = await store.exchangeCode({ codeHash: hash(body.code), codeChallenge: hash(body.code_verifier).toString('base64url'),
-          redirectUri: APP_REDIRECT_URI, now: seconds(), session: session.record });
+        const user = await store.exchangeCode({
+          codeHash: hash(body.code), codeChallenge: hash(body.code_verifier).toString('base64url'),
+          redirectUri: APP_REDIRECT_URI, now: seconds(), session: session.record
+        });
         if (!user) fail(400, 'invalid_code');
         jsonReply(response, 200, sessionReply(session, user));
       } else if (path === '/auth/me') {
@@ -329,8 +357,8 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
       if (response.headersSent || response.destroyed) return true;
       let failure = error instanceof AuthError ? error :
         error instanceof ProviderError ? new AuthError(502, error.code === 'provider_identity_invalid' ? 'authentication_failed' : 'provider_unavailable') :
-        error instanceof PasswordError ? new AuthError(error.code === 'password_unavailable' ? 503 : 400, error.code) :
-        error?.code === 'DATABASE_UNAVAILABLE' ? new AuthError(503, 'database_unavailable') : new AuthError(500, 'authentication_failed');
+          error instanceof PasswordError ? new AuthError(error.code === 'password_unavailable' ? 503 : 400, error.code) :
+            error?.code === 'DATABASE_UNAVAILABLE' ? new AuthError(503, 'database_unavailable') : new AuthError(500, 'authentication_failed');
       if (failure.status >= 500) {
         try { errorLog({ event: 'social_auth_error', status: failure.status, code: failure.code }); } catch { }
       }
@@ -338,8 +366,10 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
       if (browser) {
         const appError = failure.code === 'access_denied' ? 'access_denied' :
           failure.code === 'attempt_expired' ? 'attempt_expired' : 'authentication_failed';
-        pageReply(response, failure.status, renderError({ message: PUBLIC_MESSAGES[failure.code] ?? PUBLIC_MESSAGES.authentication_failed,
-          returnUrl: browserAttempt ? callback(browserAttempt, { error: appError }) : undefined }));
+        pageReply(response, failure.status, renderError({
+          message: PUBLIC_MESSAGES[failure.code] ?? PUBLIC_MESSAGES.authentication_failed,
+          returnUrl: browserAttempt ? callback(browserAttempt, { error: appError }) : undefined
+        }));
       } else jsonReply(response, failure.status, { error: { code: failure.code, message: PUBLIC_MESSAGES[failure.code] ?? PUBLIC_MESSAGES.authentication_failed } });
     }
     return true;
