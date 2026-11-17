@@ -66,6 +66,7 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
   const requests = [];
   const timers = new Map();
   const clearedTimers = [];
+  const alerts = [];
   let timerId = 0;
   const attributes = {};
   const values = Object.fromEntries(Object.entries({ csrf, attempt, login: 'Player123', username: 'Player123',
@@ -110,6 +111,7 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
       return reply;
     }); },
     window: {
+      alert: message => { alerts.push(message); },
       addEventListener: (event, fn) => { listeners['window:' + event] = fn; },
       setTimeout: (fn, milliseconds) => { const id = ++timerId; timers.set(id, { fn, milliseconds }); return id; },
       clearTimeout: id => clearedTimers.push(id),
@@ -122,7 +124,7 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
     }
   };
   const event = () => ({ prevented: false, preventDefault() { this.prevented = true; } });
-  return { listeners, navigation, topNavigation, frames, requests, timers, clearedTimers, attributes, values, fields, status,
+  return { listeners, navigation, topNavigation, frames, requests, timers, clearedTimers, alerts, attributes, values, fields, status,
     form, alternate, close, returnToGame, returnStatus,
     submitWithoutHandoff: () => listeners['form:submit'](event()), openGame,
     submit: async () => { await listeners['form:submit'](event()); openGame(); }, event };
@@ -303,6 +305,8 @@ test('required and invalid fields produce persistent visible feedback without se
 test('HTTP and public error codes remain useful for JSON or HTML failures and keep non-sensitive input for retry', async () => {
   for (const [mode, status, reply, expected] of [
     ['register', 409, { error: { code: 'account_exists' } }, /tên tài khoản hoặc email đã được sử dụng/iu],
+    ['register', 409, { error: { code: 'username_exists' } }, /tên tài khoản đã được sử dụng/iu],
+    ['register', 409, { error: { code: 'email_exists' } }, /email đã được đăng ký/iu],
     ['register', 400, { error: { code: 'invalid_registration' } }, /đăng ký không hợp lệ/u],
     ['login', 401, { error: { code: 'invalid_credentials' } }, /mật khẩu không đúng/u],
     ['login', 400, { error: { code: 'attempt_expired' } }, /hết hạn.*mở lại/iu],
@@ -324,11 +328,31 @@ test('HTTP and public error codes remain useful for JSON or HTML failures and ke
     assert.equal(result.values.email.value, 'player@example.test');
     assert.equal(result.values.password.value, '');
     assert.equal(result.attributes['status:data-state'], 'error');
+    assert.deepEqual(result.alerts, [result.status.textContent], 'the browser alert must match safe visible feedback');
     assert.deepEqual(result.navigation, []);
     result.values.password.value = result.values.password_confirmation.value = '  retry farm password  ';
     await result.submit();
     assert.equal(result.requests.length, 2);
   }
+});
+
+test('browser native alerts show validation and success without alerting during loading', async () => {
+  const invalid = web({ mode: 'register' });
+  invalid.values.email.value = '';
+  await invalid.submit();
+  assert.deepEqual(invalid.alerts, ['Vui lòng nhập email.']);
+  assert.equal(invalid.requests.length, 0);
+
+  let finish;
+  const success = web({ mode: 'register', fetchReply: () => new Promise(resolve => { finish = resolve; }) });
+  const waiting = success.submit();
+  assert.deepEqual(success.alerts, [], 'loading indicator must not show a modal alert');
+  finish({ ok: true, status: 201, json: async () => ({ callback_url: callback }) });
+  await waiting;
+  assert.equal(success.alerts.length, 1);
+  assert.match(success.alerts[0], /Đăng ký thành công/u);
+  success.openGame();
+  assert.deepEqual(success.navigation, [callback]);
 });
 
 test('mode-specific success is visible before the single delayed handoff and survives blocked navigation', async () => {
