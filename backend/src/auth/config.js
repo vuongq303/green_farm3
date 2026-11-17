@@ -63,8 +63,28 @@ export function trustedProxy(request, config) {
   return Boolean(configured && (peer === configured || (isLoopback(peer) && isLoopback(configured))));
 }
 
+/** Cloudflare supplies CF-Visitor when forwarding the original client scheme.
+ * Only use it if the immediate peer is the explicitly trusted local proxy. */
+function cloudflareVisitorScheme(header) {
+  if (typeof header !== 'string' || header.length > 64) return null;
+  try {
+    const data = JSON.parse(header);
+    if (data && typeof data === 'object' && !Array.isArray(data) &&
+        Object.keys(data).length === 1 && ['http', 'https'].includes(data.scheme)) return data.scheme;
+  } catch { /* Invalid proxy metadata cannot attest HTTPS. */ }
+  return null;
+}
+
 export function secureAuthRequest(request, config) {
-  return request.socket.encrypted === true || (trustedProxy(request, config) && request.headers['x-forwarded-proto'] === 'https');
+  if (request.socket.encrypted === true) return true;
+  if (!trustedProxy(request, config)) return false;
+
+  const forwarded = request.headers['x-forwarded-proto'];
+  const cfScheme = cloudflareVisitorScheme(request.headers['cf-visitor']);
+  // Reject a conflicting or malformed X-Forwarded-Proto rather than downgrading
+  // to another header. CF-Visitor is only a fallback when XFP is absent.
+  if (forwarded !== undefined) return forwarded === 'https' && (cfScheme === null || cfScheme === 'https');
+  return cfScheme === 'https';
 }
 
 export function authClientIp(request, config) {
