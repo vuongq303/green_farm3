@@ -30,6 +30,8 @@ const PUBLIC_MESSAGES = {
   invalid_credentials: 'Tên tài khoản/email hoặc mật khẩu không đúng.',
   invalid_registration: 'Kiểm tra tên tài khoản, email và mật khẩu (12–128 ký tự); hai mật khẩu phải khớp.',
   account_exists: 'Tên tài khoản hoặc email đã được sử dụng.',
+  username_exists: 'Tên tài khoản đã được sử dụng. Hãy chọn tên khác.',
+  email_exists: 'Email đã được đăng ký. Hãy dùng email khác hoặc đăng nhập.',
   csrf_failed: 'Phiên biểu mẫu không hợp lệ. Hãy đóng và mở lại đăng nhập từ trò chơi.',
   password_unavailable: 'Máy chủ đang bận xử lý đăng nhập. Vui lòng chờ rồi thử lại.',
 };
@@ -257,7 +259,10 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
             providerUserId: random(), username: fields.username, email: fields.email, passwordHash, now: seconds()
           });
           if (!registered) fail(400, 'attempt_expired');
-          if (registered.duplicate) fail(409, 'account_exists');
+          if (registered.duplicate) {
+            fail(409, registered.field === 'username' ? 'username_exists' :
+              registered.field === 'email' ? 'email_exists' : 'account_exists');
+          }
           await passwordReply(response, registered.attempt, registered.user, 201);
         } else {
           const identifier = normalizeIdentifier(body.login);
