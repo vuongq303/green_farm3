@@ -180,7 +180,12 @@ test('registration and WebView claim are atomic across duplicate credentials and
   await store.createAttempt(record);
   await store.startPasswordAttempt(record.id, cookieHash, csrfHash, f.now);
   assert.deepEqual(await store.registerPasswordAndClaim({ ...f.record('-dup', { username: existing.username }),
-    cookieHash, csrfHash }), { duplicate: true });
+    cookieHash, csrfHash }), { duplicate: true, field: 'username' });
+  assert.deepEqual(await store.registerPasswordAndClaim({ ...f.record('-dup-email', { email: existing.email }),
+    cookieHash, csrfHash }), { duplicate: true, field: 'email' });
+  assert.deepEqual(await store.registerPasswordAndClaim({ ...f.record('-dup-both',
+    { username: existing.username, email: existing.email }), cookieHash, csrfHash }),
+    { duplicate: true, field: 'both' });
   assert.ok(await store.getPasswordWebSession(cookieHash, f.now), 'duplicate credentials roll back attempt consumption');
   assert.equal(await store.registerPasswordAndClaim({ ...f.record('-csrf'), cookieHash, csrfHash: hash(token()) }), undefined);
   const candidates = [f.record('-new-a'), f.record('-new-b')];
