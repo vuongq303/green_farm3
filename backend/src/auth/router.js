@@ -177,8 +177,6 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
   }
 
   async function handle(request, response, url) {
-    console.log('Auth request', request.method, url.pathname, request.headers['user-agent']);
-    console.log('response headers', response.body, response.headers);
     const path = url.pathname;
     if (path !== '/auth' && !path.startsWith('/auth/')) return false;
     let browserAttempt;
@@ -195,7 +193,7 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
         response.end(asset.body); return true;
       }
       configured();
-      if (!isSecureRequest(request, config)) fail(400, 'https_required');
+       if (!isSecureRequest(request, config)) fail(400, 'https_required');
       const client = authClientIp(request, config);
       if (path === '/auth/attempt' || path === '/auth/facebook' || path === '/auth/google') {
         if (request.method !== 'POST') fail(405, 'method_not_allowed');
