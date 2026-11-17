@@ -53,9 +53,14 @@ export function loadSocialAuthConfig(env = process.env) {
 }
 
 function normalizedIp(value) { return value?.startsWith('::ffff:') ? value.slice(7) : value; }
+function isLoopback(value) { return value === '127.0.0.1' || value === '::1'; }
 
 export function trustedProxy(request, config) {
-  return Boolean(config.trustedProxyIp && normalizedIp(request.socket.remoteAddress) === normalizedIp(config.trustedProxyIp));
+  const peer = normalizedIp(request.socket.remoteAddress);
+  const configured = normalizedIp(config?.trustedProxyIp);
+  // cloudflared connecting to localhost may use either IPv4 or IPv6.
+  // Only trust loopback when the operator explicitly configured a loopback proxy.
+  return Boolean(configured && (peer === configured || (isLoopback(peer) && isLoopback(configured))));
 }
 
 export function secureAuthRequest(request, config) {
