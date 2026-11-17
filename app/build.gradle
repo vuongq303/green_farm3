@@ -262,6 +262,13 @@ tasks.matching { it.name == 'validateSigningDebug' }.configureEach {
     dependsOn prepareDebugSigningKey
 }
 
+// AndroidTest packaging also signs with the generated debug keystore.
+// Gradle 9 validates the producer/consumer relationship even when AGP supplies
+// the signing file through signingConfigs rather than as a task output provider.
+tasks.matching { it.name == 'packageDebugAndroidTest' }.configureEach {
+    dependsOn prepareDebugSigningKey
+}
+
 def compileDexMergeTool = tasks.register('compileDexMergeTool', JavaCompile) {
     source rootProject.file('tools/MergeCoreDex.java')
     source rootProject.file('tools/PatchBackendEndpoint.java')
