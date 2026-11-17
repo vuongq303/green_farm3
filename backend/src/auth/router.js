@@ -1,5 +1,5 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
-import { APP_REDIRECT_URI, authClientIp, secureAuthRequest } from './config.js';
+import { APP_REDIRECT_URI, authClientIp, secureAuthRequest, trustedProxy } from './config.js';
 import { createProviderClient, ProviderError } from './providers.js';
 import { ASSETS, PAGE_HEADERS, renderError, renderSuccess, renderPasswordForm } from '../../web/pages.mjs';
 import { hashPassword, normalizeIdentifier, PasswordError, registration, verifyPassword } from './passwords.js';
@@ -177,8 +177,6 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
   }
 
   async function handle(request, response, url) {
-    console.log('Auth request', request.method, url.pathname, request.headers['user-agent']);
-    console.log('response headers', response.body, response.headers);
     const path = url.pathname;
     if (path !== '/auth' && !path.startsWith('/auth/')) return false;
     let browserAttempt;
@@ -195,7 +193,23 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
         response.end(asset.body); return true;
       }
       configured();
-      if (!isSecureRequest(request, config)) fail(400, 'https_required');
+      if (!isSecureRequest(request, config)) {
+        // Log only connection metadata; never log headers containing credentials,
+        // cookies, bearer tokens, request bodies or OAuth codes.
+        try {
+          errorLog({
+            event: 'auth_https_rejected',
+            proxy_configured: Boolean(config.trustedProxyIp),
+            trusted_proxy: trustedProxy(request, config),
+            direct_tls: request.socket.encrypted === true,
+            proxy_peer: request.socket.remoteAddress ?? 'unknown',
+            forwarded_proto: request.headers['x-forwarded-proto'] === 'https' ? 'https' :
+              request.headers['x-forwarded-proto'] === 'http' ? 'http' : 'missing_or_invalid',
+            cf_visitor_present: typeof request.headers['cf-visitor'] === 'string'
+          });
+        } catch { /* Logging must not change the HTTP response. */ }
+        fail(400, 'https_required');
+      }
       const client = authClientIp(request, config);
       if (path === '/auth/attempt' || path === '/auth/facebook' || path === '/auth/google') {
         if (request.method !== 'POST') fail(405, 'method_not_allowed');
