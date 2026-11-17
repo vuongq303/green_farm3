@@ -267,6 +267,12 @@ test('password HTTP rejects cross-origin/CSRF and duplicate accounts, keeps wron
   assert.equal(response.status, 201);
   const account = await f.exchange(form, response);
   const duplicate = await f.form();
+  response = await f.post('/auth/register', { ...body, username: f.prefix,
+    email: f.prefix + '_different@example.test', attempt: duplicate.attempt, csrf: duplicate.csrf }, duplicate.headers);
+  await publicError(response, 409, 'username_exists', 'Tên tài khoản đã được sử dụng. Hãy chọn tên khác.');
+  response = await f.post('/auth/register', { ...body, username: f.prefix + '_different',
+    attempt: duplicate.attempt, csrf: duplicate.csrf }, duplicate.headers);
+  await publicError(response, 409, 'email_exists', 'Email đã được đăng ký. Hãy dùng email khác hoặc đăng nhập.');
   response = await f.post('/auth/register', { ...body, attempt: duplicate.attempt, csrf: duplicate.csrf }, duplicate.headers);
   await publicError(response, 409, 'account_exists', 'Tên tài khoản hoặc email đã được sử dụng.');
   response = await f.post('/auth/login', { attempt: duplicate.attempt, csrf: duplicate.csrf, login: f.prefix, password: password + '-wrong' }, duplicate.headers);
