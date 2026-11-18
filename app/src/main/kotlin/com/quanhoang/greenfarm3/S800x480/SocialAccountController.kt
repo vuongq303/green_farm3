@@ -43,6 +43,9 @@ class SocialAccountController private constructor() {
                     override fun now() = System.currentTimeMillis()
                     override fun randomBytes(size: Int) = ByteArray(size).also { random.nextBytes(it) }
                     override fun execute(work: () -> Unit) { worker.execute(work) }
+                    override fun authRecovery(stage: String, reason: String) {
+                        Log.w("GreenFarmAccount", "auth_recovery stage=$stage reason=$reason")
+                    }
                     override fun openBrowser(url: String) {
                         val activity = hostActivity() ?: throw SocialAuthFailure("browser_unavailable")
                         activity.runOnUiThread {

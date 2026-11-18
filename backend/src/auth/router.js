@@ -50,10 +50,10 @@ function sameText(first, second) {
 }
 
 class AuthError extends Error {
-  constructor(status, code) { super(code); this.status = status; this.code = code; }
+  constructor(status, code, conflicts) { super(code); this.status = status; this.code = code; this.conflicts = conflicts; }
 }
 
-function fail(status, code) { throw new AuthError(status, code); }
+function fail(status, code, conflicts) { throw new AuthError(status, code, conflicts); }
 function only(object, keys) {
   if (!object || typeof object !== 'object' || Array.isArray(object) ||
     Object.keys(object).some(key => !keys.includes(key))) fail(400, 'invalid_request');
@@ -257,7 +257,7 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
             providerUserId: random(), username: fields.username, email: fields.email, passwordHash, now: seconds()
           });
           if (!registered) fail(400, 'attempt_expired');
-          if (registered.duplicate) fail(409, 'account_exists');
+          if (registered.duplicate) fail(409, 'account_exists', registered.conflicts);
           await passwordReply(response, registered.attempt, registered.user, 201);
         } else {
           const identifier = normalizeIdentifier(body.login);
@@ -368,7 +368,22 @@ export function createSocialAuthRouter({ config, store, providers = createProvid
           message: PUBLIC_MESSAGES[failure.code] ?? PUBLIC_MESSAGES.authentication_failed,
           returnUrl: browserAttempt ? callback(browserAttempt, { error: appError }) : undefined
         }));
-      } else jsonReply(response, failure.status, { error: { code: failure.code, message: PUBLIC_MESSAGES[failure.code] ?? PUBLIC_MESSAGES.authentication_failed } });
+      } else {
+        const publicError = { code: failure.code, message: PUBLIC_MESSAGES[failure.code] ?? PUBLIC_MESSAGES.authentication_failed };
+        if (failure.code === 'account_exists' && Array.isArray(failure.conflicts)) {
+          const conflicts = ['username', 'email'].filter(field => failure.conflicts.includes(field));
+          const messages = {
+            username: 'Tên tài khoản đã tồn tại. Vui lòng chọn tên khác.',
+            email: 'Email đã được đăng ký. Vui lòng sử dụng email khác.',
+            'username,email': 'Tên tài khoản và email đã được sử dụng.',
+          };
+          if (messages[conflicts.join(',')]) {
+            publicError.message = messages[conflicts.join(',')];
+            publicError.conflicts = conflicts;
+          }
+        }
+        jsonReply(response, failure.status, { error: publicError });
+      }
     }
     return true;
   }

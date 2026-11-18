@@ -31,15 +31,21 @@ open class GloftGF2F : MIDlet() {
     public override fun mj() {
         synchronized(GloftGF2F::class.java) {
             if (acw != null) return
+            var storageStage = "transfer_gate"
             try {
                 val context = MIDlet.cnA ?: WrapperDeviceContext.getContext()
                 if (context != null && !SaveTransferGate.enterGame(context)) {
                     ProgressSaveController.showStartupError()
                     return
                 }
+                storageStage = "progress_store"
                 ProgressSaveController.initialize()
             } catch (failure: RuntimeException) {
-                android.util.Log.e("GreenFarmSave", "storage_initialize_failed", failure)
+                android.util.Log.e("GreenFarmSave", "storage_initialize_failed method=GloftGF2F.mj" +
+                    " phase=bootstrap_storage stage=$storageStage " +
+                    (if (storageStage == "progress_store") "database=greenfarm-progress.db slot=device-local " else "file=save-transfer.lock ") +
+                    SaveRestoreException.diagnostics(failure, if (storageStage == "progress_store")
+                        SaveRestoreException.Code.SQLITE_OPEN_FAILED else SaveRestoreException.Code.ENGINE_RESTORE_FAILED), null)
                 ProgressSaveController.showStartupError()
                 return
             }
@@ -60,7 +66,8 @@ open class GloftGF2F : MIDlet() {
                     }
                 }
             } catch (failure: RuntimeException) {
-                android.util.Log.e("GreenFarmResources", "engine_initialize_failed", failure)
+                android.util.Log.e("GreenFarmResources", "engine_initialize_failed method=GloftGF2F.mj phase=engine_init " +
+                    SaveRestoreException.diagnostics(failure, SaveRestoreException.Code.ENGINE_RESTORE_FAILED), null)
                 ProgressSaveController.showEngineStartupError()
                 return
             }

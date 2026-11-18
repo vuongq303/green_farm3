@@ -49,6 +49,12 @@ async function insertPasswordUser(connection, { providerUserId, username, email,
   return user(row);
 }
 
+async function passwordConflicts(connection, username, email) {
+  const [rows] = await connection.execute(`SELECT username, email FROM gf_password_accounts
+    WHERE username = ? OR email = ?`, [username, email]);
+  return ['username', 'email'].filter(field => rows.some(row => row[field] === (field === 'username' ? username : email)));
+}
+
 async function lockPasswordWebAttempt(connection, cookieHash, csrfHash, now) {
   const [[row]] = await connection.execute(`SELECT a.*, w.csrf_hash, w.expires_at AS web_expires_at
     FROM gf_auth_web_sessions w INNER JOIN gf_auth_attempts a ON a.id = w.attempt_id
@@ -124,13 +130,22 @@ export function createSocialStore(pool) {
     },
 
     async registerPasswordAndClaim({ cookieHash, csrfHash, providerUserId, username, email, passwordHash, now }) {
-      return transaction(async connection => {
+      const registered = await transaction(async connection => {
         const row = await lockPasswordWebAttempt(connection, cookieHash, csrfHash, now);
         if (!row) return undefined;
+        const conflicts = await passwordConflicts(connection, username, email);
+        if (conflicts.length) return { duplicate: true, conflicts };
         const account = await insertPasswordUser(connection, { providerUserId, username, email, passwordHash, now });
         await connection.execute('UPDATE gf_auth_attempts SET consumed_at = ? WHERE id = ?', [now, row.id]);
         return { user: account, attempt: attempt({ ...row, consumed_at: now }) };
       }, { duplicateIsUndefined: true, duplicateResult: { duplicate: true } });
+      if (registered?.duplicate && !registered.conflicts) {
+        // A concurrent registration can pass the check above. The existing
+        // UNIQUE indexes reject it atomically; classify only committed fields
+        // after rollback, rather than exposing/parsing a database diagnostic.
+        return run(async () => ({ duplicate: true, conflicts: await passwordConflicts(pool, username, email) }));
+      }
+      return registered;
     },
 
     async findPasswordCredential(identifier) {

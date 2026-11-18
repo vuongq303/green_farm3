@@ -103,6 +103,15 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
   const context = await browser.newContext({ viewport: { width: 393, height: 720 }, isMobile: true, hasTouch: true });
   const page = await context.newPage();
   const errors = [];
+  const dialogs = [];
+  let expectingDialog = false;
+  page.on('dialog', async dialog => {
+    dialogs.push({ type: dialog.type(), message: dialog.message() });
+    if (!expectingDialog) {
+      errors.push('Unexpected duplicate native alert: ' + dialog.message());
+      await dialog.dismiss();
+    }
+  });
   page.on('pageerror', error => errors.push(error.message));
   const violations = [];
   await page.exposeFunction('recordCspViolation', directive => violations.push(directive));
@@ -126,15 +135,38 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
     assert.equal(await page.locator('#account-form').getAttribute('data-mode'), mode);
     return { state, verifier };
   }
-  async function fillRegistration(confirmation = password) {
-    await page.locator('[name=username]').fill(prefix);
-    await page.locator('[name=email]').fill(prefix + '@example.test');
+  async function fillRegistration(confirmation = password, username = prefix, email = prefix + '@example.test') {
+    await page.locator('[name=username]').fill(username);
+    await page.locator('[name=email]').fill(email);
     await page.locator('[name=password]').fill(password);
     await page.locator('[name=password_confirmation]').fill(confirmation);
   }
-  async function submit(status) {
+  async function acknowledge(action, pattern, success = false) {
+    const previousDialogs = dialogs.length;
+    const previousNavigations = navigations.length;
+    expectingDialog = true;
+    const nextDialog = page.waitForEvent('dialog');
+    const acting = action();
+    const dialog = await nextDialog;
+    try {
+      assert.equal(dialog.type(), 'alert', 'feedback must use a real window.alert dialog');
+      assert.match(dialog.message(), pattern);
+      if (success) {
+        // Keep the actual modal open past the 350 ms launch delay. No callback
+        // navigation may happen until the user dismisses this native dialog.
+        await new Promise(resolve => setTimeout(resolve, 450));
+        assert.equal(navigations.length, previousNavigations, 'success alert must be acknowledged before handoff');
+      }
+    } finally {
+      expectingDialog = false;
+      await dialog.accept();
+      await acting;
+    }
+    assert.equal(dialogs.length, previousDialogs + 1, 'each outcome produces exactly one native alert');
+  }
+  async function submit(status, alertPattern, success = false) {
     const response = page.waitForResponse(res => ['/auth/login', '/auth/register'].includes(new URL(res.url()).pathname));
-    await page.locator('#account-submit').click();
+    await acknowledge(() => page.locator('#account-submit').click(), alertPattern, success);
     assert.equal((await response).status(), status);
     await page.waitForFunction(() => document.getElementById('account-status').getAttribute('data-state') !== 'loading');
   }
@@ -173,13 +205,13 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
   }
 
   const signup = await attempt('register');
-  await page.locator('#account-submit').click();
+  await acknowledge(() => page.locator('#account-submit').click(), /Vui lòng nhập tên tài khoản/u);
   await feedback(/Vui lòng nhập tên tài khoản/u);
   await fillRegistration('different confirmation 123');
-  await page.locator('#account-submit').click();
+  await acknowledge(() => page.locator('#account-submit').click(), /xác nhận chưa khớp/u);
   await feedback(/xác nhận chưa khớp/u);
   await fillRegistration();
-  await submit(201);
+  await submit(201, /Đăng ký thành công/u, true);
   const registered = await exchange(signup, /Đăng ký thành công/u);
   if (process.env.BROWSER_TEST_ARTIFACTS) {
     mkdirSync(process.env.BROWSER_TEST_ARTIFACTS, { recursive: true });
@@ -188,11 +220,24 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
 
   await attempt('register');
   await fillRegistration();
-  await submit(409);
+  await submit(409, /Tên tài khoản và email đã được sử dụng/u);
   await feedback(/đã được sử dụng/u);
   assert.equal(await page.locator('[name=username]').inputValue(), prefix);
   assert.equal(await page.locator('[name=email]').inputValue(), prefix + '@example.test');
   assert.equal(await page.locator('[name=password]').inputValue(), '');
+  await fillRegistration(password, prefix, 'other_' + prefix + '@example.test');
+  await submit(409, /^Tên tài khoản đã tồn tại\. Vui lòng chọn tên khác\.$/u);
+  await feedback(/Tên tài khoản đã tồn tại/u);
+  await fillRegistration(password, prefix + '_2', prefix + '@example.test');
+  await submit(409, /^Email đã được đăng ký\. Vui lòng sử dụng email khác\.$/u);
+  await feedback(/Email đã được đăng ký/u);
+
+  await attempt();
+  await page.locator('[name=login]').fill(prefix);
+  await page.locator('[name=password]').fill(password);
+  await page.evaluate(() => { document.querySelector('[name=csrf]').value = 'x'.repeat(43); });
+  await submit(403, /Phiên biểu mẫu.*mở lại đăng nhập/u);
+  await feedback(/Phiên biểu mẫu/u);
 
   const login = await attempt();
   await page.locator('[name=login]').fill('not_' + prefix);
@@ -205,9 +250,11 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
     await requestGate;
     await route.continue(); // Delay delivery, never substitute the real API response.
   });
-  const submitting = submit(401);
+  const beforeLoadingDialogs = dialogs.length;
+  const submitting = submit(401, /mật khẩu không đúng/u);
   await page.waitForFunction(() => document.getElementById('account-status').getAttribute('data-state') === 'loading');
   assert.ok(await page.locator('#account-submit').isDisabled());
+  assert.equal(dialogs.length, beforeLoadingDialogs, 'loading must not open a blocking dialog');
   await page.evaluate(() => document.getElementById('account-form').requestSubmit());
   releaseRequest();
   await submitting;
@@ -216,10 +263,10 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
   await feedback(/mật khẩu không đúng/u);
   await page.locator('[name=login]').fill(prefix);
   await page.locator('[name=password]').fill('wrong password 123');
-  await submit(401);
+  await submit(401, /mật khẩu không đúng/u);
   await feedback(/mật khẩu không đúng/u);
   await page.locator('[name=password]').fill(password);
-  await submit(200);
+  await submit(200, /Đăng nhập thành công/u, true);
   const signedIn = await exchange(login, /Đăng nhập thành công/u);
   assert.equal(signedIn.user.game_id, registered.user.game_id);
   await page.close();
@@ -228,7 +275,8 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
   const refreshed = await api('/auth/refresh', { refresh_token: signedIn.refresh_token });
   assert.equal(refreshed.status, 200);
   assert.equal(refreshed.body.user.game_id, registered.user.game_id);
-  assert.deepEqual(errors, [], 'no JavaScript exception prevented submit or feedback');
+  assert.equal(dialogs.length, 10, 'one native alert per tested validation, API error or success; no loading alert');
+  assert.deepEqual(errors, [], 'no JavaScript exception or duplicate alert prevented submit or feedback');
   assert.deepEqual(violations, [], 'the actual response CSP allowed all required assets, requests and feedback');
   assert.deepEqual(backendErrors, []);
 });

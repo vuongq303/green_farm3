@@ -88,12 +88,12 @@ async function fixture(t, extra = {}) {
   return { prefix, config, errors, get, post, form, exchange, attempts, restart: async () => { await stop(); await start(); } };
 }
 
-async function publicError(response, status, code, message) {
+async function publicError(response, status, code, message, conflicts) {
   assert.equal(response.status, status);
   assert.match(response.headers.get('content-type'), /^application\/json/u);
   assert.equal(response.headers.get('cache-control'), 'no-store');
   const result = await response.json();
-  assert.deepEqual(result, { error: { code, message } });
+  assert.deepEqual(result, { error: { code, message, ...(conflicts ? { conflicts } : {}) } });
   return result;
 }
 
@@ -124,6 +124,37 @@ test('real password API returns public errors and keeps the pending form usable 
   const registered = await f.post('/auth/register', body, form.headers);
   assert.equal(registered.status, 201, 'retries reuse the original unconsumed form and real database');
   assert.equal((await f.exchange(form, registered)).user.display_name, f.prefix);
+});
+
+test('registration reports normalized username, email and combined conflicts without changing existing identities', async t => {
+  const f = await fixture(t);
+  for (const username of [f.prefix, f.prefix + '_b']) {
+    const signup = await f.form();
+    const registered = await f.post('/auth/register', { attempt: signup.attempt, csrf: signup.csrf,
+      username, email: username + '@example.test', password, password_confirmation: password }, signup.headers);
+    assert.equal(registered.status, 201);
+    await f.exchange(signup, registered);
+  }
+  const originalRows = async () => (await pool.execute(`SELECT u.*, p.* FROM users u
+    INNER JOIN gf_password_accounts p ON p.user_id = u.id WHERE p.username IN (?, ?) ORDER BY u.id`,
+  [f.prefix, f.prefix + '_b']))[0];
+  const before = await originalRows();
+  const scenarios = [
+    [f.prefix.toUpperCase(), f.prefix + '_new@example.test', ['username'], 'Tên tài khoản đã tồn tại. Vui lòng chọn tên khác.'],
+    [f.prefix + '_new', (f.prefix + '@example.test').toUpperCase(), ['email'], 'Email đã được đăng ký. Vui lòng sử dụng email khác.'],
+    [f.prefix.toUpperCase(), (f.prefix + '@example.test').toUpperCase(), ['username', 'email'], 'Tên tài khoản và email đã được sử dụng.'],
+    [f.prefix.toUpperCase(), (f.prefix + '_b@example.test').toUpperCase(), ['username', 'email'], 'Tên tài khoản và email đã được sử dụng.'],
+  ];
+  for (const [index, [username, email, conflicts, message]] of scenarios.entries()) {
+    const form = await f.form();
+    const fields = { attempt: form.attempt, csrf: form.csrf, username, email, password, password_confirmation: password };
+    await publicError(await f.post('/auth/register', fields, form.headers), 409, 'account_exists', message, conflicts);
+    const corrected = f.prefix + '_r' + index;
+    const registered = await f.post('/auth/register', { ...fields, username: corrected, email: corrected + '@example.test' }, form.headers);
+    assert.equal(registered.status, 201, 'a conflict never consumes the attempt or creates a session');
+    assert.equal((await f.exchange(form, registered)).user.display_name, corrected);
+  }
+  assert.deepEqual(await originalRows(), before, 'duplicate registration never updates existing account data');
 });
 
 for (const [description, authEnvironment, facebookConfigured] of [
@@ -268,7 +299,7 @@ test('password HTTP rejects cross-origin/CSRF and duplicate accounts, keeps wron
   const account = await f.exchange(form, response);
   const duplicate = await f.form();
   response = await f.post('/auth/register', { ...body, attempt: duplicate.attempt, csrf: duplicate.csrf }, duplicate.headers);
-  await publicError(response, 409, 'account_exists', 'Tên tài khoản hoặc email đã được sử dụng.');
+  await publicError(response, 409, 'account_exists', 'Tên tài khoản và email đã được sử dụng.', ['username', 'email']);
   response = await f.post('/auth/login', { attempt: duplicate.attempt, csrf: duplicate.csrf, login: f.prefix, password: password + '-wrong' }, duplicate.headers);
   assert.equal(response.status, 401);
   const invalid = await publicError(response, 401, 'invalid_credentials', 'Tên tài khoản/email hoặc mật khẩu không đúng.');

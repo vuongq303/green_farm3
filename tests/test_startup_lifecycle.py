@@ -60,6 +60,8 @@ public class StartupProbe {
         peers=peers[:start]+peers[end:]
         self.run_fixture(kotlin,{'probe/StartupProbe.java':peers,'probe/FarmGameEngine.java':farm,
             'javax/microedition/lcdui/r.java':'package javax.microedition.lcdui;public class r {public static Object b(Object o){return new Object();}}',
+            'probe/SaveRestoreException.java': (ROOT / 'app/src/main/java/com/quanhoang/greenfarm3/S800x480/SaveRestoreException.java').read_text().replace(
+                'package com.quanhoang.greenfarm3.S800x480;', 'package probe;'),
             'android/util/Log.java':'package android.util;public class Log {public static int e(String a,String b,Throwable c){return 0;}}'},'probe.StartupProbe')
 
     def test_resume_uses_layout_readiness_without_fixed_ui_sleep(self):
