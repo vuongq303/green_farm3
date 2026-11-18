@@ -91,7 +91,7 @@ class BinaryBaselineTest(unittest.TestCase):
 
     def test_main_uses_windows_jar_signer_argument_arrays_with_space_paths(self):
         sdk = self.root / 'Android SDK & tools'
-        tools = sdk / 'build-tools/35.0.0'
+        tools = sdk / 'build-tools/37.0.0'
         java = self.root / 'Java Home/bin/java.exe'
         zipalign, jar = tools / 'zipalign.exe', tools / 'lib/apksigner.jar'
         for path in (java, zipalign, jar):

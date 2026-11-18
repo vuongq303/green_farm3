@@ -13,6 +13,7 @@ from android_build_tools import jdk_tool
 
 ROOT = Path(__file__).resolve().parents[1]
 KOTLIN_VERSION = '2.4.21'
+DEBUG_CLASSES = ROOT / 'app/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes'
 
 
 @lru_cache(maxsize=1)

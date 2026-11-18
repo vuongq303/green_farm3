@@ -302,6 +302,23 @@ class LocalBackendPackagingTest(unittest.TestCase):
                 self.assert_rejected_before_output("Base build revision metadata mismatch")
                 revision[field] = valid
 
+    def test_activity_exit_broadcast_guard_requires_exact_provenance(self):
+        def prepare_guarded():
+            return build.prepare(self.original, self.base, self.dex, self.output,
+                                 require_activity_exit_broadcast=True)
+        with self.assertRaisesRegex(ValueError, 'Activity-exit broadcast guard provenance'):
+            prepare_guarded()
+        for field, invalid in (('registration_method', 'akz()V'),
+                               ('send_method', 'akA(I)V'),
+                               ('reverse_patch_semantics_verified', 1)):
+            self.patch['activity_exit_broadcast'] = dict(build.ACTIVITY_EXIT_BROADCAST, **{field: invalid})
+            self.write_reports()
+            self.assert_rejected_before_output('Activity-exit broadcast guard provenance')
+        self.patch['activity_exit_broadcast'] = build.ACTIVITY_EXIT_BROADCAST
+        self.write_reports()
+        prepare_guarded()
+        self.assertTrue(self.output.exists())
+
     def test_rejects_multiple_dex_or_duplicate_entries_even_with_matching_base_hash(self):
         for name, data in (("classes2.dex", b"unexpected secondary DEX"),
                            ("AndroidManifest.xml", b"ambiguous duplicate manifest")):

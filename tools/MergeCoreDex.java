@@ -20,9 +20,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.jf.dexlib2.AccessFlags;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
 import org.jf.dexlib2.iface.ClassDef;
+import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.writer.io.MemoryDataStore;
 import org.jf.dexlib2.writer.pool.DexPool;
 
@@ -37,6 +39,7 @@ import org.jf.dexlib2.writer.pool.DexPool;
  */
 public final class MergeCoreDex {
     private static final String CORE = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/";
+    private static final String D8_LAMBDA_METHOD = "Lcom/android/tools/r8/annotations/LambdaMethod;";
     private static final List<String> R_FAMILIES = Arrays.asList(
             "Lcom/gameloft/android/ANMP/GloftGF2F/R",
             "Lcom/facebook/R",
@@ -78,6 +81,29 @@ public final class MergeCoreDex {
                     || (descriptor.startsWith(family + "$") && descriptor.endsWith(";"))) return true;
         }
         return false;
+    }
+
+    /** D8 37 adds a debug annotation for desugared lambda call sites. */
+    private static boolean isD8LambdaAnnotation(ClassDef definition) {
+        int annotationFlags = AccessFlags.PUBLIC.getValue() | AccessFlags.INTERFACE.getValue()
+                | AccessFlags.ABSTRACT.getValue() | AccessFlags.SYNTHETIC.getValue()
+                | AccessFlags.ANNOTATION.getValue();
+        if (definition.getAccessFlags() != annotationFlags
+                || !"Ljava/lang/Object;".equals(definition.getSuperclass())
+                || !definition.getInterfaces().equals(Collections.singletonList("Ljava/lang/annotation/Annotation;"))
+                || definition.getFields().iterator().hasNext()) {
+            return false;
+        }
+        int methodFlags = AccessFlags.PUBLIC.getValue() | AccessFlags.ABSTRACT.getValue();
+        Set<String> expectedMethods = new HashSet<>(Arrays.asList("holder", "method", "proto"));
+        for (Method method : definition.getMethods()) {
+            if (!expectedMethods.remove(method.getName()) || method.getAccessFlags() != methodFlags
+                    || !method.getParameters().isEmpty() || method.getImplementation() != null
+                    || !"Ljava/lang/String;".equals(method.getReturnType())) {
+                return false;
+            }
+        }
+        return expectedMethods.isEmpty();
     }
 
     private static ApkDex readApk(Path apk) throws IOException {
@@ -234,8 +260,15 @@ public final class MergeCoreDex {
                 || !overlay.classes.keySet().containsAll(REQUIRED_CORE)) {
             throw new IOException("Original/overlay APK must define every required game core: " + REQUIRED_CORE);
         }
-        for (String descriptor : overlay.classes.keySet()) {
-            if (!allowedOverlay(descriptor)) throw new IOException("Overlay class is outside whitelist or protected: " + descriptor);
+        for (ClassDef definition : overlay.classes.values()) {
+            String descriptor = definition.getType();
+            if (descriptor.equals(D8_LAMBDA_METHOD)) {
+                if (original.classes.containsKey(descriptor) || !isD8LambdaAnnotation(definition)) {
+                    throw new IOException("Unexpected definition of D8 lambda annotation: " + descriptor);
+                }
+            } else if (!allowedOverlay(descriptor)) {
+                throw new IOException("Overlay class is outside whitelist or protected: " + descriptor);
+            }
         }
         if (overlay.version > original.version) {
             throw new IOException("Overlay DEX version " + overlay.version + " requires a newer runtime than original " + original.version);

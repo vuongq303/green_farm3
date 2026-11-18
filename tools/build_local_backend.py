@@ -44,9 +44,18 @@ FACEBOOK_LIFECYCLE = {
     'reverse_patch_semantics_verified': True,
 }
 
+ACTIVITY_EXIT_BROADCAST = {
+    'owner': 'Ljavax/microedition/midlet/BaseActivity;',
+    'helper': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ActivityExitBroadcast;',
+    'registration_method': 'aky()V',
+    'send_method': 'akA()V',
+    'reverse_patch_semantics_verified': True,
+}
+
 
 def prepare(original, base, patched_dex, output, relocated_dex=None, require_local_startup_guard=False,
-            require_network_diagnostics=False, require_legacy_facebook_lifecycle=False):
+            require_network_diagnostics=False, require_legacy_facebook_lifecycle=False,
+            require_activity_exit_broadcast=False):
     original, base, patched_dex, output = map(Path, (original, base, patched_dex, output))
     base_report = base.with_suffix('.provenance.json')
     patch_report = patched_dex.with_suffix(patched_dex.suffix + '.json')
@@ -122,6 +131,11 @@ def prepare(original, base, patched_dex, output, relocated_dex=None, require_loc
     if ((require_legacy_facebook_lifecycle and not facebook_verified)
             or (facebook is not None and not facebook_verified)):
         raise ValueError('Legacy Facebook lifecycle guard provenance mismatch')
+    activity_exit = patch.get('activity_exit_broadcast')
+    if require_activity_exit_broadcast or activity_exit is not None:
+        if (activity_exit != ACTIVITY_EXIT_BROADCAST
+                or activity_exit.get('reverse_patch_semantics_verified') is not True):
+            raise ValueError('Activity-exit broadcast guard provenance mismatch')
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(base) as before:
         names = before.namelist()
         if len(names) != len(set(names)) or any(
@@ -160,6 +174,7 @@ def main():
     parser.add_argument('--require-local-startup-guard', action='store_true')
     parser.add_argument('--require-network-diagnostics', action='store_true')
     parser.add_argument('--require-legacy-facebook-lifecycle', action='store_true')
+    parser.add_argument('--require-activity-exit-broadcast', action='store_true')
     args = parser.parse_args()
     output = args.output.resolve()
     inputs = (args.original, args.base, args.patched_dex, args.keystore,
@@ -175,7 +190,7 @@ def main():
         unsigned, aligned, signed = [temp / n for n in ('unsigned.apk', 'aligned.apk', 'signed.apk')]
         baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned, args.relocated_dex,
                                   args.require_local_startup_guard, args.require_network_diagnostics,
-                                  args.require_legacy_facebook_lifecycle)
+                                  args.require_legacy_facebook_lifecycle, args.require_activity_exit_broadcast)
         if args.relocated_dex is not None:
             from verify_runtime_apk import manifest
             relocation = json.loads(args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json').read_text())

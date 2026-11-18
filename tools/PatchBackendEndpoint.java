@@ -62,6 +62,20 @@ public final class PatchBackendEndpoint {
     static final String LOCAL_MODE = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;";
     static final String HTTP_OWNER = "Lcom/gameloft/a/b/e;";
     static final String NETWORK_HELPER = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/NetworkDiagnostics;";
+    private static final String BASE_ACTIVITY = "Ljavax/microedition/midlet/BaseActivity;";
+    private static final String EXIT_BROADCAST = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ActivityExitBroadcast;";
+    private static final String CONTEXT = "Landroid/content/Context;";
+    private static final String BROADCAST_RECEIVER = "Landroid/content/BroadcastReceiver;";
+    private static final String INTENT_FILTER = "Landroid/content/IntentFilter;";
+    private static final String INTENT = "Landroid/content/Intent;";
+    private static final MethodReference REGISTER_RECEIVER = new ImmutableMethodReference(
+            BASE_ACTIVITY, "registerReceiver", Arrays.asList(BROADCAST_RECEIVER, INTENT_FILTER), INTENT);
+    private static final MethodReference SEND_BROADCAST = new ImmutableMethodReference(
+            BASE_ACTIVITY, "sendBroadcast", Collections.singletonList(INTENT), "V");
+    private static final MethodReference REGISTER_EXIT = new ImmutableMethodReference(
+            EXIT_BROADCAST, "register", Arrays.asList(CONTEXT, BROADCAST_RECEIVER, INTENT_FILTER), INTENT);
+    private static final MethodReference SEND_EXIT = new ImmutableMethodReference(
+            EXIT_BROADCAST, "send", Arrays.asList(CONTEXT, INTENT), "V");
 
     static final String MIDLET_OWNER = "Ljavax/microedition/midlet/MIDlet;";
     static final String LEGACY_FACEBOOK_OWNER = "Ljavax/microedition/midlet/v;";
@@ -228,23 +242,74 @@ public final class PatchBackendEndpoint {
                 && reference.getReturnType().equals("V");
     }
 
-    private static BuilderInstruction replaceNetworkInvoke(Instruction instruction, NetworkHook hook,
-                                                           boolean reverse) throws IOException {
-        int count = ((VariableRegisterInstruction) instruction).getRegisterCount();
-        if (count != hook.helperParameters.size()) throw new IOException("Unexpected SDK HTTP invoke register count");
+    private static BuilderInstruction replaceVirtualInvoke(Instruction instruction, MethodReference replacement,
+                                                           int count, boolean reverse) throws IOException {
+        if (!(instruction instanceof VariableRegisterInstruction)
+                || ((VariableRegisterInstruction) instruction).getRegisterCount() != count) {
+            throw new IOException("Unexpected invoke register count: " + replacement);
+        }
         if (instruction.getOpcode() == (reverse ? Opcode.INVOKE_STATIC : Opcode.INVOKE_VIRTUAL)
                 && instruction instanceof FiveRegisterInstruction) {
             FiveRegisterInstruction registers = (FiveRegisterInstruction) instruction;
             return new BuilderInstruction35c(reverse ? Opcode.INVOKE_VIRTUAL : Opcode.INVOKE_STATIC,
                     count, registers.getRegisterC(), registers.getRegisterD(), registers.getRegisterE(),
-                    registers.getRegisterF(), registers.getRegisterG(), hook.reference(reverse));
+                    registers.getRegisterF(), registers.getRegisterG(), replacement);
         }
         if (instruction.getOpcode() == (reverse ? Opcode.INVOKE_STATIC_RANGE : Opcode.INVOKE_VIRTUAL_RANGE)
                 && instruction instanceof RegisterRangeInstruction) {
             return new BuilderInstruction3rc(reverse ? Opcode.INVOKE_VIRTUAL_RANGE : Opcode.INVOKE_STATIC_RANGE,
-                    ((RegisterRangeInstruction) instruction).getStartRegister(), count, hook.reference(reverse));
+                    ((RegisterRangeInstruction) instruction).getStartRegister(), count, replacement);
         }
-        throw new IOException("Unexpected SDK HTTP invoke opcode or format");
+        throw new IOException("Unexpected invoke opcode or format: " + replacement);
+    }
+
+    private static void requireExitBroadcastHelper(Map<String, ClassDef> definitions) throws IOException {
+        ClassDef helper = definitions.get(EXIT_BROADCAST);
+        if (helper == null) throw new IOException("Missing compiled activity-exit broadcast helper");
+        for (MethodReference expected : Arrays.asList(REGISTER_EXIT, SEND_EXIT)) {
+            int found = 0;
+            for (Method method : helper.getMethods()) {
+                if (expected.equals(method) && method.getImplementation() != null
+                        && AccessFlags.PUBLIC.isSet(method.getAccessFlags())
+                        && AccessFlags.STATIC.isSet(method.getAccessFlags())) found++;
+            }
+            if (found != 1) throw new IOException("Invalid activity-exit broadcast helper method: " + expected);
+        }
+    }
+
+    /** Keep BaseActivity's original receiver instance, lifecycle and instruction layout. */
+    private static ClassDef guardActivityExitBroadcast(ClassDef definition, boolean reverse) throws IOException {
+        List<Method> methods = new ArrayList<>();
+        int registerCalls = 0, sendCalls = 0;
+        for (Method method : definition.getMethods()) {
+            MethodImplementation implementation = method.getImplementation();
+            String caller = descriptor(method);
+            boolean registering = caller.equals("aky()V");
+            if (implementation == null || (!registering && !caller.equals("akA()V"))) {
+                methods.add(method);
+                continue;
+            }
+            MethodReference original = registering ? REGISTER_RECEIVER : SEND_BROADCAST;
+            MethodReference helper = registering ? REGISTER_EXIT : SEND_EXIT;
+            MethodReference expected = reverse ? helper : original;
+            MethodReference replacement = reverse ? original : helper;
+            MutableMethodImplementation code = new MutableMethodImplementation(implementation);
+            for (int i = 0; i < code.getInstructions().size(); i++) {
+                Instruction instruction = code.getInstructions().get(i);
+                MethodReference reference = methodReference(instruction);
+                if (replacement.equals(reference)) throw new IOException("Unexpected activity-exit broadcast invoke: " + reference);
+                if (!expected.equals(reference)) continue;
+                code.replaceInstruction(i, replaceVirtualInvoke(instruction, replacement, helper.getParameterTypes().size(), reverse));
+                if (registering) registerCalls++; else sendCalls++;
+            }
+            methods.add(new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
+                    method.getReturnType(), method.getAccessFlags(), method.getAnnotations(), method.getHiddenApiRestrictions(), code));
+        }
+        if (registerCalls != 1 || sendCalls != 1) {
+            throw new IOException("Expected one retained registration and one activity-exit broadcast invoke");
+        }
+        return new ImmutableClassDef(definition.getType(), definition.getAccessFlags(), definition.getSuperclass(),
+                definition.getInterfaces(), definition.getSourceFile(), definition.getAnnotations(), definition.getFields(), methods);
     }
 
     /** Add diagnostics around the original SDK's four reviewed HTTP calls. */
@@ -278,7 +343,8 @@ public final class PatchBackendEndpoint {
                     NetworkHook hook = NETWORK_HOOKS.get(hookIndex);
                     if (!hook.matches(reference, reverse)) continue;
                     counts[hookIndex]++;
-                    code.replaceInstruction(index, replaceNetworkInvoke(instruction, hook, reverse));
+                    code.replaceInstruction(index,
+                            replaceVirtualInvoke(instruction, hook.reference(reverse), hook.helperParameters.size(), reverse));
                     matched = true;
                     break;
                 }
@@ -610,14 +676,15 @@ public final class PatchBackendEndpoint {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 3 || args.length > 6) {
-            throw new IllegalArgumentException("Usage: PatchBackendEndpoint input.dex output.dex baseURL [--guard-local-startup] [--network-diagnostics] [--guard-legacy-facebook-lifecycle]");
+        if (args.length < 3 || args.length > 7) {
+            throw new IllegalArgumentException("Usage: PatchBackendEndpoint input.dex output.dex baseURL [--guard-local-startup] [--network-diagnostics] [--guard-legacy-facebook-lifecycle] [--guard-activity-exit-broadcast]");
         }
-        boolean localStartupGuard = false, networkDiagnostics = false, facebookLifecycle = false;
+        boolean localStartupGuard = false, networkDiagnostics = false, facebookLifecycle = false, activityExitBroadcast = false;
         for (int index = 3; index < args.length; index++) {
             if (args[index].equals("--guard-local-startup") && !localStartupGuard) localStartupGuard = true;
             else if (args[index].equals("--network-diagnostics") && !networkDiagnostics) networkDiagnostics = true;
             else if (args[index].equals("--guard-legacy-facebook-lifecycle") && !facebookLifecycle) facebookLifecycle = true;
+            else if (args[index].equals("--guard-activity-exit-broadcast") && !activityExitBroadcast) activityExitBroadcast = true;
             else throw new IllegalArgumentException("Unknown or duplicate patch option");
         }
         String replacement = validateUrl(args[2]);
@@ -654,6 +721,11 @@ public final class PatchBackendEndpoint {
             if (!original.containsKey(MIDLET_OWNER)) throw new IOException("Missing retained MIDlet owner");
             modified.put(MIDLET_OWNER, guardFacebookLifecycle(original.get(MIDLET_OWNER), false));
         }
+        if (activityExitBroadcast) {
+            requireExitBroadcastHelper(original);
+            if (!original.containsKey(BASE_ACTIVITY)) throw new IOException("Missing retained BaseActivity");
+            modified.put(BASE_ACTIVITY, guardActivityExitBroadcast(original.get(BASE_ACTIVITY), false));
+        }
         byte[] outputBytes = serialize(modified.values(), opcodes);
         Map<String, ClassDef> actual = classes(outputBytes, opcodes);
         if (!original.keySet().equals(actual.keySet())) throw new IOException("Class set changed");
@@ -685,11 +757,19 @@ public final class PatchBackendEndpoint {
                 throw new IOException("Reverse-patched retained MIDlet Facebook lifecycle semantics changed");
             }
         }
+        if (activityExitBroadcast) {
+            ClassDef restored = guardActivityExitBroadcast(actual.get(BASE_ACTIVITY), true);
+            if (!Arrays.equals(serialize(Collections.singletonList(original.get(BASE_ACTIVITY)), opcodes),
+                    serialize(Collections.singletonList(restored), opcodes))) {
+                throw new IOException("Reverse-patched BaseActivity semantics changed");
+            }
+        }
         Map<String, ClassDef> beforeOthers = new TreeMap<>(original), afterOthers = new TreeMap<>(actual);
         for (String owner : TARGETS.keySet()) { beforeOthers.remove(owner); afterOthers.remove(owner); }
         if (localStartupGuard) { beforeOthers.remove(STARTUP_OWNER); afterOthers.remove(STARTUP_OWNER); }
         if (networkDiagnostics) { beforeOthers.remove(HTTP_OWNER); afterOthers.remove(HTTP_OWNER); }
         if (facebookLifecycle) { beforeOthers.remove(MIDLET_OWNER); afterOthers.remove(MIDLET_OWNER); }
+        if (activityExitBroadcast) { beforeOthers.remove(BASE_ACTIVITY); afterOthers.remove(BASE_ACTIVITY); }
         byte[] beforeCanonical = serialize(beforeOthers.values(), opcodes);
         if (!Arrays.equals(beforeCanonical, serialize(afterOthers.values(), opcodes))) throw new IOException("Other class semantics changed");
         String json = "{\n"
@@ -715,6 +795,11 @@ public final class PatchBackendEndpoint {
                         + ",\"reverse_patch_semantics_verified\":true}"
                     : "null") + ",\n"
                 + "  \"legacy_facebook_lifecycle\": " + (facebookLifecycle ? lifecycleProof() : "null") + ",\n"
+                + "  \"activity_exit_broadcast\": " + (activityExitBroadcast
+                    ? "{\"owner\":" + quote(BASE_ACTIVITY) + ",\"helper\":" + quote(EXIT_BROADCAST)
+                        + ",\"registration_method\":\"aky()V\",\"send_method\":\"akA()V\""
+                        + ",\"reverse_patch_semantics_verified\":true}"
+                    : "null") + ",\n"
                 + "  \"unchanged_classes_canonical_sha256\": " + quote(sha256(beforeCanonical)) + "\n}\n";
         // Publish only after read-back verification. Both files use same-directory atomic rename.
         Path stagedOutput = stage(output, outputBytes), stagedReport = null;

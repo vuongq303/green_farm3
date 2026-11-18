@@ -18,7 +18,8 @@ import subprocess
 import time
 import uuid
 
-from android_build_tools import BUILD_TOOLS_VERSION, executable_name, jdk_tool
+from android_build_tools import BUILD_TOOLS_VERSION, D8_NO_LAMBDA_METADATA, executable_name, jdk_tool
+from kotlin_test_tools import DEBUG_CLASSES
 from verify_runtime_apk import dex_classes
 
 
@@ -48,7 +49,7 @@ def compiled_classes(explicit):
         if not (directory / STORE_CLASS).is_file():
             raise ValueError('--classes-root lacks the compiled schema4 GameSaveStore')
         return directory
-    preferred = ROOT / 'app/build/tmp/kotlin-classes/debug'
+    preferred = DEBUG_CLASSES
     if (preferred / STORE_CLASS).is_file():
         return preferred
     matches = sorted({Path(str(path)[:-len(str(STORE_CLASS))]).resolve()
@@ -104,7 +105,7 @@ def main():
     programs = sorted(classes.glob('GameSaveStoreProbe*.class'))
     if not programs or len(list(classes.rglob('*.class'))) != len(programs):
         raise RuntimeError('Unexpected program class: the probe must not package app/helper classes')
-    stdout, stderr = checked([jdk_tool('java'), '-cp', d8, 'com.android.tools.r8.D8',
+    stdout, stderr = checked([jdk_tool('java'), D8_NO_LAMBDA_METADATA, '-cp', d8, 'com.android.tools.r8.D8',
                               '--debug', '--min-api', '16', '--lib', android,
                               '--classpath', classes_root,
                               '--classpath', java_classes,

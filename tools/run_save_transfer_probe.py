@@ -20,8 +20,8 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/'tools'))
-from android_build_tools import jdk_tool
-from kotlin_test_tools import compile_mixed, kotlin_runtime_jars
+from android_build_tools import BUILD_TOOLS_VERSION, D8_NO_LAMBDA_METADATA, jdk_tool
+from kotlin_test_tools import DEBUG_CLASSES, compile_mixed, kotlin_runtime_jars
 from verify_runtime_apk import dex_classes
 
 
@@ -62,7 +62,7 @@ def main():
     classes_root = args.classes_root
     if args.installed_runtime:
         if classes_root is None:
-            classes_root = ROOT/'app/build/tmp/kotlin-classes/debug'
+            classes_root = DEBUG_CLASSES
         required = classes_root/'com/quanhoang/greenfarm3/migration/SaveArchive.class'
         if not required.is_file():
             raise ValueError('--classes-root must contain the real compiled migration classes')
@@ -74,8 +74,8 @@ def main():
         for file in sorted((work/'classes').rglob('*.class')):
             archive.write(file, file.relative_to(work/'classes').as_posix())
     dex = work/'dex'; dex.mkdir()
-    d8 = args.sdk/'build-tools/35.0.0/lib/d8.jar'
-    command = [jdk_tool('java'),'-cp',d8,'com.android.tools.r8.D8','--debug','--min-api','16',
+    d8 = args.sdk/'build-tools'/BUILD_TOOLS_VERSION/'lib/d8.jar'
+    command = [jdk_tool('java'),D8_NO_LAMBDA_METADATA,'-cp',d8,'com.android.tools.r8.D8','--debug','--min-api','16',
                '--lib',android,'--output',dex]
     if args.installed_runtime:
         command.extend(['--classpath',classes_root])

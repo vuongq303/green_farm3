@@ -47,9 +47,15 @@ hoặc cài APK thủ công. Không sửa file trong `app/build/generated`; sử
 gốc ở `app/src/main/java/com/quanhoang/greenfarm3` và
 `app/src/main/kotlin/com/quanhoang/greenfarm3`.
 
-Giữ các phiên bản bạn đã cập nhật: Gradle9.7.1 có checksum, JDK25 theo daemon
-criteria, AGP8.10.1; thêm Kotlin2.4.21/JVM8. Cần SDK Platform28,
-Build Tools35.0.0 và Python3.10+.
+Cần Android SDK Platform 37.0, Build Tools 37.0.0 và Python 3.10+. Cài thêm
+SDK Platform 28 để phục hồi các thuộc tính tài nguyên gốc trước khi AAPT liên kết
+với API 37. Build dùng AGP 9.5.1, Gradle Wrapper 9.7.1 có checksum,
+JDK 25 theo daemon criteria và Kotlin 2.4.21 với bytecode JVM 8.
+
+Target mặc định vẫn là API 28. Có thể dùng `-PgreenfarmTargetSdk=<API>` khi
+kiểm thử các hành vi được bật theo target, độc lập với SDK dùng để biên dịch.
+Bản cầu nối xuất save giữ target 28 để duy trì đường nâng cấp của ứng dụng cũ.
+Xem [báo cáo nâng cấp Android](docs/ANDROID_MODERNIZATION.md).
 Trên Windows mặc định dùng `python`; có thể đặt `pythonExecutable` trong Gradle
 properties nếu Python nằm ở đường dẫn khác. Script chạy UTF-8 và gọi JDK/SDK
 bằng argument array, hỗ trợ đường dẫn có khoảng trắng. Khóa debug nằm trong

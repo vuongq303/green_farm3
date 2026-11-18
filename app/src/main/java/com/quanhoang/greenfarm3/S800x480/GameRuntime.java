@@ -274,6 +274,7 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
     private static int[] Uz;
     private static int Va;
     private long Qw;
+    private GL10 initializedGl;
     public static aj Qj = null;
     public static javax.microedition.lcdui.u Qk = javax.microedition.lcdui.u.aki();
     private static int Qq = w.screenWidth;
@@ -682,8 +683,19 @@ public abstract class GameRuntime extends javax.microedition.lcdui.f implements 
     @Override // javax.microedition.lcdui.f, javax.microedition.lcdui.t
     public void onSurfaceCreated(GL10 gl10, EGLConfig eGLConfig) {
         if (initializationFailed || QD != this) return;
+        // The retained GL thread calls this again when it creates a surface
+        // against the same EGL context. Its GL object survives that rebind.
+        if (initializedGl == gl10) return;
         b("-----------------------onSurfaceCreated--------------------------", "OPEN_GL", 3);
         a(gl10);
+        initializedGl = gl10;
+    }
+
+    @Override
+    public void ajU() {
+        // The retained GL thread calls this when it discards its context.
+        initializedGl = null;
+        super.ajU();
     }
 
     @Override // javax.microedition.lcdui.f, javax.microedition.lcdui.t

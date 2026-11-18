@@ -61,6 +61,17 @@ def dex(definitions, literals=()):
     return seal(data)
 
 
+def elf(alignment=4096, *, bits=32, virtual_address=0):
+    ident = b'\x7fELF' + bytes([1 if bits == 32 else 2, 1, 1]) + bytes(9)
+    if bits == 32:
+        header = struct.pack('<16sHHIIIIIHHHHHH', ident, 3, 3, 1, 0, 52, 0, 0, 52, 32, 1, 0, 0, 0)
+        segment = struct.pack('<8I', 1, 0, virtual_address, 0, 84, 84, 5, alignment)
+    else:
+        header = struct.pack('<16sHHIQQQIHHHHHH', ident, 3, 62, 1, 0, 64, 0, 0, 64, 56, 1, 0, 0, 0)
+        segment = struct.pack('<II6Q', 1, 5, 0, virtual_address, 0, 120, 120, alignment)
+    return header + segment
+
+
 class RuntimeApkTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="runtime-apk-")
@@ -76,14 +87,19 @@ class RuntimeApkTest(unittest.TestCase):
             "com.gameloft.android.ANMP.GloftGF2F.Start"))
         patch.start()
         self.addCleanup(patch.stop)
+        self.app_attributes = {'extractNativeLibs': 'true'}
+        tree = {'tag': 'manifest', 'children': [{'tag': 'application', 'attributes': self.app_attributes}]}
+        patch = mock.patch.object(verify, 'manifest_tree', return_value=tree)
+        patch.start()
+        self.addCleanup(patch.stop)
 
     def write(self, path, definitions=None, extra=None, asset=b"farm", compression=zipfile.ZIP_DEFLATED,
-              dexname="classes.dex"):
+              dexname="classes.dex", native_compression=zipfile.ZIP_STORED):
         with zipfile.ZipFile(path, "w") as archive:
             archive.writestr("AndroidManifest.xml", b"binary manifest fixture")
             archive.writestr(dexname, dex(self.classes if definitions is None else definitions))
             archive.writestr("assets/farm.bin", asset, compress_type=compression)
-            archive.writestr("lib/x86/libfarm.so", b"native", compress_type=zipfile.ZIP_STORED)
+            archive.writestr("lib/x86/libfarm.so", elf(), compress_type=native_compression)
             for name, contents in (extra or {}).items():
                 archive.writestr(name, contents)
 
@@ -93,6 +109,26 @@ class RuntimeApkTest(unittest.TestCase):
     def test_complete_definitions_pass(self):
         self.assertEqual(verify.dex_classes(dex(self.classes)), self.classes)
         self.check()
+
+    def test_original_compressed_native_libraries_require_manifest_extraction(self):
+        for path in (self.original, self.apk):
+            self.write(path, native_compression=zipfile.ZIP_DEFLATED)
+        packaging = self.check()['native_packaging']
+        self.assertTrue(packaging['extract_native_libs'])
+        self.assertEqual(packaging['libraries']['lib/x86/libfarm.so'], {
+            'compressed': True, 'min_load_segment_alignment': 4096, 'load_segments_16k_aligned': False})
+        self.app_attributes['extractNativeLibs'] = 'false'
+        with self.assertRaisesRegex(ValueError, 'Compressed native libraries require'):
+            self.check()
+
+    def test_elf_load_segment_alignment_reports_actual_offset_congruence(self):
+        self.assertFalse(verify.native_load_alignment(elf())['load_segments_16k_aligned'])
+        self.assertFalse(verify.native_load_alignment(
+            elf(16384, bits=64, virtual_address=4096))['load_segments_16k_aligned'])
+        self.assertEqual(verify.native_load_alignment(elf(65536, bits=64)), {
+            'min_load_segment_alignment': 65536, 'load_segments_16k_aligned': True})
+        with self.assertRaisesRegex(ValueError, 'program header table'):
+            verify.native_load_alignment(elf()[:-1])
 
     def test_class_name_literal_does_not_define_application(self):
         missing = "Ljavax/microedition/midlet/App;"
