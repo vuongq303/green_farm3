@@ -258,7 +258,7 @@ tasks.matching { it.name == 'generateDebugSources' }.configureEach {
             generateLocalDevelopmentConfig
 }
 
-tasks.matching { it.name == 'validateSigningDebug' }.configureEach {
+tasks.matching { it.name == 'packageDebug' }.configureEach {
     dependsOn prepareDebugSigningKey
 }
 
