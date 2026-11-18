@@ -262,10 +262,10 @@ tasks.matching { it.name == 'validateSigningDebug' }.configureEach {
     dependsOn prepareDebugSigningKey
 }
 
-// AndroidTest packaging also signs with the generated debug keystore.
-// Gradle 9 validates the producer/consumer relationship even when AGP supplies
-// the signing file through signingConfigs rather than as a task output provider.
-tasks.matching { it.name == 'packageDebugAndroidTest' }.configureEach {
+// Both APK packaging tasks use the generated debug keystore. AGP supplies the
+// signing file via signingConfigs, which doesn't carry a Gradle task dependency.
+// Declare the producer explicitly to satisfy Gradle 9 task validation.
+tasks.matching { it.name in ['packageDebug', 'packageDebugAndroidTest'] }.configureEach {
     dependsOn prepareDebugSigningKey
 }
 
