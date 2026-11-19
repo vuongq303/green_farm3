@@ -21,8 +21,8 @@ import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
-from android_build_tools import jdk_tool
-from kotlin_test_tools import compile_mixed,kotlin_runtime_jars
+from android_build_tools import BUILD_TOOLS_VERSION, D8_NO_LAMBDA_METADATA, jdk_tool
+from kotlin_test_tools import DEBUG_CLASSES, compile_mixed, kotlin_runtime_jars
 from verify_runtime_apk import dex_classes
 
 TEST_PACKAGE='com.quanhoang.greenfarm3.savetransfertest'
@@ -38,7 +38,7 @@ def checked(command, *, timeout=60):
 
 def prepare(args,work):
     android=args.sdk/'platforms/android-28/android.jar'
-    classes_root=args.classes_root or ROOT/'app/build/tmp/kotlin-classes/debug'
+    classes_root=args.classes_root or DEBUG_CLASSES
     if not (classes_root/'com/quanhoang/greenfarm3/migration/SaveArchive.class').is_file():
         raise ValueError('--classes-root must contain the production Kotlin migration classes')
     compile_mixed([ROOT/'tools/SaveTransferDatabaseProbe.kt'],[ROOT/'tools/SaveTransferInstrumentation.java'],
@@ -48,8 +48,8 @@ def prepare(args,work):
         for file in sorted((work/'classes').rglob('*.class')):
             archive.write(file,file.relative_to(work/'classes').as_posix())
     dex=work/'dex';dex.mkdir(exist_ok=True)
-    build_tools=args.sdk/'build-tools/35.0.0'
-    command=[jdk_tool('java'),'-cp',build_tools/'lib/d8.jar','com.android.tools.r8.D8','--debug','--min-api','16',
+    build_tools=args.sdk/'build-tools'/BUILD_TOOLS_VERSION
+    command=[jdk_tool('java'),D8_NO_LAMBDA_METADATA,'-cp',build_tools/'lib/d8.jar','com.android.tools.r8.D8','--debug','--min-api','16',
              '--lib',android,'--output',dex,'--classpath',classes_root]
     for jar in kotlin_runtime_jars():command.extend(['--classpath',jar])
     command.append(program)

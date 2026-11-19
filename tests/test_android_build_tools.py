@@ -27,7 +27,7 @@ class AndroidBuildToolsTest(unittest.TestCase):
         return path
 
     def sdk_files(self, platform_name):
-        directory = self.sdk / 'build-tools/35.0.0'
+        directory = self.sdk / 'build-tools/37.0.0'
         align = self.file(directory / ('zipalign.exe' if platform_name == 'nt' else 'zipalign'))
         signer = self.file(directory / 'lib/apksigner.jar')
         java = self.file(self.jdk / 'bin' / ('java.exe' if platform_name == 'nt' else 'java'))

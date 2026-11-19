@@ -224,6 +224,7 @@ class w {static boolean Vy,Vw,VA;}
 class Midlet {int quits;void akD(){quits++;}}
 class GameRuntime {
  private volatile boolean initializationFailed;
+ private GL10 initializedGl;
  boolean initializationReady;
  static GameRuntime QD;static int Qn,SE,SF,SG,SH,Tk,closed;static boolean Qp;static Midlet Qu=new Midlet();
  int draws,created,changed,disposed;
@@ -234,7 +235,10 @@ class GameRuntime {
 }
 public class RendererLifecycleProbe {
  static void check(boolean ok,String text){if(!ok)throw new AssertionError(text);}
- static void callbacks(GameRuntime game){game.onSurfaceCreated(null,null);game.onSurfaceChanged(null,800,480);game.onDrawFrame(null);}
+ static void callbacks(GameRuntime game){
+  GL10 gl=new GL10();
+  game.onSurfaceCreated(gl,null);game.onSurfaceChanged(gl,800,480);game.onDrawFrame(gl);
+ }
  public static void main(String[]args){
   GameRuntime failed=new GameRuntime();GameRuntime.QD=failed;GameRuntime.Qn=0;failed.markInitializationFailed();
   check(GameRuntime.Qn==-1&&GameRuntime.closed==1,"failed owner did not close its pack");

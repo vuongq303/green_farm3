@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reject incomplete launch APKs using DEX definitions and the packaged manifest.
+"""Check DEX definitions, the packaged manifest and native library packaging.
 
 This checks launch-class/superclass availability, not executable instructions or
 all dependencies needed by gameplay. It never installs or changes an APK.
@@ -23,6 +23,51 @@ GAME = 'L' + LEGACY_PACKAGE.replace('.', '/') + '/'
 REQUIRED = ('Ljavax/microedition/midlet/App;', 'Ljavax/microedition/midlet/MIDlet;',
             GAME + 'Start;', GAME + 'S800x480/GloftGF2F;')
 DEX_NAME = re.compile(r'classes(?:[2-9]|[1-9][0-9]+)?\.dex$')
+NATIVE_NAME = re.compile(r'lib/[^/]+/[^/]+\.so$')
+PAGE_SIZE_16K = 16 * 1024
+
+
+def native_load_alignment(data):
+    """Report ELF PT_LOAD alignment independently of APK ZIP alignment."""
+    if not data.startswith(b'\x7fELF') or len(data) < 16 or data[5:7] != b'\x01\x01':
+        raise ValueError('Invalid little-endian ELF identification')
+    if data[4] == 1:  # ELF32
+        header = struct.Struct('<16sHHIIIIIHHHHHH')
+        segment = struct.Struct('<8I')
+        offset_index, address_index = 1, 2
+    elif data[4] == 2:  # ELF64
+        header = struct.Struct('<16sHHIQQQIHHHHHH')
+        segment = struct.Struct('<II6Q')
+        offset_index, address_index = 2, 3
+    else:
+        raise ValueError('Unsupported ELF class')
+    if len(data) < header.size:
+        raise ValueError('Truncated ELF header')
+    fields = header.unpack_from(data)
+    table_offset = fields[5]
+    entry_size, entry_count = fields[9:11]
+    if (table_offset < header.size or entry_size != segment.size
+            or table_offset + entry_count * entry_size > len(data)):
+        raise ValueError('Invalid ELF program header table')
+    load_segments = []
+    for index in range(entry_count):
+        fields = segment.unpack_from(data, table_offset + index * entry_size)
+        if fields[0] == 1:  # PT_LOAD
+            load_segments.append((fields[-1], fields[offset_index], fields[address_index]))
+    if not load_segments:
+        raise ValueError('ELF has no load segments')
+    return {'min_load_segment_alignment': min(alignment for alignment, _, _ in load_segments),
+            'load_segments_16k_aligned': all(
+                alignment >= PAGE_SIZE_16K and offset % PAGE_SIZE_16K == address % PAGE_SIZE_16K
+                for alignment, offset, address in load_segments)}
+
+
+def native_packaging(root, native_libraries):
+    application = next(n for n in root['children'] if n['tag'] == 'application')
+    extract_native_libs = application['attributes'].get('extractNativeLibs') == 'true'
+    if not extract_native_libs and any(lib['compressed'] for lib in native_libraries.values()):
+        raise ValueError('Compressed native libraries require android:extractNativeLibs="true" in the final APK')
+    return {'extract_native_libs': extract_native_libs, 'libraries': native_libraries}
 
 
 def dex_classes(data):
@@ -250,7 +295,7 @@ def missing_original_components(root, definitions, target_game_package):
 def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
                application_id=None, game_package=None):
     apk, original = Path(apk), Path(original)
-    classes, dex_count = {}, 0
+    classes, dex_count, native_libraries = {}, 0, {}
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(apk) as output:
         for archive in (source, output):
             if len(archive.namelist()) != len(set(archive.namelist())):
@@ -280,8 +325,16 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
         if names != payload(output):
             raise ValueError('Assets/native file set changed')
         for name in sorted(names):
-            if source.read(name) != output.read(name) or source.getinfo(name).compress_type != output.getinfo(name).compress_type:
+            data = output.read(name)
+            compression = output.getinfo(name).compress_type
+            if source.read(name) != data or source.getinfo(name).compress_type != compression:
                 raise ValueError('Assets/native bytes or compression changed: ' + name)
+            if NATIVE_NAME.fullmatch(name):
+                try:
+                    native_libraries[name] = {'compressed': compression != zipfile.ZIP_STORED,
+                                              **native_load_alignment(data)}
+                except ValueError as error:
+                    raise ValueError(f'{name}: {error}') from error
     package, application, launcher = manifest(apk, sdk)
     original_package, original_application, original_launcher = manifest(original, sdk)
     expected_package = application_id or (APPLICATION_PACKAGE if detected_package == APPLICATION_PACKAGE else original_package)
@@ -310,6 +363,8 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
               'dex_count': dex_count, 'class_count': len(classes), 'payload_count': len(names),
               'game_package': detected_package,
               'legacy_game_class_definitions_remaining': sum(name.startswith(GAME) for name in classes)}
+    if native_libraries:
+        result['native_packaging'] = native_packaging(manifest_tree(apk, sdk), native_libraries)
     if backend_base_url:
         result['network_policy'] = network_policy(apk, sdk, backend_base_url)
         with zipfile.ZipFile(original) as reference:
