@@ -6,6 +6,19 @@ import { timingSafeEqual } from 'node:crypto';
 const USER_COLUMNS = 'CAST(u.id AS CHAR) AS user_id, u.game_id, u.provider, u.display_name';
 const ACTIVE_USER = `(u.provider <> 'password' OR EXISTS
   (SELECT 1 FROM gf_password_accounts p WHERE p.user_id = u.id AND p.account_status = 'active'))`;
+const SESSION_SCHEMA_READY = `SELECT version FROM gf_schema_migrations WHERE version = ?
+  AND EXISTS (
+    SELECT 1 FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gf_auth_sessions'
+      AND COLUMN_NAME = 'family_id' AND IS_NULLABLE = 'NO'
+  ) AND 2 = (
+    SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gf_auth_sessions'
+      AND CONSTRAINT_NAME = 'gf_auth_session_family_fk'
+      AND REFERENCED_TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME = 'gf_auth_session_families'
+      AND ((ORDINAL_POSITION = 1 AND COLUMN_NAME = 'family_id' AND REFERENCED_COLUMN_NAME = 'id')
+        OR (ORDINAL_POSITION = 2 AND COLUMN_NAME = 'user_id' AND REFERENCED_COLUMN_NAME = 'user_id'))
+  )`;
 
 function user(row) {
   return { id: String(row.user_id ?? row.id), game_id: row.game_id,
@@ -28,11 +41,9 @@ async function insertSession(connection, userId, session, familyId = session.id)
       (id, user_id, created_at) VALUES (?, ?, ?)`, [familyId, userId, session.issuedAt]);
   }
   await connection.execute(`INSERT INTO gf_auth_sessions
-    (id, user_id, access_hash, refresh_hash, issued_at, access_expires_at, refresh_expires_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?)`, [session.id, userId, session.accessHash, session.refreshHash,
+    (id, user_id, family_id, access_hash, refresh_hash, issued_at, access_expires_at, refresh_expires_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [session.id, userId, familyId, session.accessHash, session.refreshHash,
     session.issuedAt, session.accessExpiresAt, session.refreshExpiresAt]);
-  await connection.execute('INSERT INTO gf_auth_session_links (session_id, family_id) VALUES (?, ?)',
-    [session.id, familyId]);
 }
 
 async function insertPasswordUser(connection, { providerUserId, username, email, passwordHash, now }) {
@@ -93,17 +104,16 @@ export function createSocialStore(pool) {
   return {
     async health() {
       return run(async () => {
-        const [versions] = await pool.execute('SELECT version FROM gf_schema_migrations WHERE version = ?', [4]);
+        const [versions] = await pool.execute(SESSION_SCHEMA_READY, [5]);
         if (versions.length !== 1) throw new DatabaseUnavailableError();
         await pool.query('SELECT id, game_id, provider, provider_user_id FROM users LIMIT 0');
         await pool.query('SELECT id, oauth_state_hash, code_challenge, consumed_at FROM gf_auth_attempts LIMIT 0');
         await pool.query('SELECT code_hash, attempt_id, user_id, used_at FROM gf_auth_codes LIMIT 0');
-        await pool.query('SELECT id, access_hash, refresh_hash, revoked_at FROM gf_auth_sessions LIMIT 0');
+        await pool.query('SELECT id, family_id, access_hash, refresh_hash, revoked_at FROM gf_auth_sessions LIMIT 0');
         await pool.query('SELECT id, user_id, revoked_at FROM gf_auth_session_families LIMIT 0');
-        await pool.query('SELECT session_id, family_id FROM gf_auth_session_links LIMIT 0');
         await pool.query('SELECT user_id, username, email, password_hash, account_status FROM gf_password_accounts LIMIT 0');
         await pool.query('SELECT cookie_hash, attempt_id, csrf_hash, expires_at FROM gf_auth_web_sessions LIMIT 0');
-        return { status: 'ready', schemaVersion: 4 };
+        return { status: 'ready', schemaVersion: 5 };
       });
     },
 
@@ -274,8 +284,7 @@ export function createSocialStore(pool) {
         const [[row]] = await pool.execute(`SELECT s.id AS session_id, s.issued_at,
           s.access_expires_at, s.refresh_expires_at, ${USER_COLUMNS}
           FROM gf_auth_sessions s INNER JOIN users u ON u.id = s.user_id
-          INNER JOIN gf_auth_session_links l ON l.session_id = s.id
-          INNER JOIN gf_auth_session_families f ON f.id = l.family_id
+          INNER JOIN gf_auth_session_families f ON f.id = s.family_id AND f.user_id = s.user_id
           WHERE s.access_hash = ? AND s.revoked_at IS NULL AND f.revoked_at IS NULL
           AND s.access_expires_at > ? AND ${ACTIVE_USER}`, [accessHash, now]);
         if (!row) return undefined;
@@ -286,12 +295,11 @@ export function createSocialStore(pool) {
 
     async rotateRefresh(refreshHash, session, now) {
       return transaction(async connection => {
-        const [[link]] = await connection.execute(`SELECT l.family_id FROM gf_auth_session_links l
-          INNER JOIN gf_auth_sessions s ON s.id = l.session_id WHERE s.refresh_hash = ?`, [refreshHash]);
-        if (!link) return undefined;
+        const [[membership]] = await connection.execute('SELECT family_id FROM gf_auth_sessions WHERE refresh_hash = ?', [refreshHash]);
+        if (!membership) return undefined;
         // Family first, token second: logout and rotation share this ordering.
         const [[family]] = await connection.execute(`SELECT CAST(user_id AS CHAR) AS user_id, revoked_at
-          FROM gf_auth_session_families WHERE id = ? FOR UPDATE`, [link.family_id]);
+          FROM gf_auth_session_families WHERE id = ? FOR UPDATE`, [membership.family_id]);
         if (!family || family.revoked_at != null) return undefined;
         const [[row]] = await connection.execute(`SELECT s.id AS session_id, s.revoked_at,
           s.refresh_expires_at, ${USER_COLUMNS} FROM gf_auth_sessions s
@@ -299,7 +307,7 @@ export function createSocialStore(pool) {
         if (!row || row.revoked_at != null || String(row.user_id) !== String(family.user_id)
             || Number(row.refresh_expires_at) <= now) return undefined;
         await connection.execute('UPDATE gf_auth_sessions SET revoked_at = ? WHERE id = ?', [now, row.session_id]);
-        await insertSession(connection, row.user_id, session, link.family_id);
+        await insertSession(connection, row.user_id, session, membership.family_id);
         return user(row);
       });
     },
@@ -307,20 +315,19 @@ export function createSocialStore(pool) {
     async revoke(accessHash, refreshHash, now) {
       if (!accessHash) return false;
       return transaction(async connection => {
-        const [[link]] = await connection.execute(`SELECT l.family_id FROM gf_auth_session_links l
-          INNER JOIN gf_auth_sessions s ON s.id = l.session_id WHERE s.access_hash = ?`, [accessHash]);
-        if (!link) return false;
+        const [[membership]] = await connection.execute('SELECT family_id FROM gf_auth_sessions WHERE access_hash = ?', [accessHash]);
+        if (!membership) return false;
         const [[family]] = await connection.execute(`SELECT revoked_at FROM gf_auth_session_families
-          WHERE id = ? FOR UPDATE`, [link.family_id]);
+          WHERE id = ? FOR UPDATE`, [membership.family_id]);
         if (!family || family.revoked_at != null) return false;
         const [[row]] = await connection.execute(`SELECT id, refresh_hash, revoked_at
           FROM gf_auth_sessions WHERE access_hash = ? FOR UPDATE`, [accessHash]);
         if (!row || (refreshHash && !row.refresh_hash.equals(refreshHash))) return false;
         // A response from an in-flight refresh may arrive after local logout.
         // Even an older token pair revokes all descendants through the family.
-        await connection.execute('UPDATE gf_auth_session_families SET revoked_at = ? WHERE id = ?', [now, link.family_id]);
-        await connection.execute(`UPDATE gf_auth_sessions s INNER JOIN gf_auth_session_links l ON l.session_id = s.id
-          SET s.revoked_at = COALESCE(s.revoked_at, ?) WHERE l.family_id = ?`, [now, link.family_id]);
+        await connection.execute('UPDATE gf_auth_session_families SET revoked_at = ? WHERE id = ?', [now, membership.family_id]);
+        await connection.execute(`UPDATE gf_auth_sessions SET revoked_at = COALESCE(revoked_at, ?)
+          WHERE family_id = ?`, [now, membership.family_id]);
         return true;
       });
     },

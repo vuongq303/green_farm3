@@ -74,6 +74,11 @@ Migration có khóa chống chạy đồng thời, lưu checksum, tạo bảng n
 không DROP/TRUNCATE/reset dữ liệu. Sau lần đầu, chạy lại giữ nguyên ID/nội dung.
 Một schema có checksum không khớp sẽ bị từ chối thay vì tự viết lại lịch sử.
 
+Khi nâng cấp cơ sở dữ liệu đang hoạt động lên phiên bản 5, dừng mọi tiến trình
+backend ghi dữ liệu và thực hiện sao lưu theo [hướng dẫn triển khai MySQL](database/README.md).
+Migration chuyển liên kết nhóm phiên vào bảng phiên. Việc xóa bảng liên kết cũ
+có script riêng và cần quản trị viên phê duyệt sau khi đối chiếu dữ liệu.
+
 | Cấu hình backend | Giá trị/mục đích |
 |---|---|
 | `HOST` | Mặc định `0.0.0.0`; có thể dùng địa chỉ bind IPv4/IPv6 hoặc localhost. |
@@ -195,6 +200,12 @@ Remove-Item Env:DB_NAME
 ```
 
 `test:mysql` chạy tuần tự theo file vì hai suite dùng chung schema và cleanup có thể deadlock nếu chạy song song. Ca kiểm tra nhiều authorization đồng thời trong từng suite vẫn được giữ nguyên.
+
+`npm run test:mysql:upgrade` cần một schema **rỗng, dùng một lần**, có tên kết
+thúc bằng `_upgrade_test`. Cấu hình `DB_NAME` hoặc `TEST_DB_NAME` trỏ đến schema
+đó và cấp quyền DDL/DML cho tài khoản kiểm thử. Bài kiểm thử dựng dữ liệu v4,
+thử nâng cấp, khôi phục và nâng lại v5. Schema chứa dữ liệu giả sau khi chạy,
+nên tạo schema rỗng khác cho lần chạy tiếp theo.
 
 `npm test` kiểm tra HTTP/config bằng repository test double **chỉ trong test**,
 không phải fallback runtime. `test:mysql` yêu cầu MySQL thật, migration thật,

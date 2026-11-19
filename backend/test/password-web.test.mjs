@@ -23,7 +23,9 @@ test('browser forms reuse local farm assets, keep validated context and contain 
     assert.match(page.html, /password\.js\?v=[a-f0-9]{64}" defer/u);
     assert.match(page.html, /id="close-account"/u);
     assert.match(page.html, /id="return-to-game" class="farm-button" hidden/u);
-    assert.match(page.html, /aria-live="polite"/u);
+    assert.equal((page.html.match(/<dialog\b/gu) || []).length, 1);
+    assert.match(page.html, /role="alertdialog" aria-modal="true" aria-labelledby="notice-title" aria-describedby="notice-message"/u);
+    assert.doesNotMatch(page.html, /account-status|form-status/u);
     assert.ok(page.html.includes(`name="csrf" value="${csrf}"`));
     assert.ok(page.html.includes(`name="attempt" value="${attempt}"`));
     assert.ok(page.html.includes(`/auth/web/${mode === 'login' ? 'register' : 'login'}?attempt=${attempt}`));
@@ -58,11 +60,11 @@ test('form context rejects XSS, arbitrary redirects and non-cancel close callbac
 
 const script = ASSETS.get('password.js').body.toString();
 function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async () => ({ callback_url: callback }) }),
-  navigate = () => {}, onAlert = () => {} } = {}) {
+  navigate = () => {}, dialogAvailable = true } = {}) {
   const listeners = {};
   const navigation = [];
   const topNavigation = [];
-  const alerts = [];
+  const shown = [];
   const frames = [];
   const requests = [];
   const timers = new Map();
@@ -71,7 +73,7 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
   const attributes = {};
   const values = Object.fromEntries(Object.entries({ csrf, attempt, login: 'Player123', username: 'Player123',
     email: 'player@example.test', password: '  secret farm password  ', password_confirmation: '  secret farm password  ' })
-    .map(([name, value]) => [name, { value, checkValidity: () => true }]));
+    .map(([name, value]) => [name, { value, checkValidity: () => true, focus: () => { attributes.focus = name; } }]));
   const form = {
     elements: { namedItem: name => values[name] },
     getAttribute: key => key === 'data-mode' ? mode : key === 'data-endpoint' ? '/auth/' + mode : null,
@@ -82,17 +84,27 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
     addEventListener: (event, fn) => { listeners['form:' + event] = fn; },
   };
   const fields = { disabled: false };
-  const status = { textContent: '', setAttribute: (name, value) => { attributes['status:' + name] = value; },
-    removeAttribute: name => { delete attributes['status:' + name]; },
-    focus: () => { attributes.statusFocused = true; }, scrollIntoView: () => { attributes.statusScrolled = true; } };
-  Object.defineProperty(status, 'innerHTML', { set() { throw new Error('Unsafe HTML error rendering'); } });
+  const title = { textContent: '' };
+  const message = { textContent: '' };
+  Object.defineProperty(message, 'innerHTML', { set() { throw new Error('Unsafe HTML error rendering'); } });
+  const submitLabel = { textContent: mode === 'register' ? 'Đăng ký' : 'Đăng nhập' };
+  const submitButton = { focus: () => { attributes.focus = 'submit'; } };
+  const notice = { open: false, setAttribute: (name, value) => { attributes['notice:' + name] = value; },
+    showModal() { assert.equal(this.open, false); this.open = true; shown.push(title.textContent); },
+    close() { this.open = false; },
+    addEventListener: (event, fn) => { listeners['notice:' + event] = fn; } };
+  if (!dialogAvailable) delete notice.showModal;
+  const dismiss = { focus: () => { attributes.focus = 'dismiss'; },
+    addEventListener: (event, fn) => { listeners['dismiss:' + event] = fn; } };
   const close = { href: closeUrl, addEventListener: (event, fn) => { listeners['close:' + event] = fn; } };
   const alternate = { setAttribute: (key, value) => { attributes['alternate:' + key] = value; },
     addEventListener: (event, fn) => { listeners['alternate:' + event] = fn; } };
-  const returnToGame = { hidden: true, addEventListener: (event, fn) => { listeners['return:' + event] = fn; } };
-  const returnStatus = { hidden: true };
-  const nodes = { 'account-form': form, 'account-fields': fields, 'account-status': status,
-    'close-account': close, 'account-mode-link': alternate, 'return-to-game': returnToGame, 'return-status': returnStatus };
+  const returnToGame = { hidden: true, focus: () => { attributes.focus = 'return'; },
+    addEventListener: (event, fn) => { listeners['return:' + event] = fn; } };
+  const nodes = { 'account-form': form, 'account-fields': fields, 'account-notice': notice,
+    'notice-title': title, 'notice-message': message, 'notice-dismiss': dismiss,
+    'submit-label': submitLabel, 'account-submit': submitButton, 'close-account': close,
+    'account-mode-link': alternate, 'return-to-game': returnToGame };
   class AbortController {
     signal = { aborted: false };
     abort() { this.signal.aborted = true; this.signal.onabort?.(); }
@@ -111,7 +123,7 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
       return reply;
     }); },
     window: {
-      alert: message => { alerts.push(message); onAlert(message, { navigation, timers, alerts }); },
+      alert: () => assert.fail('native alerts are forbidden on the password form'),
       addEventListener: (event, fn) => { listeners['window:' + event] = fn; },
       setTimeout: (fn, milliseconds) => { const id = ++timerId; timers.set(id, { fn, milliseconds }); return id; },
       clearTimeout: id => clearedTimers.push(id),
@@ -124,8 +136,9 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
     }
   };
   const event = () => ({ prevented: false, preventDefault() { this.prevented = true; } });
-  return { listeners, navigation, topNavigation, frames, alerts, requests, timers, clearedTimers, attributes, values, fields, status,
-    form, alternate, close, returnToGame, returnStatus,
+  return { listeners, navigation, topNavigation, frames, shown, requests, timers, clearedTimers, attributes, values, fields,
+    form, alternate, close, returnToGame, notice, title, message, dismiss, submitButton, submitLabel,
+    dismissNotice: () => listeners['dismiss:click'](),
     submitWithoutHandoff: () => listeners['form:submit'](event()), openGame,
     submit: async () => { await listeners['form:submit'](event()); openGame(); }, event };
 }
@@ -154,7 +167,7 @@ test('login posts only credentials/CSRF through same-origin JSON, blocks repeats
   assert.deepEqual(result.navigation, [callback]);
   assert.equal(result.returnToGame.href, callback);
   assert.equal(result.returnToGame.hidden, false);
-  assert.equal(result.returnStatus.hidden, false);
+  assert.equal(result.notice.open, true);
   assert.equal(result.form.hidden, true);
   assert.equal(result.alternate.hidden, true);
   assert.equal(result.values.password.value, '');
@@ -167,7 +180,8 @@ test('registration checks confirmation before sending and uses only the dedicate
   result.values.password_confirmation.value = 'does not match';
   await result.submit();
   assert.equal(result.requests.length, 0);
-  assert.match(result.status.textContent, /chưa khớp/u);
+  assert.match(result.message.textContent, /chưa khớp/u);
+  result.dismissNotice();
   result.values.password_confirmation.value = result.values.password.value;
   await result.submit();
   assert.equal(result.requests[0].url, '/auth/register');
@@ -184,10 +198,10 @@ test('both browser forms keep a real code-only return link when automatic app na
       assert.deepEqual(result.navigation, [callback]);
       assert.equal(result.returnToGame.href, callback);
       assert.equal(result.returnToGame.hidden, false);
-      assert.equal(result.returnStatus.hidden, false);
+      assert.equal(result.notice.open, true);
       assert.equal(result.close.href, callback, 'close must not cancel an already-issued successful code');
       assert.equal(result.form.hidden, true);
-      assert.equal(result.fields.disabled, true);
+      assert.equal(result.attributes['aria-busy'], 'false');
       assert.equal(result.values.password.value, '');
       result.listeners['window:pageshow']({ persisted: true });
       await result.submit();
@@ -200,12 +214,14 @@ test('public credential errors use text and restore retry without retaining pass
   const message = '<img src=x onerror=bad()> incorrect password';
   const result = web({ fetchReply: async () => ({ ok: false, json: async () => ({ error: { code: 'invalid_credentials', message } }) }) });
   await result.submit();
-  assert.equal(result.status.textContent, 'Tên tài khoản/email hoặc mật khẩu không đúng.');
-  assert.ok(!result.status.textContent.includes(message));
+  assert.equal(result.message.textContent, 'Tên tài khoản hoặc mật khẩu không chính xác.');
+  assert.ok(!result.message.textContent.includes(message));
   assert.equal(result.fields.disabled, false);
   assert.equal(result.attributes['aria-busy'], 'false');
   assert.equal(result.values.password.value, '');
   assert.deepEqual(result.navigation, []);
+  result.dismissNotice();
+  assert.equal(result.attributes.focus, 'password');
   result.values.password.value = 'replacement password';
   await result.submit();
   assert.equal(result.requests.length, 2);
@@ -229,7 +245,7 @@ test('success refuses other origins, extra credentials, duplicate codes and mism
     assert.equal(result.returnToGame.href, undefined);
     assert.equal(result.fields.disabled, false);
     assert.equal(result.values.password.value, '');
-    assert.match(result.status.textContent, /không hợp lệ/u);
+    assert.equal(result.title.textContent, 'Phản hồi không hợp lệ');
   }
 });
 
@@ -256,7 +272,7 @@ test('timeout and leaving abort requests; late success cannot navigate after clo
   const pending = timed.submit();
   [...timed.timers.values()][0].fn();
   await pending;
-  assert.match(timed.status.textContent, /hết thời gian/u);
+  assert.equal(timed.title.textContent, 'Không thể kết nối');
   assert.equal(timed.fields.disabled, false);
   assert.equal(timed.values.password.value, '');
   for (const leaving of ['close:click', 'window:pagehide']) {
@@ -273,9 +289,17 @@ test('timeout and leaving abort requests; late success cannot navigate after clo
 });
 
 test('password website contains no storage, uncontrolled bridge or external navigation API', () => {
-  assert.doesNotMatch(script, /localStorage|sessionStorage|indexedDB|addJavascriptInterface|window\.open|console\.|innerHTML/u);
+  assert.doesNotMatch(script, /localStorage|sessionStorage|indexedDB|addJavascriptInterface|window\.(?:open|alert)|console\.|innerHTML/u);
   assert.doesNotMatch(script, /access_token|refresh_token/u);
   assert.doesNotMatch(ASSETS.get('styles.css').body.toString(), /@import|https?:\/\//u);
+});
+
+test('browsers without modal support ask for an update before sending credentials', () => {
+  const result = web({ dialogAvailable: false });
+  assert.equal(result.submitButton.disabled, true);
+  assert.equal(result.submitLabel.textContent, 'Hãy cập nhật trình duyệt');
+  assert.equal(result.listeners['form:submit'], undefined);
+  assert.deepEqual(result.requests, []);
 });
 
 test('required and invalid fields produce persistent visible feedback without sending requests', async () => {
@@ -288,15 +312,20 @@ test('required and invalid fields produce persistent visible feedback without se
     result.values[name].value = '';
     await result.submit();
     assert.equal(result.requests.length, 0);
-    assert.match(result.status.textContent, expected);
-    assert.equal(result.attributes['status:data-state'], 'error');
-    assert.equal(result.attributes.statusFocused, true);
-    assert.equal(result.attributes.statusScrolled, true);
+    assert.match(result.message.textContent, expected);
+    assert.equal(result.attributes['notice:data-kind'], 'warning');
+    assert.equal(result.attributes.focus, 'dismiss');
+    assert.equal(result.notice.open, true);
+    const escape = result.event();
+    result.listeners['notice:cancel'](escape);
+    assert.equal(escape.prevented, true);
+    assert.equal(result.notice.open, false);
+    assert.equal(result.attributes.focus, name);
   }
   const malformed = web({ mode: 'register' });
   malformed.values.email.checkValidity = () => false;
   await malformed.submit();
-  assert.match(malformed.status.textContent, /email hợp lệ/u);
+  assert.match(malformed.message.textContent, /email hợp lệ/u);
   assert.equal(malformed.requests.length, 0);
   assert.match(renderPasswordForm({ mode: 'register', csrfToken: csrf, attemptId: attempt, closeUrl }).html,
     /novalidate/u, 'browser validation must not silently bypass the persistent message handler');
@@ -306,10 +335,10 @@ test('HTTP and public error codes remain useful for JSON or HTML failures and ke
   for (const [mode, status, reply, expected] of [
     ['register', 409, { error: { code: 'account_exists' } }, /tên tài khoản hoặc email đã được sử dụng/iu],
     ['register', 400, { error: { code: 'invalid_registration' } }, /đăng ký không hợp lệ/u],
-    ['login', 401, { error: { code: 'invalid_credentials' } }, /mật khẩu không đúng/u],
+    ['login', 401, { error: { code: 'invalid_credentials' } }, /mật khẩu không chính xác/u],
     ['login', 400, { error: { code: 'attempt_expired' } }, /hết hạn.*mở lại/iu],
     ['login', 403, null, /phiên biểu mẫu.*mở lại/iu],
-    ['register', 429, { error: { code: 'rate_limited' } }, /quá nhiều yêu cầu/u],
+    ['register', 429, { error: { code: 'rate_limited' } }, /quá nhiều yêu cầu/iu],
     ['register', 502, null, /máy chủ tạm thời/iu],
     ['login', 500, { error: { code: 'private_failure', message: 'SQL password=private stack trace' } }, /máy chủ tạm thời/iu],
   ]) {
@@ -318,15 +347,17 @@ test('HTTP and public error codes remain useful for JSON or HTML failures and ke
       return reply;
     } }) });
     await result.submit();
-    assert.match(result.status.textContent, expected);
-    assert.doesNotMatch(result.status.textContent, /SQL|stack|private/u);
+    const copy = result.title.textContent + '. ' + result.message.textContent;
+    assert.match(copy, expected);
+    assert.doesNotMatch(copy, /SQL|stack|private/u);
     assert.equal(result.fields.disabled, false);
     assert.equal(result.values.username.value, 'Player123');
     assert.equal(result.values.login.value, 'Player123');
     assert.equal(result.values.email.value, 'player@example.test');
     assert.equal(result.values.password.value, '');
-    assert.equal(result.attributes['status:data-state'], 'error');
+    assert.equal(result.notice.open, true);
     assert.deepEqual(result.navigation, []);
+    result.dismissNotice();
     result.values.password.value = result.values.password_confirmation.value = '  retry farm password  ';
     await result.submit();
     assert.equal(result.requests.length, 2);
@@ -337,9 +368,11 @@ test('mode-specific success is visible before the single delayed handoff and sur
   for (const mode of ['login', 'register']) {
     const result = web({ mode, navigate: () => { throw new Error('External app launch blocked'); } });
     await result.submitWithoutHandoff();
-    assert.match(result.status.textContent, mode === 'register' ? /Đăng ký thành công/u : /Đăng nhập thành công/u);
-    assert.match(result.status.textContent, /Đang quay lại Green Farm 3/u);
-    assert.equal(result.attributes['status:data-state'], 'success');
+    assert.equal(result.title.textContent, mode === 'register' ? 'Đăng ký thành công!' : 'Đăng nhập thành công!');
+    assert.equal(result.message.textContent, mode === 'register' ? 'Tài khoản của bạn đã được tạo thành công.' :
+      'Xác thực thành công. Bạn có thể quay lại Green Farm 3.');
+    assert.equal(result.attributes['notice:data-kind'], 'success');
+    assert.equal(result.attributes.focus, 'return');
     assert.deepEqual(result.navigation, [], 'give feedback a browser paint before navigation');
     assert.equal(result.returnToGame.href, callback);
     assert.equal(result.returnToGame.hidden, false);
@@ -352,7 +385,7 @@ test('mode-specific success is visible before the single delayed handoff and sur
     assert.equal(result.frames[0].attributes.sandbox, 'allow-top-navigation-to-custom-protocols');
     assert.equal(result.frames[0].src, callback);
     assert.equal(result.returnToGame.hidden, false);
-    assert.match(result.status.textContent, /thành công/u);
+    assert.equal(result.notice.open, true);
   }
   const manual = web();
   await manual.submitWithoutHandoff();
@@ -372,7 +405,7 @@ test('unexpected 2xx status cannot authenticate and deadline includes a stalled 
     await result.submit();
     assert.deepEqual(result.navigation, []);
     assert.equal(result.returnToGame.hidden, true);
-    assert.match(result.status.textContent, /không hợp lệ/u);
+    assert.equal(result.title.textContent, 'Phản hồi không hợp lệ');
   }
   let finishBody;
   const stalled = web({ fetchReply: async () => ({ ok: true, status: 200,
@@ -382,7 +415,7 @@ test('unexpected 2xx status cannot authenticate and deadline includes a stalled 
   await new Promise(resolve => setImmediate(resolve));
   [...stalled.timers.values()].find(timer => timer.milliseconds === 20000).fn();
   await pending;
-  assert.match(stalled.status.textContent, /hết thời gian/u);
+  assert.equal(stalled.title.textContent, 'Không thể kết nối');
   assert.equal(stalled.fields.disabled, false);
   assert.equal(stalled.values.password.value, '');
   finishBody({ callback_url: callback });
@@ -407,7 +440,7 @@ test('password validation preserves exact printable spaces instead of trimming v
   blankIdentifier.values.login.value = '   ';
   await blankIdentifier.submit();
   assert.equal(blankIdentifier.requests.length, 0, 'identifiers still require non-whitespace input');
-  assert.match(blankIdentifier.status.textContent, /tên tài khoản hoặc email/u);
+  assert.match(blankIdentifier.message.textContent, /tên tài khoản hoặc email/u);
 });
 
 
@@ -426,68 +459,70 @@ test('password form asset URLs use hashes of shipped bytes to bypass an old depl
 });
 
 
-test('native alerts acknowledge validation, API and connection failures exactly once without duplicate loading alerts', async () => {
+test('validation, API and connection failures show one modal while loading stays in the button', async () => {
   const invalid = web({ mode: 'register' });
   invalid.values.username.value = '';
   await invalid.submit();
-  assert.deepEqual(invalid.alerts, ['Vui lòng nhập tên tài khoản.']);
+  await invalid.submit();
+  assert.deepEqual(invalid.shown, ['Kiểm tra thông tin']);
+  assert.equal(invalid.message.textContent, 'Vui lòng nhập tên tài khoản.');
   assert.equal(invalid.requests.length, 0);
   let finish;
   const pending = web({ fetchReply: () => new Promise(resolve => { finish = resolve; }) });
   const submission = pending.submit();
-  assert.deepEqual(pending.alerts, [], 'loading must remain nonblocking');
+  assert.deepEqual(pending.shown, [], 'loading must remain in the button');
+  assert.equal(pending.submitLabel.textContent, 'Đang đăng nhập…');
   await pending.submit();
-  assert.deepEqual(pending.alerts, []);
+  assert.deepEqual(pending.shown, []);
   finish({ ok: false, status: 401, json: async () => ({ error: { code: 'invalid_credentials' } }) });
   await submission;
-  assert.deepEqual(pending.alerts, ['Tên tài khoản/email hoặc mật khẩu không đúng.']);
+  assert.deepEqual(pending.shown, ['Đăng nhập thất bại']);
+  assert.equal(pending.submitLabel.textContent, 'Đăng nhập');
   assert.equal(pending.requests.length, 1);
   assert.equal(pending.fields.disabled, false);
   const failedConnection = web({ fetchReply: async () => { throw new TypeError('private diagnostic'); } });
   await failedConnection.submit();
-  assert.equal(failedConnection.alerts.length, 1);
-  assert.match(failedConnection.alerts[0], /Không thể kết nối/u);
-  assert.doesNotMatch(failedConnection.alerts[0], /private/u);
+  assert.deepEqual(failedConnection.shown, ['Không thể kết nối']);
+  assert.equal(failedConnection.message.textContent, 'Không thể kết nối với máy chủ. Vui lòng kiểm tra Internet và thử lại.');
 });
 
-test('one success alert finishes before scheduling the callback and cannot repeat on back cache or resubmit', async () => {
+test('one success modal survives the callback attempt and cannot repeat on back cache or resubmit', async () => {
   for (const mode of ['login', 'register']) {
-    let acknowledged = false;
-    const result = web({ mode, onAlert: (message, browser) => {
-      assert.match(message, mode === 'register' ? /Đăng ký thành công/u : /Đăng nhập thành công/u);
-      assert.deepEqual(browser.navigation, []);
-      assert.equal([...browser.timers.values()].filter(timer => timer.milliseconds === 350).length, 0,
-        'do not schedule app launch while the success alert is open');
-      acknowledged = true; // Returning models dismissal of the blocking native dialog.
-    }, navigate: () => assert.equal(acknowledged, true) });
+    const result = web({ mode });
     await result.submitWithoutHandoff();
-    assert.equal(result.alerts.length, 1);
+    const title = mode === 'register' ? 'Đăng ký thành công!' : 'Đăng nhập thành công!';
+    assert.deepEqual(result.shown, [title]);
+    assert.equal(result.notice.open, true);
+    assert.deepEqual(result.navigation, []);
     result.openGame();
     assert.deepEqual(result.navigation, [callback]);
+    assert.equal(result.notice.open, true);
     result.listeners['window:pageshow']({ persisted: true });
     await result.submit();
     result.openGame();
-    assert.equal(result.alerts.length, 1);
+    assert.deepEqual(result.shown, [title]);
     assert.equal(result.requests.length, 1);
     assert.deepEqual(result.navigation, [callback]);
   }
 });
 
-test('duplicate alerts distinguish only allowlisted username/email conflicts with backwards-compatible fallback', async () => {
-  for (const [conflicts, expected] of [
-    [['username'], 'Tên tài khoản đã tồn tại. Vui lòng chọn tên khác.'],
-    [['email'], 'Email đã được đăng ký. Vui lòng sử dụng email khác.'],
-    [['username', 'email'], 'Tên tài khoản và email đã được sử dụng.'],
-    [['email', 'username'], 'Tên tài khoản và email đã được sử dụng.'],
-    [undefined, 'Tên tài khoản hoặc email đã được sử dụng.'],
-    [['email', 'email'], 'Tên tài khoản hoặc email đã được sử dụng.'],
-    [['private_column'], 'Tên tài khoản hoặc email đã được sử dụng.'],
+test('duplicate notices distinguish only allowlisted username/email conflicts and keep a generic fallback', async () => {
+  for (const [conflicts, title, message, action] of [
+    [['username'], 'Tên tài khoản đã tồn tại', 'Tên tài khoản này đã được sử dụng. Vui lòng chọn tên khác.', 'Thử lại'],
+    [['email'], 'Email đã được đăng ký', 'Email này đã được sử dụng. Vui lòng nhập email khác.', 'Đã hiểu'],
+    [['username', 'email'], 'Thông tin đã được sử dụng', /Tên tài khoản và email đã được sử dụng/u, 'Thử lại'],
+    [['email', 'username'], 'Thông tin đã được sử dụng', /Tên tài khoản và email đã được sử dụng/u, 'Thử lại'],
+    [undefined, 'Thông tin đã được sử dụng', 'Tên tài khoản hoặc email đã được sử dụng.', 'Thử lại'],
+    [['email', 'email'], 'Thông tin đã được sử dụng', 'Tên tài khoản hoặc email đã được sử dụng.', 'Thử lại'],
+    [['private_column'], 'Thông tin đã được sử dụng', 'Tên tài khoản hoặc email đã được sử dụng.', 'Thử lại'],
   ]) {
     const result = web({ mode: 'register', fetchReply: async () => ({ ok: false, status: 409,
       json: async () => ({ error: { code: 'account_exists', conflicts, message: 'SQL private exception' } }) }) });
     await result.submit();
-    assert.deepEqual(result.alerts, [expected]);
-    assert.equal(result.status.textContent, expected);
+    assert.deepEqual(result.shown, [title]);
+    if (typeof message === 'string') assert.equal(result.message.textContent, message);
+    else assert.match(result.message.textContent, message);
+    assert.equal(result.dismiss.textContent, action);
     assert.equal(result.values.username.value, 'Player123');
     assert.equal(result.values.email.value, 'player@example.test');
     assert.equal(result.fields.disabled, false);

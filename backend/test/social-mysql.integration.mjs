@@ -66,7 +66,7 @@ test('social migration is additive, idempotent and does not change legacy rows',
   assert.ok(again.alreadyApplied.includes(1) && again.alreadyApplied.includes(2) && again.alreadyApplied.includes(3));
   const [[afterRow]] = await pool.execute('SELECT * FROM gf_accounts WHERE id = ?', [created.accountId]);
   assert.deepEqual(afterRow, before);
-  assert.deepEqual(await store.health(), { status: 'ready', schemaVersion: 4 });
+  assert.deepEqual(await store.health(), { status: 'ready', schemaVersion: 5 });
 });
 
 test('concurrent provider identities retain one stable game ID without email merging', async t => {

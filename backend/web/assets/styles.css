@@ -62,7 +62,7 @@ footer { margin-top: 24px; color: #24451b; text-align: center; font: .8rem Arial
 }
 
 /* First-party browser account forms; original OAuth handoff layout stays above. */
-.password-panel [hidden] { display: none !important; }
+.password-page [hidden] { display: none !important; }
 body.password-page { padding: 22px 14px; justify-content: flex-start; }
 .password-panel { position: relative; width: min(100%, 520px); margin: auto 0; padding: 38px 28px 24px; }
 .password-brand { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 8px 0 18px; }
@@ -88,12 +88,7 @@ body.password-page { padding: 22px 14px; justify-content: flex-start; }
 .password-panel .field-hint { margin: 6px 2px 0; font: .82rem/1.45 Arial, sans-serif; color: #6c593b; }
 .password-panel button.farm-button { cursor: pointer; margin-top: 24px; }
 .password-panel .farm-button:disabled { cursor: wait; opacity: .8; }
-.form-status { min-height: 1.5em; margin: 20px 0 14px; color: #863d24; font: .95rem/1.5 Arial, sans-serif; overflow-wrap: anywhere; }
-.form-status[data-state] { padding: 12px; border: 2px solid #b66b43; border-radius: 12px; background: #fff9e9; }
-.form-status[data-state="success"] { color: #295c21; border-color: #649332; background: #eff8d9; }
-.form-status[data-state="loading"] { color: #53381d; border-color: #bfa16c; }
-.form-status:focus { outline: 2px solid #244f7c; outline-offset: 3px; }
-.account-mode-link { display: inline-block; padding: 6px 0; color: #35621d; font-weight: bold; text-underline-offset: 3px; }
+.account-mode-link { display: inline-block; margin-top: 18px; padding: 6px 0; color: #35621d; font-weight: bold; text-underline-offset: 3px; }
 .account-mode-link[aria-disabled="true"] { opacity: .6; cursor: wait; }
 .form-spinner { display: none; width: 18px; height: 18px; margin-left: 10px; border: 3px solid #ffffff70; border-top-color: #fffdf0; border-radius: 50%; vertical-align: -3px; }
 .is-busy .form-spinner { display: inline-block; animation: form-spin .9s linear infinite; }
@@ -111,4 +106,55 @@ body.password-page { padding: 22px 14px; justify-content: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) {
   .is-busy .form-spinner { animation: none; }
+}
+
+.account-dialog {
+  width: min(420px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  max-height: calc(100dvh - 32px);
+  padding: clamp(18px, 5vw, 30px);
+  border: 5px solid #9a602b;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at top, #fff9e5, #ffedbf);
+  box-shadow: 0 5px 0 #643c22, 0 20px 40px #241a144d, inset 0 0 0 2px #e5bd7c;
+  color: #53381d;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(8px) scale(.98);
+  transition: opacity .16s ease, transform .16s ease, display .16s allow-discrete, overlay .16s allow-discrete;
+}
+.account-dialog:not([open]) { display: none; }
+.account-dialog[open] { opacity: 1; transform: none; }
+.account-dialog::backdrop {
+  background-color: transparent;
+  transition: background-color .16s ease, display .16s allow-discrete, overlay .16s allow-discrete;
+}
+.account-dialog[open]::backdrop { background-color: #2f201c66; }
+@starting-style {
+  .account-dialog[open] { opacity: 0; transform: translateY(8px) scale(.98); }
+  .account-dialog[open]::backdrop { background-color: transparent; }
+}
+.notice-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background: #fcdccc;
+  color: #953e2a;
+  font: bold 2rem/1 Arial, sans-serif;
+}
+.notice-icon::before { content: '×'; }
+.account-dialog[data-kind="warning"] .notice-icon { background: #ffe8ab; color: #794911; }
+.account-dialog[data-kind="warning"] .notice-icon::before { content: '!'; }
+.account-dialog[data-kind="success"] .notice-icon { background: #e5f2ce; color: #39732a; }
+.account-dialog[data-kind="success"] .notice-icon::before { content: '✓'; }
+.account-dialog h2 { margin: 0 0 10px; font-size: clamp(1.35rem, 5vw, 1.7rem); line-height: 1.2; }
+.account-dialog p { margin: 0 0 20px; font: 1rem/1.5 Arial, sans-serif; overflow-wrap: anywhere; }
+.account-dialog .farm-button { background: linear-gradient(#4e7b2c, #356323); cursor: pointer; }
+.account-dialog .farm-button:hover { background: linear-gradient(#557e32, #3e6b2a); }
+@media (prefers-reduced-motion: reduce) {
+  .account-dialog, .account-dialog::backdrop { transition: none; }
 }
