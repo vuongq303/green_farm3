@@ -56,36 +56,35 @@ served bytes. After a backend restart/deploy, new forms therefore fetch the new
 assets even if a browser cached an earlier release for an hour. The existing
 OAuth handoff page URLs are unchanged.
 
-`password.js` validates required fields into a persistent on-page status (rather
-than relying on transient browser bubbles), submits JSON and disables duplicate
-submissions. Its 20-second deadline covers both the response and JSON body.
-Known error codes and HTTP statuses map to public Vietnamese messages, including
-non-JSON proxy failures; raw internal exception text is never displayed. Status
-feedback receives focus and scrolls into view on mobile without clearing the
-username/email. Errors clear password inputs and restore retry. Password fields are cleared
-after responses and when closing/leaving. No password, token or user profile is
-stored in browser storage or sent through a JavaScript bridge. Registration
-accepts an ASCII username of 3–32 letters/digits/underscores, an email, and a
-12–128 character password with matching confirmation; the server remains the
-authority for validation and account uniqueness.
+`password.js` validates required fields, submits JSON and disables duplicate
+submissions. While the request runs, the submit button shows its loading label
+and spinner. The 20-second deadline covers both the response and JSON body.
+Validation results, API errors and successes appear in one themed `alertdialog`.
+Its title and description label the dialog for assistive technology. The dialog
+focuses its action, keeps the form inert and restores focus to the relevant input
+or submit button when an error is dismissed. Errors stay open until the user
+presses the action button or Escape. Known error codes and HTTP statuses map to
+predefined Vietnamese messages, including connection and non-JSON proxy errors.
+Passwords clear after a request or when leaving. Username and email remain
+available for retry. The browser page uses a same-origin form and the server is
+the authority for validation and account uniqueness.
 
 Success returns only `{callback_url}` with a 60-second one-use authorization code and
 the pending state. The script validates the fixed app callback, checks the
 pending state and requires HTTP 201 for registration or HTTP 200 for login.
-After rendering a distinct registration/login success message, it tries the app
-deep link once after 350 ms so the browser can paint the status first. The
+After opening the registration or login success dialog, it tries the app deep
+link once after 350 ms so the browser can paint the dialog first. The
 attempt uses a hidden sandboxed iframe restricted by CSP to the app scheme
 (custom protocols have opaque origins), with JavaScript enforcing the exact
 callback host/path and code/state; a blocked external-protocol navigation therefore cannot replace the
-form document with a browser error page. The visible return link remains an
-ordinary top-level link requiring a user gesture. Android checks
+form document with a browser error page. The “Vào trò chơi” action in the dialog
+is an ordinary top-level link and works with a user gesture. Android checks
 the callback against its retained state before exchanging the code using its
 encrypted PKCE verifier, including when Android has recreated the app process.
-The page never receives app access/refresh tokens and cannot authenticate merely
-by supplying a GAME_ID. After success the credential form is hidden and a real
-“Quay lại Green Farm 3” link remains visible for browsers that block an automatic
-app launch after an asynchronous request. The close button uses the same success
-callback at that point; before success it returns an `access_denied` callback.
+The page receives a one-use code and state. After success the credential form is
+hidden and the dialog keeps its return action available for browsers that block
+the automatic launch. Before success the page close button returns an
+`access_denied` callback.
 If browser back/forward cache restores an unfinished form, aborted responses
 from the previous visit cannot redirect it or clear newly entered credentials.
 

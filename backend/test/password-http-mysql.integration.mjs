@@ -39,7 +39,6 @@ async function fixture(t, extra = {}) {
     if (server?.listening) await stop();
     const [users] = await pool.execute('SELECT CAST(user_id AS CHAR) AS id FROM gf_password_accounts WHERE username LIKE ?', [prefix + '%']);
     for (const { id } of users) {
-      await pool.execute('DELETE FROM gf_auth_session_families WHERE user_id = ?', [id]);
       await pool.execute('DELETE FROM gf_auth_sessions WHERE user_id = ?', [id]);
       await pool.execute('DELETE FROM gf_auth_codes WHERE user_id = ?', [id]);
       await pool.execute('DELETE FROM users WHERE id = ?', [id]);

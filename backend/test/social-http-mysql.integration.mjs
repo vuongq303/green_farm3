@@ -46,7 +46,6 @@ test('real HTTP/SQL auth survives router restart, rotates/revokes and preserves 
     if (server?.listening) await stop();
     const ids = await pool.execute('SELECT id FROM users WHERE provider_user_id LIKE ?', [prefix + '%']);
     for (const { id } of ids[0]) {
-      await pool.execute('DELETE FROM gf_auth_session_families WHERE user_id = ?', [id]);
       await pool.execute('DELETE FROM gf_auth_sessions WHERE user_id = ?', [id]);
       await pool.execute('DELETE FROM gf_auth_codes WHERE user_id = ?', [id]);
       await pool.execute('DELETE FROM users WHERE id = ?', [id]);

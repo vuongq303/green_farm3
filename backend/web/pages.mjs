@@ -182,20 +182,24 @@ export function renderPasswordForm({ mode, csrfToken, attemptId, closeUrl } = {}
     </header>
     <h1 id="page-heading">${heading}</h1>
     <p class="password-intro">${register ? 'Tạo tài khoản để bắt đầu chuyến phiêu lưu nông trại.' : 'Chào bạn! Đăng nhập để tiếp tục vào trò chơi.'}</p>
-    <form id="account-form" data-endpoint="${target}" data-mode="${mode}" novalidate method="post" action="${target}">
+    <form id="account-form" data-endpoint="${target}" data-mode="${mode}" aria-busy="false" novalidate method="post" action="${target}">
       <fieldset id="account-fields">
         <input type="hidden" name="csrf" value="${escapeHtml(csrfToken)}">
         <input type="hidden" name="attempt" value="${escapeHtml(attemptId)}">${fields}
-        <button id="account-submit" class="farm-button" type="submit"><span class="submit-label">${register ? 'Đăng ký' : 'Đăng nhập'}</span><span class="form-spinner" aria-hidden="true"></span></button>
+        <button id="account-submit" class="farm-button" type="submit"><span id="submit-label">${register ? 'Đăng ký' : 'Đăng nhập'}</span><span class="form-spinner" aria-hidden="true"></span></button>
       </fieldset>
     </form>
-    <p id="account-status" class="form-status" role="status" aria-live="polite" tabindex="-1" aria-atomic="true"></p>
-    <a id="return-to-game" class="farm-button" hidden>Quay lại Green Farm 3</a>
-    <p id="return-status" class="hint" hidden>Nếu trình duyệt chưa tự mở trò chơi, hãy chạm nút ở trên. Mã xác thực chỉ có hiệu lực trong thời gian ngắn.</p>
     <a id="account-mode-link" class="account-mode-link" href="${escapeHtml(alternate)}">${register ? 'Đã có tài khoản? Đăng nhập' : 'Chưa có tài khoản? Đăng ký'}</a>
     <p class="account-note">Nông trại hiện được lưu trên thiết bị này. Đăng nhập không đồng bộ dữ liệu nông trại.</p>
-    <noscript><p class="form-status">Trang đăng nhập cần JavaScript. Hãy đóng trang và thử lại từ trò chơi.</p></noscript>
+    <noscript><p class="hint">Trang đăng nhập cần JavaScript. Hãy đóng trang và thử lại từ trò chơi.</p></noscript>
   </main>
+  <dialog id="account-notice" class="account-dialog" role="alertdialog" aria-modal="true" aria-labelledby="notice-title" aria-describedby="notice-message">
+    <span class="notice-icon" aria-hidden="true"></span>
+    <h2 id="notice-title"></h2>
+    <p id="notice-message"></p>
+    <button id="notice-dismiss" class="farm-button" type="button">Thử lại</button>
+    <a id="return-to-game" class="farm-button" hidden>Vào trò chơi</a>
+  </dialog>
   <footer>Green Farm 3 · Tài khoản trò chơi</footer>
 </body>
 </html>`;

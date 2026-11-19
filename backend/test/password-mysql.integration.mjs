@@ -62,7 +62,7 @@ test('password migration is additive, repeatable and preserves provider identiti
   assert.ok(again.alreadyApplied.includes(4));
   const [afterRows] = await pool.execute('SELECT * FROM users WHERE id IN (?, ?) ORDER BY id', [facebook.id, google.id]);
   assert.deepEqual(afterRows, before);
-  assert.deepEqual(await store.health(), { status: 'ready', schemaVersion: 4 });
+  assert.deepEqual(await store.health(), { status: 'ready', schemaVersion: 5 });
   const [[credentials]] = await pool.execute('SELECT COUNT(*) AS total FROM gf_password_accounts WHERE user_id IN (?, ?)',
     [facebook.id, google.id]);
   assert.equal(Number(credentials.total), 0, 'provider identities are never converted to password accounts');

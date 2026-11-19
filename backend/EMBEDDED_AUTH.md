@@ -89,8 +89,12 @@ Migration [004_password_accounts.sql](migrations/004_password_accounts.sql) adds
   email, Argon2id password hash, `account_status`, created/updated/last-login times.
 - `gf_auth_web_sessions`: cookie hash, unique pending attempt, CSRF hash and expiry.
 
-The existing `users`, codes, sessions, families and links remain the shared
-identity/session system. A password identity gets its existing-format `GF...`
+The shared identity/session system uses `users`, authorization codes, sessions
+and revocation families. Migration [005](migrations/005_session_family_membership.sql)
+moves family membership onto each session and preserves the existing token
+hashes and revocation timestamps. Before upgrading an existing installation,
+follow the [MySQL deployment runbook](database/README.md). A password identity
+gets its existing-format `GF...`
 ID from its actual MySQL BIGINT ID, without JavaScript-number rounding. No
 account is matched or merged with Facebook/Google using email. Disabling a
 password credential blocks login, code issuance/exchange, access and refresh;

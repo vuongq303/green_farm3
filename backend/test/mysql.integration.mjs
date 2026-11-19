@@ -38,7 +38,7 @@ test('real MySQL migrations are additive, checksum tracked and idempotent', asyn
   const first = await migrate(pool);
   assert.ok([...first.applied, ...first.alreadyApplied].includes(1));
   const again = await migrate(pool);
-  assert.deepEqual(again, { applied: [], alreadyApplied: [1, 2, 3, 4] });
+  assert.deepEqual(again, { applied: [], alreadyApplied: [1, 2, 3, 4, 5] });
 });
 
 test('accounts, sessions, profile identity and compliance survive store restart', async t => {
