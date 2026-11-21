@@ -42,6 +42,7 @@ JAVA = {
     'com/quanhoang/greenfarm3/Start.java': 'package com.quanhoang.greenfarm3; public class Start extends android.app.Activity {}',
     'android/os/Build.java': '''package android.os; public class Build {public static class VERSION {public static int SDK_INT=28;}}''',
     'android/util/Log.java': LOG,
+    'org/json/JSONObject.java': 'package org.json; public class JSONObject {}',
     'javax/microedition/midlet/MIDlet.java': '''package javax.microedition.midlet; public class MIDlet extends android.app.Activity {
         public static MIDlet cnz; public static android.app.Activity cnA=new android.app.Activity();}''',
     'com/quanhoang/greenfarm3/S800x480/LocalDevelopmentConfig.java': '''package com.quanhoang.greenfarm3.S800x480;
@@ -74,6 +75,7 @@ class SocialAuthClient(base:String):SocialAccountFlow.Backend {
  override fun me(accessToken:String)=SocialIdentity("GF000001",provider,"Player")
  override fun refresh(refreshToken:String)=exchange("unused","unused")
  override fun logout(accessToken:String,refreshToken:String){}
+ fun giftRequest(method:String,path:String,payload:org.json.JSONObject?,bearer:String)=org.json.JSONObject()
 }
 '''
 
@@ -107,6 +109,11 @@ fun main(){
  val url="https://auth.example/auth/web/login?attempt="+"a".repeat(43)
  val cb=SocialAccountFlow.REDIRECT_URI+"?state=$state&code=$code"
  check(SocialAccountController.accountName()=="")
+ val supported=listOf(0,1,2,3,4,5,7,9,10,11,12,15,16,20)
+ val errors=listOf("configuration_required","invalid_response","invalid_authorization_url","network_error","timeout",
+  "tls_error","storage_error","browser_unavailable","invalid_callback","session_expired")
+ for(language in supported){check(errors.map{SocialAccountText.message(language,it,false)}.toSet().size==errors.size)}
+ check(SocialAccountText.message(2,"invalid_authorization_url",false).contains("adresse"))
  SecureAccountStore.pending=SocialAttempt("password",state,verifier,url,System.currentTimeMillis()+300000)
  check(!SocialAccountController.recordCallback(ctx,cb.replace(state,"x".repeat(43))))
  check(!SocialAccountController.recordCallback(ctx,cb+"&access_token=private"))
@@ -179,7 +186,7 @@ class BrowserAccountControllerTest(unittest.TestCase):
             harness.write_text(HARNESS)
             source = ROOT / 'app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480'
             classes = path / 'classes'
-            compile_mixed([source / (name + '.kt') for name in ('SocialAccountFlow', 'SocialAccountController', 'SocialAuthCallbackActivity')]
+            compile_mixed([source / (name + '.kt') for name in ('SocialAccountFlow', 'SocialAccountController', 'SocialAuthCallbackActivity', 'SocialAccountText')]
                           + [peers, harness], java_sources, classes)
             result = subprocess.run([str(java), '-cp', runtime_classpath(classes), 'ControllerChecksKt'],
                                     capture_output=True, text=True, timeout=20)

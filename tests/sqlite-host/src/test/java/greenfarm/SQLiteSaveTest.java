@@ -298,6 +298,38 @@ public class SQLiteSaveTest {
         assertEquals(16, GameSaveStore.read("RMSHeader")[4]);
         for (String name : new String[] {"RMSHeader", "save_gameplay", "save_farm0", "pending_rewards_v1", "entity_pose_v1"}) assertEquals(71, read(name));
     }
+    @Test public void giftcodeReceiptAndWalletRollBackAndReopenTogether() {
+        String receipt = "giftcode_local_receipt_aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+        GameSaveStore.Snapshot old = fullSnapshot(50);
+        GameSaveStore.applySnapshot(old);
+        GameSaveStore.beginCapture(true);
+        for (String record : new String[] {"RMSHeader", "save_gameplay", "save_farm0", "pending_rewards_v1", "entity_pose_v1"}) {
+            byte[] data = new byte[35]; ByteBuffer.wrap(data).putInt(61);
+            GameSaveStore.write(record, data, 0, data.length);
+        }
+        byte[] grant = value(11);
+        GameSaveStore.write(receipt, grant, 0, grant.length);
+        GameSaveStore.Snapshot credited = GameSaveStore.finishCapture();
+        try (SQLiteDatabase external = SQLiteDatabase.openDatabase(
+                context.getDatabasePath(GameSaveStore.DATABASE_NAME).getPath(), null, SQLiteDatabase.OPEN_READWRITE)) {
+            external.execSQL("CREATE TRIGGER reject_gift BEFORE INSERT ON save_commits BEGIN SELECT RAISE(ABORT,'injected'); END");
+            List<String> before = persistedRecords();
+            try {
+                GameSaveStore.applySnapshot(credited);
+                fail("injected commit error should roll back the gift");
+            } catch (GameSaveStore.Failure expected) {
+                assertEquals(before, persistedRecords());
+            }
+            external.execSQL("DROP TRIGGER reject_gift");
+        }
+        GameSaveStore.applySnapshot(credited);
+        GameSaveStore.applySnapshot(old);
+        GameSaveStore.close();
+        GameSaveStore.initialize(context);
+        assertEquals(61, read("save_gameplay"));
+        assertArrayEquals(grant, GameSaveStore.read(receipt));
+    }
+
     private static GameSaveStore.Snapshot fullSnapshot(int n) {
         GameSaveStore.beginCapture(true);
         for (String name : new String[] {"RMSHeader", "save_gameplay", "save_farm0", "pending_rewards_v1", "entity_pose_v1"}) {

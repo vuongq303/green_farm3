@@ -20,6 +20,9 @@ hoặc Google. URL đọc từ cấu hình Gradle, hỗ trợ tên miền, IPv4 
 Xem [bản sửa độc lập Website/Facebook và kết quả kiểm thử](docs/WEBSITE_AUTH_ISOLATION.md) cùng
 [hướng dẫn backend tài khoản](backend/EMBEDDED_AUTH.md). SQLite nông trại vẫn cục bộ.
 
+Quản trị viên tạo giftcode tại `/admin/giftcodes`. Người chơi đã đăng nhập mở
+menu tạm dừng và chọn **Nhập giftcode** cạnh các mục cài đặt. Xem [cấu hình, migration và cách kiểm thử giftcode](docs/GIFTCODES.md).
+
 Pipeline chuẩn khôi phục resource, biên dịch Java/Kotlin được chọn và các helper,
 ghép runtime DEX còn lại, đổi package/symbol có kiểm chứng, cập nhật metadata
 kích thước DEX, ký và kiểm tra APK. AGP cung cấp đúng

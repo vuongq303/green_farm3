@@ -10,6 +10,7 @@ import java.io.DataInputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
+import java.nio.ByteBuffer
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.Arrays
@@ -17,6 +18,7 @@ import java.util.Collections
 import java.util.HashMap
 import java.util.HashSet
 import java.util.TreeSet
+import java.util.UUID
 import java.util.concurrent.locks.ReentrantLock
 import java.util.regex.Pattern
 import java.util.zip.CRC32
@@ -28,6 +30,8 @@ object GameSaveStore {
     const val STATUS_SAVED = 2
     const val STATUS_FAILED = 3
     const val DATABASE_NAME = "greenfarm-progress.db"
+    internal const val GIFTCODE_RECORD_PREFIX = "giftcode_local_"
+    private const val GIFTCODE_FARM_RECORD = "giftcode_local_farm_v1"
     private const val VERSION = 4
     private const val MAX_RECORD_BYTES = 64 * 1024 * 1024
     private const val SLOT = "device-local"
@@ -45,6 +49,7 @@ object GameSaveStore {
     private var logicalVersions: Map<String, Long> = Collections.emptyMap()
     @Volatile private var logicalReady = false
     @Volatile private var writeDispatcher: WriteDispatcher? = null
+    @Volatile private var currentGiftcodeFarmId: String? = null
     private var acceptedVersion = 0L
     @Volatile private var languageWriteOverride: Int? = null
     private var helper: Helper? = null
@@ -243,6 +248,37 @@ object GameSaveStore {
     @JvmStatic fun setWriteDispatcher(dispatcher: WriteDispatcher?) { writeDispatcher = dispatcher }
     @JvmStatic fun isCaptureAvailable(): Boolean = logicalReady && !loading
 
+    /** Bind grants to both this database and this non-backed-up installation. Called on the network worker. */
+    internal fun giftcodeFarmId(): String {
+        LOCK.lock()
+        try {
+            rejectFailedRestore()
+            check(ready && !loading && logicalReady) { "Farm storage is not ready" }
+            val preferences = checkNotNull(context).getSharedPreferences("greenfarm_giftcode_installation_v1", Context.MODE_PRIVATE)
+            val installation = preferences.getString("binding", null) ?: UUID.randomUUID().toString().also {
+                check(preferences.edit().putString("binding", it).commit()) { "Cannot persist giftcode installation binding" }
+            }
+            val farm = confirmedRecords[GIFTCODE_FARM_RECORD] ?: UUID.randomUUID().toString().toByteArray(Charsets.US_ASCII).also {
+                mutate(GIFTCODE_FARM_RECORD, it, false)
+            }
+            val binding = ByteBuffer.wrap(digest(installation.toByteArray(Charsets.US_ASCII) + farm))
+            val high = (binding.long and -0xf001L) or 0x4000L
+            val low = (binding.long and 0x3fffffffffffffffL) or Long.MIN_VALUE
+            return UUID(high, low).toString().also { currentGiftcodeFarmId = it }
+        } finally { LOCK.unlock() }
+    }
+
+    internal fun isGiftcodeFarm(farmId: String): Boolean = ready && currentGiftcodeFarmId == farmId && isCaptureAvailable()
+
+    internal fun giftcodeReceipt(grantId: String): ByteArray? =
+        confirmedRecords["${GIFTCODE_RECORD_PREFIX}receipt_$grantId"]?.copyOf()
+
+    internal fun captureGiftcodeReceipt(grantId: String, receipt: ByteArray) {
+        val capture = checkNotNull(CAPTURE.get()) { "Giftcode receipt requires a game snapshot" }
+        check(capture.wholeFarm && capture.gameplaySnapshot) { "Giftcode receipt requires a complete farm snapshot" }
+        write("${GIFTCODE_RECORD_PREFIX}receipt_$grantId", receipt, 0, receipt.size)
+    }
+
     private fun acceptSnapshot(records: Map<String, ByteArray?>, wholeFarm: Boolean,
         gameplaySnapshot: Boolean, loadingHeaderOnly: Boolean): Snapshot {
         synchronized(CACHE_LOCK) {
@@ -326,6 +362,7 @@ object GameSaveStore {
             logicalRecords = Collections.emptyMap()
             logicalVersions = Collections.emptyMap()
             logicalReady = false
+            currentGiftcodeFarmId = null
             writeDispatcher = null
             languageWriteOverride = null
             APPLIED_VERSIONS.clear()

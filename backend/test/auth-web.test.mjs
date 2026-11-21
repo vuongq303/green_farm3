@@ -74,11 +74,11 @@ test('browser auto-return uses only validated app navigation and leaves a usable
   const script = ASSETS.get('callback.js').body.toString();
   function browser(href, visibilityState = 'visible') {
     const calls = [];
-    const link = { href };
+    const link = { href, getAttribute: key => key === 'href' ? href : null };
     const status = { textContent: '' };
     const timers = [];
     runInNewContext(script, {
-      URL,
+      URLSearchParams,
       document: { visibilityState, getElementById: id => id === 'return-to-game' ? link : status },
       window: { setTimeout: fn => timers.push(fn), location: { replace: url => calls.push(url) } },
     });
@@ -96,7 +96,8 @@ test('browser auto-return uses only validated app navigation and leaves a usable
   assert.deepEqual(hidden.calls, []);
   for (const invalid of [
     `https://evil.example/?code=${code}&state=${state}`, `${callback}&access_token=secret`,
-    `${callback}#fragment`, `${callback}&state=duplicate`,
+    `${callback}#fragment`, `${callback}&state=duplicate`, `${callback}\n`,
+    callback.replace('://oauth/', '://oauth:443/'),
   ]) {
     const result = browser(invalid);
     assert.deepEqual(result.calls, []);

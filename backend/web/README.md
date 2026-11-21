@@ -90,3 +90,23 @@ from the previous visit cannot redirect it or clear newly entered credentials.
 
 Real HTTPS configuration and Android device tests are still required. Rendering
 a form or passing host tests does not prove a live Android/browser login round trip.
+
+## Giftcode administration
+
+The page at `/admin/giftcodes` uses HTML, CSS and JavaScript from
+`web/giftcodes/`. `giftcode-admin.mjs` serves explicit asset paths and
+references the repository's farm screenshot and Android currency icons.
+Deploy with those assets alongside the backend. Management requests use the
+same-origin HTTPS API at `/admin/api/giftcodes` and a Secure, HttpOnly
+administrator cookie. See [giftcode setup](../../docs/GIFTCODES.md).
+
+From `backend/`, run the Chromium integration test against a dedicated MySQL
+database whose name ends in `_test`:
+
+```sh
+npm run test:browser -- test/giftcode-browser.integration.mjs
+```
+
+The test creates a giftcode in Chromium, redeems it through the authenticated
+HTTPS API, then checks that changing the code leaves the original redemption
+intact in history. It cleans up the code and test account it created.

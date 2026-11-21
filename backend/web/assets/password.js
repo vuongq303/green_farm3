@@ -22,16 +22,18 @@
   const mode = form.getAttribute('data-mode');
   const endpoint = form.getAttribute('data-endpoint');
   if (!['login', 'register'].includes(mode) || endpoint !== '/auth/' + mode) return;
-  let expectedState;
-  try {
-    const exit = new URL(close.href);
-    if (exit.protocol !== 'com.quanhoang.greenfarm3:' || exit.hostname !== 'oauth' ||
-        exit.pathname !== '/callback' || exit.username || exit.password || exit.port || exit.hash ||
-        exit.searchParams.get('error') !== 'access_denied' ||
-        [...exit.searchParams.keys()].length !== 2) return;
-    expectedState = exit.searchParams.get('state');
-    if (!/^[A-Za-z0-9_-]{32,128}$/.test(expectedState || '')) return;
-  } catch { return; }
+  const callbackPrefix = 'com.quanhoang.greenfarm3://oauth/callback?';
+  function callbackParams(value) {
+    // Older WebView versions parse the host of an application scheme as part
+    // of its path. Require the canonical app route before reading its query.
+    if (typeof value !== 'string' || value.length > 2048 || !value.startsWith(callbackPrefix)) return null;
+    const query = value.slice(callbackPrefix.length);
+    return query && !/[^A-Za-z0-9_=&-]/.test(query) ? new URLSearchParams(query) : null;
+  }
+  const exit = callbackParams(close.getAttribute('href'));
+  if (!exit || exit.get('error') !== 'access_denied' || [...exit.keys()].length !== 2) return;
+  const expectedState = exit.get('state');
+  if (!/^[A-Za-z0-9_-]{32,128}$/.test(expectedState || '')) return;
   let busy = false;
   let closed = false;
   let completed = false;
@@ -72,7 +74,7 @@
   }
   function closeNotice() {
     notice.close();
-    restoreFocus?.focus();
+    if (restoreFocus) restoreFocus.focus();
     restoreFocus = null;
   }
   dismissNotice.addEventListener('click', closeNotice);
@@ -124,16 +126,10 @@
     submitLabel.textContent = value ? (mode === 'register' ? 'Đang đăng ký…' : 'Đang đăng nhập…') : idleLabel;
   }
   function appCode(value) {
-    if (typeof value !== 'string' || value.length > 2048) throw new Error('invalid_callback');
-    let target;
-    try { target = new URL(value); } catch { throw new Error('invalid_callback'); }
-    const keys = [...target.searchParams.keys()];
-    if (target.protocol !== 'com.quanhoang.greenfarm3:' || target.hostname !== 'oauth' ||
-        target.pathname !== '/callback' || target.username || target.password || target.port || target.hash ||
-        keys.length !== 2 || new Set(keys).size !== 2 || !keys.includes('code') || !keys.includes('state') ||
-        target.searchParams.get('state') !== expectedState ||
-        !/^[A-Za-z0-9_-]{43}$/.test(target.searchParams.get('code') || '')) throw new Error('invalid_callback');
-    return target.href;
+    const params = callbackParams(value);
+    if (!params || [...params.keys()].length !== 2 || params.get('state') !== expectedState ||
+        !/^[A-Za-z0-9_-]{43}$/.test(params.get('code') || '')) throw new Error('invalid_callback');
+    return value;
   }
   function complete(target) {
     close.href = target;
@@ -237,6 +233,9 @@
       const { response, reply } = await Promise.race([(async () => {
         const response = await fetch(endpoint, {
           method: 'POST', credentials: 'same-origin', cache: 'no-store', redirect: 'error',
+          // Older Chromium emits an opaque Origin for a no-referrer POST.
+          // Send only the origin so the server can still enforce exact CSRF origin.
+          referrerPolicy: 'origin',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify(body), signal: requestController.signal,
         });
@@ -257,7 +256,7 @@
       }
       target = appCode(reply.callback_url);
     } catch (error) {
-      issue = ['invalid_response', 'invalid_callback'].includes(error?.message) ?
+      issue = ['invalid_response', 'invalid_callback'].includes(error && error.message) ?
         feedback.invalid_response : feedback.connection;
     } finally {
       window.clearTimeout(timeout);

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Quản trị giftcode · Green Farm 3</title>
+  <link rel="icon" href="/admin/giftcodes/assets/green-farm-3.png">
+  <link rel="stylesheet" href="{{STYLE_URL}}">
+  <script defer src="{{SCRIPT_URL}}"></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="brand">
+        <img src="/admin/giftcodes/assets/green-farm-3.png" alt="" width="42" height="42">
+        <span>Green Farm 3</span>
+      </div>
+      <button id="logout" type="button" class="button button-masthead" hidden>Đăng xuất</button>
+    </div>
+  </header>
+  <main class="workspace">
+    <section class="hero" aria-labelledby="heading">
+      <div class="hero-copy">
+        <h1 id="heading">Quản trị giftcode</h1>
+        <p>Tạo mã quà tặng, quản lý phần thưởng và theo dõi lượt đổi trong game.</p>
+      </div>
+      <img class="hero-photo" src="/admin/giftcodes/assets/farm.png" width="800" height="480" alt="">
+    </section>
+    <noscript><p class="notice notice-error">Bật JavaScript để sử dụng trang quản trị.</p></noscript>
+    <p id="notice" class="notice" role="status">Đang kiểm tra phiên quản trị…</p>
+    <section id="login-panel" class="panel login-panel" aria-labelledby="login-title" hidden>
+      <h2 id="login-title">Đăng nhập quản trị</h2>
+      <form id="login-form">
+        <label class="field" for="admin-password">
+          <span>Mật khẩu quản trị</span>
+          <input type="password" id="admin-password" required autocomplete="current-password" maxlength="256">
+        </label>
+        <button id="login" type="submit" class="button button-primary">Đăng nhập</button>
+      </form>
+    </section>
+    <section id="dashboard" class="panel" aria-labelledby="list-title" hidden>
+      <div class="panel-header">
+        <div>
+          <h2 id="list-title">Danh sách giftcode</h2>
+          <p id="result-count" class="muted" aria-live="polite"></p>
+        </div>
+        <button id="new-code" type="button" class="button button-primary">+ Tạo giftcode</button>
+      </div>
+      <form class="filters" id="filters">
+        <label class="field">
+          <span>Tìm theo mã</span>
+          <input type="search" id="query" placeholder="Ví dụ: MUAHE" maxlength="96" autocomplete="off">
+        </label>
+        <div class="field">
+          <label for="filter-status">Trạng thái</label>
+          <select id="filter-status">
+            <option value="">Tất cả</option>
+            <option value="active">Đang hoạt động</option>
+            <option value="scheduled">Chưa có hiệu lực</option>
+            <option value="expired">Hết hạn</option>
+            <option value="exhausted">Hết lượt</option>
+            <option value="disabled">Đã tắt</option>
+          </select>
+        </div>
+        <button class="button button-secondary" type="submit">Tìm</button>
+      </form>
+      <div class="table-wrap" id="code-results" aria-busy="true">
+        <table>
+          <thead><tr><th scope="col">Mã</th><th scope="col">Trạng thái</th><th scope="col">Hết hạn</th><th scope="col">Lượt đã dùng</th><th scope="col">Thao tác</th></tr></thead>
+          <tbody id="codes"></tbody>
+        </table>
+      </div>
+      <p id="list-empty" class="empty" hidden>Không có giftcode phù hợp.</p>
+      <nav class="pagination" aria-label="Phân trang giftcode">
+        <button id="codes-prev" type="button" class="button button-secondary" disabled>Trước</button>
+        <span id="codes-page" aria-live="polite"></span>
+        <button id="codes-next" type="button" class="button button-secondary" disabled>Sau</button>
+      </nav>
+    </section>
+  </main>
+  <dialog id="editor" aria-labelledby="editor-title">
+    <div class="dialog-head">
+      <h2 id="editor-title">Tạo giftcode</h2>
+      <button class="close-button" type="button" aria-label="Đóng" data-close="editor">×</button>
+    </div>
+    <p id="editor-error" class="notice notice-error" role="alert" hidden></p>
+    <form id="editor-form">
+      <div class="field">
+        <label for="code">Mã giftcode</label>
+        <div class="inline-field">
+          <input id="code" maxlength="96" autocapitalize="characters" spellcheck="false" autocomplete="off" placeholder="Để trống để tự tạo mã">
+          <button id="random-code" type="button" class="button button-secondary">Tạo ngẫu nhiên</button>
+        </div>
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>Bắt đầu</span>
+          <input id="starts-at" type="datetime-local" step="1">
+        </label>
+        <label class="field">
+          <span>Hết hạn</span>
+          <input id="expires-at" type="datetime-local" step="1">
+        </label>
+        <label class="field">
+          <span>Giới hạn lượt nhận</span>
+          <input id="max-redemptions" type="number" inputmode="numeric" min="1" max="1000000000" step="1" placeholder="Không giới hạn">
+        </label>
+        <label class="switch">
+          <input id="enabled" type="checkbox" checked>
+          <span>Bật giftcode</span>
+        </label>
+      </div>
+      <p class="field-note">Thời gian theo múi giờ của thiết bị. Để trống ngày hết hạn nếu mã có hiệu lực vô thời hạn.</p>
+      <h3>Phần thưởng</h3>
+      <p id="editor-lock-note" class="field-note" hidden>Mã đã có người nhận. Thay đổi phần thưởng chỉ áp dụng cho các lượt đổi mới.</p>
+      <ul id="reward-rows" class="reward-list"></ul>
+      <div class="picker">
+        <label class="field">
+          <span>Tìm vật phẩm</span>
+          <input id="reward-search" type="search" placeholder="Tên hoặc ID" autocomplete="off">
+        </label>
+        <div class="field">
+          <label for="reward-picker">Danh mục</label>
+          <select id="reward-picker"></select>
+        </div>
+        <button id="add-reward" type="button" class="button button-secondary">+ Thêm</button>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="button button-secondary" data-close="editor">Hủy</button>
+        <button type="submit" class="button button-primary">Xem trước</button>
+      </div>
+    </form>
+    <section id="preview" hidden aria-labelledby="preview-title">
+      <h3 id="preview-title" tabindex="-1">Xác nhận lưu</h3>
+      <dl id="preview-fields" class="details"></dl>
+      <ul id="preview-rewards" class="reward-list"></ul>
+      <div class="dialog-actions">
+        <button id="back-to-editor" type="button" class="button button-secondary">Quay lại</button>
+        <button id="save-code" type="button" class="button button-primary">Lưu giftcode</button>
+      </div>
+    </section>
+  </dialog>
+  <dialog id="history" aria-labelledby="history-title">
+    <div class="dialog-head">
+      <h2 id="history-title">Lịch sử đổi mã</h2>
+      <button class="close-button" type="button" aria-label="Đóng" data-close="history">×</button>
+    </div>
+    <p id="history-error" class="notice notice-error" role="alert" hidden></p>
+    <div id="history-results" aria-busy="true">
+      <ul id="history-entries" class="history-list"></ul>
+      <p id="history-empty" class="empty" hidden>Chưa có lượt đổi nào.</p>
+    </div>
+    <nav class="pagination" aria-label="Phân trang lịch sử">
+      <button id="history-prev" type="button" class="button button-secondary" disabled>Trước</button>
+      <span id="history-page" aria-live="polite"></span>
+      <button id="history-next" type="button" class="button button-secondary" disabled>Sau</button>
+    </nav>
+  </dialog>
+</body>
+</html>

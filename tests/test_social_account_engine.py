@@ -73,6 +73,7 @@ static void reset(){
  for(int i=0;i<atf.length;i++)atf[i]=new Sprite();
  for(int i=0;i<aZh.length;i++)aZh[i]=new a();
  a.charWidth=10;a.lineHeight=18;a.spacing=1;a.measureCalls=0;
+ a.failWrap=false;
 }
 static String geometry(){StringBuilder out=new StringBuilder();for(int item:new int[]{6,7,8,9,10})for(int field:new int[]{2,3,5,6,7})out.append(atc[29][item][field]).append(',');return out.toString();}
 static void testEntryDefaults(){
@@ -105,6 +106,7 @@ static void testNativeUiAndButtons(){
  ok(!enabled[29][6]&&!enabled[29][7]&&!enabled[29][8]&&sounds==0&&SocialAccountController.actions()==0,"busy button repeats cannot create requests");
  reset();SocialAccountController.state=SocialAccountController.ERROR;configureSocialAccountUi();
  ok(enabled[29][6]&&enabled[29][8]&&ate[29][3].equals("Mất kết nối. Vui lòng thử lại."),"native error text and retry actions restored");
+ aYU=0;configureSocialAccountUi();ok(ate[29][3].equals("Cannot reach the account server."),"localized failure survives the renderer");
  socialAccountRight();ok(SocialAccountController.password==1,"failed authorization can be retried");
 }
 static void testGateAndBusyRendering(){
@@ -166,6 +168,10 @@ static void testVerifiedAccountName(){
  a.charWidth=10;a.lineHeight=18;a.spacing=1;String emoji=new String(Character.toChars(0x1F33E));StringBuilder providerName=new StringBuilder();
  for(int i=0;i<33;i++)providerName.append(emoji);SocialAccountController.savedAccountName=providerName.toString();configureSocialAccountUi();
  ok(ate[29][3].startsWith(providerName.substring(0,64)+"... (GF000123)"),"provider display cap preserves Unicode code points");
+ a.failWrap=true;SocialAccountController.savedAccountName="different name";socialAccountScreen(2);
+ ok(ate[29][3].startsWith("Welcome back, GF000123!")&&ate[29][9].equals("Continue")&&ate[29][10].equals("Log out"),
+   "a welcome font failure still replaces the busy caption and installs the verified account actions");
+ ok(SocialAccountController.layoutFailures==1,"welcome font failure attributed without exposing the account name");
  SocialAccountController.state=SocialAccountController.LOGGING_OUT;SocialAccountController.inProgress=true;configureSocialAccountUi();
  ok(!ate[29][3].contains("GF000123")&&!ate[29][3].contains(emoji),"leaving the verified welcome removes its account label");
  ok(transitions==0&&legacyCalls==0&&SocialAccountController.actions()==0,"presenting an account name cannot enter or rebind a farm");
@@ -195,11 +201,16 @@ class LocalDevelopmentConfig {static boolean ONLINE_ACCOUNTS=true;}
 class LocalDevelopmentMode {static boolean skipLegacyBackend(){return LocalDevelopmentConfig.ONLINE_ACCOUNTS;}}
 class SocialAccountController {
  static final int SIGNED_OUT=0,CHECKING=1,BROWSER=2,EXCHANGING=3,WELCOME=4,READY=5,ERROR=6,LOGGING_OUT=7;
- static int state,startups,ticks,facebook,password,continues,logouts,cancels;static boolean inProgress;
+ static int state,startups,ticks,facebook,password,continues,logouts,cancels,layoutFailures;static boolean inProgress;
  static String errorMessage,savedGameId,savedAccountName;
- static void reset(){state=SIGNED_OUT;startups=ticks=facebook=password=continues=logouts=cancels=0;inProgress=false;errorMessage="Mất kết nối. Vui lòng thử lại.";savedGameId="GF000123";savedAccountName="";}
+ static void reset(){state=SIGNED_OUT;startups=ticks=facebook=password=continues=logouts=cancels=layoutFailures=0;inProgress=false;errorMessage=null;savedGameId="GF000123";savedAccountName="";}
+ static void reportWelcomeLayoutFailure(RuntimeException failure){layoutFailures++;}
  static boolean busy(){return inProgress;}static int status(){return state;}
- static String gameId(){return savedGameId;}static String message(){return errorMessage;}
+ static String gameId(){return savedGameId;}static String message(int language){
+  if(errorMessage!=null)return errorMessage;
+  if(state==ERROR)return language==16?"Mất kết nối. Vui lòng thử lại.":"Cannot reach the account server.";
+  return language==16?"Vui lòng đăng nhập tài khoản để tiếp tục":"Sign in to continue.";
+ }
  static String accountName(){return state==WELCOME||state==READY?savedAccountName:"";}
  static void startupGate(){startups++;}static void tick(){ticks++;}
  static void choose(String provider){if(provider.equals("facebook"))facebook++;else if(provider.equals("password"))password++;else throw new AssertionError();inProgress=true;state=BROWSER;}
@@ -212,8 +223,9 @@ class bt {static boolean nY(){return false;}static void nT(){throw new Assertion
 class Sprite {void a(Object graphics,int frame,float x,float y,int transform){}}
 class a {
  static int charWidth=10,lineHeight=18,spacing=1,measureCalls;
- void a(String value,char[] ignored){if(ignored!=null)throw new AssertionError();}
- short[] a(String value,int width,int unused,boolean flag){measureCalls++;int lines=0;for(String part:value.split("\\n",-1))lines+=Math.max(1,(part.codePointCount(0,part.length())*charWidth+width-1)/width);return new short[]{(short)lines};}
+ static boolean failWrap;
+ void a(String value,char[] ignored){throw new StringIndexOutOfBoundsException("stale layout bounds");}
+ short[] a(String value,int width,int unused,boolean flag){if(failWrap)throw new IndexOutOfBoundsException();measureCalls++;int lines=0;for(String part:value.split("\\n",-1))lines+=Math.max(1,(part.codePointCount(0,part.length())*charWidth+width-1)/width);return new short[]{(short)lines};}
  int hG(){return lineHeight;}int hA(){return spacing;}
 }
 class w {static int screenWidth=800,screenHeight=480;}

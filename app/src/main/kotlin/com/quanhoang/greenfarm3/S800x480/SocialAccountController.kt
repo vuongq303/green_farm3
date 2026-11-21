@@ -9,6 +9,7 @@ import android.util.Log
 import java.security.SecureRandom
 import java.util.concurrent.Executors
 import javax.microedition.midlet.MIDlet
+import org.json.JSONObject
 
 /** Platform adapter. The renderer owns all visible account UI, using the game's original components. */
 class SocialAccountController private constructor() {
@@ -27,6 +28,7 @@ class SocialAccountController private constructor() {
         @Volatile private var initializationError = "configuration_required"
         private var application: Context? = null
         private var configuredBaseUrl = ""
+        private var authClient: SocialAuthClient? = null
 
         @JvmStatic @Synchronized fun initialize(context: Context, authBaseUrl: String) {
             application = context.applicationContext
@@ -34,6 +36,7 @@ class SocialAccountController private constructor() {
             if (flow != null) return
             if (Build.VERSION.SDK_INT < 23) {
                 initializationError = "unsupported_device"
+                logStage("initialization", initializationError)
                 return
             }
             try {
@@ -43,21 +46,31 @@ class SocialAccountController private constructor() {
                     override fun now() = System.currentTimeMillis()
                     override fun randomBytes(size: Int) = ByteArray(size).also { random.nextBytes(it) }
                     override fun execute(work: () -> Unit) { worker.execute(work) }
+                    override fun authStage(stage: String, code: String) = logStage(stage, code)
                     override fun authRecovery(stage: String, reason: String) {
                         Log.w("GreenFarmAccount", "auth_recovery stage=$stage reason=$reason")
                     }
                     override fun openBrowser(url: String) {
                         val activity = hostActivity() ?: throw SocialAuthFailure("browser_unavailable")
                         activity.runOnUiThread {
+                            if (flow?.canOpenBrowser(url) != true) return@runOnUiThread
                             try {
                                 activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addCategory(Intent.CATEGORY_BROWSABLE))
-                            } catch (_: Exception) { flow?.browserFailed() }
+                                logStage("browser_launch", "ok")
+                            } catch (_: Exception) { flow?.browserFailed(url) }
                         }
                     }
                 }
+                authClient = client
                 flow = SocialAccountFlow(vault, client, platform)
-            } catch (failure: SocialAuthFailure) { initializationError = failure.code }
-            catch (_: Exception) { initializationError = "storage_error" }
+                logStage("initialization", "ok")
+            } catch (failure: SocialAuthFailure) {
+                initializationError = failure.code
+                logStage("initialization", initializationError)
+            } catch (_: Exception) {
+                initializationError = "storage_error"
+                logStage("initialization", initializationError)
+            }
         }
 
         @JvmStatic fun startupGate(): Boolean = flow?.startupGate() ?: true
@@ -74,40 +87,75 @@ class SocialAccountController private constructor() {
         @JvmStatic fun onHostResumed() { flow?.onHostResumed() }
         @JvmStatic fun status(): Int = flow?.status ?: ERROR
         @JvmStatic fun message(): String = flow?.message ?: SocialAccountFlow.messageFor(initializationError)
+        @JvmStatic fun message(language: Int): String {
+            val active = flow
+            return SocialAccountText.message(language, if (active == null) initializationError else active.failureCode,
+                active?.busy == true)
+        }
+
+        @JvmStatic fun withReadyAccess(operation: (SocialIdentity, String) -> Unit, onFailure: (String) -> Unit) {
+            val active = flow
+            if (active == null) worker.execute { onFailure(initializationError) }
+            else active.withReadyAccess(operation, onFailure)
+        }
+
+        internal fun giftRequest(method: String, path: String, payload: JSONObject?, bearer: String): JSONObject =
+            (authClient ?: throw SocialAuthFailure("configuration_required")).giftRequest(method, path, payload, bearer)
         @JvmStatic fun gameId(): String = flow?.gameId ?: ""
         @JvmStatic fun accountName(): String = flow?.accountName ?: ""
         @JvmStatic fun busy(): Boolean = flow?.busy ?: false
 
+        @JvmStatic fun reportWelcomeLayoutFailure(failure: RuntimeException) {
+            Log.w("GreenFarmAccount", "auth stage=welcome_layout code=font_measurement_failed type=${failure.javaClass.simpleName}")
+        }
+
         /** cnA belongs to the launcher; cnz is the running MIDlet/game Activity. */
         internal fun hostActivity(): Activity? {
             val game = MIDlet.cnz as Activity?
-            if (game != null && !game.isFinishing && !game.isDestroyed) return game
+            if (game?.let(::isUsable) == true) return game
             val launcher = MIDlet.cnA as Activity?
-            return if (launcher != null && !launcher.isFinishing && !launcher.isDestroyed) launcher else null
+            return launcher?.takeIf(::isUsable)
         }
+
+        private fun isUsable(activity: Activity): Boolean =
+            !activity.isFinishing && (Build.VERSION.SDK_INT < 17 || !activity.isDestroyed)
 
         /** The callback Activity accepts no tokens and never trusts Intent extras. */
         @JvmStatic fun recordCallback(context: Context, rawUri: String?): Boolean {
-            if (rawUri == null || rawUri.length > 2048) return rejectedCallback()
-            if (Build.VERSION.SDK_INT < 23) return rejectedCallback()
-            val callback = SocialAccountFlow.parseCallback(rawUri) ?: return rejectedCallback()
+            if (rawUri == null || rawUri.length > 2048) return rejectedCallback("invalid_callback")
+            if (Build.VERSION.SDK_INT < 23) return rejectedCallback("unsupported_device")
+            val callback = SocialAccountFlow.parseCallback(rawUri) ?: return rejectedCallback("invalid_callback")
+            var matchedPending = false
             return try {
                 val origin = SocialAuthClient.validateOrigin(LocalDevelopmentConfig.AUTH_BASE_URL)
                 val vault = SecureAccountStore(context, origin)
-                val expected = vault.attempt() ?: return rejectedCallback()
+                val expected = vault.attempt() ?: return rejectedCallback("missing_attempt")
                 if (expected.provider !in arrayOf("password", "facebook") ||
-                    System.currentTimeMillis() >= expected.expiresAt ||
-                    !SocialAccountFlow.sameState(expected.state, callback.state)) return rejectedCallback()
+                    !SocialAccountFlow.sameState(expected.state, callback.state)) return rejectedCallback("invalid_callback")
+                if (System.currentTimeMillis() >= expected.expiresAt) return rejectedCallback("attempt_expired")
+                matchedPending = true
                 // Persist before waking the host. A cold process recovers the same state/PKCE attempt.
                 // Only exchangeSaved may turn this one-use code into a verified session.
                 vault.saveCallback(callback)
+                logStage("callback_storage", "ok")
                 flow?.enqueueCallback()
                 true
-            } catch (_: Exception) { rejectedCallback() }
+            } catch (failure: Exception) {
+                val code = (failure as? SocialAuthFailure)?.code ?: "storage_error"
+                if (matchedPending) flow?.callbackStorageFailed()
+                logStage("callback_storage", code)
+                false
+            }
         }
 
-        private fun rejectedCallback(): Boolean {
-            try { Log.w("GreenFarmAccount", "callback_rejected") } catch (_: RuntimeException) { }
+        internal fun logStage(stage: String, code: String) {
+            val safeStage = stage.takeIf { it.matches(Regex("[a-z_]{1,48}")) } ?: "unknown"
+            val safeCode = code.takeIf { it.matches(Regex("[a-z_]{1,48}")) } ?: "unknown"
+            try { Log.w("GreenFarmAccount", "auth stage=$safeStage code=$safeCode") } catch (_: RuntimeException) { }
+        }
+
+        private fun rejectedCallback(code: String): Boolean {
+            logStage("callback_validation", code)
             return false
         }
     }

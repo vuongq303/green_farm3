@@ -20,6 +20,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.util.Calendar;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
@@ -2944,6 +2945,14 @@ public final class FarmGameEngine extends GameRuntime implements av {
         f(15, 18, false);
         e(15, 19, false);
         f(15, 19, false);
+        // The original third row held one centered button. Keep its action and
+        // fit the new button into the same two-column grid as the rows above.
+        atc[15][11][2] = atc[15][9][2];
+        atc[15][12][2] = atc[15][10][2];
+        ate[15][GIFTCODE_SETTINGS_TEXT] = GiftcodeDialog.title(aYU);
+        e(15, GIFTCODE_SETTINGS_BUTTON, true);
+        f(15, GIFTCODE_SETTINGS_BUTTON, true);
+        e(15, GIFTCODE_SETTINGS_TEXT, true);
         Ff();
         gM(15);
         aur = true;
@@ -2973,6 +2982,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
             f(15, 18, false);
             e(15, 19, false);
             f(15, 19, false);
+            e(15, GIFTCODE_SETTINGS_BUTTON, false);
+            f(15, GIFTCODE_SETTINGS_BUTTON, false);
+            e(15, GIFTCODE_SETTINGS_TEXT, false);
             aur = false;
         }
     }
@@ -27455,6 +27467,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
         aT(1, 2);
     }
 
+    private static final int GIFTCODE_SETTINGS_BUTTON = 164;
+    private static final int GIFTCODE_SETTINGS_TEXT = 165;
+
     static void gF(int i) {
         int iJ;
         byte[] bArrDb = GameRuntime.db(i);
@@ -27504,6 +27519,20 @@ public final class FarmGameEngine extends GameRuntime implements av {
             }
             i3++;
             i4 = iJ;
+        }
+        if (i == 15) {
+            // Clone original GUI15 button/text nodes before the renderer builds
+            // hitboxes, preserving its sprite, font and pressed animation.
+            atd[i] = Arrays.copyOf(atd[i], atd[i].length + 2);
+            atc[i] = Arrays.copyOf(atc[i], atd[i].length);
+            ate[i] = Arrays.copyOf(ate[i], atd[i].length);
+            atd[i][GIFTCODE_SETTINGS_BUTTON] = atd[i][11].clone();
+            atd[i][GIFTCODE_SETTINGS_BUTTON][2] = atd[i][7][2];
+            atd[i][GIFTCODE_SETTINGS_BUTTON][10] = 0;
+            atd[i][GIFTCODE_SETTINGS_BUTTON][18] = 0;
+            atd[i][GIFTCODE_SETTINGS_TEXT] = atd[i][12].clone();
+            atd[i][GIFTCODE_SETTINGS_TEXT][2] = atd[i][8][2];
+            atd[i][GIFTCODE_SETTINGS_TEXT][15] = 0;
         }
         gG(i);
     }
@@ -28879,6 +28908,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
                         break;
                     case 983201:
                         zc();
+                        break;
+                    case (15 << 16) | GIFTCODE_SETTINGS_BUTTON:
+                        gX(60);
+                        GiftcodeDialog.open(aYU);
                         break;
                 }
                 break;
@@ -38202,7 +38235,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         int status = SocialAccountController.status();
         boolean welcome = status == SocialAccountController.WELCOME;
         boolean busy = SocialAccountController.busy();
-        String message = SocialAccountController.message();
+        String message = SocialAccountController.message(aYU);
         String gameId = SocialAccountController.gameId();
         String accountName = welcome ? SocialAccountController.accountName() : "";
         if (socialAccountUiStatus == status && socialAccountUiLanguage == aYU &&
@@ -38233,10 +38266,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             ate[29][9] = vietnamese ? "Đăng nhập" : "Continue";
             ate[29][10] = vietnamese ? "Đăng xuất" : "Log out";
         } else {
-            ate[29][3] = busy ? (vietnamese ? "Đang xác thực tài khoản..." : "Checking your account...") :
-                    (status == SocialAccountController.ERROR ? (vietnamese ? message :
-                    "Sign-in failed. Check the HTTPS backend connection and try again.") :
-                    (vietnamese ? "Vui lòng đăng nhập tài khoản để tiếp tục" : "Please sign in to continue"));
+            ate[29][3] = message;
             ate[29][9] = "Facebook";
             ate[29][10] = vietnamese ? "Đăng nhập" : "Sign in";
         }
@@ -38251,10 +38281,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     private static String socialAccountWelcome(String accountName, String gameId, boolean vietnamese) {
-        if (accountName.length() == 0) {
-            return vietnamese ? "Chào mừng " + gameId + " trở lại!\nNông trại lưu trên thiết bị này." :
-                    "Welcome back, " + gameId + "!\nYour farm is stored on this device.";
-        }
+        String fallback = vietnamese ? "Chào mừng " + gameId + " trở lại!\nNông trại lưu trên thiết bị này." :
+                "Welcome back, " + gameId + "!\nYour farm is stored on this device.";
+        if (accountName.length() == 0) return fallback;
         // Only a verified session supplies this name. Fit the original text box,
         // without changing its font/geometry or rebinding the local farm owner.
         int total = accountName.codePointCount(0, accountName.length());
@@ -38267,8 +38296,13 @@ public final class FarmGameEngine extends GameRuntime implements av {
             String caption = name + " (" + gameId + ")\n" +
                     (vietnamese ? "Nông trại cục bộ." : "Farm stored on this device.");
             if (font == null || atc[29][3][5] <= 0 || atc[29][3][6] <= 0 || visible <= 1) return caption;
-            font.a(caption, (char[]) null);
-            int lines = font.a(caption, (int) atc[29][3][5], -1, false)[0];
+            int lines;
+            try {
+                lines = font.a(caption, (int) atc[29][3][5], -1, false)[0];
+            } catch (RuntimeException failure) {
+                SocialAccountController.reportWelcomeLayoutFailure(failure);
+                return fallback;
+            }
             if (lines * font.hG() + Math.max(0, lines - 1) * font.hA() <= atc[29][3][6]) return caption;
             visible--;
         }
@@ -64581,6 +64615,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
         }
         fE(59);
         } finally {
+            GiftcodeFarmStore.frameFinished();
             ProgressSaveController.frameFinished();
         }
         }

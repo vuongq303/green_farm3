@@ -126,6 +126,12 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
       code_challenge: createHash('sha256').update(verifier).digest('base64url'), redirect_uri: APP_REDIRECT_URI });
     assert.equal(result.status, 201);
     attempts.push(result.body.attempt_id);
+    const authorization = new URL(result.body.authorization_url);
+    assert.equal(authorization.origin, origin);
+    assert.equal(authorization.pathname, '/auth/web/login');
+    assert.ok(authorization.search === '?attempt=' + result.body.attempt_id &&
+      !authorization.username && !authorization.password && !authorization.hash,
+    'authorization URL contains the expected attempt and no additional data');
     await page.goto(result.body.authorization_url.replace('/web/login', '/web/' + mode));
     await page.locator('#account-form').waitFor();
     assert.equal(await page.locator('#account-form').getAttribute('data-mode'), mode);

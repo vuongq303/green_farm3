@@ -22,7 +22,7 @@ data class SocialCallback(val state: String, val code: String?, val error: Strin
 data class SocialAttemptReply(val authorizationUrl: String, val expiresIn: Long) {
     override fun toString() = "SocialAttemptReply(credentials=<redacted>)"
 }
-class SocialAuthFailure(val code: String) : RuntimeException(code)
+class SocialAuthFailure(val code: String, val stage: String? = null) : RuntimeException(code)
 
 /** Deterministic flow; platform/network results are only applied by tick on the game thread. */
 class SocialAccountFlow(private val vault: Vault, private val backend: Backend, private val platform: Platform) {
@@ -52,6 +52,7 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
         fun openBrowser(url: String)
         /** Controlled stage/reason only; never pass exception text or stored credentials. */
         fun authRecovery(stage: String, reason: String) { }
+        fun authStage(stage: String, code: String) { }
     }
 
     companion object {
@@ -119,6 +120,9 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
             "unsupported_device" -> "Đăng nhập an toàn cần Android 6.0 trở lên. Dữ liệu nông trại vẫn được giữ nguyên."
             "storage_error" -> "Không thể đọc hoặc lưu phiên đăng nhập an toàn. Hãy thử đăng nhập lại."
             "auth_record_unreadable" -> "Không thể khôi phục phiên đăng nhập trên thiết bị. Vui lòng đăng nhập lại. Dữ liệu nông trại vẫn được giữ nguyên."
+            "invalid_response" -> "Phản hồi đăng nhập không hợp lệ. Hãy kiểm tra phiên bản máy chủ."
+            "invalid_authorization_url" -> "Địa chỉ đăng nhập không khớp cấu hình HTTPS của trò chơi."
+            "https_required" -> "Máy chủ yêu cầu HTTPS. Hãy kiểm tra proxy."
             "invalid_callback" -> "Kết quả đăng nhập không hợp lệ. Hãy thử lại."
             "access_denied" -> "Bạn đã hủy đăng nhập. Có thể thử lại."
             "authentication_failed" -> "Không thể xác thực tài khoản. Vui lòng thử lại."
@@ -137,12 +141,13 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
     @Volatile private var generation = 0L
     private val completions = ConcurrentLinkedQueue<() -> Unit>()
     private var initialized = false
-    private var currentSession: SocialSession? = null
+    @Volatile private var currentSession: SocialSession? = null
     private var pending: SocialAttempt? = null
     private var browserWasPaused = false
     private var resumedAt = 0L
     private var operationDeadline = 0L
-    var status: Int = SIGNED_OUT; private set
+    @Volatile var status: Int = SIGNED_OUT; private set
+    var failureCode: String? = null; private set
     var message: String = "Vui lòng đăng nhập tài khoản để tiếp tục"; private set
     val gameId: String get() = currentSession?.user?.gameId ?: ""
     /** A remembered name is visible only after this process verifies the session with the backend. */
@@ -174,10 +179,9 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                     status = SIGNED_OUT
                     message = "Vui lòng đăng nhập tài khoản để tiếp tục"
                 } else {
-                    status = ERROR
-                    message = messageFor("timeout")
+                    reportFailure("flow_timeout", "timeout")
                 }
-            } catch (_: Exception) { status = ERROR; message = messageFor("storage_error") }
+            } catch (_: Exception) { reportFailure("attempt_storage", "storage_error") }
         }
         while (true) (completions.poll() ?: break).invoke()
         if (status == BROWSER) {
@@ -199,15 +203,19 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
         val verifier = base64Url(platform.randomBytes(32))
         val id = ++generation
         status = CHECKING
+        failureCode = null
         operationDeadline = platform.now() + 60_000L
         message = "Đang kết nối tài khoản..."
         resumedAt = 0L
         browserWasPaused = false
         platform.execute {
             if (generation != id) return@execute
+            var stage = "attempt_request"
             try {
                 val reply = backend.attempt(provider, state, challenge(verifier))
-                if (reply.expiresIn !in 1..600) throw SocialAuthFailure("invalid_response")
+                if (reply.expiresIn !in 1..600) throw SocialAuthFailure("invalid_response", "attempt_response")
+                platform.authStage("attempt_response", "ok")
+                stage = "attempt_storage"
                 val attempt = SocialAttempt(provider, state, verifier, reply.authorizationUrl,
                     platform.now() + reply.expiresIn * 1000L)
                 synchronized(this) {
@@ -215,13 +223,14 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                     vault.clearAttempt()
                     vault.saveAttempt(attempt)
                 }
+                platform.authStage(stage, "ok")
                 publish(id) {
                     pending = attempt
                     status = BROWSER
                     message = "Đang chờ xác thực trong trình duyệt..."
                     openAttempt(attempt)
                 }
-            } catch (failure: Exception) { publishFailure(id, failure) }
+            } catch (failure: Exception) { publishFailure(id, stage, failure) }
         }
     }
 
@@ -237,9 +246,17 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
         completions.add { callbackAvailable() }
     }
 
-    fun browserFailed() {
+    @Synchronized fun canOpenBrowser(url: String): Boolean =
+        status == BROWSER && pending?.authorizationUrl == url
+
+    fun browserFailed(url: String) {
         val id = generation
-        publish(id) { if (status == BROWSER) failPending("browser_unavailable") }
+        publish(id) { if (canOpenBrowser(url)) failPending("browser_unavailable") }
+    }
+
+    fun callbackStorageFailed() {
+        val id = generation
+        publish(id) { if (status == BROWSER) failPending("storage_error") }
     }
 
     @Synchronized fun continueSaved() {
@@ -273,9 +290,10 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                 publish(id) {
                     currentSession = null
                     status = SIGNED_OUT
+                    failureCode = null
                     message = "Vui lòng đăng nhập tài khoản để tiếp tục"
                 }
-            } catch (failure: Exception) { publishFailure(id, failure) }
+            } catch (failure: Exception) { publishFailure(id, "logout_storage", failure) }
         }
     }
 
@@ -286,8 +304,9 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
         resumedAt = 0L
         browserWasPaused = false
         try { vault.clearAttempt() }
-        catch (_: Exception) { status = ERROR; message = messageFor("storage_error"); return }
+        catch (_: Exception) { reportFailure("attempt_storage", "storage_error"); return }
         status = SIGNED_OUT
+        failureCode = null
         message = "Vui lòng đăng nhập tài khoản để tiếp tục"
     }
 
@@ -307,6 +326,7 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
     private fun recover() {
         val id = ++generation
         status = CHECKING
+        failureCode = null
         operationDeadline = platform.now() + 60_000L
         message = "Đang kiểm tra tài khoản..."
         platform.execute {
@@ -359,16 +379,18 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                 if (session == null) publish(id) {
                     currentSession = null
                     status = SIGNED_OUT
+                    failureCode = if (unreadableSession) "auth_record_unreadable" else null
                     message = if (unreadableSession) messageFor("auth_record_unreadable")
                         else "Vui lòng đăng nhập tài khoản để tiếp tục"
                 } else validateSession(id, session, false)
-            } catch (failure: Exception) { publishFailure(id, failure) }
+            } catch (failure: Exception) { publishFailure(id, "session_restore", failure) }
         }
     }
 
     private fun validateSession(id: Long, session: SocialSession, enter: Boolean) {
         platform.execute {
             if (generation != id) return@execute
+            var stage = "session_validation"
             try {
                 var active = session
                 if (platform.now() >= active.refreshExpiresAt) throw SocialAuthFailure("session_expired")
@@ -386,10 +408,12 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                     throw SocialAuthFailure("invalid_session")
                 }
                 active = active.copy(user = user)
+                stage = "session_storage"
                 synchronized(this) {
                     if (generation != id || platform.now() >= operationDeadline) return@execute
                     vault.saveSession(active)
                 }
+                platform.authStage(stage, "ok")
                 val verified = active
                 publish(id) {
                     currentSession = verified
@@ -408,10 +432,11 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                         publish(id) {
                             currentSession = null
                             status = SIGNED_OUT
+                            failureCode = failure.code
                             message = messageFor(failure.code)
                         }
-                    } catch (storageFailure: Exception) { publishFailure(id, storageFailure) }
-                } else publishFailure(id, failure)
+                    } catch (storageFailure: Exception) { publishFailure(id, "session_storage", storageFailure) }
+                } else publishFailure(id, stage, failure)
             }
         }
     }
@@ -425,7 +450,8 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
             if (generation != id || platform.now() >= operationDeadline) return null
             // The server has consumed the old refresh token. Retain its replacement
             // before /me, so a later network failure cannot strand the next cold start.
-            vault.saveSession(refreshed)
+            try { vault.saveSession(refreshed) }
+            catch (_: Exception) { throw SocialAuthFailure("storage_error", "session_storage") }
         }
         return refreshed
     }
@@ -433,11 +459,13 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
     private fun exchangeSaved(id: Long) {
         platform.execute {
             if (generation != id) return@execute
+            var stage = "callback_storage"
             try {
                 val attempt = vault.attempt() ?: throw SocialAuthFailure("invalid_callback")
                 val callback = vault.callback() ?: throw SocialAuthFailure("invalid_callback")
                 if (platform.now() >= attempt.expiresAt) throw SocialAuthFailure("attempt_expired")
-                if (!sameState(attempt.state, callback.state)) throw SocialAuthFailure("invalid_callback")
+                if (!sameState(attempt.state, callback.state)) throw SocialAuthFailure("invalid_callback", "callback_validation")
+                platform.authStage("callback_validation", "ok")
                 synchronized(this) {
                     if (generation != id) return@execute
                     // Local replay is rejected even if this process dies during exchange.
@@ -445,11 +473,13 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                 }
                 if (callback.error != null) throw SocialAuthFailure(callback.error)
                 val code = callback.code ?: throw SocialAuthFailure("invalid_callback")
+                stage = "exchange_request"
                 val session = backend.exchange(code, attempt.verifier)
                 if (session.user.provider != attempt.provider) {
                     try { backend.logout(session.accessToken, session.refreshToken) } catch (_: Exception) { }
                     throw SocialAuthFailure("invalid_session")
                 }
+                stage = "session_storage"
                 val retained = synchronized(this) {
                     if (generation != id || platform.now() >= operationDeadline) {
                         false
@@ -462,6 +492,7 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                     try { backend.logout(session.accessToken, session.refreshToken) } catch (_: Exception) { }
                     return@execute
                 }
+                platform.authStage(stage, "ok")
                 publish(id) {
                     pending = null
                     currentSession = session
@@ -470,7 +501,7 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
                     status = if (attempt.provider == "password") WELCOME else READY
                     message = "Chào mừng ${session.user.gameId}!"
                 }
-            } catch (failure: Exception) { publishFailure(id, failure) }
+            } catch (failure: Exception) { publishFailure(id, stage, failure) }
         }
     }
 
@@ -484,7 +515,18 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
         pending = null
         resumedAt = 0L
         try { vault.clearAttempt() } catch (_: Exception) { }
+        val stage = when (code) {
+            "browser_unavailable", "browser_closed" -> "browser_launch"
+            "attempt_expired" -> "callback_validation"
+            else -> "callback_storage"
+        }
+        reportFailure(stage, code)
+    }
+
+    private fun reportFailure(stage: String, code: String) {
+        platform.authStage(stage, code)
         status = ERROR
+        failureCode = code
         message = messageFor(code)
     }
 
@@ -492,13 +534,45 @@ class SocialAccountFlow(private val vault: Vault, private val backend: Backend, 
         completions.add { if (generation == id) result() }
     }
 
-    private fun publishFailure(id: Long, failure: Exception) {
-        val code = if (failure is SocialAuthFailure) failure.code else "storage_error"
+    private fun publishFailure(id: Long, stage: String, failure: Exception) {
+        val auth = failure as? SocialAuthFailure
         publish(id) {
             pending = null
             resumedAt = 0L
-            status = ERROR
-            message = messageFor(code)
+            reportFailure(auth?.stage ?: stage, auth?.code ?: "storage_error")
+        }
+    }
+
+    /** Supplies only a verified, current session on the serialized account worker. */
+    fun withReadyAccess(operation: (SocialIdentity, String) -> Unit, onFailure: (String) -> Unit) {
+        platform.execute {
+            try {
+                val (id, session) = synchronized(this) {
+                    if (status != READY) throw SocialAuthFailure("invalid_session")
+                    generation to (currentSession ?: throw SocialAuthFailure("invalid_session"))
+                }
+                var active = session
+                val time = platform.now()
+                if (time >= active.refreshExpiresAt) throw SocialAuthFailure("session_expired")
+                if (time >= active.accessExpiresAt - 30_000L) {
+                    val refreshed = backend.refresh(active.refreshToken)
+                    if (refreshed.user.gameId != active.user.gameId || refreshed.user.provider != active.user.provider) {
+                        throw SocialAuthFailure("invalid_session")
+                    }
+                    synchronized(this) {
+                        if (generation != id || status != READY) throw SocialAuthFailure("invalid_session")
+                        vault.saveSession(refreshed)
+                        currentSession = refreshed
+                    }
+                    active = refreshed
+                }
+                synchronized(this) {
+                    if (generation != id || status != READY) throw SocialAuthFailure("invalid_session")
+                }
+                operation(active.user, active.accessToken)
+            } catch (failure: Exception) {
+                onFailure((failure as? SocialAuthFailure)?.code ?: "storage_error")
+            }
         }
     }
 }

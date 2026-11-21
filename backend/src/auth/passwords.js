@@ -20,6 +20,10 @@ export function validPassword(value) {
     Buffer.byteLength(value, 'utf8') <= 512 && !/[\u0000-\u001f\u007f]/u.test(value);
 }
 
+export function validPasswordHash(value) {
+  return typeof value === 'string' && ENCODED_HASH.test(value);
+}
+
 export function normalizeIdentifier(value) {
   if (typeof value !== 'string' || value.length > 254 || /[^\x20-\x7e]/u.test(value)) return undefined;
   const normalized = value.trim().toLowerCase();
@@ -58,7 +62,7 @@ export function hashPassword(password) {
  * wrong password. The random dummy credential is never an authenticatable user. */
 export function verifyPassword(password, encoded) {
   return bounded(async () => {
-    const validStored = typeof encoded === 'string' && ENCODED_HASH.test(encoded);
+    const validStored = validPasswordHash(encoded);
     if (!validStored && !dummyHash) dummyHash = argon2.hash(randomBytes(32), OPTIONS).catch(error => { dummyHash = undefined; throw error; });
     const reference = validStored ? encoded : await dummyHash;
     const candidate = typeof password === 'string' && Buffer.byteLength(password, 'utf8') <= 512 ? password : '';

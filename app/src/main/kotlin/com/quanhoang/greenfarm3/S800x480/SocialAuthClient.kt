@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
-import javax.net.ssl.SSLException
 import org.json.JSONObject
 
 /** New account requests never inherit the legacy game's permissive global TLS factory. */
@@ -55,32 +54,53 @@ class SocialAuthClient(baseUrl: String, private val operationTimeoutMillis: Long
     }
 
     override fun attempt(provider: String, state: String, challenge: String): SocialAttemptReply {
-        try {
-            val response = request("POST", "auth/attempt", JSONObject().put("provider", provider)
-                .put("state", state).put("code_challenge", challenge).put("redirect_uri", SocialAccountFlow.REDIRECT_URI))
-            val authorization = response.getString("authorization_url")
-            if (!isAuthorizationUrl(authorization, origin, provider)) throw SocialAuthFailure("invalid_response")
-            return SocialAttemptReply(authorization, response.getLong("expires_in"))
-        } catch (failure: SocialAuthFailure) { throw failure }
-        catch (_: Exception) { throw SocialAuthFailure("invalid_response") }
+        val response = request("POST", "auth/attempt", JSONObject().put("provider", provider)
+            .put("state", state).put("code_challenge", challenge).put("redirect_uri", SocialAccountFlow.REDIRECT_URI))
+        val authorization = response.opt("authorization_url") as? String
+            ?: throw SocialAuthFailure("invalid_response", "attempt_response")
+        val attemptId = response.opt("attempt_id") as? String
+        val expires = response.opt("expires_in")
+        if (attemptId == null || !attemptId.matches(Regex("[A-Za-z0-9_-]{43}")) ||
+            expires !is Number || expires.toLong() !in 1..600 ||
+            expires.toDouble() != expires.toLong().toDouble()) {
+            throw SocialAuthFailure("invalid_response", "attempt_response")
+        }
+        if (!isAuthorizationUrl(authorization, origin, provider) ||
+            URI(authorization).rawQuery.substringAfter('=') != attemptId) {
+            NetworkDiagnostics.authEvent("authorization_url", "invalid_authorization_url", authorization)
+            throw SocialAuthFailure("invalid_authorization_url", "authorization_url")
+        }
+        NetworkDiagnostics.authEvent("authorization_url", "ok", authorization)
+        return SocialAttemptReply(authorization, expires.toLong())
     }
 
-    override fun exchange(code: String, verifier: String): SocialSession = tokens(request("POST", "auth/exchange",
+    internal fun giftRequest(method: String, path: String, payload: JSONObject?, bearer: String): JSONObject {
+        val route = path.removePrefix("/")
+        val allowed = when (method) {
+            "POST" -> route == "giftcodes/redeem" || route == "giftcodes/ack"
+            "GET" -> route.matches(Regex("giftcodes/pending\\?farm_id=[0-9a-fA-F-]{36}"))
+            else -> false
+        }
+        require(allowed)
+        return request(method, route, payload, bearer, route == "giftcodes/ack")
+    }
+
+    override fun exchange(code: String, verifier: String): SocialSession = tokens("exchange_response", request("POST", "auth/exchange",
         JSONObject().put("code", code).put("code_verifier", verifier).put("redirect_uri", SocialAccountFlow.REDIRECT_URI)))
 
     override fun me(accessToken: String): SocialIdentity = try {
         identity(request("GET", "auth/me", null, accessToken).getJSONObject("user"))
     } catch (failure: SocialAuthFailure) { throw failure }
-    catch (_: Exception) { throw SocialAuthFailure("invalid_response") }
+    catch (_: Exception) { throw SocialAuthFailure("invalid_response", "me_response") }
 
-    override fun refresh(refreshToken: String): SocialSession = tokens(request("POST", "auth/refresh",
+    override fun refresh(refreshToken: String): SocialSession = tokens("refresh_response", request("POST", "auth/refresh",
         JSONObject().put("refresh_token", refreshToken)))
 
     override fun logout(accessToken: String, refreshToken: String) {
         request("POST", "auth/logout", JSONObject().put("refresh_token", refreshToken), accessToken, true)
     }
 
-    private fun tokens(response: JSONObject): SocialSession {
+    private fun tokens(stage: String, response: JSONObject): SocialSession {
         try {
             val access = response.getString("access_token")
             val refresh = response.getString("refresh_token")
@@ -92,8 +112,7 @@ class SocialAuthClient(baseUrl: String, private val operationTimeoutMillis: Long
             val issuedAt = now()
             return SocialSession(access, refresh, issuedAt + lifetime * 1000L,
                 issuedAt + refreshLifetime * 1000L, identity(response.getJSONObject("user")))
-        } catch (failure: SocialAuthFailure) { throw failure }
-        catch (_: Exception) { throw SocialAuthFailure("invalid_response") }
+        } catch (_: Exception) { throw SocialAuthFailure("invalid_response", stage) }
     }
 
     private fun identity(value: JSONObject): SocialIdentity {
@@ -111,6 +130,8 @@ class SocialAuthClient(baseUrl: String, private val operationTimeoutMillis: Long
     private fun request(method: String, path: String, payload: JSONObject?, bearer: String? = null,
                         acceptEmpty: Boolean = false): JSONObject {
         var connection: HttpsURLConnection? = null
+        var status: Int? = null
+        val route = path.substringBefore('?').substringAfterLast('/')
         var deadlineTask: ScheduledFuture<*>? = null
         val timedOut = AtomicBoolean(false)
         val deadline = monotonicNanos() + operationTimeoutMillis * 1_000_000L
@@ -140,14 +161,21 @@ class SocialAuthClient(baseUrl: String, private val operationTimeoutMillis: Long
                 connection.setFixedLengthStreamingMode(bytes.size)
                 connection.outputStream.use { it.write(bytes) }
             }
-            val status = NetworkDiagnostics.authResponseCode(connection)
+            status = NetworkDiagnostics.authResponseCode(connection)
             ensureDeadline(deadline, timedOut)
             if (acceptEmpty && status == 204) return JSONObject()
             val stream = if (status in 200..299) connection.inputStream else connection.errorStream
             val text = if (stream == null) "" else stream.use { readBounded(it, deadline, timedOut) }
             if (status !in 200..299) {
-                val error = try { JSONObject(text).getJSONObject("error").getString("code") }
-                    catch (_: Exception) { if (status == 401) "invalid_session" else if (status == 429) "rate_limited" else "network_error" }
+                val error = try {
+                    when (val value = JSONObject(text).get("error")) {
+                        is JSONObject -> value.getString("code")
+                        is String -> if (path.startsWith("giftcodes/")) value else "authentication_failed"
+                        else -> "authentication_failed"
+                    }
+                } catch (_: Exception) {
+                    if (status == 401) "invalid_session" else if (status == 429) "rate_limited" else "network_error"
+                }
                 throw SocialAuthFailure(if (error.matches(Regex("[a-z_]{1,64}"))) error else "authentication_failed")
             }
             if (!connection.contentType.orEmpty().lowercase().startsWith("application/json")) throw SocialAuthFailure("invalid_response")
@@ -156,16 +184,21 @@ class SocialAuthClient(baseUrl: String, private val operationTimeoutMillis: Long
             return parsed
         } catch (failure: SocialAuthFailure) {
             if (failure.code == "timeout") NetworkDiagnostics.failure(SocketTimeoutException("Authentication operation deadline exceeded"))
-            throw failure
+            val stage = if (status != null) "${route}_response" else "${route}_request"
+            NetworkDiagnostics.authEvent(stage, failure.code, origin + path, status)
+            throw SocialAuthFailure(failure.code, stage)
         }
         catch (failure: Exception) {
             val expired = timedOut.get() || monotonicNanos() >= deadline
             NetworkDiagnostics.failure(if (expired) SocketTimeoutException("Authentication operation deadline exceeded") else failure)
-            throw SocialAuthFailure(if (expired) "timeout" else when (failure) {
-                is SocketTimeoutException -> "timeout"
-                is SSLException -> "tls_error"
+            val code = if (expired) "timeout" else when (NetworkDiagnostics.errorKind(failure)) {
+                "TIMEOUT" -> "timeout"
+                "TLS_ERROR" -> "tls_error"
                 else -> "network_error"
-            })
+            }
+            val stage = if (status != null) "${route}_response" else "${route}_request"
+            NetworkDiagnostics.authEvent(stage, code, origin + path, status)
+            throw SocialAuthFailure(code, stage)
         } finally {
             deadlineTask?.cancel(false)
             connection?.disconnect()

@@ -57,6 +57,8 @@ val secret="PRIVATE-CREDENTIAL-"+"x".repeat(36)
 fun user(id:String="GF000001",provider:String="google")=JSONObject().put("game_id",id).put("provider",provider).put("display_name","Player")
 fun tokens(id:String="GF000001")=JSONObject().put("access_token",secret).put("refresh_token",secret+"r")
  .put("expires_in",900).put("refresh_expires_in",2592000).put("user",user(id)).toString()
+fun attemptBody(url:String,id:String="a".repeat(43),expires:Any=300)=JSONObject()
+ .put("authorization_url",url).put("attempt_id",id).put("expires_in",expires).toString()
 fun clean(reply:Reply){Transport.reply=reply;Log.entries.clear()}
 fun secureConnection(compromised:SSLSocketFactory,method:String,path:String){
  val c=Transport.last!!
@@ -80,29 +82,36 @@ fun main(){
  }
  val client=SocialAuthClient("https://auth.example/"){123456L}
  val state="s".repeat(43);val verifier="v".repeat(43);val challenge=SocialAccountFlow.challenge(verifier)
- clean(Reply(201,JSONObject().put("authorization_url","https://auth.example/auth/browser/start?id="+"a".repeat(43)).put("expires_in",300).toString()))
+ clean(Reply(201,attemptBody("https://auth.example/auth/browser/start?id="+"a".repeat(43))))
  val attempt=client.attempt("google",state,challenge)
  check(attempt.expiresIn==300L&&attempt.authorizationUrl.startsWith("https://auth.example/"))
  secureConnection(insecure,"POST","auth/attempt")
  val start=JSONObject(Transport.last!!.sent.toString("UTF-8"))
  check(start.getString("provider")=="google"&&start.getString("state")==state&&start.getString("code_challenge")==challenge)
  check(start.getString("redirect_uri")==SocialAccountFlow.REDIRECT_URI)
- clean(Reply(201,JSONObject().put("authorization_url","https://evil.example/auth/browser/start?id="+"a".repeat(43)).put("expires_in",300).toString()))
- expect("invalid_response"){client.attempt("google",state,challenge)}
+ clean(Reply(201,attemptBody("https://evil.example/auth/browser/start?id="+"a".repeat(43))))
+ expect("invalid_authorization_url"){client.attempt("google",state,challenge)}
+ check(Log.joined().contains("stage=authorization_url code=invalid_authorization_url url=https://evil.example:443/auth/browser/start"))
+ check(!Log.joined().contains("id="+"a".repeat(43)))
  // Explicit HTTPS443 and host casing are the same trusted origin.
  val explicit=SocialAuthClient("https://AUTH.example:443/")
- clean(Reply(201,JSONObject().put("authorization_url","https://auth.example/auth/browser/start?id="+"a".repeat(43)).put("expires_in",300).toString()))
+ clean(Reply(201,attemptBody("https://auth.example/auth/browser/start?id="+"a".repeat(43))))
  check(explicit.attempt("google",state,challenge).expiresIn==300L)
  clean(Reply(201,"{}"));expect("invalid_response"){client.attempt("google",state,challenge)}
- clean(Reply(201,JSONObject().put("authorization_url","https://auth.example/auth/web/login?attempt="+"a".repeat(43)).put("expires_in",300).toString()))
+ clean(Reply(201,attemptBody("https://auth.example/auth/web/login?attempt="+"a".repeat(43))))
  check(client.attempt("password",state,challenge).authorizationUrl.contains("/auth/web/login?attempt="))
  check(JSONObject(Transport.last!!.sent.toString("UTF-8")).getString("provider")=="password")
- clean(Reply(201,JSONObject().put("authorization_url","https://auth.example/auth/browser/start?id="+"a".repeat(43)).put("expires_in",300).toString()))
- expect("invalid_response"){client.attempt("password",state,challenge)}
- clean(Reply(201,JSONObject().put("authorization_url","https://auth.example/auth/web/login?attempt="+"a".repeat(43)).put("expires_in",300).toString()))
- expect("invalid_response"){client.attempt("facebook",state,challenge)}
+ clean(Reply(201,attemptBody("https://auth.example/auth/browser/start?id="+"a".repeat(43))))
+ expect("invalid_authorization_url"){client.attempt("password",state,challenge)}
+ clean(Reply(201,attemptBody("https://auth.example/auth/web/login?attempt="+"a".repeat(43))))
+ expect("invalid_authorization_url"){client.attempt("facebook",state,challenge)}
  for(bad in listOf("https://evil.example/auth/web/login?attempt="+"a".repeat(43),"https://auth.example/auth/web/login?attempt="+"a".repeat(43)+"&redirect=https://evil.example/")){
-  clean(Reply(201,JSONObject().put("authorization_url",bad).put("expires_in",300).toString()));expect("invalid_response"){client.attempt("password",state,challenge)}
+  clean(Reply(201,attemptBody(bad)));expect("invalid_authorization_url"){client.attempt("password",state,challenge)}
+ }
+ val passwordUrl="https://auth.example/auth/web/login?attempt="+"a".repeat(43)
+ clean(Reply(201,attemptBody(passwordUrl,id="b".repeat(43))));expect("invalid_authorization_url"){client.attempt("password",state,challenge)}
+ for(expiry in listOf<Any>(0,601,"300",3.5)){
+  clean(Reply(201,attemptBody(passwordUrl,expires=expiry)));expect("invalid_response"){client.attempt("password",state,challenge)}
  }
  clean(Reply(200,JSONObject().put("user",user(provider="password")).toString()));check(client.me(secret).provider=="password")
  clean(Reply(200,tokens()))

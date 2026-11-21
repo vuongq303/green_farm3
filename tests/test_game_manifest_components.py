@@ -54,7 +54,7 @@ class GameManifestComponentsTest(unittest.TestCase):
         self.assertEqual(definition.get(ANDROID + 'protectionLevel'), 'signature')
         self.assertIn(permission_name, {item.get(ANDROID + 'name') for item in root.findall('uses-permission')})
 
-    def test_cloud_backup_and_device_transfer_exclude_only_the_keystore_bound_preferences(self):
+    def test_backup_excludes_auth_session_and_giftcode_installation_binding(self):
         application = ElementTree.parse(MAIN / 'AndroidManifest.xml').getroot().find('application')
         def read_rules(attribute):
             spec = application.get(ANDROID + attribute)
@@ -63,11 +63,14 @@ class GameManifestComponentsTest(unittest.TestCase):
 
         legacy = read_rules('fullBackupContent')
         modern = read_rules('dataExtractionRules')
-        expected = {'domain': 'sharedpref', 'path': 'greenfarm_online_auth_v1.xml'}
-        self.assertEqual([(rule.tag, rule.attrib) for rule in legacy], [('exclude', expected)])
+        expected = [
+            ('exclude', {'domain': 'sharedpref', 'path': 'greenfarm_online_auth_v1.xml'}),
+            ('exclude', {'domain': 'sharedpref', 'path': 'greenfarm_giftcode_installation_v1.xml'}),
+        ]
+        self.assertEqual([(rule.tag, rule.attrib) for rule in legacy], expected)
         self.assertEqual([rule.tag for rule in modern], ['cloud-backup', 'device-transfer'])
         for scope in modern:
-            self.assertEqual([(rule.tag, rule.attrib) for rule in scope], [('exclude', expected)])
+            self.assertEqual([(rule.tag, rule.attrib) for rule in scope], expected)
 
 
 if __name__ == '__main__':

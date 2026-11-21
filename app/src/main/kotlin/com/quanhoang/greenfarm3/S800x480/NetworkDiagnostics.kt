@@ -57,13 +57,23 @@ class NetworkDiagnostics private constructor() {
                         "/auth/attempt", "/auth/facebook", "/auth/google", "/auth/exchange",
                         "/auth/me", "/auth/logout", "/auth/refresh", "/auth/browser/start",
                         "/auth/login", "/auth/register", "/auth/web/login", "/auth/web/register",
-                        "/auth/callback/facebook", "/auth/callback/google") -> path
+                        "/auth/callback/facebook", "/auth/callback/google",
+                        "/giftcodes/redeem", "/giftcodes/pending", "/giftcodes/ack") -> path
                     path.matches(Regex("/config/[^/]+/datacenters")) -> "/config/:client/datacenters"
                     path.matches(Regex("/config/[^/]+/datacenters/[^/]+/urls")) -> "/config/:client/datacenters/:name/urls"
                     else -> "/<redacted>"
                 }
                 "$scheme://$host:$port$route"
             } catch (_: Exception) { "<invalid-url>" }
+        }
+
+        /** Authentication stages log fixed codes and URL summaries with no query, body or fragment. */
+        @JvmStatic fun authEvent(stage: String, code: String, url: String? = null, status: Int? = null) {
+            val safeStage = stage.takeIf { it.matches(Regex("[a-z_]{1,48}")) } ?: "unknown"
+            val safeCode = code.takeIf { it.matches(Regex("[a-z_]{1,48}")) } ?: "unknown"
+            val endpoint = if (url == null) "" else " url=${safeUrl(url)}"
+            val response = if (status == null) "" else " status=$status"
+            write(safeCode != "ok", "auth stage=$safeStage code=$safeCode$endpoint$response")
         }
 
         @JvmStatic @Throws(IOException::class)
