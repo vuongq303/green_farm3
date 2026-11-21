@@ -102,9 +102,10 @@ existing provider identities are unaffected.
 
 ## Configuration
 
-Start with [.env.example](.env.example) and configure actual MySQL credentials and
-the existing stable private `RESEARCH_SESSION_SECRET`. Keep secrets only on the
-server. New password accounts require an HTTPS origin, not Google OAuth IDs:
+Start with [.env.example](.env.example) and configure actual MySQL credentials.
+`RESEARCH_SESSION_SECRET` is required only for enabled legacy sessions.
+Keep secrets on the server. Password accounts require an HTTPS origin and
+work with the Facebook and Google settings omitted:
 
 ```dotenv
 HOST=127.0.0.1

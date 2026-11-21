@@ -1,4 +1,5 @@
 import { DatabaseUnavailableError } from './store.js';
+import { requireSchemaVersion } from './diagnostics.js';
 import { timingSafeEqual } from 'node:crypto';
 
 // Keep identity arithmetic out of JavaScript numbers even if a caller supplies
@@ -77,6 +78,19 @@ async function lockPasswordWebAttempt(connection, cookieHash, csrfHash, now) {
   return row;
 }
 
+export async function checkSocialSchema(connection) {
+  const [versions] = await connection.execute(SESSION_SCHEMA_READY, [5]);
+  requireSchemaVersion(versions);
+  await connection.query('SELECT id, game_id, provider, provider_user_id FROM users LIMIT 0');
+  await connection.query('SELECT id, oauth_state_hash, code_challenge, consumed_at FROM gf_auth_attempts LIMIT 0');
+  await connection.query('SELECT code_hash, attempt_id, user_id, used_at FROM gf_auth_codes LIMIT 0');
+  await connection.query('SELECT id, family_id, access_hash, refresh_hash, revoked_at FROM gf_auth_sessions LIMIT 0');
+  await connection.query('SELECT id, user_id, revoked_at FROM gf_auth_session_families LIMIT 0');
+  await connection.query('SELECT user_id, username, email, password_hash, account_status FROM gf_password_accounts LIMIT 0');
+  await connection.query('SELECT cookie_hash, attempt_id, csrf_hash, expires_at FROM gf_auth_web_sessions LIMIT 0');
+  return { status: 'ready', schemaVersion: 5 };
+}
+
 /** Opaque-token/code hashes only; this store has no gameplay or SQLite API. */
 export function createSocialStore(pool) {
   async function run(operation) {
@@ -103,18 +117,7 @@ export function createSocialStore(pool) {
 
   return {
     async health() {
-      return run(async () => {
-        const [versions] = await pool.execute(SESSION_SCHEMA_READY, [5]);
-        if (versions.length !== 1) throw new DatabaseUnavailableError();
-        await pool.query('SELECT id, game_id, provider, provider_user_id FROM users LIMIT 0');
-        await pool.query('SELECT id, oauth_state_hash, code_challenge, consumed_at FROM gf_auth_attempts LIMIT 0');
-        await pool.query('SELECT code_hash, attempt_id, user_id, used_at FROM gf_auth_codes LIMIT 0');
-        await pool.query('SELECT id, family_id, access_hash, refresh_hash, revoked_at FROM gf_auth_sessions LIMIT 0');
-        await pool.query('SELECT id, user_id, revoked_at FROM gf_auth_session_families LIMIT 0');
-        await pool.query('SELECT user_id, username, email, password_hash, account_status FROM gf_password_accounts LIMIT 0');
-        await pool.query('SELECT cookie_hash, attempt_id, csrf_hash, expires_at FROM gf_auth_web_sessions LIMIT 0');
-        return { status: 'ready', schemaVersion: 5 };
-      });
+      return run(() => checkSocialSchema(pool));
     },
 
     async upsertUser(provider, providerUserId, displayName, now) {

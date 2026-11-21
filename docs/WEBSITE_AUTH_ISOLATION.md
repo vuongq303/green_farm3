@@ -114,8 +114,8 @@ AUTH_TRUSTED_PROXY_IP=127.0.0.1
 LEGACY_AUTH_ENABLED=false
 ```
 
-Điền `DB_*` và `RESEARCH_SESSION_SECRET` đúng môi trường hiện có; không hardcode
-password trong source. Cổng `PORT` chỉ là HTTP listener local, độc lập cổng public
+Điền `DB_*` đúng môi trường. Chỉ đặt `RESEARCH_SESSION_SECRET` khi bật phiên
+legacy. Giữ mật khẩu ở backend. Cổng `PORT` chỉ là HTTP listener local, độc lập cổng public
 của proxy/tunnel. Proxy phải ghi đè forwarded headers, chứng chỉ HTTPS phải hợp
 lệ. Google/Facebook ID/secret có thể để trống khi chỉ dùng Website. Cấu hình
 Facebook hợp lệ vẫn được dùng khi người chơi chọn Facebook.

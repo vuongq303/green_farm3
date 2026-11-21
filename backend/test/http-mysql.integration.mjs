@@ -9,16 +9,15 @@ import { networkInterfaces, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { after, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { loadDatabaseConfig, loadEnvironment } from '../src/config.js';
+import { loadDatabaseConfig, readEnvironment } from '../src/config.js';
 import { createPoolFromConfig } from '../src/db/store.js';
 import { migrate } from '../src/db/migrate.js';
 import { legacyPassword } from '../src/services/sessions.js';
 
 // Explicitly selected real-MySQL/real-process tests; no fake repository or
 // production listeners are used. Only this test's children and rows are removed.
-loadEnvironment();
-const database = loadDatabaseConfig();
-database.database = process.env.TEST_DB_NAME ?? database.database;
+const environment = readEnvironment();
+const database = loadDatabaseConfig({ ...environment, DB_NAME: environment.TEST_DB_NAME ?? environment.DB_NAME });
 if (!database.database.endsWith('_test')) {
   throw new Error('HTTP/MySQL integration requires DB_NAME or TEST_DB_NAME ending in _test');
 }
@@ -87,10 +86,10 @@ async function fixture(t) {
   const fields = { client_id: clientId, username: 'anonymous:' + credential,
     password: legacyPassword(credential), scope: 'leaderboard social storage auth message config',
     device_id: 'http-mysql-owned-device' };
-  const env = { ...process.env, DB_HOST: database.host, DB_PORT: String(database.port),
+  const env = { ...environment, DB_HOST: database.host, DB_PORT: String(database.port),
     DB_NAME: database.database, DB_USER: database.user, DB_PASSWORD: database.password,
     HOST: '127.0.0.1', PORT: String(port), BACKEND_CONFIG_FILE: propertiesFile,
-    RESEARCH_SESSION_SECRET: process.env.RESEARCH_SESSION_SECRET ?? randomBytes(32).toString('hex'),
+    RESEARCH_SESSION_SECRET: environment.RESEARCH_SESSION_SECRET ?? randomBytes(32).toString('hex'),
     NODE_ENV: 'test', DB_CONNECT_TIMEOUT_MS: '250' };
   for (const deprecated of ['PUBLIC_BASE_URL', 'BIND_HOST', 'BACKEND_BASE_URL']) delete env[deprecated];
   const ownedChildren = new Set();
@@ -162,6 +161,7 @@ async function fixture(t) {
       'failed database startup must never announce readiness or HTTP listening');
     await assert.rejects(request(port, '/health'), { code: 'ECONNREFUSED' },
       'failed startup must not leave an HTTP listener');
+    return failure;
   }
 
   t.after(async () => {
@@ -248,7 +248,9 @@ test('an unavailable MySQL server fails startup without opening HTTP', async t =
   const f = await fixture(t);
   let unavailablePort;
   do { unavailablePort = await unusedPort(); } while (unavailablePort === f.port);
-  await f.rejectsStartup({ DB_HOST: '127.0.0.1', DB_PORT: String(unavailablePort) });
+  const failure = await f.rejectsStartup({ DB_HOST: '127.0.0.1', DB_PORT: String(unavailablePort) });
+  assert.equal(failure.phase, 'connection');
+  assert.equal(failure.code, 'MYSQL_CONNECTION_FAILED');
   const [[count]] = await pool.execute('SELECT COUNT(*) AS total FROM gf_accounts WHERE client_id = ?', [f.clientId]);
   assert.equal(Number(count.total), 0);
   const log = f.logs.join('\n');
@@ -258,8 +260,21 @@ test('an unavailable MySQL server fails startup without opening HTTP', async t =
 test('incorrect MySQL credentials fail startup without opening HTTP or exposing the password', async t => {
   const f = await fixture(t);
   const wrongPassword = 'owned-incorrect-password-' + randomBytes(16).toString('hex');
-  await f.rejectsStartup({ DB_PASSWORD: wrongPassword });
+  const failure = await f.rejectsStartup({ DB_PASSWORD: wrongPassword });
+  assert.equal(failure.phase, 'authentication');
+  assert.equal(failure.code, 'MYSQL_AUTH_FAILED');
   const [[count]] = await pool.execute('SELECT COUNT(*) AS total FROM gf_accounts WHERE client_id = ?', [f.clientId]);
   assert.equal(Number(count.total), 0);
   assertLogsRedacted(f.logs.join('\n'), [f.clientId, f.credential, f.fields.password, database.password, wrongPassword]);
+});
+
+test('an unavailable MySQL database is distinguished from login and connection failures', async t => {
+  const f = await fixture(t);
+  const missingDatabase = 'missing_' + randomBytes(16).toString('hex') + '_test';
+  const failure = await f.rejectsStartup({ DB_NAME: missingDatabase });
+  assert.equal(failure.phase, 'database');
+  // An account with scoped grants may be refused before MySQL discloses
+  // whether the requested database exists.
+  assert.ok(['MYSQL_DATABASE_NOT_FOUND', 'MYSQL_PERMISSION_DENIED'].includes(failure.code));
+  assertLogsRedacted(f.logs.join('\n'), [database.password, missingDatabase]);
 });

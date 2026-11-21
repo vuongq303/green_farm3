@@ -97,8 +97,8 @@ function recognize(path) {
   return path.startsWith(ADMIN) ? ADMIN + '/[unknown]' : '/giftcodes/[unknown]';
 }
 
-export function createGiftcodeRouter({ config, store, socialStore, adminPasswordHash, now = Date.now }) {
-  const admin = createGiftcodeAdminAuth({ config, adminPasswordHash, now });
+export function createGiftcodeRouter({ auth, giftcodes, store, socialStore, now = Date.now }) {
+  const admin = createGiftcodeAdminAuth({ auth, giftcodes, now });
   const redeemLimit = createRateLimit({ now, maximum: 60, windowMs: 60 * 1000 });
 
   async function userId(request) {
@@ -194,8 +194,8 @@ export function createGiftcodeRouter({ config, store, socialStore, adminPassword
     recognize,
     async handle(request, response, url, route) {
       if (route.endsWith('/[unknown]')) throw new HttpError(404, 'route_not_found');
-      if (!config?.publicBaseUrl) throw new HttpError(503, 'auth_not_configured');
-      if (!secureAuthRequest(request, config)) throw new HttpError(400, 'https_required');
+      if (!auth.publicBaseUrl) throw new HttpError(503, 'auth_not_configured');
+      if (!secureAuthRequest(request, auth)) throw new HttpError(400, 'https_required');
       if (!store || !socialStore) throw new HttpError(503, 'database_unavailable');
       if (route.startsWith(ADMIN)) await manage(request, response, url, route);
       else await player(request, response, url, route);

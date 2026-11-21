@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from 'playwright';
-import { loadConfig, loadEnvironment } from '../src/config.js';
+import { loadConfig, readEnvironment } from '../src/config.js';
 import { createMysqlStore, createPoolFromConfig } from '../src/db/store.js';
 import { migrate } from '../src/db/migrate.js';
 import { createResearchServer } from '../src/server.js';
@@ -17,15 +17,15 @@ import { APP_REDIRECT_URI } from '../src/auth/config.js';
 // into pinning this fixture's exact public key for an isolated browser process.
 // Node always verifies the supplied CA and hostname. No production TLS options
 // or global trust stores are changed, and ignoreHTTPSErrors is never enabled.
-loadEnvironment();
+const env = readEnvironment();
 for (const name of ['BROWSER_TEST_TLS_KEY', 'BROWSER_TEST_TLS_CERT', 'BROWSER_TEST_TLS_CA']) {
-  if (!process.env[name]) throw new Error('Set ' + name + ' to the local HTTPS fixture file; see docs/WEBSITE_AUTH_RELIABILITY_FIX.md');
+  if (!env[name]) throw new Error('Set ' + name + ' to the local HTTPS fixture file; see docs/WEBSITE_AUTH_RELIABILITY_FIX.md');
 }
 const tls = {
-  key: readFileSync(process.env.BROWSER_TEST_TLS_KEY),
-  cert: readFileSync(process.env.BROWSER_TEST_TLS_CERT),
+  key: readFileSync(env.BROWSER_TEST_TLS_KEY),
+  cert: readFileSync(env.BROWSER_TEST_TLS_CERT),
 };
-const ca = readFileSync(process.env.BROWSER_TEST_TLS_CA);
+const ca = readFileSync(env.BROWSER_TEST_TLS_CA);
 const random = () => randomBytes(32).toString('base64url');
 const password = 'Browser integration correct password 123';
 
@@ -37,7 +37,7 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const origin = 'https://localhost:' + server.address().port;
-  const config = loadConfig({ ...process.env, AUTH_PUBLIC_BASE_URL: origin, LEGACY_AUTH_ENABLED: 'false' });
+  const config = loadConfig({ ...env, AUTH_PUBLIC_BASE_URL: origin, LEGACY_AUTH_ENABLED: 'false' });
   assert.ok(config.database.database.endsWith('_test'), 'browser tests require a dedicated DB_NAME ending in _test');
   const store = createMysqlStore(config.database);
   const pool = createPoolFromConfig(config.database);
@@ -71,7 +71,7 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
   migrated = true;
   await store.health();
   await store.social.health();
-  const production = createResearchServer({ ...config, store, log: () => {}, errorLog: error => backendErrors.push(error) });
+  const production = createResearchServer({ config, store, log: () => {}, errorLog: error => backendErrors.push(error) });
   server.on('request', production.listeners('request')[0]);
 
   function api(path, body, token) {
@@ -95,12 +95,12 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
     });
   }
   assert.equal((await api('/health')).body.mysql.status, 'ready');
-  const testCertificatePin = process.env.BROWSER_TEST_PIN_LOCAL_CERT === '1'
+  const testCertificatePin = env.BROWSER_TEST_PIN_LOCAL_CERT === '1'
     ? createHash('sha256').update(new X509Certificate(tls.cert).publicKey.export({ type: 'spki', format: 'der' })).digest('base64')
     : undefined;
   browser = await chromium.launch({ headless: true,
     args: testCertificatePin ? ['--ignore-certificate-errors-spki-list=' + testCertificatePin] : [],
-    ...(process.env.CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.CHROMIUM_EXECUTABLE_PATH } : {}) });
+    ...(env.CHROMIUM_EXECUTABLE_PATH ? { executablePath: env.CHROMIUM_EXECUTABLE_PATH } : {}) });
   const context = await browser.newContext({ viewport: { width: 393, height: 720 }, isMobile: true, hasTouch: true });
   const page = await context.newPage();
   const errors = [];
@@ -210,9 +210,9 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
   await submit(201);
   await feedback('Đăng ký thành công!', 'Tài khoản của bạn đã được tạo thành công.', { kind: 'success', action: 'Vào trò chơi' });
   const registered = await exchange(signup);
-  if (process.env.BROWSER_TEST_ARTIFACTS) {
-    mkdirSync(process.env.BROWSER_TEST_ARTIFACTS, { recursive: true });
-    await page.screenshot({ path: join(process.env.BROWSER_TEST_ARTIFACTS, 'registration-success.png'), animations: 'disabled' });
+  if (env.BROWSER_TEST_ARTIFACTS) {
+    mkdirSync(env.BROWSER_TEST_ARTIFACTS, { recursive: true });
+    await page.screenshot({ path: join(env.BROWSER_TEST_ARTIFACTS, 'registration-success.png'), animations: 'disabled' });
   }
 
   await attempt('register');
@@ -231,8 +231,8 @@ test('real Chromium HTTPS form → MySQL identity → one-use PKCE session → r
   await fillRegistration(password, prefix + '_2', prefix + '@example.test');
   await submit(409);
   await feedback('Email đã được đăng ký', 'Email này đã được sử dụng. Vui lòng nhập email khác.', { kind: 'warning', action: 'Đã hiểu' });
-  if (process.env.BROWSER_TEST_ARTIFACTS) {
-    await page.screenshot({ path: join(process.env.BROWSER_TEST_ARTIFACTS, 'duplicate-email.png'), animations: 'disabled' });
+  if (env.BROWSER_TEST_ARTIFACTS) {
+    await page.screenshot({ path: join(env.BROWSER_TEST_ARTIFACTS, 'duplicate-email.png'), animations: 'disabled' });
   }
   await dismiss('email');
   await page.setViewportSize({ width: 393, height: 720 });

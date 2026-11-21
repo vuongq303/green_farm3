@@ -1,16 +1,15 @@
 import assert from 'node:assert/strict';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { after, test } from 'node:test';
-import { APP_REDIRECT_URI, loadSocialAuthConfig } from '../src/auth/config.js';
+import { APP_REDIRECT_URI } from '../src/auth/config.js';
 import { hashPassword } from '../src/auth/passwords.js';
-import { loadDatabaseConfig, loadEnvironment } from '../src/config.js';
+import { loadConfig, loadDatabaseConfig, readEnvironment } from '../src/config.js';
 import { migrate } from '../src/db/migrate.js';
 import { createMysqlStore, createPoolFromConfig } from '../src/db/store.js';
 import { createResearchServer } from '../src/server.js';
 
-loadEnvironment();
-const database = loadDatabaseConfig();
-database.database = process.env.TEST_DB_NAME ?? database.database;
+const env = readEnvironment();
+const database = loadDatabaseConfig({ ...env, DB_NAME: env.TEST_DB_NAME ?? env.DB_NAME });
 if (!database.database.endsWith('_test')) throw new Error('Giftcode tests require a dedicated database ending in _test');
 const pool = createPoolFromConfig(database);
 after(() => pool.end());
@@ -38,12 +37,12 @@ async function fixture(t) {
   const codes = 'GIFT-' + prefix.toUpperCase();
   const ids = new Set(), attempts = [];
   const store = createMysqlStore(database);
-  const giftcodeAdminPasswordHash = await hashPassword(password);
+  const config = loadConfig({ ...env, DB_NAME: database.database, AUTH_PUBLIC_BASE_URL: publicOrigin,
+    AUTH_TRUSTED_PROXY_IP: '127.0.0.1', LEGACY_AUTH_ENABLED: 'false',
+    GIFTCODE_ADMIN_PASSWORD_HASH: await hashPassword(password) });
   let time = Date.now();
   const server = createResearchServer({
-    publicBaseUrl: publicOrigin, sessionSecret: value(), legacyAuthEnabled: false,
-    auth: loadSocialAuthConfig({ AUTH_PUBLIC_BASE_URL: publicOrigin, AUTH_TRUSTED_PROXY_IP: '127.0.0.1' }),
-    giftcodeAdminPasswordHash, now: () => time, store, log: () => {}, errorLog: () => {},
+    config, now: () => time, store, log: () => {}, errorLog: () => {},
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const origin = 'http://127.0.0.1:' + server.address().port;

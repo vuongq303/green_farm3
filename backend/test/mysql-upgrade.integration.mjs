@@ -6,13 +6,14 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { APP_REDIRECT_URI, loadSocialAuthConfig } from '../src/auth/config.js';
+import { APP_REDIRECT_URI } from '../src/auth/config.js';
 import { hashPassword } from '../src/auth/passwords.js';
 import { createSocialAuthRouter } from '../src/auth/router.js';
-import { loadDatabaseConfig, loadEnvironment } from '../src/config.js';
+import { loadSocialAuthConfig, loadDatabaseConfig, readEnvironment } from '../src/config.js';
 import { migrate } from '../src/db/migrate.js';
+import { databaseDiagnostic } from '../src/db/diagnostics.js';
 import { createSocialStore } from '../src/db/social-store.js';
-import { createPoolFromConfig } from '../src/db/store.js';
+import { createMysqlStore, createPoolFromConfig } from '../src/db/store.js';
 
 const migrations = fileURLToPath(new URL('../migrations/', import.meta.url));
 const token = () => randomBytes(32).toString('base64url');
@@ -65,14 +66,21 @@ async function listen(t, store, now) {
 }
 
 test('MySQL v4 upgrade preserves account data, active tokens and the full rotation lineage', { timeout: 30_000 }, async t => {
-  loadEnvironment();
-  const config = loadDatabaseConfig();
-  config.database = process.env.TEST_DB_NAME ?? config.database;
+  const env = readEnvironment();
+  const config = loadDatabaseConfig({ ...env, DB_NAME: env.TEST_DB_NAME ?? env.DB_NAME });
   assert.match(config.database, /^[a-zA-Z0-9_]+_upgrade_test$/u, 'Use a new database ending in _upgrade_test');
   const pool = createPoolFromConfig(config);
   t.after(() => pool.end());
   const [[{ total }]] = await pool.query('SELECT COUNT(*) AS total FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()');
   assert.equal(Number(total), 0, 'Upgrade test requires a dedicated empty database');
+  const startup = createMysqlStore(config);
+  t.after(() => startup.close());
+  const requiresMigration = failure => {
+    const result = databaseDiagnostic(failure);
+    return result.phase === 'schema' && result.code === 'MYSQL_SCHEMA_NOT_READY' &&
+      result.message.includes('npm run migrate');
+  };
+  await assert.rejects(startup.checkStartup({ social: true, giftcodes: true }), requiresMigration);
 
   const v4 = await mkdtemp(join(tmpdir(), 'greenfarm-migrations-v4-'));
   t.after(() => rm(v4, { recursive: true, force: true }));
@@ -80,6 +88,7 @@ test('MySQL v4 upgrade preserves account data, active tokens and the full rotati
     if (/^00[1-4]_.+\.sql$/u.test(file)) await copyFile(join(migrations, file), join(v4, file));
   }
   assert.deepEqual(await migrate(pool, { directory: v4 }), { applied: [1, 2, 3, 4], alreadyApplied: [] });
+  await assert.rejects(startup.checkStartup({ social: true, giftcodes: true }), requiresMigration);
   await assert.rejects(createSocialStore(pool).health(), { code: 'DATABASE_UNAVAILABLE' });
 
   const now = Math.floor(Date.now() / 1000);

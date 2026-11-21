@@ -1,7 +1,6 @@
 import { createServer } from 'node:http';
 import { HttpError, respond, form, parsePairs, required, routeSegments, validateClientPath } from './http.js';
 import { createSessionService } from './services/sessions.js';
-import { normalizeBackendBaseUrl } from './config.js';
 import { createSocialAuthRouter } from './auth/router.js';
 import { createGiftcodeRouter } from './giftcodes/router.js';
 import { handleGiftcodeAdminPage } from '../web/giftcode-admin.mjs';
@@ -15,20 +14,18 @@ const URL_KEYS = [
 ];
 
 /** Original HTTP contracts, with an explicitly supplied persistent repository. */
-export function createResearchServer(options) {
-  const baseUrl = normalizeBackendBaseUrl(options.publicBaseUrl).replace(/\/$/u, '');
-  const store = options.store;
+export function createResearchServer({
+  config, store, socialStore = store?.social, socialProviders, now = Date.now,
+  log = entry => console.log(JSON.stringify(entry)),
+  errorLog = entry => console.error(JSON.stringify(entry)),
+}) {
   if (!store || ['health', 'createSession', 'refreshSession', 'findSession', 'saveCompliance'].some(name => typeof store[name] !== 'function')) {
     throw new Error('A MySQL repository is required; there is no memory/file fallback');
   }
-  const now = options.now ?? Date.now;
-  const sessions = createSessionService({ store, secret: options.sessionSecret, ttl: options.sessionTtlSeconds ?? 900, refreshTtl: options.refreshTtlSeconds ?? 2592000, now });
-  const log = options.log ?? (entry => console.log(JSON.stringify(entry)));
-  const errorLog = options.errorLog ?? (entry => console.error(JSON.stringify(entry)));
-  const social = createSocialAuthRouter({ config: options.auth, store: options.socialStore ?? store.social,
-    now, providers: options.socialProviders, errorLog });
-  const giftcodes = createGiftcodeRouter({ config: options.auth, store: store.giftcodes,
-    socialStore: options.socialStore ?? store.social, adminPasswordHash: options.giftcodeAdminPasswordHash, now });
+  const baseUrl = config.server.publicBaseUrl.replace(/\/$/u, '');
+  const sessions = config.sessions.legacy ? createSessionService({ store, config: config.sessions.legacy, now }) : null;
+  const social = createSocialAuthRouter({ config: config.auth, store: socialStore, now, providers: socialProviders, errorLog });
+  const giftcodes = createGiftcodeRouter({ auth: config.auth, giftcodes: config.giftcodes, store: store.giftcodes, socialStore, now });
 
   const server = createServer((request, response) => {
     let path = '[unmatched]';
@@ -112,7 +109,7 @@ export function createResearchServer(options) {
         throw new HttpError(405, 'method_not_allowed');
       }
 
-      if (options.legacyAuthEnabled === false && ['/authorize', '/profiles/me/myprofile', '/users/me/compliance'].includes(path)) {
+      if (!sessions && ['/authorize', '/profiles/me/myprofile', '/users/me/compliance'].includes(path)) {
         throw new HttpError(503, 'legacy_auth_disabled');
       }
 

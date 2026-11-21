@@ -69,9 +69,9 @@ backend/
 
 ## Configuration and startup
 
-Use Node.js 24+ and MySQL 8.0/8.4. Copy `.env.example` to your private `.env` and
-fill its `DB_*`, stable `RESEARCH_SESSION_SECRET` and OAuth settings. Do not commit
-`.env`, provider secrets or database passwords.
+Use Node.js 24+ and MySQL 8.0/8.4. If `.env` is absent, copy `.env.example` to
+`.env`. Fill the private `DB_*` values and OAuth settings. Keep provider secrets
+and database passwords in the server environment.
 
 ```dotenv
 HOST=127.0.0.1
@@ -81,7 +81,6 @@ DB_PORT=3306
 DB_NAME=green_farm
 DB_USER=green_farm_app
 DB_PASSWORD=<secure value entered only on the server>
-RESEARCH_SESSION_SECRET=<stable private random value of at least 32 bytes>
 AUTH_PUBLIC_BASE_URL=https://accounts.your-domain.example
 AUTH_TRUSTED_PROXY_IP=127.0.0.1
 GOOGLE_OAUTH_CLIENT_ID=<Google Web OAuth client ID>
@@ -101,15 +100,16 @@ a user automatically.
 
 The current environment has no supplied HTTPS domain or Facebook/Google OAuth
 applications. You can still run and test the local backend without inventing
-provider credentials: configure the actual local `DB_*` values and a stable
-private `RESEARCH_SESSION_SECRET`, and leave `AUTH_PUBLIC_BASE_URL`,
+provider credentials. Configure the actual local `DB_*` values and leave
+`AUTH_PUBLIC_BASE_URL`,
 `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `FACEBOOK_APP_ID` and
 `FACEBOOK_APP_SECRET` empty. Keep `LEGACY_AUTH_ENABLED=false` for the new account
-flow. Run the installation/migration/start commands below, then check the local
-`/health` endpoint on port 8787.
+flow. A stable private `RESEARCH_SESSION_SECRET` is required when running with
+legacy sessions enabled. Run the installation/migration/start commands below,
+then check the local `/health` endpoint on port 8787.
 
 In this local-only state the backend and MySQL can be healthy while account
-endpoints return `503 oauth_not_configured`. An Android build without a real
+endpoints return `503 auth_not_configured`. An Android build without a real
 HTTPS `AUTH_BASE_URL` also reports missing account configuration. Neither case
 is a successful Facebook/Google login. No HTTP authentication bypass or fake
 provider account is enabled. Complete the real domain, TLS and provider-console

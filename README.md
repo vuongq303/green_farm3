@@ -88,8 +88,8 @@ sau đó chạy trong PowerShell:
 ```powershell
 cd backend
 npm ci
-Copy-Item .env.example .env
-# Sửa .env: DB_* và RESEARCH_SESSION_SECRET riêng, ổn định qua restart.
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
+# Điền DB_* trong .env. Chỉ đặt RESEARCH_SESSION_SECRET nếu bật legacy.
 npm run migrate
 npm start
 # Khi phát triển: npm run dev
