@@ -16,12 +16,8 @@ function equalText(left, right) {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
-export function createSessionService({ store, secret: suppliedSecret, ttl, refreshTtl = 2592000, now }) {
-  if (!Number.isInteger(ttl) || ttl < 1 || ttl > 86400) throw new Error('sessionTtlSeconds must be an integer from 1 to 86400');
-  if (!Number.isInteger(refreshTtl) || refreshTtl < ttl || refreshTtl > 7776000) throw new Error('refreshTtlSeconds must be between sessionTtlSeconds and 7776000');
-  if (suppliedSecret === undefined) throw new Error('A persistent sessionSecret is required');
-  const secret = Buffer.from(suppliedSecret);
-  if (secret.length < 32) throw new Error('sessionSecret must contain at least 32 bytes');
+export function createSessionService({ store, config, now }) {
+  const { secret, accessTtlSeconds, refreshTtlSeconds } = config;
   const signature = value => createHmac('sha256', secret).update(value).digest();
   const seconds = () => Math.floor(now() / 1000);
 
@@ -59,8 +55,8 @@ export function createSessionService({ store, secret: suppliedSecret, ttl, refre
       }
       const issuedAt = seconds();
       const sid = randomBytes(24).toString('hex');
-      const expiresAt = issuedAt + ttl;
-      const refreshExpiresAt = issuedAt + refreshTtl;
+      const expiresAt = issuedAt + accessTtlSeconds;
+      const refreshExpiresAt = issuedAt + refreshTtlSeconds;
       await store.createSession({ sid, issuedAt, expiresAt, refreshExpiresAt, credential: username, clientId, deviceId, password });
       return tokens(sid, issuedAt, expiresAt, refreshExpiresAt);
     },
@@ -73,8 +69,8 @@ export function createSessionService({ store, secret: suppliedSecret, ttl, refre
       }
       const issuedAt = seconds();
       const sid = randomBytes(24).toString('hex');
-      const expiresAt = issuedAt + ttl;
-      const refreshExpiresAt = issuedAt + refreshTtl;
+      const expiresAt = issuedAt + accessTtlSeconds;
+      const refreshExpiresAt = issuedAt + refreshTtlSeconds;
       await store.refreshSession({ previousSid: payload.sid, sid, issuedAt, expiresAt, refreshExpiresAt });
       return tokens(sid, issuedAt, expiresAt, refreshExpiresAt);
     },

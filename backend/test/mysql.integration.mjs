@@ -2,15 +2,14 @@ import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { createServer } from 'node:net';
 import { after, test } from 'node:test';
-import { loadDatabaseConfig, loadEnvironment } from '../src/config.js';
+import { loadDatabaseConfig, readEnvironment } from '../src/config.js';
 import { createMysqlStore, createPoolFromConfig } from '../src/db/store.js';
 import { migrate } from '../src/db/migrate.js';
 
 // This explicitly selected suite uses a real, isolated MySQL database. It never
 // drops/truncates tables and cleans up only its own randomly namespaced rows.
-loadEnvironment();
-const config = loadDatabaseConfig();
-config.database = process.env.TEST_DB_NAME ?? config.database;
+const env = readEnvironment();
+const config = loadDatabaseConfig({ ...env, DB_NAME: env.TEST_DB_NAME ?? env.DB_NAME });
 if (!config.database.endsWith('_test')) {
   throw new Error('test:mysql requires a dedicated DB_NAME or TEST_DB_NAME ending in _test');
 }

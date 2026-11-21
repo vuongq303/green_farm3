@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { HttpError } from '../http.js';
 import { DatabaseUnavailableError } from './store.js';
+import { requireSchemaVersion } from './diagnostics.js';
 
 const CODE_FIELDS = 'id, code, rewards, enabled, starts_at, expires_at, max_redemptions, redeemed_count';
 const GRANT_FIELDS = 'grant_id, farm_id, rewards, redeemed_at, applied_at';
@@ -60,6 +61,14 @@ function paged(rows, total, limit, offset) {
   return { items: rows, total: Number(total), limit, offset };
 }
 
+export async function checkGiftcodeSchema(connection) {
+  const [versions] = await connection.execute('SELECT version FROM gf_schema_migrations WHERE version = 6');
+  requireSchemaVersion(versions);
+  await connection.query('SELECT id, code, rewards FROM gf_giftcodes LIMIT 0');
+  await connection.query('SELECT grant_id, farm_id, applied_at FROM gf_giftcode_redemptions LIMIT 0');
+  await connection.query('SELECT id, actor, operation FROM gf_giftcode_audit LIMIT 0');
+}
+
 export function createGiftcodeStore(pool) {
   async function read(operation) {
     try { return await operation(); }
@@ -83,13 +92,7 @@ export function createGiftcodeStore(pool) {
 
   return {
     async health() {
-      return read(async () => {
-        const [[version]] = await pool.execute('SELECT version FROM gf_schema_migrations WHERE version = 6');
-        if (!version) throw new DatabaseUnavailableError();
-        await pool.query('SELECT id, code, rewards FROM gf_giftcodes LIMIT 0');
-        await pool.query('SELECT grant_id, farm_id, applied_at FROM gf_giftcode_redemptions LIMIT 0');
-        await pool.query('SELECT id, actor, operation FROM gf_giftcode_audit LIMIT 0');
-      });
+      return read(() => checkGiftcodeSchema(pool));
     },
 
     async redeem({ code, userId, farmId, now }) {

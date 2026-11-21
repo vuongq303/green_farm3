@@ -1,5 +1,6 @@
 import { createResearchServer } from './server.js';
-import { loadEnvironment, loadConfig } from './config.js';
+import { configurationDiagnostic, loadConfig } from './config.js';
+import { databaseDiagnostic } from './db/diagnostics.js';
 import { createMysqlStore } from './db/store.js';
 
 async function closeStore(store) {
@@ -12,34 +13,30 @@ async function closeStore(store) {
 
 async function main() {
   let config;
-  try { loadEnvironment(); config = loadConfig(); }
+  try { config = loadConfig(); }
   catch (error) {
-    console.error(error.message);
+    console.error(JSON.stringify({ event: 'startup_configuration_error', ...configurationDiagnostic(error) }));
     process.exitCode = 1;
     return;
   }
 
-  const store = createMysqlStore(config.database);
+  let store;
   try {
-    // mysql2 pools connect lazily. Creating a pool does not prove that MySQL
-    // accepts the credentials or that the required migration has been applied.
-    const database = await store.health();
-    if (Object.values(config.auth.providers).some(provider => provider.enabled)) await store.social.health();
-    if (config.auth.publicBaseUrl) await store.giftcodes.health();
+    store = createMysqlStore(config.database);
+    const database = await store.checkStartup({
+      social: Object.values(config.auth.providers).some(provider => provider.enabled),
+      giftcodes: Boolean(config.auth.publicBaseUrl),
+    });
     console.log(JSON.stringify({ event: 'database_ready', schema_version: database.schemaVersion }));
-  } catch {
-    console.error(JSON.stringify({
-      event: 'startup_database_error',
-      code: 'DATABASE_UNAVAILABLE',
-      message: 'Cannot connect to MySQL or the required schema is not ready. Check DB_* in backend/.env, start MySQL and run npm run migrate before restarting.',
-    }));
+  } catch (error) {
+    console.error(JSON.stringify({ event: 'startup_database_error', ...databaseDiagnostic(error) }));
     process.exitCode = 1;
-    await closeStore(store);
+    if (store) await closeStore(store);
     return;
   }
 
   let server;
-  try { server = createResearchServer({ ...config, store }); }
+  try { server = createResearchServer({ config, store }); }
   catch {
     console.error(JSON.stringify({ event: 'startup_server_error', code: 'SERVER_INITIALIZATION_FAILED', message: 'Check the backend session configuration in backend/.env.' }));
     process.exitCode = 1;
@@ -51,8 +48,9 @@ async function main() {
     process.exitCode = 1;
     void closeStore(store);
   });
-  server.listen(config.port, config.host, () => {
-    console.log(JSON.stringify({ event: 'listening', host: config.host, port: config.port, backend_base_url: config.publicBaseUrl, persistence: 'mysql' }));
+  const { host, port, publicBaseUrl } = config.server;
+  server.listen(port, host, () => {
+    console.log(JSON.stringify({ event: 'listening', host, port, backend_base_url: publicBaseUrl, persistence: 'mysql' }));
   });
   let closing = false;
   for (const signal of ['SIGINT', 'SIGTERM']) {

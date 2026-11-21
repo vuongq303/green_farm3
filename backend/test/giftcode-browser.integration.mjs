@@ -6,17 +6,17 @@ import { createServer } from 'node:https';
 import { test } from 'node:test';
 import { chromium } from 'playwright';
 import { hashPassword } from '../src/auth/passwords.js';
-import { loadConfig, loadEnvironment } from '../src/config.js';
+import { loadConfig, readEnvironment } from '../src/config.js';
 import { migrate } from '../src/db/migrate.js';
 import { createMysqlStore, createPoolFromConfig } from '../src/db/store.js';
 import { createResearchServer } from '../src/server.js';
 
-loadEnvironment();
+const env = readEnvironment();
 
 test('Chromium quản trị tạo mã, cập nhật và hiển thị phần thưởng đã chốt từ MySQL', { timeout: 120000 }, async t => {
   const tls = {
-    key: readFileSync(process.env.BROWSER_TEST_TLS_KEY),
-    cert: readFileSync(process.env.BROWSER_TEST_TLS_CERT),
+    key: readFileSync(env.BROWSER_TEST_TLS_KEY),
+    cert: readFileSync(env.BROWSER_TEST_TLS_CERT),
   };
   const server = createServer(tls);
   t.after(async () => {
@@ -25,11 +25,12 @@ test('Chromium quản trị tạo mã, cập nhật và hiển thị phần thư
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const origin = 'https://localhost:' + server.address().port;
-  const config = loadConfig({ ...process.env, AUTH_PUBLIC_BASE_URL: origin, LEGACY_AUTH_ENABLED: 'false' });
+  const password = randomBytes(24).toString('hex');
+  const config = loadConfig({ ...env, AUTH_PUBLIC_BASE_URL: origin, LEGACY_AUTH_ENABLED: 'false',
+    GIFTCODE_ADMIN_PASSWORD_HASH: await hashPassword(password) });
   assert.match(config.database.database, /_test$/u, 'Use an isolated test database');
   const pool = createPoolFromConfig(config.database);
   const store = createMysqlStore(config.database);
-  const password = randomBytes(24).toString('hex');
   const code = 'WEB-' + randomBytes(6).toString('hex').toUpperCase();
   let person;
   let browser;
@@ -56,17 +57,15 @@ test('Chromium quản trị tạo mã, cập nhật và hiển thị phần thư
   });
   await migrate(pool);
   migrationsReady = true;
-  const production = createResearchServer({
-    ...config, store, giftcodeAdminPasswordHash: await hashPassword(password), log: () => {},
-  });
+  const production = createResearchServer({ config, store, log: () => {} });
   server.on('request', production.listeners('request')[0]);
-  const certificatePin = process.env.BROWSER_TEST_PIN_LOCAL_CERT === '1'
+  const certificatePin = env.BROWSER_TEST_PIN_LOCAL_CERT === '1'
     ? createHash('sha256').update(new X509Certificate(tls.cert).publicKey.export({ type: 'spki', format: 'der' })).digest('base64')
     : undefined;
   browser = await chromium.launch({
     headless: true,
     args: certificatePin ? ['--ignore-certificate-errors-spki-list=' + certificatePin] : [],
-    ...(process.env.CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.CHROMIUM_EXECUTABLE_PATH } : {}),
+    ...(env.CHROMIUM_EXECUTABLE_PATH ? { executablePath: env.CHROMIUM_EXECUTABLE_PATH } : {}),
   });
   const context = await browser.newContext({ viewport: { width: 1200, height: 880 } });
   context.setDefaultTimeout(10000);

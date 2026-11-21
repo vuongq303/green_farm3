@@ -15,7 +15,9 @@ export async function migrate(pool, { directory = DEFAULT_DIRECTORY } = {}) {
     if (!database.name) throw new Error('A database must be selected before migration');
     lockName = 'greenfarm_migrate_' + createHash('sha256').update(database.name).digest('hex').slice(0, 32);
     const [[lock]] = await connection.execute('SELECT GET_LOCK(?, 10) AS acquired', [lockName]);
-    if (Number(lock.acquired) !== 1) throw new Error('Another Green Farm migration is running');
+    if (Number(lock.acquired) !== 1) {
+      throw Object.assign(new Error('Another Green Farm migration is running'), { code: 'MIGRATION_LOCK_UNAVAILABLE' });
+    }
     await connection.query(`CREATE TABLE IF NOT EXISTS gf_schema_migrations (
       version INT UNSIGNED NOT NULL PRIMARY KEY,
       name VARCHAR(128) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,

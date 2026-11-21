@@ -1,14 +1,13 @@
 import assert from 'node:assert/strict';
 import { createHash, randomBytes } from 'node:crypto';
 import { after, test } from 'node:test';
-import { loadDatabaseConfig, loadEnvironment } from '../src/config.js';
+import { loadDatabaseConfig, readEnvironment } from '../src/config.js';
 import { createPoolFromConfig } from '../src/db/store.js';
 import { createSocialStore } from '../src/db/social-store.js';
 import { migrate } from '../src/db/migrate.js';
 
-loadEnvironment();
-const config = loadDatabaseConfig();
-config.database = process.env.TEST_DB_NAME ?? config.database;
+const env = readEnvironment();
+const config = loadDatabaseConfig({ ...env, DB_NAME: env.TEST_DB_NAME ?? env.DB_NAME });
 if (!config.database.endsWith('_test')) throw new Error('Password MySQL tests require a dedicated database ending in _test');
 const pool = createPoolFromConfig(config);
 const store = createSocialStore(pool);

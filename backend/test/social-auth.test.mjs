@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { createHash, generateKeyPairSync, randomBytes, sign } from 'node:crypto';
 import { test } from 'node:test';
-import { APP_REDIRECT_URI, loadSocialAuthConfig, secureAuthRequest, authClientIp } from '../src/auth/config.js';
+import { APP_REDIRECT_URI, secureAuthRequest, authClientIp } from '../src/auth/config.js';
+import { loadSocialAuthConfig } from '../src/config.js';
 import { createSocialAuthRouter } from '../src/auth/router.js';
 import { createProviderClient } from '../src/auth/providers.js';
 

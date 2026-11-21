@@ -4,7 +4,7 @@ Giftcode dùng tài khoản website hiện có và chỉ lưu tiền thưởng v
 
 ## Cấu hình và chạy
 
-1. Sao lưu MySQL theo quy trình triển khai hiện có. Trong `backend/.env` đặt kết nối MySQL và `RESEARCH_SESSION_SECRET` giữ nguyên qua mỗi lần khởi động. Đặt `AUTH_PUBLIC_BASE_URL` thành origin HTTPS đang hoạt động, gồm tên miền và cổng nếu dùng cổng riêng.
+1. Sao lưu MySQL theo quy trình triển khai hiện có. Trong `backend/.env` đặt kết nối MySQL, `LEGACY_AUTH_ENABLED=false` và `AUTH_PUBLIC_BASE_URL` là origin HTTPS đang hoạt động, gồm tên miền và cổng nếu dùng cổng riêng.
 2. Nếu Node nhận HTTP nội bộ từ reverse proxy, đặt `AUTH_TRUSTED_PROXY_IP` bằng IP thực mà Node thấy từ proxy. Proxy phải ghi đè `X-Forwarded-Proto` và `X-Forwarded-For` với protocol và IP của kết nối bên ngoài. Với tunnel trên cùng máy, bind Node vào `127.0.0.1` khi phù hợp. Kiểm tra origin trước khi build lại APK.
 3. Chạy trong thư mục `backend`:
 

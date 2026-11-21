@@ -5,7 +5,6 @@ import { HttpError } from '../http.js';
 
 const COOKIE = '__Host-gf_giftcode_admin';
 const COOKIE_OPTIONS = 'Path=/; Secure; HttpOnly; SameSite=Strict';
-const SESSION_TTL = 3600;
 const hash = value => createHash('sha256').update(value).digest('base64url');
 
 function sessionToken(request) {
@@ -33,7 +32,8 @@ export function createRateLimit({ windowMs, maximum, now }) {
   };
 }
 
-export function createGiftcodeAdminAuth({ config, adminPasswordHash, now }) {
+export function createGiftcodeAdminAuth({ auth, giftcodes, now }) {
+  const { adminPasswordHash, adminSessionTtl } = giftcodes;
   const sessions = new Map();
   const loginLimit = createRateLimit({ now, maximum: 8, windowMs: 15 * 60 * 1000 });
   const requireEnabled = () => {
@@ -42,7 +42,7 @@ export function createGiftcodeAdminAuth({ config, adminPasswordHash, now }) {
 
   return {
     requireOrigin(request) {
-      if (request.headers.origin !== config.publicBaseUrl ||
+      if (request.headers.origin !== auth.publicBaseUrl ||
           (request.headers['sec-fetch-site'] != null && request.headers['sec-fetch-site'] !== 'same-origin')) {
         throw new HttpError(403, 'csrf_failed');
       }
@@ -50,7 +50,7 @@ export function createGiftcodeAdminAuth({ config, adminPasswordHash, now }) {
 
     async login(request, response, password) {
       requireEnabled();
-      loginLimit(authClientIp(request, config));
+      loginLimit(authClientIp(request, auth));
       let valid;
       try { valid = await verifyPassword(password, adminPasswordHash); }
       catch { throw new HttpError(503, 'password_unavailable'); }
@@ -61,8 +61,8 @@ export function createGiftcodeAdminAuth({ config, adminPasswordHash, now }) {
       const previous = sessionToken(request);
       if (previous) sessions.delete(hash(previous));
       const token = randomBytes(32).toString('base64url');
-      sessions.set(hash(token), time + SESSION_TTL * 1000);
-      response.setHeader('Set-Cookie', COOKIE + '=' + token + '; ' + COOKIE_OPTIONS + '; Max-Age=' + SESSION_TTL);
+      sessions.set(hash(token), time + adminSessionTtl * 1000);
+      response.setHeader('Set-Cookie', COOKIE + '=' + token + '; ' + COOKIE_OPTIONS + '; Max-Age=' + adminSessionTtl);
     },
 
     requireSession(request) {

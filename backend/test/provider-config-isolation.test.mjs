@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { APP_REDIRECT_URI, loadSocialAuthConfig } from '../src/auth/config.js';
+import { APP_REDIRECT_URI } from '../src/auth/config.js';
+import { loadSocialAuthConfig } from '../src/config.js';
 
 const AUTH_ORIGIN = 'https://accounts.example.test';
 const GOOGLE = {
