@@ -30,6 +30,8 @@ class Vault : SocialAccountFlow.Vault {
 class Platform:SocialAccountFlow.Platform {
  var time=1_700_000_000_000L;var random=0;var opened=0;var browsers=0;val jobs=ArrayDeque<()->Unit>()
  val recoveries=mutableListOf<String>()
+ val stages=mutableListOf<String>()
+ override fun authStage(stage:String,code:String){stages.add("$stage:$code")}
  override fun authRecovery(stage:String,reason:String){recoveries.add("$stage:$reason")}
  override fun now()=time
  override fun randomBytes(size:Int)=ByteArray(size){(++random).toByte()}
@@ -111,6 +113,15 @@ fun main(){
   f.continueSaved();pump(f,p)
   check(f.status==SocialAccountFlow.READY&&!f.needsGate&&f.gameId=="GF000001"&&v.saved!=null&&v.pending==null&&v.returned==null)
   check(b.exchanges==1&&b.lastVerifier==verifier&&f.accountName=="Player")
+  check(listOf("attempt_response:ok","attempt_storage:ok","callback_validation:ok","session_storage:ok").all{it in p.stages})
+  var giftAccess=""
+  p.time=v.saved!!.accessExpiresAt-15_000
+  f.withReadyAccess({identity,token->
+   check(identity.gameId=="GF000001"&&v.saved!!.accessToken==token){"rotation must be durable before using it"}
+   giftAccess=token
+  },{error(it)})
+  pump(f,p);check(giftAccess=="refreshed-access"&&f.status==SocialAccountFlow.READY)
+
   check(!v.saved.toString().contains("new-access")&&!v.saved.toString().contains("new-refresh"))
   check(!SocialAttempt("google",state,verifier,"https://auth.example/?private",p.time).toString().contains(verifier))
   check(!SocialCallback(state,code,null).toString().contains(code))

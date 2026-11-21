@@ -3,6 +3,7 @@ import { isIP } from 'node:net';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadSocialAuthConfig } from './auth/config.js';
+import { validPasswordHash } from './auth/passwords.js';
 import { normalizeHttpOrigin } from './backend-url.js';
 
 const backendDirectory = fileURLToPath(new URL('..', import.meta.url));
@@ -77,6 +78,10 @@ export function loadConfig(env = process.env) {
   const sessionTtlSeconds = integer(env, 'SESSION_TTL_SECONDS', 900, 1, 86400);
   const refreshTtlSeconds = integer(env, 'REFRESH_TTL_SECONDS', 2592000, 1, 7776000);
   if (refreshTtlSeconds < sessionTtlSeconds) throw new Error('REFRESH_TTL_SECONDS must be at least SESSION_TTL_SECONDS');
+  const giftcodeAdminPasswordHash = env.GIFTCODE_ADMIN_PASSWORD_HASH || undefined;
+  if (giftcodeAdminPasswordHash && !validPasswordHash(giftcodeAdminPasswordHash)) {
+    throw new Error('Generate GIFTCODE_ADMIN_PASSWORD_HASH with node scripts/hash-giftcode-admin-password.js');
+  }
   return { host, port, publicBaseUrl, sessionSecret, sessionTtlSeconds, refreshTtlSeconds, database: loadDatabaseConfig(env),
-    legacyAuthEnabled, auth: loadSocialAuthConfig(env) };
+    legacyAuthEnabled, auth: loadSocialAuthConfig(env), giftcodeAdminPasswordHash };
 }

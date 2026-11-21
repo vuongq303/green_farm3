@@ -3,6 +3,8 @@ import { HttpError, respond, form, parsePairs, required, routeSegments, validate
 import { createSessionService } from './services/sessions.js';
 import { normalizeBackendBaseUrl } from './config.js';
 import { createSocialAuthRouter } from './auth/router.js';
+import { createGiftcodeRouter } from './giftcodes/router.js';
+import { handleGiftcodeAdminPage } from '../web/giftcode-admin.mjs';
 
 const DATACENTER_NAME = 'local';
 const DATACENTER_ID = 'local-research';
@@ -25,6 +27,8 @@ export function createResearchServer(options) {
   const errorLog = options.errorLog ?? (entry => console.error(JSON.stringify(entry)));
   const social = createSocialAuthRouter({ config: options.auth, store: options.socialStore ?? store.social,
     now, providers: options.socialProviders, errorLog });
+  const giftcodes = createGiftcodeRouter({ config: options.auth, store: store.giftcodes,
+    socialStore: options.socialStore ?? store.social, adminPasswordHash: options.giftcodeAdminPasswordHash, now });
 
   const server = createServer((request, response) => {
     let path = '[unmatched]';
@@ -42,6 +46,19 @@ export function createResearchServer(options) {
         throw new HttpError(400, 'invalid_path');
       }
       const url = new URL(request.url, 'http://local.invalid');
+      if (url.pathname === '/admin/giftcodes' || url.pathname.startsWith('/admin/giftcodes/')) {
+        path = url.pathname.startsWith('/admin/giftcodes/assets/') ? '/admin/giftcodes/assets/:file' : '/admin/giftcodes';
+        if (handleGiftcodeAdminPage(request, response, url)) return;
+        throw new HttpError(404, 'route_not_found');
+      }
+      if (url.pathname === '/giftcodes' || url.pathname.startsWith('/giftcodes/') ||
+          url.pathname === '/admin/api/giftcodes' || url.pathname.startsWith('/admin/api/giftcodes/')) {
+        path = giftcodes.recognize(url.pathname);
+        response.setHeader('X-Content-Type-Options', 'nosniff');
+        response.setHeader('Referrer-Policy', 'no-referrer');
+        await giftcodes.handle(request, response, url, path);
+        return;
+      }
       if (url.pathname === '/auth' || url.pathname.startsWith('/auth/')) {
         // OAuth query strings contain authorization codes and must never enter logs.
         path = url.pathname.startsWith('/auth/callback/') ? '/auth/callback/:provider'

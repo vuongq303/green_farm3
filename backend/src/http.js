@@ -73,6 +73,25 @@ export async function form(request, allowed) {
   return parsePairs(text, allowed);
 }
 
+export async function json(request) {
+  if (request.headers['content-type']?.split(';', 1)[0]?.trim().toLowerCase() !== 'application/json') {
+    request.resume();
+    throw new HttpError(415, 'json_required');
+  }
+  let body;
+  try {
+    body = await readBody(request);
+  } catch (error) {
+    if (error.status === 413) throw new HttpError(413, 'request_too_large');
+    throw new HttpError(400, 'invalid_request');
+  }
+  let value;
+  try { value = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(body)); }
+  catch { throw new HttpError(400, 'invalid_request'); }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new HttpError(400, 'invalid_request');
+  return value;
+}
+
 export function parsePairs(text, allowed) {
   const fields = new Map();
   if (!text) return fields;

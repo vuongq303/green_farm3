@@ -21,4 +21,7 @@ if [[ -z "${CHROMIUM_EXECUTABLE_PATH:-}" ]] && command -v chromium >/dev/null; t
   export CHROMIUM_EXECUTABLE_PATH
   CHROMIUM_EXECUTABLE_PATH=$(command -v chromium)
 fi
-node --test --test-concurrency=1 test/password-browser.integration.mjs
+if [[ $# -eq 0 ]]; then
+  set -- test/password-browser.integration.mjs test/giftcode-browser.integration.mjs
+fi
+node --test --test-concurrency=1 "$@"

@@ -96,7 +96,8 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
   if (!dialogAvailable) delete notice.showModal;
   const dismiss = { focus: () => { attributes.focus = 'dismiss'; },
     addEventListener: (event, fn) => { listeners['dismiss:' + event] = fn; } };
-  const close = { href: closeUrl, addEventListener: (event, fn) => { listeners['close:' + event] = fn; } };
+  const close = { href: closeUrl, getAttribute(key) { return key === 'href' ? this.href : null; },
+    addEventListener: (event, fn) => { listeners['close:' + event] = fn; } };
   const alternate = { setAttribute: (key, value) => { attributes['alternate:' + key] = value; },
     addEventListener: (event, fn) => { listeners['alternate:' + event] = fn; } };
   const returnToGame = { hidden: true, focus: () => { attributes.focus = 'return'; },
@@ -110,7 +111,7 @@ function web({ mode = 'login', fetchReply = async () => ({ ok: true, json: async
     abort() { this.signal.aborted = true; this.signal.onabort?.(); }
   }
   runInNewContext(script, {
-    URL, AbortController,
+    URLSearchParams, AbortController,
     document: { visibilityState: 'visible', getElementById: id => nodes[id],
       createElement: tag => {
         assert.equal(tag, 'iframe');
@@ -157,6 +158,7 @@ test('login posts only credentials/CSRF through same-origin JSON, blocks repeats
   const request = result.requests[0];
   assert.equal(request.url, '/auth/login');
   assert.equal(request.options.credentials, 'same-origin');
+  assert.equal(request.options.referrerPolicy, 'origin');
   assert.equal(request.options.redirect, 'error');
   assert.equal(request.options.cache, 'no-store');
   assert.deepEqual(JSON.parse(request.options.body), { csrf, attempt, login: 'Player123', password: '  secret farm password  ' });

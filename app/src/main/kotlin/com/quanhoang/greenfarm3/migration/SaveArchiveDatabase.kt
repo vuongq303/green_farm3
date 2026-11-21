@@ -14,6 +14,9 @@ import java.security.MessageDigest
 object SaveArchiveDatabase {
     const val BACKUP_FILE = "greenfarm-before-import.gf3save"
     private const val SLOT = SaveArchive.SLOT_ID
+    // Giftcode receipts and farm bindings are installation-local. The wallet
+    // balances still travel in the regular gameplay snapshot.
+    private const val DEVICE_GIFTCODE_PREFIX = "giftcode_local_"
     private val preserveCorruptDatabase = DatabaseErrorHandler {
         // The platform default deletes corrupt database/WAL files. An export
         // or failed import must retain the user's original bytes for recovery.
@@ -52,6 +55,8 @@ object SaveArchiveDatabase {
         val records = ArrayList<SaveArchive.Record>()
         db.rawQuery("SELECT store_name,payload,checksum,deleted,generation,record_id FROM save_records WHERE slot_id=? ORDER BY store_name", arrayOf(SLOT)).use { rows ->
             while (rows.moveToNext()) {
+                val name = rows.getString(0)
+                if (name.startsWith(DEVICE_GIFTCODE_PREFIX)) continue
                 if (rows.getInt(5) != 1) throw IOException("Record ID không được hỗ trợ.")
                 val deleted = rows.getInt(3)
                 if (deleted !in 0..1) throw IOException("Cờ bản ghi không hợp lệ.")
@@ -62,7 +67,7 @@ object SaveArchiveDatabase {
                 } else if (payload == null || expected == null || !MessageDigest.isEqual(expected, SaveArchive.checksum(payload))) {
                     throw IOException("Checksum SQLite không hợp lệ; chưa xuất hoặc thay đổi dữ liệu.")
                 }
-                records.add(SaveArchive.Record(rows.getString(0), payload, rows.getLong(4)))
+                records.add(SaveArchive.Record(name, payload, rows.getLong(4)))
             }
         }
         return SaveArchive.Snapshot(sourcePackage, metadata[0], metadata[1], metadata[2].toInt(),
@@ -116,6 +121,7 @@ object SaveArchiveDatabase {
                     throw IOException("Không cập nhật được slot bản lưu.")
                 }
                 for (record in snapshot.records) {
+                    if (record.name.startsWith(DEVICE_GIFTCODE_PREFIX)) continue
                     db.insertOrThrow("save_records", null, ContentValues().apply {
                         put("slot_id", SLOT)
                         put("store_name", record.name)

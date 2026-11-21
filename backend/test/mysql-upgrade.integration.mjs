@@ -116,14 +116,14 @@ test('MySQL v4 upgrade preserves account data, active tokens and the full rotati
   const [unfinished] = await pool.query('SELECT version FROM gf_schema_migrations WHERE version = 5');
   assert.deepEqual(unfinished, []);
   await pool.execute('UPDATE gf_auth_session_links SET family_id = ? WHERE session_id = ?', [facebook.id, facebook.id]);
-  assert.deepEqual(await migrate(pool), { applied: [5], alreadyApplied: [1, 2, 3, 4] });
+  assert.deepEqual(await migrate(pool), { applied: [5, 6], alreadyApplied: [1, 2, 3, 4] });
   assert.deepEqual(await snapshot(), before, 'Account, token, family and original link data must survive byte-for-byte');
   const [memberships] = await pool.query('SELECT id, family_id FROM gf_auth_sessions ORDER BY id');
   assert.deepEqual(memberships.map(row => [row.id, row.family_id]),
     before.links.map(row => [row.session_id, row.family_id]));
   await assert.rejects(pool.execute('UPDATE gf_auth_sessions SET family_id = ? WHERE id = ?', [first.id, facebook.id]),
     { code: 'ER_NO_REFERENCED_ROW_2' });
-  assert.deepEqual(await migrate(pool), { applied: [], alreadyApplied: [1, 2, 3, 4, 5] });
+  assert.deepEqual(await migrate(pool), { applied: [], alreadyApplied: [1, 2, 3, 4, 5, 6] });
   assert.deepEqual(await snapshot(), before);
 
   const store = createSocialStore(pool);
@@ -181,7 +181,7 @@ test('MySQL v4 upgrade preserves account data, active tokens and the full rotati
   await pool.query(`ALTER TABLE gf_auth_sessions MODIFY COLUMN family_id
     VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NULL`);
   const v4Session = await seedSession(pool, { userId, now });
-  assert.deepEqual(await migrate(pool), { applied: [], alreadyApplied: [1, 2, 3, 4, 5] });
+  assert.deepEqual(await migrate(pool), { applied: [], alreadyApplied: [1, 2, 3, 4, 5, 6] });
   await assert.rejects(store.health(), { code: 'DATABASE_UNAVAILABLE' });
 
   // The documented roll-forward deliberately replays the already-ledgered

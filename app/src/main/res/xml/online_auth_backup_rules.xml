@@ -2,4 +2,5 @@
 <full-backup-content>
     <!-- The Keystore key stays on this device; never transfer encrypted sessions. -->
     <exclude domain="sharedpref" path="greenfarm_online_auth_v1.xml"/>
+    <exclude domain="sharedpref" path="greenfarm_giftcode_installation_v1.xml"/>
 </full-backup-content>

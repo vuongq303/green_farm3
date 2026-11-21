@@ -114,10 +114,16 @@ AUTH_TRUSTED_PROXY_IP=127.0.0.1
 LEGACY_AUTH_ENABLED=false
 ```
 
-The example domain is a placeholder. Put the same actual HTTPS origin in root
-`gradle.properties` as `AUTH_BASE_URL`, rebuild and install over the existing
-application using the same signing key. `BACKEND_BASE_URL` is the separate
-legacy LAN discovery URL; changing it does not configure account authentication.
+Set `AUTH_PUBLIC_BASE_URL` to the live HTTPS origin on the server. Build the APK
+with that same origin and install it over the existing application using the
+same signing key. A command-line property overrides the root Gradle default:
+
+```sh
+./gradlew :app:assembleDebug -PAUTH_BASE_URL=https://accounts.your-domain.example
+```
+
+Replace the example hostname before building. `BACKEND_BASE_URL` still
+configures the legacy LAN discovery origin.
 
 Facebook still needs `FACEBOOK_APP_ID`, `FACEBOOK_APP_SECRET`, a supported Graph
 version and exact HTTPS `/auth/callback/facebook` redirect; see
@@ -131,9 +137,39 @@ npm start
 
 Without a configured HTTPS `AUTH_PUBLIC_BASE_URL`, the local `/health` endpoint
 can be healthy while account routes report `503 auth_not_configured`. The app
-without `AUTH_BASE_URL` reports missing configuration. Neither state is a
-successful login. This checkout does not deploy a domain or create real OAuth
-applications, and it has no HTTP, fake-account or certificate-error bypass.
+without `AUTH_BASE_URL` reports missing configuration.
+
+## Diagnosing an HTTP 201 sign-in failure
+
+The account API deliberately returns HTTP 201 for `POST /auth/attempt`.
+The app validates the JSON, attempt lifetime and browser URL before it writes
+the pending attempt or requests a browser launch. The browser URL must match
+the configured HTTPS host and port, the selected provider route and the
+response's attempt ID. Earlier checked-in defaults paired the Gradle account
+origin with a different temporary tunnel in `.env.example`. Combining those
+values yields HTTP 201 followed by `invalid_authorization_url`.
+
+Inspect Logcat tags `GreenFarmNetwork` and `GreenFarmAccount`. The request
+entry gives the fixed route and HTTP status. The `authorization_url` entry
+gives the returned scheme, host, port and recognized path. Compare that origin
+with `account_startup`. Configure both values again and rebuild the APK after
+a temporary tunnel's origin changes. Use `attempt_storage`, `browser_launch`,
+`callback_validation`, `callback_storage`, `callback_return`,
+`exchange_request`, `exchange_response` and `session_storage` to locate
+failures later in the flow. Session restore reports validation or storage
+errors. The log entries omit queries, response bodies, callback contents,
+passwords, PKCE verifiers and session tokens.
+
+The Android 9 fixture browser reproduced two failures after the browser opened.
+Its WebView treated the callback authority as part of the path and sent an
+opaque Origin on a no-referrer form POST. The page now validates the fixed app
+route before parsing the query and sends only the origin on the same-origin
+POST. The server still checks the exact Origin and CSRF token.
+
+If `session_storage` reports success and `welcome_layout` reports a font
+measurement error, the native welcome panel uses the verified GAME_ID and
+keeps Continue available. The API 28 emulator exercised this fallback after a
+restart with the saved session.
 
 ## HTTPS hosting and Cloudflare Tunnel preparation
 

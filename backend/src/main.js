@@ -25,6 +25,7 @@ async function main() {
     // accepts the credentials or that the required migration has been applied.
     const database = await store.health();
     if (Object.values(config.auth.providers).some(provider => provider.enabled)) await store.social.health();
+    if (config.auth.publicBaseUrl) await store.giftcodes.health();
     console.log(JSON.stringify({ event: 'database_ready', schema_version: database.schemaVersion }));
   } catch {
     console.error(JSON.stringify({

@@ -100,10 +100,22 @@ class GameSaveStore {
  static int initializes,reopens,begins,logicalLanguage,durableLanguage,durableCredits,durablePending,applies;
  static Throwable loadCause;
  static boolean capturing,serialized,whole,restoreFailed;static Snapshot captured;static WriteDispatcher dispatcher;
+ static String farmId="dddddddd-dddd-4ddd-8ddd-dddddddddddd", stagedGrant;
+ static byte[] stagedReceipt;
+ static final Map<String,byte[]> receipts=new HashMap<>();
+ static String giftcodeFarmId(){return farmId;}
+ static boolean isGiftcodeFarm(String id){return farmId.equals(id)&&isCaptureAvailable();}
+ static byte[] giftcodeReceipt(String id){return receipts.get(id);}
+ static void captureGiftcodeReceipt(String id,byte[] receipt){
+  if(!capturing||!whole)throw new AssertionError("receipt outside whole farm capture");
+  stagedGrant=id;stagedReceipt=receipt;
+ }
  interface WriteDispatcher {void changed(Snapshot snapshot);}
  static final class Snapshot {
   final int language,credits,pending;final boolean gameplay,whole;
-  Snapshot(int l,int c,int p,boolean g,boolean w){language=l;credits=c;pending=p;gameplay=g;whole=w;}
+  final String grant;final byte[] receipt;final int coins,cash;
+  Snapshot(int l,int c,int p,boolean g,boolean w){language=l;credits=c;pending=p;gameplay=g;whole=w;
+   grant=stagedGrant;receipt=stagedReceipt;coins=ci.FA();cash=ci.FB();}
   int recordCount(){return gameplay?(whole?5:3):1;}long byteCount(){return 35;}
  }
  static void initialize(){initializes++;if(failInitialize)throw new IllegalStateException("open");ready=true;}
@@ -114,14 +126,22 @@ class GameSaveStore {
  static void close(){ready=false;}static void reopen(){reopens++;if(failReopen)throw new IllegalStateException("reopen");ready=true;}
  static void setWriteDispatcher(WriteDispatcher d){dispatcher=d;}
  static boolean isCaptureAvailable(){return ready&&!loading;}static int status(){return 0;}
- static void beginCapture(boolean farm){if(!isCaptureAvailable())throw new IllegalStateException("not loaded");capturing=true;serialized=false;whole=farm;}
+ static void beginCapture(boolean farm){if(!isCaptureAvailable())throw new IllegalStateException("not loaded");capturing=true;serialized=false;whole=farm;stagedGrant=null;stagedReceipt=null;}
  static void record(){serialized=true;captured=new Snapshot(ci.aYU,ch.credits,ch.pending,true,whole);}
  static void setLanguageWriteOverride(Integer language){}
  static void overrideCapturedLanguage(int language){captured=new Snapshot(language,captured.credits,captured.pending,captured.gameplay,captured.whole);}
  static Snapshot finishCapture(){capturing=false;if(!serialized)throw new IllegalStateException("incomplete");logicalLanguage=captured.language;return captured;}
  static void abortCapture(){capturing=false;}
  static Snapshot captureLanguageSetting(int language){if(!ready)throw new IllegalStateException("no header");logicalLanguage=language;return new Snapshot(language,0,0,false,false);}
- static void apply(Snapshot s){applies++;durableLanguage=s.language;if(s.gameplay){durableCredits=s.credits;durablePending=s.pending;}}
+ static int durableCoins,durableCash;
+ static void apply(Snapshot s){applies++;durableLanguage=s.language;if(s.gameplay){
+   durableCredits=s.credits;durablePending=s.pending;durableCoins=s.coins;durableCash=s.cash;
+   if(s.grant!=null)receipts.put(s.grant,s.receipt);
+ }}
+}
+class SocialAccountController {
+ static final int READY=6;static int authStatus=READY;static String id="GF000001";
+ static int status(){return authStatus;}static String gameId(){return id;}
 }
 class AsyncSaveQueue {
  interface RetryableCheckpoint {}
@@ -158,6 +178,11 @@ class ci {
   throw new IllegalStateException("Engine initialized without its MIDlet");}
  static int avD=-1,aZB,aZD,level,attempts,visitorWrites,cancels,clears,queued,aYU,aOD,auy,committedCallbacks,aYR=-1,aYS=-1;
  static int aAG,aAH,aAI,aAJ,aAK,aZp;static Object avE,baf,aZn;static ch aZi,aZj;
+ static Integer aBc=0,aBd=0,aCP=0,aCQ=0;
+ static int aBe=99_999_999,aBg=3_000_000;
+ static boolean aBI,aBH;
+ static int FA(){return aBI?-aBc:aBc;}static int FB(){return aBH?-aBd:aBd;}
+ static void hJ(int amount){aBc=aCP=amount;}static void hK(int amount){aBd=aCQ=amount;}
  static boolean baa,bab,skipWrite,throwCapture,forcedSeen,aAi,aAj,awV;
  static int apA=-1,apz=-1,apB=-1,auN,asi;static int[]apC=new int[32],apV=new int[128];
  static void state(int...stack){apB=stack.length-1;System.arraycopy(stack,0,apC,0,stack.length);}
@@ -336,6 +361,40 @@ public class ProgressSaveChecks {
   ci.skipWrite=true;check(!ProgressSaveController.flushForLifecycle(),"declined serializer became durable save");
   ci.skipWrite=false;queue().awaitCompletes=true;check(ProgressSaveController.flushForLifecycle()&&ci.forcedSeen,"lifecycle flush failed to await durability");
  }
+ static void giftcodeAtomicCheckpoint()throws Exception{
+  readySaved();
+  java.util.List<String> results=new java.util.ArrayList<>();
+  String id="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", next="bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+  String last="cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+  String farm=GiftcodeFarmStore.getFarmId();
+  ci.hJ(50);ci.hK(5);ci.baa=true;frame(0);frame(500);
+  GiftcodeFarmStore.apply(farm,"GF000001",id,11,2,results::add);
+  GiftcodeFarmStore.apply(farm,"GF000001",id,11,2,results::add);
+  GiftcodeFarmStore.frameFinished();
+  check(results.equals(java.util.Collections.singletonList("farm_not_ready"))&&ci.FA()==61&&ci.FB()==7,"grant/repeat at frame boundary");
+  complete(false);
+  check(GameSaveStore.durableCoins==50&&!GameSaveStore.receipts.containsKey(id),"older snapshot acknowledged an uncommitted grant");
+  queue().retryPaused=true;complete(true);
+  check(results.get(1).equals("save_failed")&&GameSaveStore.durableCoins==50&&GameSaveStore.durableCash==5&&
+        !GameSaveStore.receipts.containsKey(id),"failed write published a partial grant");
+  GiftcodeFarmStore.apply(farm,"GF000001",id,11,2,results::add);
+  GiftcodeFarmStore.frameFinished();
+  check(ci.FA()==61&&ci.FB()==7&&!queue().retryPaused,"retry added balances twice");
+  complete(false);
+  check(results.get(2).equals("applied")&&GameSaveStore.receipts.containsKey(id)&&GameSaveStore.durableCoins==61&&
+        GameSaveStore.durableCash==7,"durable grant missing receipt or wallet");
+  GiftcodeFarmStore.apply(farm,"GF000001",id,11,2,results::add);GiftcodeFarmStore.frameFinished();
+  check(results.get(3).equals("already_applied")&&ci.FA()==61,"lost acknowledgement caused duplicate grant");
+  GiftcodeFarmStore.apply(farm,"GF000002",next,1,1,results::add);GiftcodeFarmStore.frameFinished();
+  check(results.get(4).equals("account_changed"),"different account can apply stale response");
+  ci.hK(ci.aBg);
+  GiftcodeFarmStore.apply(farm,"GF000001",next,1,1,results::add);GiftcodeFarmStore.frameFinished();
+  check(results.get(5).equals("balance_limit")&&ci.FA()==61,"over-cap grant partially credited");
+  ci.hK(7);ci.throwCapture=true;
+  GiftcodeFarmStore.apply(farm,"GF000001",last,1,1,results::add);GiftcodeFarmStore.frameFinished();
+  check(results.get(6).equals("save_failed")&&ci.FA()==61&&ci.FB()==7&&!GameSaveStore.receipts.containsKey(last),
+        "capture rejection added wallet without a receipt");
+ }
  static void loadRetry()throws Exception{
   reset();GameSaveStore.failFinish=true;ready();check(ProgressSaveController.isLoadBlocked(),"load completion failure unblocked");
   set(ProgressSaveController.class,"retryLoad",true);GameSaveStore.failFinish=false;frame(0);frame(500);finishPending();check(!ProgressSaveController.isLoadBlocked(),"load retry deadlocked");
@@ -505,7 +564,7 @@ public class ProgressSaveChecks {
   if(args.length>0&&args[0].equals("coldNoWriter")){coldNoWriter();return;}
   ColdEngineInitProbe.failInitialization=false;
   backendSnapshotDurability();onlineAccountsKeepLocalProgress();failedRestoreCannotAutosave();loaderBatchAndTimer();continuousBatchAndNewMutation();immutableSnapshotAndFailure();loadRetry();loadRetryWaitsForWriter();transitions();
-  retryNoticePreservesExistingQuestDialog();actionMatrixAndCriticalFlush();languageMandatoryTargetRestart();languageFontFailureRetriesOnlyOnUserChoice();languageFinalSaveRetainsLateWrites();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();saveTransferLongPress();saveTransferFreeze();
+  retryNoticePreservesExistingQuestDialog();actionMatrixAndCriticalFlush();languageMandatoryTargetRestart();languageFontFailureRetriesOnlyOnUserChoice();languageFinalSaveRetainsLateWrites();languageFailureRetry();languageLateMutation();languageHeaderAndHandoff();languageLateCaptureFailure();languageCommittedPreferenceRollback();languageRejectedInitialPreference();tutorialHardwareOptions();saveTransferLongPress();saveTransferFreeze();giftcodeAtomicCheckpoint();
   System.out.println("PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff");
  }
 }
@@ -544,7 +603,7 @@ class ProgressSaveControllerTest(unittest.TestCase):
                 peer.write_text(adapt_fixture(content).replace('com.gameloft.android.ANMP.GloftGF2F', qualified_package().rsplit('.', 1)[0]), encoding='utf-8')
                 peers.append(peer)
             fixture, runner = folder / 'Fixture.java', folder / 'ProgressSaveChecks.java'
-            actual = [kotlin_source / name for name in ('ProgressSaveController.kt', 'SaveBatchPolicy.kt', 'BackendSavePolicy.kt', 'LanguageRestartController.kt', 'GameNotification.kt')]
+            actual = [kotlin_source / name for name in ('ProgressSaveController.kt', 'SaveBatchPolicy.kt', 'BackendSavePolicy.kt', 'LanguageRestartController.kt', 'GameNotification.kt', 'GiftcodeFarmStore.kt')]
             fixture_text = FIXTURE.replace('class ci {', 'class LocalDevelopmentMode { static boolean enabled,online; public static boolean isEnabled(){return enabled;} public static boolean skipLegacyBackend(){return enabled||online;} }\nclass ci {')
             if kotlin_midlet.is_file():
                 # Isolate only the two unchanged production override bodies,

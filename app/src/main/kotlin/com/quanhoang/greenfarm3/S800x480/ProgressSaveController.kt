@@ -44,6 +44,7 @@ object ProgressSaveController {
     private var promptVisible = false
     private var errorNoticeVisible = false
     private var languageCheckpoint: LanguageCheckpoint? = null
+    private var atomicUpdate: AtomicUpdate? = null
     private var deferredLanguage: Int? = null
     private var retryNoticeShown = false
     private val criticalRequests = AtomicLong()
@@ -68,6 +69,9 @@ object ProgressSaveController {
 
     private class LanguageRollback(val language: LanguageCheckpoint) : AsyncSaveQueue.RetryableCheckpoint
 
+    private class AtomicUpdate(val completed: (durable: Boolean, finished: Boolean) -> Unit) :
+        AsyncSaveQueue.RetryableCheckpoint
+
     @JvmStatic
     fun initialize() {
         sqliteWriteQueue?.let { previousWriter ->
@@ -75,6 +79,8 @@ object ProgressSaveController {
             previousWriter.close()
         }
         GameSaveStore.setWriteDispatcher(null)
+        atomicUpdate?.completed?.invoke(false, true)
+        atomicUpdate = null
         GameSaveStore.initialize()
         GameSaveStore.beginLoading()
         PendingRewardState.resetForLoad()
@@ -367,7 +373,23 @@ object ProgressSaveController {
         }
     }
 
-    private fun capture(force: Boolean, checkpoint: Any?): Long {
+    internal fun canCaptureAtomicUpdate(): Boolean = canSerialize() && FarmGameEngine.aZB == 0 &&
+        languageCheckpoint == null && atomicUpdate == null && sqliteWriteQueue?.isRetryPaused() == false
+
+    /** The mutation and its receipt are serialized on the engine thread and written by the existing queue. */
+    internal fun captureAtomicUpdate(change: () -> Unit, completed: (Boolean, Boolean) -> Unit): Boolean {
+        if (!canCaptureAtomicUpdate()) return false
+        val update = AtomicUpdate(completed)
+        observeChanges(SystemClock.uptimeMillis())
+        lastObservedRequestSequence = requestedSequence.incrementAndGet()
+        if (capture(true, update, change) < 0L) return false
+        atomicUpdate = update
+        return true
+    }
+
+    internal fun retryAtomicUpdate() { sqliteWriteQueue?.retryPending() }
+
+    private fun capture(force: Boolean, checkpoint: Any?, change: (() -> Unit)? = null): Long {
         if (!canSerialize()) return -1L
         val sequence = requestedSequence.get()
         val criticalAtCapture = criticalRequests.get()
@@ -380,6 +402,7 @@ object ProgressSaveController {
         forcedCheckpoint = force
         try {
             GameSaveStore.beginCapture(FarmGameEngine.aZB == 0)
+            change?.invoke()
             if (FarmGameEngine.aZB == 0) FarmGameEngine.av(false) else FarmGameEngine.rs()
             val savedLanguage = if (checkpoint is LanguageCheckpoint && checkpoint.preferencePhase) checkpoint.language else deferredLanguage
             savedLanguage?.let { GameSaveStore.overrideCapturedLanguage(it) }
@@ -434,6 +457,15 @@ object ProgressSaveController {
                     SaveRestoreException.diagnostics(result.failure, SaveRestoreException.Code.SQLITE_WRITE_FAILED), null)
             }
             val checkpoint = result.checkpoint
+            if (checkpoint is AtomicUpdate && checkpoint === atomicUpdate) {
+                if (result.failure == null) {
+                    atomicUpdate = null
+                    checkpoint.completed(true, true)
+                } else if (sqliteWriteQueue?.isRetryPaused() == true) {
+                    checkpoint.completed(false, false)
+                }
+                continue
+            }
             if (checkpoint is LanguageRollback) {
                 val language = checkpoint.language
                 if (language === languageCheckpoint && result.failure == null) {
@@ -627,7 +659,7 @@ object ProgressSaveController {
 
     @JvmStatic
     fun requestLanguageCheckpoint(language: Int, completion: LanguageRestartController.SaveCompletion): Boolean {
-        if (languageCheckpoint != null || loadBlocked || sqliteWriteQueue == null) return false
+        if (languageCheckpoint != null || atomicUpdate != null || loadBlocked || sqliteWriteQueue == null) return false
         // This entry is an explicit user selection/retry, never a timed loop.
         sqliteWriteQueue!!.retryPending()
         val request = LanguageCheckpoint(language, completion)
