@@ -1,0 +1,30 @@
+{
+  "note": "Ignores javac synthetic private-access bridges, all replaced with their owning nested implementations. Preserves callable static vs instance descriptors.",
+  "classes": [
+    {
+      "class": "GameSaveStore",
+      "baseline_callable_members": 34,
+      "missing_abi": []
+    },
+    {
+      "class": "GameSaveStore$Snapshot",
+      "baseline_callable_members": 4,
+      "missing_abi": []
+    },
+    {
+      "class": "GameSaveStore$WriteDispatcher",
+      "baseline_callable_members": 1,
+      "missing_abi": []
+    },
+    {
+      "class": "PendingRewardState",
+      "baseline_callable_members": 4,
+      "missing_abi": []
+    },
+    {
+      "class": "EntityPoseState",
+      "baseline_callable_members": 5,
+      "missing_abi": []
+    }
+  ]
+}

@@ -3,7 +3,8 @@ import android.content.ContextWrapper;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
-import com.gameloft.android.ANMP.GloftGF2F.S800x480.GameSaveStore;
+import com.quanhoang.greenfarm3.S800x480.GameSaveStore;
+import com.quanhoang.greenfarm3.S800x480.SaveRestoreException;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +25,15 @@ import java.util.zip.CRC32;
  * to files/sqlite-probe-<fixture>; it never opens the actual player database.
  */
 public final class GameSaveStoreProbe {
-    private static final String PACKAGE = "com.gameloft.android.ANMP.GloftGF2F";
+    private static final String PACKAGE = probePackage();
+    private static String probePackage() {
+        String supplied = System.getenv("GREENFARM_PROBE_PACKAGE");
+        if (!"com.quanhoang.greenfarm3".equals(supplied)
+                && !"com.gameloft.android.ANMP.GloftGF2F".equals(supplied)) {
+            throw new IllegalArgumentException("Set GREENFARM_PROBE_PACKAGE to the new app or legacy migration bridge application ID");
+        }
+        return supplied;
+    }
     private static final String SLOT = "device-local";
     private static final String[] RECORDS = {"RMSHeader", "save_gameplay", "save_farm0", "pending_rewards_v1", "entity_pose_v1"};
 
@@ -552,12 +561,88 @@ public final class GameSaveStoreProbe {
         SQLiteDatabase db = raw(context);
         try { db.execSQL("UPDATE save_records SET payload=? WHERE store_name='save_gameplay'", new Object[]{data("corrupt-without-updating-checksum")}); }
         finally { db.close(); }
+        Map<String, String> original = recordFingerprint(context);
         boolean rejected = false;
-        try { GameSaveStore.initialize(context); } catch (RuntimeException expected) { rejected = true; }
+        try { GameSaveStore.initialize(context); } catch (SaveRestoreException expected) {
+            check(expected.getCode() == SaveRestoreException.Code.CHECKSUM_MISMATCH,
+                    "Checksum diagnosis was lost through storage wrappers");
+            check(expected.getCause() != null, "The checksum cause was not retained");
+            rejected = true;
+        }
         check(rejected && GameSaveStore.status() == GameSaveStore.STATUS_FAILED, "Corrupt database was accepted as a new game");
         GameSaveStore.close();
         db = raw(context);
         try { check(scalar(db, "SELECT COUNT(*) FROM save_records") == RECORDS.length, "Corruption recovery reset records"); }
+        finally { db.close(); }
+        check(original.equals(recordFingerprint(context)), "Checksum failure rewrote original records");
+    }
+
+    private static Map<String, String> recordFingerprint(IsolatedContext context) {
+        Map<String, String> result = new TreeMap<String, String>();
+        SQLiteDatabase db = raw(context);
+        Cursor rows = db.rawQuery("SELECT store_name,hex(payload),hex(checksum),deleted,generation FROM save_records ORDER BY store_name", null);
+        try {
+            while (rows.moveToNext()) result.put(rows.getString(0), rows.getString(1) + ":" + rows.getString(2)
+                    + ":" + rows.getLong(3) + ":" + rows.getLong(4));
+        } finally { rows.close(); db.close(); }
+        return result;
+    }
+
+    private static void failedRestoreBarrier(IsolatedContext context) throws Exception {
+        byte[] header = new byte[35];
+        header[4] = 1;
+        GameSaveStore.write("RMSHeader", header, 0, header.length);
+        long generation = GameSaveStore.generation();
+        Map<String, String> original = recordFingerprint(context);
+        GameSaveStore.Snapshot language = GameSaveStore.captureLanguageSetting(16);
+        GameSaveStore.beginLoading();
+        IllegalArgumentException decoder = new IllegalArgumentException("Owned probe decode failure");
+        GameSaveStore.failLoad("Owned probe restore failure", decoder);
+        check(GameSaveStore.isReady(), "Engine failure incorrectly invalidated a healthy SQLite database");
+        boolean rejected = false;
+        try { GameSaveStore.applySnapshot(language); }
+        catch (SaveRestoreException expected) {
+            check(expected.getCode() == SaveRestoreException.Code.ENGINE_RESTORE_FAILED, "Wrong restore barrier diagnosis");
+            Throwable root = expected;
+            while (root.getCause() != null) root = root.getCause();
+            check(root == decoder, "Restore barrier lost the original decode cause");
+            rejected = true;
+        }
+        check(rejected, "Pre-captured language snapshot bypassed failed-restore barrier");
+        rejected = false;
+        try { GameSaveStore.captureLanguageSetting(17); } catch (SaveRestoreException expected) { rejected = true; }
+        check(rejected, "A new language capture bypassed failed-restore barrier");
+        rejected = false;
+        try { GameSaveStore.finishLoading(); } catch (SaveRestoreException expected) { rejected = true; }
+        check(rejected && GameSaveStore.isLoading(), "finishLoading silently cleared the failed restore");
+        GameSaveStore.write("save_gameplay", new byte[1], 0, 1);
+        GameSaveStore.delete("save_farm0");
+        check(GameSaveStore.isReady() && GameSaveStore.generation() == generation, "Failed restore changed SQLite readiness/generation");
+        check(original.equals(recordFingerprint(context)), "Failed restore rewrote player records/checksums/generations");
+        GameSaveStore.beginLoading();
+        equal("save_gameplay", "save_gameplay-v2");
+        GameSaveStore.finishLoading();
+        GameSaveStore.applySnapshot(GameSaveStore.captureLanguageSetting(16));
+        check(GameSaveStore.read("RMSHeader")[4] == 16 && GameSaveStore.generation() == generation + 1,
+                "Explicit successful restore did not release the save barrier");
+    }
+
+    private static void unsupportedVersion(IsolatedContext context) throws Exception {
+        GameSaveStore.close();
+        SQLiteDatabase db = raw(context);
+        try { db.setVersion(5); } finally { db.close(); }
+        Map<String, String> original = recordFingerprint(context);
+        boolean rejected = false;
+        try { GameSaveStore.initialize(context); }
+        catch (SaveRestoreException expected) {
+            check(expected.getCode() == SaveRestoreException.Code.SAVE_VERSION_UNSUPPORTED, "Future-schema diagnosis was lost");
+            rejected = true;
+        }
+        check(rejected, "Future SQLite schema was reset or silently accepted");
+        GameSaveStore.close();
+        check(original.equals(recordFingerprint(context)), "Future-schema rejection rewrote player records");
+        db = raw(context);
+        try { check(db.getVersion() == 5, "Future-schema rejection rewrote database version"); }
         finally { db.close(); }
     }
     private static void missingRecords(IsolatedContext context) throws Exception {
@@ -768,6 +853,8 @@ public final class GameSaveStoreProbe {
                 for (String name : RECORDS) equal(name, name + "-v3");
                 check(GameSaveStore.generation() == 3L, "Committed snapshot generation did not persist");
             } else if (command.equals("corrupt-read")) corruption(context);
+            else if (command.equals("failed-restore-barrier")) failedRestoreBarrier(context);
+            else if (command.equals("unsupported-version")) unsupportedVersion(context);
             else if (command.equals("missing-records")) missingRecords(context);
             else if (command.equals("missing-all-tables")) missingAllTables(context);
             else if (command.equals("missing-pose")) missingPose(context);

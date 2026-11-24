@@ -1,0 +1,22 @@
+test_200ms_debounce_500ms_max_wait_and_50_operations (test_async_save_queue.AsyncSaveQueueTest.test_200ms_debounce_500ms_max_wait_and_50_operations) ... ok
+test_await_idle_interruption_and_close_never_discard_pending_work (test_async_save_queue.AsyncSaveQueueTest.test_await_idle_interruption_and_close_never_discard_pending_work) ... ok
+test_failed_language_checkpoint_does_not_retry_canceled_selection (test_async_save_queue.AsyncSaveQueueTest.test_failed_language_checkpoint_does_not_retry_canceled_selection) ... ok
+test_failure_retains_absolute_snapshot_and_coalesces_newer_values (test_async_save_queue.AsyncSaveQueueTest.test_failure_retains_absolute_snapshot_and_coalesces_newer_values) ... ok
+test_one_writer_bounded_pending_and_acknowledgement (test_async_save_queue.AsyncSaveQueueTest.test_one_writer_bounded_pending_and_acknowledgement) ... ok
+test_actual_controllers_and_transition (test_progress_save_controller.ProgressSaveControllerTest.test_actual_controllers_and_transition) ... ok
+test_differential_original_bytecode_and_lzma_golden_payloads (test_gllib_recovered_algorithms.GLLibRecoveredAlgorithmsTest.test_differential_original_bytecode_and_lzma_golden_payloads) ... ok
+test_kotlin_unknown_shadows_and_templates_are_rejected (test_verified_symbol_refactor.VerifiedSymbolRefactorTest.test_kotlin_unknown_shadows_and_templates_are_rejected) ... ok
+test_resolved_owner_and_constructor_names_preserve_shadows_and_data (test_verified_symbol_refactor.VerifiedSymbolRefactorTest.test_resolved_owner_and_constructor_names_preserve_shadows_and_data) ... Resolved 4 Java source files; dry-run only
+Resolved 4 Java source files; applied
+ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 35.406s
+
+OK
+PASS policy: 200ms debounce, 500ms continuous-change cap, 50 operations and reset
+PASS lifecycle: interrupted/timeout wait preserves pending data; close only succeeds after completion
+PASS checkpoint: failure completes once, no automatic canceled-language retry, explicit old-language recovery persists
+PASS retry: first failure retained, no partial publish, newer absolute values survive one atomic retry
+PASS coalescing: blocked A, one pending B/C, one active writer, A cannot acknowledge B/C, close retains work
+PASS actual save/language controllers: batching, detached snapshots, durable transitions, language cancel/retry, late mutations and restart handoff

@@ -11,10 +11,14 @@ import tempfile
 import unittest
 
 from test_aa_tile_renderer import extract_method
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from kotlin_test_tools import compile_mixed, runtime_classpath
+from game_source_context import (qualified_package, core_source_directory, kotlin_source_directory, type_name, adapt_fixture, legacy_fixture_names)
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
-SOURCE = ROOT / 'app/src/main/java' / PACKAGE
+PACKAGE = qualified_package().replace('.', '/')
+SOURCE = core_source_directory()
 
 SHELL = r'''package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 class GLLib {
@@ -195,7 +199,7 @@ class TutorialSequenceTest(unittest.TestCase):
         javac, java = home / 'bin/javac', home / 'bin/java'
         if not javac.is_file():
             self.skipTest('Requires installed JDK')
-        source = (SOURCE / 'ci.java').read_text()
+        source = legacy_fixture_names((SOURCE / (type_name('ci') + '.java')).read_text())
         methods = '\n'.join(extract_method(source, signature) for signature in (
             'static boolean jN(int i)', 'private static boolean isIntroSpeechStep(',
             'private static void consumeTutorialGesture()', 'static void Fi()',
@@ -210,7 +214,7 @@ class TutorialSequenceTest(unittest.TestCase):
         task = task[:task.index(' else if (i == aZQ[2]')] + '\n}'
         # Same constants the original game uses; no objective rules in peers.
         methods = methods.replace('Constants.APP_INDEXING_SCHEDULE_INTERVAL_MS', '1000')
-        actor_source = (SOURCE / 'ch.java').read_text()
+        actor_source = legacy_fixture_names((SOURCE / (type_name('ch') + '.java')).read_text())
         completion = extract_method(actor_source, 'private void finishEatingTutorial()')
         # The fixture invokes the exact callback directly after the animation
         # boundary; production pH invokes it only after aoO.lQ().
@@ -231,15 +235,12 @@ class TutorialSequenceTest(unittest.TestCase):
             directory = Path(temporary)
             package = directory / PACKAGE
             package.mkdir(parents=True)
-            main = package / 'ci.java'
-            main.write_text(fixture)
-            helper = package / 'TutorialFlowController.java'
-            helper.write_bytes((SOURCE / helper.name).read_bytes())
-            result = subprocess.run([str(javac), '-d', str(directory), str(main), str(helper)],
-                                    capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            result = subprocess.run([str(java), '-cp', str(directory),
-                                     PACKAGE.replace('/', '.') + '.ci'],
+            main = package / (type_name('ci') + '.java')
+            main.write_text(adapt_fixture(fixture))
+            helper = kotlin_source_directory() / 'TutorialFlowController.kt'
+            compile_mixed([helper], [main], directory)
+            result = subprocess.run([str(java), '-cp', runtime_classpath(directory),
+                                     PACKAGE.replace('/', '.') + '.' + type_name('ci')],
                                     capture_output=True, text=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn('PASS tutorial condition', result.stdout)

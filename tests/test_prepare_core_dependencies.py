@@ -99,6 +99,27 @@ class PrepareCoreDependenciesTest(unittest.TestCase):
         self.assertFalse(prepare.is_resource_class('other/package/R.class'))
         self.assertFalse(prepare.is_resource_class('com/facebook/Request.class'))
 
+    def test_reviewed_kotlin_streams_replace_binary_lookup_without_weakening_base_profile(self):
+        source = self.root / 'app/src/main/java/com/quanhoang/greenfarm3/S800x480'
+        kotlin = self.root / 'app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480'
+        source.mkdir(parents=True); kotlin.mkdir(parents=True)
+        for name in ('a', 'ci', 'l'):
+            (source / (name + '.java')).write_text('JADX reference')
+        for name in ('l', 'g', 'GameSaveStore'):
+            (kotlin / (name + '.kt')).write_text('Reviewed Kotlin source')
+        names = prepare.source_classes(source, expected_count=2)
+        self.assertEqual(names, {prepare.CORE_PACKAGE + n + '.class' for n in ('a', 'ci', 'l', 'g')})
+        with self.assertRaisesRegex(ValueError, 'Expected 108 recovered core sources'):
+            prepare.source_classes(source)
+
+    def test_java_and_kotlin_same_game_identity_are_rejected(self):
+        source = self.root / 'source'
+        source.mkdir()
+        (source / 'ci.java').write_text('old')
+        (source / 'ci.kt').write_text('new')
+        with self.assertRaisesRegex(ValueError, 'Duplicate Java/Kotlin'):
+            prepare.source_classes(source, expected_count=1)
+
     def test_filter_removes_source_and_resource_classes_only_preserving_bytes(self):
         core = {prepare.CORE_PACKAGE + 'ci.class'}
         kept = {prepare.CORE_PACKAGE + 'l.class': b'original-partial-data-input',

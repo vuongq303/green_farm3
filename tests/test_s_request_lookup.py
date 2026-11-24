@@ -17,6 +17,10 @@ from test_aa_tile_renderer import extract_method
 
 
 ROOT = Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(ROOT / "tools"))
+from game_source_context import legacy_core_source, current_source_path
+
 PACKAGE = "com/gameloft/android/ANMP/GloftGF2F/S800x480"
 RUNNER = r"""
 import java.lang.reflect.*;
@@ -138,7 +142,7 @@ class RequestLookupTest(unittest.TestCase):
         java, javac = home / "bin/java", home / "bin/javac"
         if not jar.exists() or not java.is_file() or not javac.is_file():
             self.skipTest("Requires verified original dex2jar artifact and JDK")
-        text = (ROOT / "app/src/main/java" / PACKAGE / "s.java").read_text()
+        text = legacy_core_source('s')
         with tempfile.TemporaryDirectory(prefix="s-lookup-differential-") as temp:
             temporary = Path(temp)
             source = temporary / "source" / PACKAGE

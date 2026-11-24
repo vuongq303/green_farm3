@@ -1,0 +1,11 @@
+test_binding_uses_verified_format4_layout_and_utf8 (test_save_transfer_archive.SaveTransferArchiveTest.test_binding_uses_verified_format4_layout_and_utf8) ... ok
+test_byte_exact_roundtrip_tombstones_times_and_language (test_save_transfer_archive.SaveTransferArchiveTest.test_byte_exact_roundtrip_tombstones_times_and_language) ... ok
+test_count_and_size_are_bounded_before_allocation (test_save_transfer_archive.SaveTransferArchiveTest.test_count_and_size_are_bounded_before_allocation) ... ok
+test_every_single_bit_mutation_is_rejected (test_save_transfer_archive.SaveTransferArchiveTest.test_every_single_bit_mutation_is_rejected) ... ok
+test_every_truncation_and_trailing_bytes_are_rejected (test_save_transfer_archive.SaveTransferArchiveTest.test_every_truncation_and_trailing_bytes_are_rejected) ... ok
+test_required_records_versions_generations_and_codec_flags (test_save_transfer_archive.SaveTransferArchiveTest.test_required_records_versions_generations_and_codec_flags) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 6.411s
+
+OK

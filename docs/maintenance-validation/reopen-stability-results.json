@@ -1,0 +1,144 @@
+{
+  "baseline_commit": "67b0c463a6acf8be354c59dd4b8cdc4fa5e70c05",
+  "modified_worktree": true,
+  "validated_at_utc": "2026-11-14T05:32:40.010567+00:00",
+  "scope": "Resource pack reopen/startup, mandatory selected-locale restart, no-op SQLite deletes and UI resume sleep. No player save/schema/asset changes.",
+  "verified_regressions": {
+    "baseline_eof_pack_read": {
+      "timed_out": true,
+      "timeout_seconds": 0.75
+    },
+    "baseline_zero_progress_skip": {
+      "timed_out": true,
+      "timeout_seconds": 0.75
+    },
+    "fixed_pack_io": {
+      "shipped_payload_reads_forward_and_reverse": 1504,
+      "standard_packs": 15,
+      "text_locales": 14,
+      "coverage": "Exact extracted production reader against shipped asset bytes; same-path recovery, EOF, stream errors, zero progress, MIME cache isolation and GL lifecycle guards."
+    },
+    "duplicate_tombstone_writes": {
+      "runtime": "Robolectric API35 with native SQLite; 100 repeated async delete snapshots on an already deleted auxiliary test record",
+      "before_generation": [
+        1,
+        101
+      ],
+      "after_generation": [
+        1,
+        1
+      ],
+      "tested_after_reopen": true,
+      "regression_test_fails_on_baseline": true
+    },
+    "resume_sleep": {
+      "runtime": "Extracted original and modified onResume with deterministic wrapper/layout peers on host JVM; not Android UI or FPS",
+      "before_cold_ms": 1000.3,
+      "before_warm_ms": 1014.7,
+      "after_cold_ms": 0.01,
+      "after_warm_ms": 0.006,
+      "layout_callback_and_wrapper_gates_preserved": true
+    }
+  },
+  "validation": {
+    "host_suite": {
+      "command": "python3 -m unittest discover -s tests",
+      "run": 153,
+      "passed": 138,
+      "skipped": 15,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 167.597
+    },
+    "tools_suite": {
+      "command": "python3 -m unittest discover -s tools -p 'test_*.py'",
+      "run": 20,
+      "passed": 20,
+      "skipped": 0,
+      "failures": 0,
+      "seconds": 0.076
+    },
+    "native_sqlite_suite": {
+      "command": "./gradlew -p tests/sqlite-host test --rerun-tasks",
+      "run": 9,
+      "passed": 9,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 6.855,
+      "runtime": "Robolectric 4.16.1 API35, native SQLite",
+      "tests": [
+        "absoluteRetryStaleOrderAndReopen",
+        "oneTenFiftyHundredAndCoalescedWriter",
+        "completeSnapshotReplaysAndReopenKeepAllFiveRecords",
+        "storageOnlyTimingSample",
+        "walAndSchemaThreeUpgradeKeepRecords",
+        "failedTransactionDoesNotPublishPartialRowsAndRetryIsIdempotent",
+        "deferredLanguageSurvivesDirectOptionsHeaderWrites",
+        "lockedWriterRetriesWithoutPartialState",
+        "repeatedAsyncDeletesDoNotRewriteDurableTombstones"
+      ]
+    },
+    "storage_only_sample": {
+      "comparison_to_previous_runs_valid": false,
+      "transactions": 100,
+      "changed_rows": 300,
+      "payload_bytes_per_batch": 98304,
+      "capture_p50_ms": 0.515,
+      "capture_p95_ms": 0.666,
+      "writer_p50_ms": 1.485,
+      "writer_p95_ms": 2.226,
+      "note": "Opaque auxiliary fixture payloads, single run. Not 100 gameplay harvests or Android frame measurements."
+    },
+    "apk": {
+      "command": "./gradlew :app:assembleDebug -PpythonExecutable=python3",
+      "build": "successful",
+      "build_elapsed_seconds": 142,
+      "variant": "debug",
+      "path": "app/build/outputs/apk/debug/app-debug.apk",
+      "bytes": 15857123,
+      "sha256": "0366d12f0aad29780b4c674579e18072b812b3eea71f573017f85d33b2bdecdd",
+      "signature_schemes": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "zipalign_command": "zipalign -c -P 16 4 app/build/outputs/apk/debug/app-debug.apk",
+      "zipalign_passed": true
+    },
+    "android_ui_verified": false,
+    "android_device_reopen_verified": false,
+    "gameplay_fps_measured": false,
+    "sql_statement_trace_measured": false,
+    "memory_profiler_run": false
+  },
+  "limits": [
+    "Original user-reported Android incident was not reproduced on a device; verified code defects are demonstrated using deterministic host fault injection.",
+    "15 host tests were skipped, not counted as passes.",
+    "Still requires device cold launch, force-close/reopen, background/context-loss, selected-language glyph/layout and alarm handoff checks.",
+    "Still requires device harvest/plant/animal reward, active-writer exit/reopen and old Android compatibility checks.",
+    "RAM changes not yet committed cannot be guaranteed after an abrupt operating-system process kill."
+  ],
+  "deleted_files": [],
+  "changed_files": [
+    "README.md",
+    "app/src/main/java/com/quanhoang/greenfarm3/S800x480/FarmGameEngine.java",
+    "app/src/main/java/com/quanhoang/greenfarm3/S800x480/GameRuntime.java",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/GameSaveStore.kt",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/GloftGF2F.kt",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/LanguageRestartController.kt",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/S800x480/ProgressSaveController.kt",
+    "app/src/main/kotlin/com/quanhoang/greenfarm3/Start.kt",
+    "docs/LANGUAGE_RESTART_FLOW.md",
+    "docs/MAINTENANCE_REPORT.md",
+    "docs/REOPEN_STABILITY_REPORT.md",
+    "docs/maintenance-validation/reopen-stability-results.json",
+    "tests/sqlite-host/src/test/java/greenfarm/SQLiteSaveTest.java",
+    "tests/test_language_notification_fonts.py",
+    "tests/test_progress_save_controller.py",
+    "tests/test_resource_load_retry.py",
+    "tests/test_resource_pack_io.py",
+    "tests/test_startup_lifecycle.py",
+    "tools/test_language_restart_source.py"
+  ]
+}

@@ -13,12 +13,15 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+from game_source_context import legacy_core_source, current_source_path
+
 sys.path.insert(0, str(ROOT / 'tools'))
 from android_build_tools import jdk_tool
 
 
 def actual_predicate():
-    source = (ROOT / 'app/src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480/ci.java').read_text()
+    source = legacy_core_source('ci')
     callback = source.index('public void a(int i, String str, String str2, int i2, String str3, Exception exc)')
     start = source.index('String exceptionMessage = exc.getMessage();', callback)
     declaration = source[start:source.index('\n', start)].strip()

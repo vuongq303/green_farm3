@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.URI;
+import java.net.IDN;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import org.jf.dexlib2.AccessFlags;
+import org.jf.dexlib2.builder.MutableMethodImplementation;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction10x;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction11x;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction21t;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction35c;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction3rc;
+import org.jf.dexlib2.builder.BuilderInstruction;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
@@ -24,13 +32,21 @@ import org.jf.dexlib2.iface.MethodImplementation;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
+import org.jf.dexlib2.iface.instruction.OffsetInstruction;
+import org.jf.dexlib2.iface.instruction.VariableRegisterInstruction;
+import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
+import org.jf.dexlib2.iface.instruction.RegisterRangeInstruction;
+import org.jf.dexlib2.iface.reference.MethodReference;
 import org.jf.dexlib2.iface.reference.StringReference;
 import org.jf.dexlib2.immutable.ImmutableClassDef;
 import org.jf.dexlib2.immutable.ImmutableMethod;
 import org.jf.dexlib2.immutable.ImmutableMethodImplementation;
 import org.jf.dexlib2.immutable.instruction.ImmutableInstruction21c;
 import org.jf.dexlib2.immutable.instruction.ImmutableInstruction31c;
+import org.jf.dexlib2.immutable.instruction.ImmutableInstruction35c;
+import org.jf.dexlib2.immutable.instruction.ImmutableInstruction3rc;
 import org.jf.dexlib2.immutable.reference.ImmutableStringReference;
+import org.jf.dexlib2.immutable.reference.ImmutableMethodReference;
 import org.jf.dexlib2.writer.io.MemoryDataStore;
 import org.jf.dexlib2.writer.pool.DexPool;
 
@@ -42,38 +58,519 @@ public final class PatchBackendEndpoint {
     static { TARGETS.put(OWNER, 1); TARGETS.put(CORE_OWNER, 2); }
     static final String METHOD = "aL(Ljava/lang/String;)Ljava/lang/String;";
     static final String ORIGINAL = "https://eve.gameloft.com/";
+    static final String STARTUP_OWNER = "Lcom/gameloft/android/wrapper/au;";
+    static final String LOCAL_MODE = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;";
+    static final String HTTP_OWNER = "Lcom/gameloft/a/b/e;";
+    static final String NETWORK_HELPER = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/NetworkDiagnostics;";
+    private static final String BASE_ACTIVITY = "Ljavax/microedition/midlet/BaseActivity;";
+    private static final String EXIT_BROADCAST = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ActivityExitBroadcast;";
+    private static final String CONTEXT = "Landroid/content/Context;";
+    private static final String BROADCAST_RECEIVER = "Landroid/content/BroadcastReceiver;";
+    private static final String INTENT_FILTER = "Landroid/content/IntentFilter;";
+    private static final String INTENT = "Landroid/content/Intent;";
+    private static final MethodReference REGISTER_RECEIVER = new ImmutableMethodReference(
+            BASE_ACTIVITY, "registerReceiver", Arrays.asList(BROADCAST_RECEIVER, INTENT_FILTER), INTENT);
+    private static final MethodReference SEND_BROADCAST = new ImmutableMethodReference(
+            BASE_ACTIVITY, "sendBroadcast", Collections.singletonList(INTENT), "V");
+    private static final MethodReference REGISTER_EXIT = new ImmutableMethodReference(
+            EXIT_BROADCAST, "register", Arrays.asList(CONTEXT, BROADCAST_RECEIVER, INTENT_FILTER), INTENT);
+    private static final MethodReference SEND_EXIT = new ImmutableMethodReference(
+            EXIT_BROADCAST, "send", Arrays.asList(CONTEXT, INTENT), "V");
+
+    static final String MIDLET_OWNER = "Ljavax/microedition/midlet/MIDlet;";
+    static final String LEGACY_FACEBOOK_OWNER = "Ljavax/microedition/midlet/v;";
+    static final String LIFECYCLE_HELPER = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LegacyFacebookLifecycle;";
+    private static final List<MethodReference> FACEBOOK_LIFECYCLE = Arrays.asList(
+            lifecycle("onCreate", "Landroid/os/Bundle;"), lifecycle("onDestroy"), lifecycle("onPause"),
+            lifecycle("onSaveInstanceState", "Landroid/os/Bundle;"), lifecycle("onRestart"),
+            lifecycle("onResume"), lifecycle("onStart"), lifecycle("onStop"),
+            lifecycle("onNewIntent", "Landroid/content/Intent;"),
+            lifecycle("onActivityResult", "I", "I", "Landroid/content/Intent;"),
+            lifecycle("onWindowFocusChanged", "Z"),
+            lifecycle("onConfigurationChanged", "Landroid/content/res/Configuration;"));
+
+    private static MethodReference lifecycle(String name, String... parameters) {
+        return new ImmutableMethodReference(LEGACY_FACEBOOK_OWNER, name, Arrays.asList(parameters), "V");
+    }
+
+    private static String descriptor(MethodReference reference) {
+        StringBuilder value = new StringBuilder(reference.getName()).append('(');
+        for (CharSequence parameter : reference.getParameterTypes()) value.append(parameter);
+        return value.append(')').append(reference.getReturnType()).toString();
+    }
+
+    private static boolean sameSignature(MethodReference left, MethodReference right) {
+        return left.getName().equals(right.getName()) && left.getParameterTypes().equals(right.getParameterTypes())
+                && left.getReturnType().equals(right.getReturnType());
+    }
+
+    private static MethodReference lifecycleReference(MethodReference original, boolean reverse) {
+        return new ImmutableMethodReference(reverse ? LEGACY_FACEBOOK_OWNER : LIFECYCLE_HELPER,
+                original.getName(), original.getParameterTypes(), original.getReturnType());
+    }
+
+    private static void requireLifecycleHelper(Map<String, ClassDef> definitions) throws IOException {
+        ClassDef helper = definitions.get(LIFECYCLE_HELPER);
+        if (helper == null) throw new IOException("The compiled Facebook lifecycle helper is missing");
+        for (MethodReference expected : FACEBOOK_LIFECYCLE) {
+            int found = 0;
+            for (Method method : helper.getMethods()) {
+                if (sameSignature(method, expected) && method.getImplementation() != null
+                        && AccessFlags.PUBLIC.isSet(method.getAccessFlags()) && AccessFlags.STATIC.isSet(method.getAccessFlags())) found++;
+            }
+            if (found != 1) throw new IOException("The compiled Facebook lifecycle helper method is missing or duplicated: " + descriptor(expected));
+        }
+    }
+
+    /** Rebind only the twelve original child lifecycle calls. Instruction widths,
+     * registers, branches, exceptions, fields and all other child modules stay intact. */
+    private static ClassDef guardFacebookLifecycle(ClassDef definition, boolean reverse) throws IOException {
+        int[] counts = new int[FACEBOOK_LIFECYCLE.size()];
+        List<Method> methods = new ArrayList<>();
+        String expectedOwner = reverse ? LIFECYCLE_HELPER : LEGACY_FACEBOOK_OWNER;
+        for (Method method : definition.getMethods()) {
+            MethodImplementation implementation = method.getImplementation();
+            if (implementation == null) { methods.add(method); continue; }
+            List<Instruction> instructions = new ArrayList<>();
+            for (Instruction instruction : implementation.getInstructions()) {
+                MethodReference reference = methodReference(instruction);
+                if (reference != null && reference.getDefiningClass().equals(expectedOwner)
+                        && reference.getName().startsWith("on")) {
+                    int matched = -1;
+                    for (int index = 0; index < FACEBOOK_LIFECYCLE.size(); index++) {
+                        if (sameSignature(reference, FACEBOOK_LIFECYCLE.get(index))) { matched = index; break; }
+                    }
+                    if (matched < 0 || !sameSignature(method, reference)) {
+                        throw new IOException("Unexpected retained MIDlet Facebook lifecycle call");
+                    }
+                    counts[matched]++;
+                    int registers = reference.getParameterTypes().size();
+                    if (!(instruction instanceof VariableRegisterInstruction)
+                            || ((VariableRegisterInstruction) instruction).getRegisterCount() != registers) {
+                        throw new IOException("Unexpected retained MIDlet Facebook lifecycle registers");
+                    }
+                    MethodReference replacement = lifecycleReference(reference, reverse);
+                    if (instruction.getOpcode() == Opcode.INVOKE_STATIC && instruction instanceof FiveRegisterInstruction) {
+                        FiveRegisterInstruction invoke = (FiveRegisterInstruction) instruction;
+                        instruction = new ImmutableInstruction35c(Opcode.INVOKE_STATIC, registers,
+                                invoke.getRegisterC(), invoke.getRegisterD(), invoke.getRegisterE(),
+                                invoke.getRegisterF(), invoke.getRegisterG(), replacement);
+                    } else if (instruction.getOpcode() == Opcode.INVOKE_STATIC_RANGE && instruction instanceof RegisterRangeInstruction) {
+                        instruction = new ImmutableInstruction3rc(Opcode.INVOKE_STATIC_RANGE,
+                                ((RegisterRangeInstruction) instruction).getStartRegister(), registers, replacement);
+                    } else throw new IOException("Unexpected retained MIDlet Facebook lifecycle opcode");
+                } else if (reference != null && reference.getDefiningClass().equals(reverse ? LEGACY_FACEBOOK_OWNER : LIFECYCLE_HELPER)
+                        && reference.getName().startsWith("on")) {
+                    throw new IOException("Retained MIDlet Facebook lifecycle was already patched or only partially restored");
+                }
+                instructions.add(instruction);
+            }
+            methods.add(new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
+                    method.getReturnType(), method.getAccessFlags(), method.getAnnotations(), method.getHiddenApiRestrictions(),
+                    new ImmutableMethodImplementation(implementation.getRegisterCount(), instructions,
+                            implementation.getTryBlocks(), implementation.getDebugItems())));
+        }
+        for (int count : counts) if (count != 1) {
+            throw new IOException("Expected exactly one retained MIDlet call for each of twelve Facebook lifecycle methods");
+        }
+        return new ImmutableClassDef(definition.getType(), definition.getAccessFlags(), definition.getSuperclass(),
+                definition.getInterfaces(), definition.getSourceFile(), definition.getAnnotations(), definition.getFields(), methods);
+    }
+
+    private static String lifecycleProof() {
+        StringBuilder counts = new StringBuilder("{");
+        for (MethodReference method : FACEBOOK_LIFECYCLE) {
+            if (counts.length() > 1) counts.append(',');
+            counts.append(quote(descriptor(method))).append(":1");
+        }
+        counts.append('}');
+        return "{\"owner\":" + quote(MIDLET_OWNER) + ",\"original_delegate\":" + quote(LEGACY_FACEBOOK_OWNER)
+                + ",\"helper\":" + quote(LIFECYCLE_HELPER) + ",\"call_count\":12,\"method_counts\":" + counts
+                + ",\"helper_methods_verified\":true,\"method_references_only\":true,\"reverse_patch_semantics_verified\":true}";
+    }
+
+    private static final class NetworkHook {
+        final String owner, name, result, helperName;
+        final List<String> parameters, helperParameters;
+
+        NetworkHook(String owner, String name, List<String> parameters, String result,
+                    String helperName, List<String> helperParameters) {
+            this.owner = owner; this.name = name; this.parameters = parameters;
+            this.result = result; this.helperName = helperName; this.helperParameters = helperParameters;
+        }
+
+        boolean matches(MethodReference reference, boolean reverse) {
+            return reference.getDefiningClass().equals(reverse ? NETWORK_HELPER : owner)
+                    && reference.getName().equals(reverse ? helperName : name)
+                    && reference.getParameterTypes().equals(reverse ? helperParameters : parameters)
+                    && reference.getReturnType().equals(result);
+        }
+
+        MethodReference reference(boolean reverse) {
+            return new ImmutableMethodReference(reverse ? owner : NETWORK_HELPER,
+                    reverse ? name : helperName, reverse ? parameters : helperParameters, result);
+        }
+    }
+
+    // Wrappers consume the existing receiver as their first argument. No
+    // register, move-result, branch or exception handler needs to be rewritten.
+    private static final List<NetworkHook> NETWORK_HOOKS = Arrays.asList(
+            new NetworkHook("Ljava/net/URL;", "openConnection", Collections.emptyList(),
+                    "Ljava/net/URLConnection;", "openConnection", Collections.singletonList("Ljava/net/URL;")),
+            new NetworkHook("Ljava/net/URL;", "openConnection", Collections.singletonList("Ljava/net/Proxy;"),
+                    "Ljava/net/URLConnection;", "openConnection", Arrays.asList("Ljava/net/URL;", "Ljava/net/Proxy;")),
+            new NetworkHook("Ljava/net/HttpURLConnection;", "getResponseCode", Collections.emptyList(),
+                    "I", "responseCode", Collections.singletonList("Ljava/net/HttpURLConnection;")),
+            new NetworkHook("Ljava/lang/Exception;", "printStackTrace", Collections.emptyList(),
+                    "V", "failure", Collections.singletonList("Ljava/lang/Throwable;")));
     private PatchBackendEndpoint() {}
 
+    private static boolean sdkHttpRun(Method method) {
+        return method.getDefiningClass().equals(HTTP_OWNER) && method.getName().equals("run")
+                && method.getParameterTypes().isEmpty() && method.getReturnType().equals("V");
+    }
+
+    private static MethodReference methodReference(Instruction instruction) {
+        if (!(instruction instanceof ReferenceInstruction)) return null;
+        Object reference = ((ReferenceInstruction) instruction).getReference();
+        return reference instanceof MethodReference ? (MethodReference) reference : null;
+    }
+
+    private static boolean beginReference(MethodReference reference) {
+        return reference != null && reference.getDefiningClass().equals(NETWORK_HELPER)
+                && reference.getName().equals("begin") && reference.getParameterTypes().isEmpty()
+                && reference.getReturnType().equals("V");
+    }
+
+    private static BuilderInstruction replaceVirtualInvoke(Instruction instruction, MethodReference replacement,
+                                                           int count, boolean reverse) throws IOException {
+        if (!(instruction instanceof VariableRegisterInstruction)
+                || ((VariableRegisterInstruction) instruction).getRegisterCount() != count) {
+            throw new IOException("Unexpected invoke register count: " + replacement);
+        }
+        if (instruction.getOpcode() == (reverse ? Opcode.INVOKE_STATIC : Opcode.INVOKE_VIRTUAL)
+                && instruction instanceof FiveRegisterInstruction) {
+            FiveRegisterInstruction registers = (FiveRegisterInstruction) instruction;
+            return new BuilderInstruction35c(reverse ? Opcode.INVOKE_VIRTUAL : Opcode.INVOKE_STATIC,
+                    count, registers.getRegisterC(), registers.getRegisterD(), registers.getRegisterE(),
+                    registers.getRegisterF(), registers.getRegisterG(), replacement);
+        }
+        if (instruction.getOpcode() == (reverse ? Opcode.INVOKE_STATIC_RANGE : Opcode.INVOKE_VIRTUAL_RANGE)
+                && instruction instanceof RegisterRangeInstruction) {
+            return new BuilderInstruction3rc(reverse ? Opcode.INVOKE_VIRTUAL_RANGE : Opcode.INVOKE_STATIC_RANGE,
+                    ((RegisterRangeInstruction) instruction).getStartRegister(), count, replacement);
+        }
+        throw new IOException("Unexpected invoke opcode or format: " + replacement);
+    }
+
+    private static void requireExitBroadcastHelper(Map<String, ClassDef> definitions) throws IOException {
+        ClassDef helper = definitions.get(EXIT_BROADCAST);
+        if (helper == null) throw new IOException("Missing compiled activity-exit broadcast helper");
+        for (MethodReference expected : Arrays.asList(REGISTER_EXIT, SEND_EXIT)) {
+            int found = 0;
+            for (Method method : helper.getMethods()) {
+                if (expected.equals(method) && method.getImplementation() != null
+                        && AccessFlags.PUBLIC.isSet(method.getAccessFlags())
+                        && AccessFlags.STATIC.isSet(method.getAccessFlags())) found++;
+            }
+            if (found != 1) throw new IOException("Invalid activity-exit broadcast helper method: " + expected);
+        }
+    }
+
+    /** Keep BaseActivity's original receiver instance, lifecycle and instruction layout. */
+    private static ClassDef guardActivityExitBroadcast(ClassDef definition, boolean reverse) throws IOException {
+        List<Method> methods = new ArrayList<>();
+        int registerCalls = 0, sendCalls = 0;
+        for (Method method : definition.getMethods()) {
+            MethodImplementation implementation = method.getImplementation();
+            String caller = descriptor(method);
+            boolean registering = caller.equals("aky()V");
+            if (implementation == null || (!registering && !caller.equals("akA()V"))) {
+                methods.add(method);
+                continue;
+            }
+            MethodReference original = registering ? REGISTER_RECEIVER : SEND_BROADCAST;
+            MethodReference helper = registering ? REGISTER_EXIT : SEND_EXIT;
+            MethodReference expected = reverse ? helper : original;
+            MethodReference replacement = reverse ? original : helper;
+            MutableMethodImplementation code = new MutableMethodImplementation(implementation);
+            for (int i = 0; i < code.getInstructions().size(); i++) {
+                Instruction instruction = code.getInstructions().get(i);
+                MethodReference reference = methodReference(instruction);
+                if (replacement.equals(reference)) throw new IOException("Unexpected activity-exit broadcast invoke: " + reference);
+                if (!expected.equals(reference)) continue;
+                code.replaceInstruction(i, replaceVirtualInvoke(instruction, replacement, helper.getParameterTypes().size(), reverse));
+                if (registering) registerCalls++; else sendCalls++;
+            }
+            methods.add(new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
+                    method.getReturnType(), method.getAccessFlags(), method.getAnnotations(), method.getHiddenApiRestrictions(), code));
+        }
+        if (registerCalls != 1 || sendCalls != 1) {
+            throw new IOException("Expected one retained registration and one activity-exit broadcast invoke");
+        }
+        return new ImmutableClassDef(definition.getType(), definition.getAccessFlags(), definition.getSuperclass(),
+                definition.getInterfaces(), definition.getSourceFile(), definition.getAnnotations(), definition.getFields(), methods);
+    }
+
+    /** Add diagnostics around the original SDK's four reviewed HTTP calls. */
+    private static ClassDef instrumentNetwork(ClassDef definition, boolean reverse) throws IOException {
+        int found = 0;
+        List<Method> methods = new ArrayList<>();
+        for (Method method : definition.getMethods()) {
+            if (!sdkHttpRun(method)) { methods.add(method); continue; }
+            found++;
+            MethodImplementation implementation = method.getImplementation();
+            if (!AccessFlags.PUBLIC.isSet(method.getAccessFlags()) || AccessFlags.STATIC.isSet(method.getAccessFlags())
+                    || implementation == null || implementation.getRegisterCount() < 1) {
+                throw new IOException("Unexpected SDK HTTP run method shape");
+            }
+            MutableMethodImplementation code = new MutableMethodImplementation(implementation);
+            if (reverse) {
+                Instruction first = code.getInstructions().get(0);
+                if (first.getOpcode() != Opcode.INVOKE_STATIC || !beginReference(methodReference(first))
+                        || ((VariableRegisterInstruction) first).getRegisterCount() != 0) {
+                    throw new IOException("SDK network diagnostics entry is missing or malformed");
+                }
+                code.removeInstruction(0);
+            }
+            int[] counts = new int[NETWORK_HOOKS.size()];
+            for (int index = 0; index < code.getInstructions().size(); index++) {
+                Instruction instruction = code.getInstructions().get(index);
+                MethodReference reference = methodReference(instruction);
+                if (reference == null) continue;
+                boolean matched = false;
+                for (int hookIndex = 0; hookIndex < NETWORK_HOOKS.size(); hookIndex++) {
+                    NetworkHook hook = NETWORK_HOOKS.get(hookIndex);
+                    if (!hook.matches(reference, reverse)) continue;
+                    counts[hookIndex]++;
+                    code.replaceInstruction(index,
+                            replaceVirtualInvoke(instruction, hook.reference(reverse), hook.helperParameters.size(), reverse));
+                    matched = true;
+                    break;
+                }
+                if (!matched && reference.getDefiningClass().equals(NETWORK_HELPER)) {
+                    throw new IOException("Unexpected SDK network diagnostics call");
+                }
+            }
+            for (int count : counts) if (count != 1) {
+                throw new IOException("Expected exactly one SDK HTTP call for each network diagnostics hook");
+            }
+            if (!reverse) code.addInstruction(0, new BuilderInstruction35c(Opcode.INVOKE_STATIC,
+                    0, 0, 0, 0, 0, 0, new ImmutableMethodReference(NETWORK_HELPER, "begin", Collections.emptyList(), "V")));
+            methods.add(new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
+                    method.getReturnType(), method.getAccessFlags(), method.getAnnotations(),
+                    method.getHiddenApiRestrictions(), code));
+        }
+        if (found != 1) throw new IOException("Expected exactly one SDK HTTP run()V entry");
+        return new ImmutableClassDef(definition.getType(), definition.getAccessFlags(), definition.getSuperclass(),
+                definition.getInterfaces(), definition.getSourceFile(), definition.getAnnotations(), definition.getFields(), methods);
+    }
+
+    private static void requireNetworkHelper(Map<String, ClassDef> definitions) throws IOException {
+        ClassDef helper = definitions.get(NETWORK_HELPER);
+        if (helper == null) throw new IOException("The compiled network diagnostics helper is missing");
+        List<MethodReference> expected = new ArrayList<>();
+        expected.add(new ImmutableMethodReference(NETWORK_HELPER, "begin", Collections.emptyList(), "V"));
+        for (NetworkHook hook : NETWORK_HOOKS) expected.add(hook.reference(false));
+        for (MethodReference target : expected) {
+            boolean found = false;
+            for (Method method : helper.getMethods()) {
+                if (method.getName().equals(target.getName()) && method.getReturnType().equals(target.getReturnType())
+                        && method.getParameterTypes().equals(target.getParameterTypes()) && method.getImplementation() != null
+                        && AccessFlags.PUBLIC.isSet(method.getAccessFlags()) && AccessFlags.STATIC.isSet(method.getAccessFlags())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) throw new IOException("The compiled network diagnostics helper method is missing: " + target.getName());
+        }
+    }
+
+    private static boolean startup(Method method) {
+        return method.getDefiningClass().equals(STARTUP_OWNER) && method.getName().equals("Qh")
+                && method.getParameterTypes().isEmpty() && method.getReturnType().equals("V");
+    }
+
+    /** Add a conditional early return; the complete SDK path remains after it. */
+    private static ClassDef guardStartup(ClassDef definition, boolean reverse) throws IOException {
+        int found = 0;
+        List<Method> methods = new ArrayList<>();
+        for (Method method : definition.getMethods()) {
+            if (!startup(method)) { methods.add(method); continue; }
+            found++;
+            MethodImplementation implementation = method.getImplementation();
+            if (method.getAccessFlags() != (AccessFlags.PUBLIC.getValue() | AccessFlags.STATIC.getValue())
+                    || implementation == null || implementation.getRegisterCount() < 1) {
+                throw new IOException("Unexpected SDK startup method shape");
+            }
+            MutableMethodImplementation code = new MutableMethodImplementation(implementation);
+            if (reverse) {
+                List<? extends Instruction> instructions = code.getInstructions();
+                if (instructions.size() < 5 || instructions.get(0).getOpcode() != Opcode.INVOKE_STATIC
+                        || instructions.get(1).getOpcode() != Opcode.MOVE_RESULT
+                        || instructions.get(2).getOpcode() != Opcode.IF_EQZ
+                        || instructions.get(3).getOpcode() != Opcode.RETURN_VOID) {
+                    throw new IOException("SDK startup guard is missing or malformed");
+                }
+                MethodReference predicate = (MethodReference) ((ReferenceInstruction) instructions.get(0)).getReference();
+                if (!predicate.getDefiningClass().equals(LOCAL_MODE) || !predicate.getName().equals("skipLegacyBackend")
+                        || !predicate.getParameterTypes().isEmpty() || !predicate.getReturnType().equals("Z")
+                        || ((VariableRegisterInstruction) instructions.get(0)).getRegisterCount() != 0
+                        || ((OneRegisterInstruction) instructions.get(1)).getRegisterA() != 0
+                        || ((OneRegisterInstruction) instructions.get(2)).getRegisterA() != 0
+                        || ((OffsetInstruction) instructions.get(2)).getCodeOffset() != 3) {
+                    throw new IOException("SDK startup guard does not preserve the false branch");
+                }
+                for (int index = 0; index < 4; index++) code.removeInstruction(0);
+            } else {
+                code.addInstruction(0, new BuilderInstruction35c(Opcode.INVOKE_STATIC, 0, 0, 0, 0, 0, 0,
+                        new ImmutableMethodReference(LOCAL_MODE, "skipLegacyBackend", Collections.emptyList(), "Z")));
+                code.addInstruction(1, new BuilderInstruction11x(Opcode.MOVE_RESULT, 0));
+                // The return is outside the SDK's original try regions. Builder
+                // labels preserve every original branch/debug/handler address.
+                code.addInstruction(2, new BuilderInstruction10x(Opcode.RETURN_VOID));
+                code.addInstruction(2, new BuilderInstruction21t(Opcode.IF_EQZ, 0, code.newLabelForIndex(3)));
+            }
+            methods.add(new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
+                    method.getReturnType(), method.getAccessFlags(), method.getAnnotations(),
+                    method.getHiddenApiRestrictions(), code));
+        }
+        if (found != 1) throw new IOException("Expected exactly one SDK Qh()V startup entry");
+        return new ImmutableClassDef(definition.getType(), definition.getAccessFlags(), definition.getSuperclass(),
+                definition.getInterfaces(), definition.getSourceFile(), definition.getAnnotations(), definition.getFields(), methods);
+    }
+
+    private static void requireLocalMode(Map<String, ClassDef> definitions) throws IOException {
+        ClassDef helper = definitions.get(LOCAL_MODE);
+        if (helper != null) for (Method method : helper.getMethods()) {
+            if (method.getName().equals("skipLegacyBackend") && method.getParameterTypes().isEmpty()
+                    && method.getReturnType().equals("Z") && method.getImplementation() != null
+                    && AccessFlags.STATIC.isSet(method.getAccessFlags())
+                    && AccessFlags.PUBLIC.isSet(method.getAccessFlags())) return;
+        }
+        throw new IOException("The compiled local development mode helper is missing");
+    }
+
+    /** Validate a configured origin without DNS resolution or host allowlists. */
     static String validateUrl(String value) throws Exception {
-        String message = "Set BACKEND_BASE_URL in root gradle.properties to an HTTP(S) IPv4 LAN origin, "
-                + "for example http://<server-IPv4>:<port>/; no userinfo, path, query, fragment or loopback address";
+        String message = "Set BACKEND_BASE_URL in root gradle.properties to an HTTP(S) origin "
+                + "using DNS, localhost, IPv4 or bracketed IPv6. "
+                + "An optional port is allowed; credentials, paths, queries and fragments are not.";
         try {
-            URI uri = new URI(value.trim());
+            String text = value == null ? "" : value;
+            if (text.isEmpty() || text.indexOf('\\') >= 0) throw new IllegalArgumentException();
+            for (int i = 0; i < text.length(); i++) {
+                char c = text.charAt(i);
+                if (Character.isWhitespace(c) || Character.isSpaceChar(c) || Character.isISOControl(c)) {
+                    throw new IllegalArgumentException();
+                }
+            }
+
+            URI uri = new URI(text);
             String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
-            String host = uri.getHost();
-            if (!(scheme.equals("http") || scheme.equals("https")) || host == null
-                    || !host.matches("(?:0|[1-9][0-9]{0,2})(?:\\.(?:0|[1-9][0-9]{0,2})){3}")
+            String authority = uri.getRawAuthority();
+            if (!(scheme.equals("http") || scheme.equals("https")) || authority == null
                     || uri.getRawUserInfo() != null || uri.getRawQuery() != null || uri.getRawFragment() != null
-                    || !(uri.getRawPath().isEmpty() || uri.getRawPath().equals("/"))
-                    || uri.getPort() == 0 || uri.getPort() > 65535 || uri.getRawAuthority().endsWith(":")
-                    || value.indexOf('\\') >= 0) {
-                throw new IllegalArgumentException(message);
+                    || !("".equals(uri.getRawPath()) || "/".equals(uri.getRawPath()))
+                    || authority.indexOf('%') >= 0 || authority.indexOf('@') >= 0) {
+                throw new IllegalArgumentException();
             }
-            String[] parts = host.split("\\.");
-            int[] octets = new int[4];
-            for (int index = 0; index < 4; index++) {
-                octets[index] = Integer.parseInt(parts[index]);
-                if (octets[index] > 255) throw new IllegalArgumentException(message);
+            String host, portText = null;
+            if (authority.startsWith("[")) {
+                int end = authority.indexOf(']');
+                if (end < 0 || uri.getHost() == null) throw new IllegalArgumentException();
+                String suffix = authority.substring(end + 1);
+                if (!suffix.isEmpty()) {
+                    if (!suffix.startsWith(":")) throw new IllegalArgumentException();
+                    portText = suffix.substring(1);
+                }
+                host = "[" + canonicalIpv6(authority.substring(1, end)) + "]";
+            } else {
+                int colon = authority.indexOf(':');
+                String rawHost = authority;
+                if (colon >= 0) {
+                    if (colon != authority.lastIndexOf(':')) throw new IllegalArgumentException();
+                    rawHost = authority.substring(0, colon);
+                    portText = authority.substring(colon + 1);
+                }
+                host = canonicalHostname(rawHost);
             }
-            if (octets[0] == 0 || octets[0] == 127 || octets[0] >= 224
-                    || (octets[0] == 169 && octets[1] == 254) || host.equals("10.0.2.2")) {
-                throw new IllegalArgumentException(message);
+            int port = -1;
+            if (portText != null) {
+                if (!portText.matches("[0-9]{1,5}")) throw new IllegalArgumentException();
+                port = Integer.parseInt(portText);
+                if (port < 1 || port > 65535) throw new IllegalArgumentException();
             }
-            return scheme + "://" + host + (uri.getPort() < 0 ? "" : ":" + uri.getPort()) + "/";
+            return scheme + "://" + host + (port < 0 ? "" : ":" + port) + "/";
         } catch (Exception failure) {
-            // A URI parser's exception may echo accidental userinfo/passwords.
+            // Do not echo the input: an invalid URL might contain credentials.
             throw new IllegalArgumentException(message);
         }
+    }
+
+    private static int[] ipv4Parts(String host) {
+        String[] parts = host.split("\\.", -1);
+        if (parts.length != 4) throw new IllegalArgumentException();
+        int[] result = new int[4];
+        for (int i = 0; i < parts.length; i++) {
+            if (!parts[i].matches("0|[1-9][0-9]{0,2}")) throw new IllegalArgumentException();
+            result[i] = Integer.parseInt(parts[i]);
+            if (result[i] > 255) throw new IllegalArgumentException();
+        }
+        return result;
+    }
+
+    private static String canonicalHostname(String value) {
+        String host = IDN.toASCII(value, IDN.USE_STD3_ASCII_RULES).toLowerCase(Locale.ROOT);
+        if (host.isEmpty() || host.length() > 253) throw new IllegalArgumentException();
+        if (host.matches("[0-9.]+")) {
+            if (!host.equals(value)) throw new IllegalArgumentException();
+            ipv4Parts(host);
+            return host;
+        }
+        String name = host.endsWith(".") ? host.substring(0, host.length() - 1) : host;
+        String[] labels = name.split("\\.", -1);
+        for (String label : labels) {
+            if (!label.matches("[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?")) throw new IllegalArgumentException();
+        }
+        if (labels[labels.length - 1].matches("[0-9]+|0x[0-9a-f]+")) throw new IllegalArgumentException();
+        return host;
+    }
+
+    /** RFC 5952-style literal formatting, without resolving hostnames. */
+    private static String canonicalIpv6(String value) {
+        String text = value.toLowerCase(Locale.ROOT);
+        if (text.indexOf('.') >= 0) {
+            int last = text.lastIndexOf(':');
+            if (last < 0) throw new IllegalArgumentException();
+            int[] v4 = ipv4Parts(text.substring(last + 1));
+            text = text.substring(0, last + 1) + Integer.toHexString(v4[0] * 256 + v4[1])
+                    + ":" + Integer.toHexString(v4[2] * 256 + v4[3]);
+        }
+        String[] sides = text.split("::", -1);
+        if (sides.length > 2) throw new IllegalArgumentException();
+        String[] left = sides[0].isEmpty() ? new String[0] : sides[0].split(":", -1);
+        String[] right = sides.length == 2 && !sides[1].isEmpty() ? sides[1].split(":", -1) : new String[0];
+        int size = left.length + right.length;
+        if ((sides.length == 1 && size != 8) || (sides.length == 2 && size >= 8)) throw new IllegalArgumentException();
+        int[] words = new int[8];
+        for (int i = 0; i < size; i++) {
+            String word = i < left.length ? left[i] : right[i - left.length];
+            if (!word.matches("[0-9a-f]{1,4}")) throw new IllegalArgumentException();
+            words[i < left.length ? i : 8 - size + i] = Integer.parseInt(word, 16);
+        }
+        int start = -1, length = 0;
+        for (int i = 0; i < 8;) {
+            if (words[i] != 0) { i++; continue; }
+            int j = i;
+            while (j < 8 && words[j] == 0) j++;
+            if (j - i > length && j - i >= 2) { start = i; length = j - i; }
+            i = j;
+        }
+        List<String> hex = new ArrayList<>();
+        for (int word : words) hex.add(Integer.toHexString(word));
+        if (start < 0) return String.join(":", hex);
+        return String.join(":", hex.subList(0, start)) + "::" + String.join(":", hex.subList(start + length, 8));
     }
 
     private static boolean target(Method method) {
@@ -179,7 +676,17 @@ public final class PatchBackendEndpoint {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 3) throw new IllegalArgumentException("Usage: PatchBackendEndpoint input.dex output.dex baseURL");
+        if (args.length < 3 || args.length > 7) {
+            throw new IllegalArgumentException("Usage: PatchBackendEndpoint input.dex output.dex baseURL [--guard-local-startup] [--network-diagnostics] [--guard-legacy-facebook-lifecycle] [--guard-activity-exit-broadcast]");
+        }
+        boolean localStartupGuard = false, networkDiagnostics = false, facebookLifecycle = false, activityExitBroadcast = false;
+        for (int index = 3; index < args.length; index++) {
+            if (args[index].equals("--guard-local-startup") && !localStartupGuard) localStartupGuard = true;
+            else if (args[index].equals("--network-diagnostics") && !networkDiagnostics) networkDiagnostics = true;
+            else if (args[index].equals("--guard-legacy-facebook-lifecycle") && !facebookLifecycle) facebookLifecycle = true;
+            else if (args[index].equals("--guard-activity-exit-broadcast") && !activityExitBroadcast) activityExitBroadcast = true;
+            else throw new IllegalArgumentException("Unknown or duplicate patch option");
+        }
         String replacement = validateUrl(args[2]);
         Path input = Paths.get(args[0]).toRealPath();
         Path output = Paths.get(args[1]).toAbsolutePath().normalize();
@@ -199,6 +706,26 @@ public final class PatchBackendEndpoint {
             if (!original.containsKey(owner)) throw new IOException("Missing target class " + owner);
             modified.put(owner, replace(original.get(owner), ORIGINAL, replacement));
         }
+        if (localStartupGuard) {
+            requireLocalMode(original);
+            if (!original.containsKey(STARTUP_OWNER)) throw new IOException("Missing SDK startup owner");
+            modified.put(STARTUP_OWNER, guardStartup(original.get(STARTUP_OWNER), false));
+        }
+        if (networkDiagnostics) {
+            requireNetworkHelper(original);
+            if (!original.containsKey(HTTP_OWNER)) throw new IOException("Missing SDK HTTP owner");
+            modified.put(HTTP_OWNER, instrumentNetwork(original.get(HTTP_OWNER), false));
+        }
+        if (facebookLifecycle) {
+            requireLifecycleHelper(original);
+            if (!original.containsKey(MIDLET_OWNER)) throw new IOException("Missing retained MIDlet owner");
+            modified.put(MIDLET_OWNER, guardFacebookLifecycle(original.get(MIDLET_OWNER), false));
+        }
+        if (activityExitBroadcast) {
+            requireExitBroadcastHelper(original);
+            if (!original.containsKey(BASE_ACTIVITY)) throw new IOException("Missing retained BaseActivity");
+            modified.put(BASE_ACTIVITY, guardActivityExitBroadcast(original.get(BASE_ACTIVITY), false));
+        }
         byte[] outputBytes = serialize(modified.values(), opcodes);
         Map<String, ClassDef> actual = classes(outputBytes, opcodes);
         if (!original.keySet().equals(actual.keySet())) throw new IOException("Class set changed");
@@ -209,8 +736,40 @@ public final class PatchBackendEndpoint {
                 throw new IOException("Reverse-patched target semantics changed: " + owner);
             }
         }
+        if (localStartupGuard) {
+            ClassDef restored = guardStartup(actual.get(STARTUP_OWNER), true);
+            if (!Arrays.equals(serialize(Collections.singletonList(original.get(STARTUP_OWNER)), opcodes),
+                    serialize(Collections.singletonList(restored), opcodes))) {
+                throw new IOException("Reverse-patched SDK startup semantics changed");
+            }
+        }
+        if (networkDiagnostics) {
+            ClassDef restored = instrumentNetwork(actual.get(HTTP_OWNER), true);
+            if (!Arrays.equals(serialize(Collections.singletonList(original.get(HTTP_OWNER)), opcodes),
+                    serialize(Collections.singletonList(restored), opcodes))) {
+                throw new IOException("Reverse-patched SDK network diagnostics semantics changed");
+            }
+        }
+        if (facebookLifecycle) {
+            ClassDef restored = guardFacebookLifecycle(actual.get(MIDLET_OWNER), true);
+            if (!Arrays.equals(serialize(Collections.singletonList(original.get(MIDLET_OWNER)), opcodes),
+                    serialize(Collections.singletonList(restored), opcodes))) {
+                throw new IOException("Reverse-patched retained MIDlet Facebook lifecycle semantics changed");
+            }
+        }
+        if (activityExitBroadcast) {
+            ClassDef restored = guardActivityExitBroadcast(actual.get(BASE_ACTIVITY), true);
+            if (!Arrays.equals(serialize(Collections.singletonList(original.get(BASE_ACTIVITY)), opcodes),
+                    serialize(Collections.singletonList(restored), opcodes))) {
+                throw new IOException("Reverse-patched BaseActivity semantics changed");
+            }
+        }
         Map<String, ClassDef> beforeOthers = new TreeMap<>(original), afterOthers = new TreeMap<>(actual);
         for (String owner : TARGETS.keySet()) { beforeOthers.remove(owner); afterOthers.remove(owner); }
+        if (localStartupGuard) { beforeOthers.remove(STARTUP_OWNER); afterOthers.remove(STARTUP_OWNER); }
+        if (networkDiagnostics) { beforeOthers.remove(HTTP_OWNER); afterOthers.remove(HTTP_OWNER); }
+        if (facebookLifecycle) { beforeOthers.remove(MIDLET_OWNER); afterOthers.remove(MIDLET_OWNER); }
+        if (activityExitBroadcast) { beforeOthers.remove(BASE_ACTIVITY); afterOthers.remove(BASE_ACTIVITY); }
         byte[] beforeCanonical = serialize(beforeOthers.values(), opcodes);
         if (!Arrays.equals(beforeCanonical, serialize(afterOthers.values(), opcodes))) throw new IOException("Other class semantics changed");
         String json = "{\n"
@@ -225,6 +784,22 @@ public final class PatchBackendEndpoint {
                 + "  \"replacement_counts\": {" + quote(OWNER) + ": 1, " + quote(CORE_OWNER) + ": 2},\n"
                 + "  \"unchanged_other_classes_verified\": true,\n"
                 + "  \"reverse_patch_semantics_verified\": true,\n"
+                + "  \"local_startup_guard\": " + (localStartupGuard
+                    ? "{\"owner\":" + quote(STARTUP_OWNER) + ",\"method\":\"Qh()V\",\"predicate\":"
+                        + quote(LOCAL_MODE + "->skipLegacyBackend()Z")
+                        + ",\"original_false_branch_preserved\":true,\"reverse_patch_semantics_verified\":true}"
+                    : "null") + ",\n"
+                + "  \"network_diagnostics\": " + (networkDiagnostics
+                    ? "{\"owner\":" + quote(HTTP_OWNER) + ",\"method\":\"run()V\",\"helper\":" + quote(NETWORK_HELPER)
+                        + ",\"begin_calls\":1,\"hook_counts\":{\"open_connection\":1,\"open_connection_proxy\":1,\"response_code\":1,\"failure\":1}"
+                        + ",\"reverse_patch_semantics_verified\":true}"
+                    : "null") + ",\n"
+                + "  \"legacy_facebook_lifecycle\": " + (facebookLifecycle ? lifecycleProof() : "null") + ",\n"
+                + "  \"activity_exit_broadcast\": " + (activityExitBroadcast
+                    ? "{\"owner\":" + quote(BASE_ACTIVITY) + ",\"helper\":" + quote(EXIT_BROADCAST)
+                        + ",\"registration_method\":\"aky()V\",\"send_method\":\"akA()V\""
+                        + ",\"reverse_patch_semantics_verified\":true}"
+                    : "null") + ",\n"
                 + "  \"unchanged_classes_canonical_sha256\": " + quote(sha256(beforeCanonical)) + "\n}\n";
         // Publish only after read-back verification. Both files use same-directory atomic rename.
         Path stagedOutput = stage(output, outputBytes), stagedReport = null;

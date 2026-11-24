@@ -17,6 +17,10 @@ from test_aa_tile_renderer import extract_method
 
 
 ROOT = Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(ROOT / "tools"))
+from game_source_context import legacy_core_source, current_source_path
+
 PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
 FIELDS = {'atw', 'atx', 'axo', 'avR', 'atc', 'awr', 'aws', 'awt', 'awu',
           'avP', 'aww', 'awv', 'awq', 'awk', 'atm', 'atf', 'aEe', 'aEh'}
@@ -70,7 +74,7 @@ class SelectionContinuationTest(unittest.TestCase):
         java, javac = home/'bin/java', home/'bin/javac'
         if not jar.is_file() or not java.is_file() or not javac.is_file():
             self.skipTest('Requires verified original conversion and JDK')
-        text = (ROOT/'app/src/main/java'/PACKAGE/'ci.java').read_text()
+        text = legacy_core_source('ci')
         prefix = 'package com.gameloft.android.ANMP.GloftGF2F.S800x480;\n'
         fields = '''static boolean atw,atx;static int axo,avR,avP,aww,awv,awq,awk;
                     static short[][][] atc;static int[] awr,aws,awt,awu,aEe,aEh;

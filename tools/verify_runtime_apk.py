@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reject incomplete launch APKs using DEX definitions and the packaged manifest.
+"""Check DEX definitions, the packaged manifest and native library packaging.
 
 This checks launch-class/superclass availability, not executable instructions or
 all dependencies needed by gameplay. It never installs or changes an APK.
@@ -17,10 +17,57 @@ from urllib.parse import urlsplit
 
 from android_build_tools import BUILD_TOOLS_VERSION, executable_name
 
-GAME = 'Lcom/gameloft/android/ANMP/GloftGF2F/'
+LEGACY_PACKAGE = 'com.gameloft.android.ANMP.GloftGF2F'
+APPLICATION_PACKAGE = 'com.quanhoang.greenfarm3'
+GAME = 'L' + LEGACY_PACKAGE.replace('.', '/') + '/'
 REQUIRED = ('Ljavax/microedition/midlet/App;', 'Ljavax/microedition/midlet/MIDlet;',
             GAME + 'Start;', GAME + 'S800x480/GloftGF2F;')
 DEX_NAME = re.compile(r'classes(?:[2-9]|[1-9][0-9]+)?\.dex$')
+NATIVE_NAME = re.compile(r'lib/[^/]+/[^/]+\.so$')
+PAGE_SIZE_16K = 16 * 1024
+
+
+def native_load_alignment(data):
+    """Report ELF PT_LOAD alignment independently of APK ZIP alignment."""
+    if not data.startswith(b'\x7fELF') or len(data) < 16 or data[5:7] != b'\x01\x01':
+        raise ValueError('Invalid little-endian ELF identification')
+    if data[4] == 1:  # ELF32
+        header = struct.Struct('<16sHHIIIIIHHHHHH')
+        segment = struct.Struct('<8I')
+        offset_index, address_index = 1, 2
+    elif data[4] == 2:  # ELF64
+        header = struct.Struct('<16sHHIQQQIHHHHHH')
+        segment = struct.Struct('<II6Q')
+        offset_index, address_index = 2, 3
+    else:
+        raise ValueError('Unsupported ELF class')
+    if len(data) < header.size:
+        raise ValueError('Truncated ELF header')
+    fields = header.unpack_from(data)
+    table_offset = fields[5]
+    entry_size, entry_count = fields[9:11]
+    if (table_offset < header.size or entry_size != segment.size
+            or table_offset + entry_count * entry_size > len(data)):
+        raise ValueError('Invalid ELF program header table')
+    load_segments = []
+    for index in range(entry_count):
+        fields = segment.unpack_from(data, table_offset + index * entry_size)
+        if fields[0] == 1:  # PT_LOAD
+            load_segments.append((fields[-1], fields[offset_index], fields[address_index]))
+    if not load_segments:
+        raise ValueError('ELF has no load segments')
+    return {'min_load_segment_alignment': min(alignment for alignment, _, _ in load_segments),
+            'load_segments_16k_aligned': all(
+                alignment >= PAGE_SIZE_16K and offset % PAGE_SIZE_16K == address % PAGE_SIZE_16K
+                for alignment, offset, address in load_segments)}
+
+
+def native_packaging(root, native_libraries):
+    application = next(n for n in root['children'] if n['tag'] == 'application')
+    extract_native_libs = application['attributes'].get('extractNativeLibs') == 'true'
+    if not extract_native_libs and any(lib['compressed'] for lib in native_libraries.values()):
+        raise ValueError('Compressed native libraries require android:extractNativeLibs="true" in the final APK')
+    return {'extract_native_libs': extract_native_libs, 'libraries': native_libraries}
 
 
 def dex_classes(data):
@@ -196,9 +243,59 @@ def network_policy(apk, sdk, backend_base_url):
             'uses_cleartext_traffic': cleartext, 'network_security_config': None}
 
 
-def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None):
+def verify_game_components(root, classes, application_id, original_missing_components=()):
+    """Component class names follow code, while authorities follow the app ID.
+
+    In the legacy export bridge these are intentionally different. Checking
+    only Application/launcher would miss an old-ID KeyProvider class that can
+    fail before the launcher is instantiated.
+    """
+    application = next(n for n in root['children'] if n['tag'] == 'application')
+    verified = []
+    prefixes = (LEGACY_PACKAGE + '.', APPLICATION_PACKAGE + '.')
+    for node in application.get('children', []):
+        if node['tag'] not in ('activity', 'service', 'receiver', 'provider'):
+            continue
+        name = node['attributes'].get('name', '')
+        if name.startswith('.'):
+            name = application_id + name
+        elif name and '.' not in name:
+            name = application_id + '.' + name
+        if name.startswith(prefixes):
+            if 'L' + name.replace('.', '/') + ';' not in classes:
+                if name not in original_missing_components:
+                    raise ValueError('Missing game component class definition: ' + name)
+            else:
+                verified.append(name)
+        authority = node['attributes'].get('authorities', '')
+        if '${' in authority:
+            raise ValueError('Unresolved provider authority placeholder')
+        if name == APPLICATION_PACKAGE + '.KeyProvider' and authority != application_id + '.KeyProvider':
+            raise ValueError('KeyProvider authority differs from the installed application ID')
+    return sorted(verified)
+
+
+def missing_original_components(root, definitions, target_game_package):
+    """Record exact dangling entries in the reference APK, never new omissions."""
+    result = []
+    application = next(n for n in root['children'] if n['tag'] == 'application')
+    for node in application.get('children', []):
+        if node['tag'] not in ('activity', 'service', 'receiver', 'provider'):
+            continue
+        name = node['attributes'].get('name', '')
+        if name.startswith('.'):
+            name = LEGACY_PACKAGE + name
+        elif name and '.' not in name:
+            name = LEGACY_PACKAGE + '.' + name
+        if name.startswith(LEGACY_PACKAGE + '.') and 'L' + name.replace('.', '/') + ';' not in definitions:
+            result.append(name.replace(LEGACY_PACKAGE, target_game_package, 1))
+    return sorted(result)
+
+
+def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None,
+               application_id=None, game_package=None):
     apk, original = Path(apk), Path(original)
-    classes, dex_count = {}, 0
+    classes, dex_count, native_libraries = {}, 0, {}
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(apk) as output:
         for archive in (source, output):
             if len(archive.namelist()) != len(set(archive.namelist())):
@@ -211,7 +308,16 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None):
                 if classes.keys() & found.keys():
                     raise ValueError('DEX duplicate class across files')
                 classes.update(found)
-        for required in REQUIRED:
+        detected_package = (APPLICATION_PACKAGE if
+                            'L' + APPLICATION_PACKAGE.replace('.', '/') + '/Start;' in classes
+                            else LEGACY_PACKAGE)
+        if game_package is not None and game_package != detected_package:
+            raise ValueError('Game class namespace differs from the expected package')
+        game = 'L' + detected_package.replace('.', '/') + '/'
+        required_classes = REQUIRED[:2] + (game + 'Start;', game + 'S800x480/GloftGF2F;')
+        if detected_package == APPLICATION_PACKAGE and any(name.startswith(GAME) for name in classes):
+            raise ValueError('Legacy game class definitions remain after package relocation')
+        for required in required_classes:
             if required not in classes:
                 raise ValueError('Missing runtime class definition: ' + required)
         payload = lambda archive: {n for n in archive.namelist() if n.startswith(('assets/', 'lib/')) and not n.endswith('/')}
@@ -219,12 +325,23 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None):
         if names != payload(output):
             raise ValueError('Assets/native file set changed')
         for name in sorted(names):
-            if source.read(name) != output.read(name) or source.getinfo(name).compress_type != output.getinfo(name).compress_type:
+            data = output.read(name)
+            compression = output.getinfo(name).compress_type
+            if source.read(name) != data or source.getinfo(name).compress_type != compression:
                 raise ValueError('Assets/native bytes or compression changed: ' + name)
+            if NATIVE_NAME.fullmatch(name):
+                try:
+                    native_libraries[name] = {'compressed': compression != zipfile.ZIP_STORED,
+                                              **native_load_alignment(data)}
+                except ValueError as error:
+                    raise ValueError(f'{name}: {error}') from error
     package, application, launcher = manifest(apk, sdk)
-    if (package, application, launcher) != manifest(original, sdk):
-        raise ValueError('Packaged manifest package/application/launcher differs from original')
-    for entry in (*REQUIRED, 'L' + application.replace('.', '/') + ';', 'L' + launcher.replace('.', '/') + ';'):
+    original_package, original_application, original_launcher = manifest(original, sdk)
+    expected_package = application_id or (APPLICATION_PACKAGE if detected_package == APPLICATION_PACKAGE else original_package)
+    expected_launcher = original_launcher.replace(LEGACY_PACKAGE, detected_package, 1)
+    if (package, application, launcher) != (expected_package, original_application, expected_launcher):
+        raise ValueError('Packaged manifest package/application/launcher differs from the reviewed configuration')
+    for entry in (*required_classes, 'L' + application.replace('.', '/') + ';', 'L' + launcher.replace('.', '/') + ';'):
         seen = set()
         while entry and not (entry.startswith(('Landroid/', 'Ljava/'))
                              and not entry.startswith(('Landroid/support/', 'Landroid/arch/'))):
@@ -243,9 +360,19 @@ def verify_apk(apk, original, sdk, metadata=None, backend_base_url=None):
                 or (metadata.parent / elements[0]['outputFile']).resolve() != apk.resolve()):
             raise ValueError('APK metadata does not point to this APK/package')
     result = {'apk': str(apk.resolve()), 'package': package, 'application': application, 'launcher': launcher,
-              'dex_count': dex_count, 'class_count': len(classes), 'payload_count': len(names)}
+              'dex_count': dex_count, 'class_count': len(classes), 'payload_count': len(names),
+              'game_package': detected_package,
+              'legacy_game_class_definitions_remaining': sum(name.startswith(GAME) for name in classes)}
+    if native_libraries:
+        result['native_packaging'] = native_packaging(manifest_tree(apk, sdk), native_libraries)
     if backend_base_url:
         result['network_policy'] = network_policy(apk, sdk, backend_base_url)
+        with zipfile.ZipFile(original) as reference:
+            original_definitions = {name for entry in reference.namelist() if DEX_NAME.fullmatch(entry)
+                                    for name in dex_classes(reference.read(entry))}
+        original_missing = missing_original_components(manifest_tree(original, sdk), original_definitions, detected_package)
+        result['verified_game_components'] = verify_game_components(manifest_tree(apk, sdk), classes, package, original_missing)
+        result['known_dangling_original_components'] = original_missing
     return result
 
 
@@ -255,8 +382,11 @@ def main():
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--metadata', type=Path)
     parser.add_argument('--backend-base-url')
+    parser.add_argument('--application-id', choices=(LEGACY_PACKAGE, APPLICATION_PACKAGE))
+    parser.add_argument('--game-package', choices=(LEGACY_PACKAGE, APPLICATION_PACKAGE))
     args = parser.parse_args()
-    print(json.dumps(verify_apk(args.apk, args.original, args.sdk, args.metadata, args.backend_base_url), indent=2))
+    print(json.dumps(verify_apk(args.apk, args.original, args.sdk, args.metadata, args.backend_base_url,
+                              args.application_id, args.game_package), indent=2))
 
 
 if __name__ == '__main__':

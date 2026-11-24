@@ -1,0 +1,8 @@
+test_active_import_blocks_new_game_until_transfer_finishes (test_save_transfer_gate.SaveTransferGateTest.test_active_import_blocks_new_game_until_transfer_finishes) ... ok
+test_game_lifetime_blocks_transfer_and_kernel_releases_after_process_kill (test_save_transfer_gate.SaveTransferGateTest.test_game_lifetime_blocks_transfer_and_kernel_releases_after_process_kill) ... ok
+test_preparation_has_one_owner_and_failure_unfreezes (test_save_transfer_gate.SaveTransferGateTest.test_preparation_has_one_owner_and_failure_unfreezes) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 5.449s
+
+OK

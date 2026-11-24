@@ -1,14 +1,14 @@
 {
-  "source_commit": "cd8ff09d1c9292099ed339bdb9bec089f226d5ad",
-  "built_at": "2026-11-12T18:35:07.544708+00:00",
-  "build_command": "./gradlew :app:assembleDebug -Pandroid.injected.build.api=24 --stacktrace",
-  "build_result": "BUILD SUCCESSFUL in 54s; 43 tasks, 12 executed, 31 up-to-date",
+  "source_commit": "1064add5f3edfcc007a675e994171aaca1784f96",
+  "built_at": "2026-11-13T05:39:52.005592+00:00",
+  "build_command": "./gradlew :app:clean :app:assembleDebug --stacktrace",
+  "build_result": "BUILD SUCCESSFUL in 1m 44s; 45 actionable tasks: 42 executed, 3 up-to-date",
   "artifact": "green-farm-3-debug.apk",
-  "size_bytes": 15029731,
-  "sha256": "bdff4cd9f4ee223befb743c153d3b6f5832565667ad1b4dfdf908ef1a673d503",
-  "application_id": "com.gameloft.android.ANMP.GloftGF2F",
+  "size_bytes": 15848931,
+  "sha256": "233a37af49e2e91afb5bbda1cef0a83f338e8b384ce47e4f5445913834be9201",
+  "application_id": "com.quanhoang.greenfarm3",
   "application_class": "javax.microedition.midlet.App",
-  "launcher_activity": "com.gameloft.android.ANMP.GloftGF2F.Start",
+  "launcher_activity": "com.quanhoang.greenfarm3.Start",
   "version_name": "4.4.2",
   "version_code": 44220,
   "variant": "debug",
@@ -28,10 +28,12 @@
     "agp": "8.10.1",
     "compile_sdk": 28,
     "build_tools": "35.0.0",
-    "declared_min_sdk": 16
+    "declared_min_sdk": 16,
+    "kotlin": "2.4.21",
+    "jvm_target": "1.8"
   },
   "apk_verification": {
-    "defined_classes": 6440,
+    "defined_classes": 7647,
     "dex_files": 1,
     "original_assets_and_native_payload_files_preserved": 59,
     "network_policy": {
@@ -41,7 +43,32 @@
       "network_security_config": null
     },
     "dex_version": "035",
-    "real_application_and_bootstrap_classes_present": true
+    "real_application_and_bootstrap_classes_present": true,
+    "method_references": 62058,
+    "legacy_game_class_definitions_remaining": 0,
+    "kotlin_metadata_class_count": 149,
+    "kotlin_runtime_class_count": 1140,
+    "verified_game_components": [
+      "com.quanhoang.greenfarm3.ActivityClearAllTasks",
+      "com.quanhoang.greenfarm3.ActivityMessage",
+      "com.quanhoang.greenfarm3.GoogleIAPTrackerReceiver",
+      "com.quanhoang.greenfarm3.InGameBrowserActivity",
+      "com.quanhoang.greenfarm3.KeyProvider",
+      "com.quanhoang.greenfarm3.Nt",
+      "com.quanhoang.greenfarm3.PushNotification.FirebaseInstanceIDService",
+      "com.quanhoang.greenfarm3.PushNotification.FirebaseMessageService",
+      "com.quanhoang.greenfarm3.PushNotification.LocalPushReceiver",
+      "com.quanhoang.greenfarm3.PushNotification.PushDeleteReceiver",
+      "com.quanhoang.greenfarm3.PushNotification.PushIntentReceiver",
+      "com.quanhoang.greenfarm3.S800x480.GloftGF2F",
+      "com.quanhoang.greenfarm3.Start",
+      "com.quanhoang.greenfarm3.installer.IReferrerReceiver",
+      "com.quanhoang.greenfarm3.migration.SaveTransferActivity",
+      "com.quanhoang.greenfarm3.migration.SaveTransferPreparationReceiver"
+    ],
+    "known_dangling_original_components": [
+      "com.quanhoang.greenfarm3.SoftKeyBoardActivity"
+    ]
   },
   "backend": {
     "configuration": "../gradle.properties:5 BACKEND_BASE_URL",
@@ -61,27 +88,34 @@
     "this_exact_windows_ip_apk_tested": false,
     "windows_lan_connectivity_tested": false,
     "same_source_cloud_ip_variant_tested_on_api28": true,
-    "tested_cloud_apk_sha256": "a9ce1b7da2d3f9515bca3c47955dcf713c1c548f9401efb24a8132059e7aa759",
-    "storage_probe_and_performance_apk_sha256": "1dd040b97f0bb0fd446ba90efbe4de74afb03970f522253a6b6072daefed535f",
-    "evidence": "../docs/async-save-validation/game-runtime.json",
-    "report": "../docs/ASYNC_GAMEPLAY_CHECKPOINT.md",
-    "sqlite_probe_evidence": "../docs/async-save-validation/probe-results.json",
-    "sqlite_probe_cases_passed": 27,
-    "python_tests_passed": 129,
-    "tools_and_language_tests_passed": 20,
+    "tested_cloud_apk_sha256": "090e1cc7c9e075eee51e5ddbd71382eaaa1bf9ca91b5cf4ab5a8c9840efa38be",
+    "tested_cloud_legacy_export_sha256": "f147ee37a1556a2eb9bff2a0f1cd7431c3ff7ea3409221999ba7d58493b1156a",
+    "evidence": "../docs/kotlin-validation/game-runtime.json",
+    "host_evidence": "../docs/kotlin-validation/final-host-validation.json",
+    "python_tests_passed": 154,
+    "tools_tests_passed": 20,
+    "focused_cold_lifecycle_regression_passed": true,
+    "sqlite_store_installed_apk_cases_passed": 27,
+    "sqlite_store_evidence": "../docs/kotlin-validation/store-probe-results.json",
+    "save_transfer_installed_apk_cases_passed": 30,
+    "save_transfer_sqlite_evidence": "../docs/kotlin-validation/save-transfer-apk-sqlite.json",
     "observed": [
-      "Existing farm preserved; no player database reset or gameplay state injection",
-      "Real harvest and rapid three-plot burst on earlier asynchronous-save candidate",
-      "Task book restored; all three quest objectives remained0/1 before real actions",
-      "Legitimate calf purchase reduced coins2000 to1900, cash50 unchanged",
-      "English confirmation Cancel preserved process and language/header generation",
-      "Original Vietnamese farm/dialogue loaded from the previously failing saved data",
-      "Vietnamese confirmation for English; four rapid OK touches caused one automatic process restart",
-      "Real farm restored after automatic restart with one SQLite writer and no app crash recorded",
-      "No routine save overlay observed on tested screens",
-      "English cold reopen restored farm, original English assets and tutorial23; one writer, no load failure or repeated confirmation"
+      "Old-ID bridge update without uninstall or clearing data",
+      "SAF export and separate new-ID import: all14record bytes/generations/checksums/markers matched before first game boot",
+      "Original farm graphics and world loaded under new game class names",
+      "Coins1900/cash50/XP7/level1/tutorial23/EN retained on first load and two cold reopens",
+      "New committed save binding matches current SDK identity and remains stable across cold reopens",
+      "One SQLite writer observed per sampled new process; no FATAL in tested new game processes",
+      "English-to-Vietnamese native confirmation Cancel retained process/header/locale; subsequent OK automatically restarted once and restored Vietnamese farm",
+      "After language restart:1900coins/50cash/XP7/level1/tutorial23/language16; final Home durable checkpoint5520"
     ],
-    "limitations": "50-100 actual harvests with exact XP/inventory/quest totals, controlled gameplay FPS before/after, full crop/animal/building and14-language UI matrix, physical devices, newer Android, and Windows LAN remain unverified; one final cold reopen verified, long repeated-restart soak remains unverified"
+    "limitations": [
+      "Remaining28Java game classes and125original integrationDEX classes have not been ported",
+      "No controlled FPS/50-100realharvest, complete inventory/quest matrix, physical device or newerAndroid validation",
+      "Windows URL binary and LAN have not run from cloud",
+      "Optional additional language/gameplay observations are recorded in the runtime evidence rather than inferred from host tests"
+    ],
+    "language_cycle_on_device_verified": true
   },
   "local_progress": {
     "storage": "Android SQLite",
@@ -111,5 +145,41 @@
       "synchronous": "FULL",
       "notes": "Capture at completed game-frame boundary; original game codecs remain on game thread. SQLite apply/hash runs on writer. No schema migration in this change."
     }
+  },
+  "game_namespace": "com.quanhoang.greenfarm3",
+  "build_host": "Linux cloud; Windows execution not performed",
+  "clean_build": true,
+  "source_scope": {
+    "migration_complete": false,
+    "main_kotlin_files": 99,
+    "original_game_namespace_classes": 236,
+    "original_game_classes_compiled_kotlin": 83,
+    "original_game_classes_compiled_java": 28,
+    "original_game_integration_classes_still_from_dex": 125,
+    "original_core_classes": 110,
+    "original_core_kotlin": 82,
+    "original_core_java": 28,
+    "original_core_classes_still_from_dex": 0,
+    "added_kotlin_helpers": 16,
+    "original_non_overlay_class_definitions_retained": 6247,
+    "original_class_definitions_replaced_including_R_aliases": 136,
+    "native_libraries_preserved": 10,
+    "original_apk_still_required": true,
+    "report": "../docs/KOTLIN_MIGRATION_CHECKPOINT.md",
+    "class_by_class_inventory": "../docs/kotlin-validation/dependency-inventory.json"
+  },
+  "legacy_export_bridge": {
+    "artifact": "green-farm-3-legacy-export-debug.apk",
+    "sha256": "bbe0aecf66cf7d1fd7b394fd3f2f17c9388ee9df478f4d4dd7deeb320882d2d1",
+    "size_bytes": 15848931,
+    "application_id": "com.gameloft.android.ANMP.GloftGF2F",
+    "code_namespace": "com.quanhoang.greenfarm3",
+    "build_command": "./gradlew :app:clean :app:assembleDebug -PgreenfarmLegacyExport=true --stacktrace",
+    "clean_build_result": "BUILD SUCCESSFUL in 1m 54s; 45 actionable tasks: 42 executed, 3 up-to-date",
+    "requires_same_signing_key_as_installed_old_app": true,
+    "must_not_uninstall_old_app_to_install_bridge": true,
+    "purpose": "User-approved SAF export of the old application private SQLite progress before importing into the new app",
+    "provider_identity_exceptions": "Only two verified KeyProvider authority/URI literals; all game class definitions use the new namespace",
+    "instructions": "../docs/SAVE_TRANSFER_KOTLIN.md"
   }
 }

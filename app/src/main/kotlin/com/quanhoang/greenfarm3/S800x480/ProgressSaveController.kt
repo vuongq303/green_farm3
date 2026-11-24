@@ -1,0 +1,713 @@
+package com.quanhoang.greenfarm3.S800x480
+
+import android.app.Activity
+import android.app.AlertDialog
+import android.os.SystemClock
+import android.util.Log
+import android.widget.Toast
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicLong
+import javax.microedition.midlet.MIDlet
+
+/** Game-thread snapshots, bounded batching, and one detached SQLite writer. */
+object ProgressSaveController {
+    private val requestedSequence = AtomicLong()
+    private val completedWrites = ConcurrentLinkedQueue<AsyncSaveQueue.Result>()
+    private val batchPolicy = SaveBatchPolicy()
+    private val backendSavePolicy = BackendSavePolicy()
+    private val backendLevelPolicy = BackendSavePolicy("farm-level-autosave")
+    private val backendManorPolicy = BackendSavePolicy("farm-manor-autosave")
+    private var backendCapturePayload: String? = null
+    private var backendCaptureLevel: String? = null
+    private var backendCaptureManor: String? = null
+    private var backendBaselineSequence = 0L
+    private var sqliteWriteQueue: AsyncSaveQueue? = null
+    private var lastObservedRequestSequence = 0L
+    private var durableRequestSequence = 0L
+    private var lastCaptureUptimeMillis = 0L
+    private var lastCaptureAttemptUptimeMillis = 0L
+    private var pendingUnloadSaveSequence = -1L
+    private var pendingUnloadAction = 0
+    private var pendingUnloadTargetState = 0
+    private var pendingUnloadStackDepth = 0
+    private var snapshotBoundary = false
+    private var forcedCheckpoint = false
+    private var captureFailed = false
+    @Volatile private var saveFailure = false
+    @Volatile private var globalLoaded = false
+    @Volatile private var ownFarmLoaded = false
+    @Volatile private var worldReady = false
+    @Volatile private var loadBlocked = false
+    @Volatile private var retryLoad = false
+    @Volatile private var loadError: String? = null
+    private var failedLoadStep = -1
+    private var promptVisible = false
+    private var errorNoticeVisible = false
+    private var languageCheckpoint: LanguageCheckpoint? = null
+    private var atomicUpdate: AtomicUpdate? = null
+    private var deferredLanguage: Int? = null
+    private var retryNoticeShown = false
+    private val criticalRequests = AtomicLong()
+    private var capturedCriticalRequests = 0L
+    private var captureCount = 0L
+    private var totalCaptureNanos = 0L
+    private var legacyCallbackSequence = 0L
+
+    private class LanguageCheckpoint(
+        val language: Int,
+        val completion: LanguageRestartController.SaveCompletion
+    ) {
+        val previousLanguage = deferredLanguage ?: FarmGameEngine.aYU
+        var sequence = 0L
+        var preferencePhase = false
+        var preferenceCommitted = false
+        var preferencePublished = false
+        var rollingBack = false
+        var rollbackSequence = -1L
+        var rollbackAttempt = 0L
+    }
+
+    private class LanguageRollback(val language: LanguageCheckpoint) : AsyncSaveQueue.RetryableCheckpoint
+
+    private class AtomicUpdate(val completed: (durable: Boolean, finished: Boolean) -> Unit) :
+        AsyncSaveQueue.RetryableCheckpoint
+
+    @JvmStatic
+    fun initialize() {
+        sqliteWriteQueue?.let { previousWriter ->
+            check(previousWriter.awaitIdle(10000L)) { "Previous save writer is still active" }
+            previousWriter.close()
+        }
+        GameSaveStore.setWriteDispatcher(null)
+        atomicUpdate?.completed?.invoke(false, true)
+        atomicUpdate = null
+        GameSaveStore.initialize()
+        GameSaveStore.beginLoading()
+        PendingRewardState.resetForLoad()
+        EntityPoseState.resetForLoad()
+        TutorialFlowController.invalidateSession()
+        completedWrites.clear()
+        sqliteWriteQueue = AsyncSaveQueue { result -> completedWrites.add(result) }
+        retryLoad = false
+        loadBlocked = false
+        worldReady = false
+        ownFarmLoaded = false
+        globalLoaded = false
+        loadError = null
+        failedLoadStep = -1
+        lastCaptureAttemptUptimeMillis = 0L
+        lastCaptureUptimeMillis = 0L
+        pendingUnloadSaveSequence = -1L
+        captureFailed = false
+        errorNoticeVisible = false
+        saveFailure = false
+        languageCheckpoint = null
+        deferredLanguage = null
+        GameSaveStore.setLanguageWriteOverride(null)
+        lastObservedRequestSequence = requestedSequence.get()
+        durableRequestSequence = lastObservedRequestSequence
+        legacyCallbackSequence = durableRequestSequence
+        batchPolicy.captured()
+        resetBackendSave()
+        backendBaselineSequence = lastObservedRequestSequence
+    }
+
+    @JvmStatic
+    fun requestSave() {
+        requestedSequence.incrementAndGet()
+    }
+
+    @JvmStatic fun requestCriticalSave() {
+        requestedSequence.incrementAndGet()
+        criticalRequests.incrementAndGet()
+    }
+
+    @JvmStatic fun atSnapshotBoundary(): Boolean = snapshotBoundary
+    @JvmStatic fun isForcedCheckpoint(): Boolean = forcedCheckpoint
+    @JvmStatic fun canSerialize(): Boolean = worldEligible() && GameSaveStore.isCaptureAvailable()
+
+    /** The Android Menu key may expose existing settings during a tutorial. */
+    @JvmStatic
+    fun isWorldReadyForMenu(): Boolean = worldReady && globalLoaded && ownFarmLoaded && !loadBlocked &&
+        languageCheckpoint == null
+
+    private fun worldEligible(): Boolean {
+        val engineState = FarmGameEngine.currentEngineState()
+        return worldReady && !loadBlocked && FarmGameEngine.avD == -1 && engineState != -1 &&
+            engineState != 1 && engineState != 2 && engineState != 4
+    }
+
+    @JvmStatic
+    fun globalLoadFinished(existed: Boolean, loaded: Boolean) {
+        if (existed && !loaded) {
+            throw SaveRestoreException(SaveRestoreException.Code.SAVE_NOT_FOUND,
+                "Previously present gameplay record was not restored; original save retained", null)
+        }
+        globalLoaded = true
+        Log.i("GreenFarmSave", "global_restore result=" +
+            if (loaded) SaveRestoreException.Code.RESTORE_SUCCESS else SaveRestoreException.Code.SAVE_NOT_FOUND)
+    }
+
+    @JvmStatic fun farmLoadFinished() { ownFarmLoaded = true }
+
+    @JvmStatic
+    fun enterWorld() {
+        if (!globalLoaded || !ownFarmLoaded || loadBlocked) return
+        try {
+            GameSaveStore.finishLoading()
+        } catch (failure: RuntimeException) {
+            loadingFailed(failure)
+            return
+        }
+        worldReady = true
+        pendingUnloadSaveSequence = -1L
+        GameSaveStore.setWriteDispatcher(object : GameSaveStore.WriteDispatcher {
+            override fun changed(mutation: GameSaveStore.Snapshot) {
+                val sequence = requestedSequence.incrementAndGet()
+                // Detached auxiliary SDK/settings records share the same writer
+                // without serializing the mutable farm on this callback thread.
+                sqliteWriteQueue!!.submit(mutation, sequence, null)
+            }
+        })
+        requestSave()
+        backendBaselineSequence = requestedSequence.get()
+        if (!LocalDevelopmentMode.skipLegacyBackend()) {
+            backendLevelPolicy.baseline(FarmGameEngine.FC().toString())
+            backendManorPolicy.baseline(FarmGameEngine.aZD.toString())
+        }
+    }
+
+    @JvmStatic
+    fun allowLoadStep(): Boolean {
+        if (!loadBlocked) return true
+        if (!retryLoad) return false
+        retryLoad = false
+        return try {
+            check(sqliteWriteQueue!!.awaitIdle(10000L)) { "Pending save has not completed" }
+            GameSaveStore.setWriteDispatcher(null)
+            GameSaveStore.close()
+            GameSaveStore.initialize()
+            GameSaveStore.beginLoading()
+            if (failedLoadStep == 47) {
+                FarmEntity.oL()
+                FarmGameEngine.aZi = null
+                FarmGameEngine.aZj = null
+                FarmGameEngine.FN()
+                EntityPoseState.resetForLoad()
+                PendingRewardState.resetForLoad()
+            }
+            loadBlocked = false
+            loadError = null
+            true
+        } catch (failure: RuntimeException) {
+            loadingFailed(failedLoadStep, failure)
+            false
+        }
+    }
+
+    @JvmStatic fun isLoadBlocked(): Boolean = loadBlocked
+
+    @JvmStatic
+    fun isCriticalLoadFailure(step: Int, failure: Exception?): Boolean =
+        step == 38 || step == 44 || step == 47 || GameSaveStore.status() == GameSaveStore.STATUS_FAILED
+
+    @JvmStatic fun loadingFailed(failure: Throwable) { loadingFailed(-1, failure) }
+
+    @JvmStatic
+    fun loadingFailed(step: Int, failure: Throwable) {
+        failedLoadStep = step
+        loadBlocked = true
+        worldReady = false
+        // A decoder/engine failure is not proof of SQLite corruption. Keep the
+        // database available for diagnosis, but reject every subsequent write,
+        // including header-only snapshots captured before this failure.
+        GameSaveStore.failLoad("Restore failed; original save retained", failure)
+        loadError = "Không thể đọc tiến độ. Bản lưu cũ được giữ nguyên."
+        Log.e("GreenFarmSave", "load_failed method=ProgressSaveController.loadingFailed phase=gameplay_load step=$step" +
+            " database=greenfarm-progress.db slot=device-local records=${SaveRestoreException.recordsForLoadStep(step)} " +
+            SaveRestoreException.diagnostics(failure, SaveRestoreException.Code.ENGINE_RESTORE_FAILED) +
+            " db_status=${GameSaveStore.status()} generation=${GameSaveStore.generation()}" +
+            " local_mode=${LocalDevelopmentMode.isEnabled()}", null)
+        showLoadError()
+    }
+
+    @JvmStatic
+    fun showStartupError() {
+        showBootstrapError("Không thể mở dữ liệu trò chơi", "Không thể đọc bản lưu. Dữ liệu không bị đặt lại.")
+    }
+
+    @JvmStatic fun showEngineStartupError() {
+        showBootstrapError("Không thể khởi tạo trò chơi", "Không thể khởi tạo tài nguyên. Tiến độ được giữ nguyên. Hãy thử lại.")
+    }
+
+    private fun showBootstrapError(title: String, message: String) {
+        val activity = foregroundActivity() ?: return
+        activity.runOnUiThread {
+            if (activity.isFinishing || promptVisible) return@runOnUiThread
+            promptVisible = true
+            AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Thử lại") { _, _ ->
+                    promptVisible = false
+                    GloftGF2F.acx?.mj()
+                }.show()
+        }
+    }
+
+    /** Bootstrap may not have fonts/GUI4 yet; reuse the existing startup error surface. */
+    @JvmStatic fun showResourceLoadError(step: Int, failure: Exception) {
+        val activity = foregroundActivity() ?: return
+        activity.runOnUiThread {
+            if (activity.isFinishing || promptVisible) return@runOnUiThread
+            promptVisible = true
+            AlertDialog.Builder(activity)
+                .setTitle("Không thể tải tài nguyên")
+                .setMessage("Không thể hoàn tất bước tải $step. Tiến độ được giữ nguyên. Hãy thử lại.\n" +
+                    if (failure is GameRuntime.ResourceFailure) failure.message else failure.javaClass.simpleName)
+                .setCancelable(false)
+                .setPositiveButton("Thử lại") { _, _ ->
+                    promptVisible = false
+                    FarmGameEngine.requestResourceLoadRetry()
+                }.show()
+        }
+    }
+
+    private fun showLoadError() {
+        val activity = foregroundActivity() ?: return
+        activity.runOnUiThread {
+            if (activity.isFinishing || promptVisible) return@runOnUiThread
+            promptVisible = true
+            AlertDialog.Builder(activity)
+                .setTitle("Không thể tải tiến độ")
+                .setMessage(loadError)
+                .setCancelable(false)
+                .setPositiveButton("Thử lại") { _, _ ->
+                    promptVisible = false
+                    retryLoad = true
+                }.show()
+        }
+    }
+
+    /** Called once after completed simulation commands, never from a writer. */
+    @JvmStatic
+    fun frameFinished() {
+        drainCompletions()
+        if (worldReady && languageCheckpoint == null && sqliteWriteQueue!!.isIdle() &&
+            !hasPendingChanges() && legacyCallbackSequence < durableRequestSequence) {
+            legacyCallbackSequence = durableRequestSequence
+            try {
+                FarmGameEngine.progressSaveCommitted()
+            } catch (legacyFailure: RuntimeException) {
+                Log.w("GreenFarmSave", "legacy_save_callback_failed " +
+                    SaveRestoreException.diagnostics(legacyFailure, SaveRestoreException.Code.ENGINE_RESTORE_FAILED), null)
+            }
+        }
+        if (loadBlocked && retryLoad && failedLoadStep == -1 && globalLoaded && ownFarmLoaded) {
+            try {
+                if (!sqliteWriteQueue!!.isIdle()) return
+                retryLoad = false
+                GameSaveStore.reopen()
+                // This explicit retry has already decoded global/farm state.
+                // Revalidate storage and clear the failed-restore barrier
+                // before completing loading; reopening alone cannot do so.
+                GameSaveStore.beginLoading()
+                GameSaveStore.finishLoading()
+                loadBlocked = false
+                loadError = null
+                worldReady = true
+                requestSave()
+            } catch (failure: RuntimeException) {
+                loadingFailed(-1, failure)
+            }
+        }
+        if (loadBlocked) {
+            showLoadError()
+            return
+        }
+        val checkpoint = languageCheckpoint
+        if (checkpoint != null && checkpoint.rollingBack && checkpoint.rollbackSequence < 0L &&
+            SystemClock.uptimeMillis() - checkpoint.rollbackAttempt >= 1000L) {
+            enqueueLanguageRollback(checkpoint)
+        }
+        val queue = sqliteWriteQueue
+        if (queue != null && !queue.isRetryPaused()) retryNoticeShown = false
+        if (queue?.isRetryPaused() == true && !retryNoticeShown &&
+            (languageCheckpoint != null || worldEligible()) && !GameNotification.isVisible() &&
+            FarmGameEngine.currentEngineState() != 20 && FarmGameEngine.apA == -1) {
+            retryNoticeShown = true
+            val text = LanguageRestartController.textFor(FarmGameEngine.aYU)
+            val failureText = GameNotification.storageFailure(FarmGameEngine.aYU)
+            GameNotification.show(failureText[0], failureText[1], text[4], text[3], canDismiss = languageCheckpoint == null) { retry ->
+                if (retry) queue.retryPending()
+            }
+        }
+        if (!worldReady || languageCheckpoint != null) return
+        val now = SystemClock.uptimeMillis()
+        observeChanges(now)
+        val periodic = !batchPolicy.isDirty() && now - lastCaptureUptimeMillis >= 8000L
+        if (canSerialize() && (criticalRequests.get() != capturedCriticalRequests || batchPolicy.due(now) || periodic) &&
+            (!captureFailed || now - lastCaptureAttemptUptimeMillis >= 1000L)) {
+            capture(false, null)
+        }
+    }
+
+    private fun observeChanges(now: Long) {
+        // Transfer dirty flags to a monotonic request before clearing them.
+        // Commit A must never clear changes accepted while A was writing.
+        if (FarmGameEngine.hasUnsavedGameChanges || FarmGameEngine.bab) {
+            requestedSequence.incrementAndGet()
+            FarmGameEngine.bab = false
+            FarmGameEngine.hasUnsavedGameChanges = false
+        }
+        val current = requestedSequence.get()
+        if (current != lastObservedRequestSequence) {
+            batchPolicy.changed(now, current - lastObservedRequestSequence)
+            if (!LocalDevelopmentMode.skipLegacyBackend() && current > backendBaselineSequence) {
+                backendSavePolicy.changed(current, now)
+                backendLevelPolicy.changed(current, now)
+                backendManorPolicy.changed(current, now)
+            }
+            lastObservedRequestSequence = current
+        }
+    }
+
+    internal fun canCaptureAtomicUpdate(): Boolean = canSerialize() && FarmGameEngine.aZB == 0 &&
+        languageCheckpoint == null && atomicUpdate == null && sqliteWriteQueue?.isRetryPaused() == false
+
+    /** The mutation and its receipt are serialized on the engine thread and written by the existing queue. */
+    internal fun captureAtomicUpdate(change: () -> Unit, completed: (Boolean, Boolean) -> Unit): Boolean {
+        if (!canCaptureAtomicUpdate()) return false
+        val update = AtomicUpdate(completed)
+        observeChanges(SystemClock.uptimeMillis())
+        lastObservedRequestSequence = requestedSequence.incrementAndGet()
+        if (capture(true, update, change) < 0L) return false
+        atomicUpdate = update
+        return true
+    }
+
+    internal fun retryAtomicUpdate() { sqliteWriteQueue?.retryPending() }
+
+    private fun capture(force: Boolean, checkpoint: Any?, change: (() -> Unit)? = null): Long {
+        if (!canSerialize()) return -1L
+        val sequence = requestedSequence.get()
+        val criticalAtCapture = criticalRequests.get()
+        val startNanos = System.nanoTime()
+        lastCaptureAttemptUptimeMillis = SystemClock.uptimeMillis()
+        snapshotBoundary = true
+        backendCapturePayload = null
+        backendCaptureLevel = null
+        backendCaptureManor = null
+        forcedCheckpoint = force
+        try {
+            GameSaveStore.beginCapture(FarmGameEngine.aZB == 0)
+            change?.invoke()
+            if (FarmGameEngine.aZB == 0) FarmGameEngine.av(false) else FarmGameEngine.rs()
+            val savedLanguage = if (checkpoint is LanguageCheckpoint && checkpoint.preferencePhase) checkpoint.language else deferredLanguage
+            savedLanguage?.let { GameSaveStore.overrideCapturedLanguage(it) }
+            val snapshot = GameSaveStore.finishCapture()
+            if (!LocalDevelopmentMode.skipLegacyBackend() && FarmGameEngine.aZB == 0) {
+                backendSavePolicy.captured(sequence, backendCapturePayload)
+                backendLevelPolicy.captured(sequence, backendCaptureLevel)
+                backendManorPolicy.captured(sequence, backendCaptureManor)
+            }
+            sqliteWriteQueue!!.submit(snapshot, sequence, checkpoint)
+            batchPolicy.captured()
+            capturedCriticalRequests = criticalAtCapture
+            captureFailed = false
+            lastCaptureUptimeMillis = SystemClock.uptimeMillis()
+            captureCount++
+            val durationNanos = System.nanoTime() - startNanos
+            totalCaptureNanos += durationNanos
+            Log.d("GreenFarmSave", "capture seq=$sequence us=${durationNanos / 1000L}" +
+                " records=${snapshot.recordCount()} bytes=${snapshot.byteCount()}")
+            return sequence
+        } catch (failure: RuntimeException) {
+            GameSaveStore.abortCapture()
+            captureFailed = true
+            saveFailed()
+            Log.e("GreenFarmSave", "capture_failed " +
+                SaveRestoreException.diagnostics(failure, SaveRestoreException.Code.SQLITE_WRITE_FAILED), null)
+            return -1L
+        } finally {
+            forcedCheckpoint = false
+            snapshotBoundary = false
+            backendCapturePayload = null
+            backendCaptureLevel = null
+            backendCaptureManor = null
+        }
+    }
+
+    private fun drainCompletions() {
+        while (true) {
+            val result = completedWrites.poll() ?: break
+            Log.d("GreenFarmSave", "write seq=${result.sequence} us=${result.durationNanos / 1000L}" +
+                " ok=${result.failure == null}")
+            if (result.failure == null) {
+                durableRequestSequence = maxOf(durableRequestSequence, result.sequence)
+                backendSavePolicy.durable(result.sequence)
+                backendLevelPolicy.durable(result.sequence)
+                backendManorPolicy.durable(result.sequence)
+                errorNoticeVisible = false
+                saveFailure = false
+            } else {
+                saveFailed()
+                Log.e("GreenFarmSave", "write_failed; absolute snapshot retained for retry " +
+                    SaveRestoreException.diagnostics(result.failure, SaveRestoreException.Code.SQLITE_WRITE_FAILED), null)
+            }
+            val checkpoint = result.checkpoint
+            if (checkpoint is AtomicUpdate && checkpoint === atomicUpdate) {
+                if (result.failure == null) {
+                    atomicUpdate = null
+                    checkpoint.completed(true, true)
+                } else if (sqliteWriteQueue?.isRetryPaused() == true) {
+                    checkpoint.completed(false, false)
+                }
+                continue
+            }
+            if (checkpoint is LanguageRollback) {
+                val language = checkpoint.language
+                if (language === languageCheckpoint && result.failure == null) {
+                    languageCheckpoint = null
+                    if (worldReady) requestSave()
+                    language.completion.completed(false)
+                }
+                continue
+            }
+            if (checkpoint is LanguageCheckpoint && checkpoint === languageCheckpoint) {
+                val language = checkpoint
+                if (result.failure != null) {
+                    failLanguageCheckpoint(language)
+                } else {
+                    if (language.preferencePhase) language.preferenceCommitted = true
+                    observeChanges(SystemClock.uptimeMillis())
+                    if (!language.preferencePhase && requestedSequence.get() <= language.sequence) {
+                        // Gameplay becomes durable before preference publication.
+                        language.preferencePhase = true
+                        language.sequence = enqueueLanguagePreference(language)
+                        if (language.sequence < 0L) failLanguageCheckpoint(language)
+                    } else if (requestedSequence.get() > language.sequence) {
+                        // Genuine SDK callbacks accepted during the write must
+                        // also become durable before restarting the session.
+                        language.sequence = requestLanguageCapture(language)
+                        if (language.sequence < 0L) failLanguageCheckpoint(language)
+                    } else {
+                        languageCheckpoint = null
+                        language.completion.completed(true)
+                    }
+                }
+            }
+        }
+    }
+
+    @JvmStatic fun capturedBackendFarm(payload: String, level: Int, manor: Int) {
+        if (snapshotBoundary && !LocalDevelopmentMode.skipLegacyBackend()) {
+            backendCapturePayload = payload
+            backendCaptureLevel = level.toString()
+            backendCaptureManor = manor.toString()
+        }
+    }
+
+    /** The existing legacy Farm request consumes only a current, durable capture. */
+    private fun backendCanUpload(): Boolean = !LocalDevelopmentMode.skipLegacyBackend() && worldReady && !loadBlocked &&
+        languageCheckpoint == null && !FarmGameEngine.hasUnsavedGameChanges && !FarmGameEngine.bab &&
+        requestedSequence.get() <= durableRequestSequence
+
+    @JvmStatic fun beginBackendSave(): BackendSavePolicy.Upload? =
+        if (backendCanUpload()) backendSavePolicy.begin(SystemClock.uptimeMillis()) else null
+
+    @JvmStatic fun beginBackendLevelSave(): BackendSavePolicy.Upload? =
+        if (backendCanUpload()) backendLevelPolicy.begin(SystemClock.uptimeMillis()) else null
+
+    @JvmStatic fun beginBackendManorSave(): BackendSavePolicy.Upload? =
+        if (backendCanUpload()) backendManorPolicy.begin(SystemClock.uptimeMillis()) else null
+
+    @JvmStatic fun backendSaveCompleted(tag: String?, success: Boolean): Boolean {
+        val now = SystemClock.uptimeMillis()
+        return backendSavePolicy.completed(tag, success, now) ||
+            backendLevelPolicy.completed(tag, success, now) || backendManorPolicy.completed(tag, success, now)
+    }
+
+    @JvmStatic fun resetBackendSave() {
+        backendSavePolicy.reset()
+        backendLevelPolicy.reset()
+        backendManorPolicy.reset()
+        backendBaselineSequence = requestedSequence.get()
+    }
+
+    private fun failLanguageCheckpoint(language: LanguageCheckpoint) {
+        if (!language.preferencePhase && !language.preferenceCommitted) {
+            languageCheckpoint = null
+            requestSave()
+            language.completion.completed(false)
+            return
+        }
+        // An uncertain commit needs durable compensation before promising the
+        // old-language session is safe to resume.
+        language.rollingBack = true
+        enqueueLanguageRollback(language)
+    }
+
+    private fun enqueueLanguageRollback(language: LanguageCheckpoint) {
+        language.rollbackAttempt = SystemClock.uptimeMillis()
+        try {
+            val sequence = requestedSequence.incrementAndGet()
+            sqliteWriteQueue!!.submit(GameSaveStore.captureLanguageSetting(language.previousLanguage),
+                sequence, LanguageRollback(language))
+            language.rollbackSequence = sequence
+        } catch (failure: RuntimeException) {
+            Log.e("GreenFarmSave", "language_rollback_capture_failed " +
+                SaveRestoreException.diagnostics(failure, SaveRestoreException.Code.SQLITE_WRITE_FAILED), null)
+            saveFailed()
+        }
+    }
+
+    /** No routine saving/saved banner, overlay, touch target or per-action toast. */
+    @JvmStatic
+    fun saveFailed() {
+        saveFailure = true
+        if (errorNoticeVisible) return
+        errorNoticeVisible = true
+        val activity = foregroundActivity() ?: return
+        activity.runOnUiThread {
+            if (!activity.isFinishing) Toast.makeText(activity,
+                "Progress could not be saved. Check free storage; retrying.", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    @JvmStatic
+    fun checkpointBeforeMove() {
+        synchronized(FarmGameEngine::class.java) {
+            val previousMoveMode = FarmGameEngine.avD
+            if (previousMoveMode == 3 && FarmGameEngine.avE == null) FarmGameEngine.avD = -1
+            try {
+                observeChanges(SystemClock.uptimeMillis())
+                capture(true, null)
+            } finally {
+                FarmGameEngine.avD = previousMoveMode
+            }
+        }
+    }
+
+    /** Header choice survives Later; live text/sprites keep their current locale. */
+    @JvmStatic fun deferLanguageUntilRestart(language: Int) {
+        deferredLanguage = language.takeIf { it != FarmGameEngine.aYU }
+        GameSaveStore.setLanguageWriteOverride(deferredLanguage)
+    }
+    @JvmStatic fun hasDeferredLanguage(): Boolean = deferredLanguage != null
+
+    /** Android pause/hide callbacks must not wait for SQLite while holding the UI thread. */
+    @JvmStatic fun requestLifecycleFlush() = synchronized(FarmGameEngine::class.java) {
+        if (sqliteWriteQueue == null) return@synchronized
+        FarmGameEngine.cancelMovePreviewForInterruption()
+        drainCompletions()
+        if (languageCheckpoint == null && worldEligible()) {
+            observeChanges(SystemClock.uptimeMillis())
+            capture(true, null)
+        }
+    }
+
+    @JvmStatic
+    fun flushForLifecycle(): Boolean = synchronized(FarmGameEngine::class.java) {
+        // A cold save-transfer receiver has no MIDlet/world or writer yet.
+        // Taking the class monitor is safe; calling the engine would run its
+        // static initialization before the MIDlet exists.
+        if (sqliteWriteQueue == null) return@synchronized true
+        FarmGameEngine.cancelMovePreviewForInterruption()
+        drainCompletions()
+        if (languageCheckpoint == null && worldEligible()) {
+            observeChanges(SystemClock.uptimeMillis())
+            if (capture(true, null) < 0L) return@synchronized false
+        }
+        if (!sqliteWriteQueue!!.awaitIdle(10000L)) return@synchronized false
+        drainCompletions()
+        !saveFailure && sqliteWriteQueue!!.durableSequence() >= requestedSequence.get()
+    }
+
+    @JvmStatic
+    fun prepareWorldUnload(): Boolean = synchronized(FarmGameEngine::class.java) {
+        drainCompletions()
+        if (loadBlocked || languageCheckpoint != null) return@synchronized false
+        if (!worldReady) return@synchronized sqliteWriteQueue?.isIdle() ?: true
+        if (pendingUnloadSaveSequence >= 0L && (pendingUnloadAction != FarmGameEngine.apA || pendingUnloadTargetState != FarmGameEngine.apz ||
+                pendingUnloadStackDepth != FarmGameEngine.apB)) pendingUnloadSaveSequence = -1L
+        if (pendingUnloadSaveSequence >= 0L) {
+            observeChanges(SystemClock.uptimeMillis())
+            if (!sqliteWriteQueue!!.isIdle() || sqliteWriteQueue!!.durableSequence() < pendingUnloadSaveSequence) return@synchronized false
+            if (requestedSequence.get() <= pendingUnloadSaveSequence) return@synchronized true
+        }
+        FarmGameEngine.cancelMovePreviewForInterruption()
+        if (!canSerialize()) return@synchronized false
+        FarmEntity.oM()
+        observeChanges(SystemClock.uptimeMillis())
+        pendingUnloadSaveSequence = capture(true, null)
+        pendingUnloadAction = FarmGameEngine.apA
+        pendingUnloadTargetState = FarmGameEngine.apz
+        pendingUnloadStackDepth = FarmGameEngine.apB
+        if (!FarmGameEngine.pendingTransitionUnloadsWorld()) pendingUnloadSaveSequence = -1L
+        false // Resume the pending command after its durable acknowledgement.
+    }
+
+    @JvmStatic
+    fun worldUnloaded() {
+        worldReady = false
+        pendingUnloadSaveSequence = -1L
+        GameSaveStore.setWriteDispatcher(null)
+        TutorialFlowController.invalidateSession()
+    }
+
+    @JvmStatic
+    fun requestLanguageCheckpoint(language: Int, completion: LanguageRestartController.SaveCompletion): Boolean {
+        if (languageCheckpoint != null || atomicUpdate != null || loadBlocked || sqliteWriteQueue == null) return false
+        // This entry is an explicit user selection/retry, never a timed loop.
+        sqliteWriteQueue!!.retryPending()
+        val request = LanguageCheckpoint(language, completion)
+        languageCheckpoint = request
+        request.sequence = requestLanguageCapture(request)
+        if (request.sequence < 0L) {
+            if (request.preferencePublished) {
+                // Rejected enqueue still needs compensation for its published
+                // logical setting, keeping this barrier owned until durable.
+                failLanguageCheckpoint(request)
+                return true
+            }
+            languageCheckpoint = null
+            return false
+        }
+        return true
+    }
+
+    private fun requestLanguageCapture(request: LanguageCheckpoint): Long {
+        FarmGameEngine.cancelMovePreviewForInterruption()
+        if (worldEligible()) {
+            observeChanges(SystemClock.uptimeMillis())
+            lastObservedRequestSequence = requestedSequence.incrementAndGet()
+            return capture(true, request)
+        }
+        request.preferencePhase = true
+        return enqueueLanguagePreference(request)
+    }
+
+    private fun enqueueLanguagePreference(request: LanguageCheckpoint): Long = try {
+        val snapshot = GameSaveStore.captureLanguageSetting(request.language)
+        request.preferencePublished = true
+        val sequence = requestedSequence.incrementAndGet()
+        lastObservedRequestSequence = sequence
+        sqliteWriteQueue!!.submit(snapshot, sequence, request)
+        sequence
+    } catch (failure: RuntimeException) {
+        Log.e("GreenFarmSave", "language_checkpoint_failed " +
+            SaveRestoreException.diagnostics(failure, SaveRestoreException.Code.SQLITE_WRITE_FAILED), null)
+        -1L
+    }
+
+    @JvmStatic fun captureCount(): Long = captureCount
+    @JvmStatic fun captureNanos(): Long = totalCaptureNanos
+
+    @JvmStatic
+    fun hasPendingChanges(): Boolean = requestedSequence.get() > durableRequestSequence ||
+        (sqliteWriteQueue?.let { !it.isIdle() } ?: false) || FarmGameEngine.hasUnsavedGameChanges || FarmGameEngine.bab
+
+    private fun foregroundActivity(): Activity? = MIDlet.cnz ?: MIDlet.cnA
+}

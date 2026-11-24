@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "input_dex_sha256": "3901b6678b4523947273914b30fe94a750e149f89e0a7a1fa3932261d7539ec4",
+  "output_dex_sha256": "9e903cc5345a4e47ea9067bf1f6190e8a05b3f5358583de5a89d0db27ca34ebd",
+  "from_package": "com.gameloft.android.ANMP.GloftGF2F",
+  "to_package": "com.quanhoang.greenfarm3",
+  "application_id": "com.gameloft.android.ANMP.GloftGF2F",
+  "class_count": 6383,
+  "relocated_class_count": 236,
+  "legacy_game_class_definitions_remaining": 0,
+  "inverse_canonical_semantics_verified": true,
+  "game_symbols_renamed": false,
+  "class_name_mapping": {},
+  "member_name_mapping": {},
+  "provider_identity_compatibility_exceptions": [{"class":"Lcom/quanhoang/greenfarm3/KeyProvider;","method":"<clinit>()V","literal_replacements":2,"authority":"com.gameloft.android.ANMP.GloftGF2F.KeyProvider","uri":"content://com.gameloft.android.ANMP.GloftGF2F.KeyProvider/key","reverse_policy_semantics_verified":true,"other_classes_unchanged_verified":true}],
+  "input_canonical_sha256": "ccee705373fac7d466e49cdc4ee55844adf36a64971be759eda5e23c2f619bd8",
+  "migration_identity_literal_exception_owners": []
+}

@@ -3,6 +3,7 @@ import { once } from 'node:events';
 import { request as httpRequest } from 'node:http';
 import test from 'node:test';
 
+import { loadSocialAuthConfig, normalizeBackendBaseUrl } from '../src/config.js';
 import { createResearchServer } from '../src/server.js';
 import { createTestStore } from './helpers/store.mjs';
 
@@ -36,10 +37,24 @@ function authorizeFields(overrides = {}) {
   };
 }
 
-async function fixture(t, options = {}) {
+async function fixture(t, {
+  publicBaseUrl = PUBLIC_BASE, sessionTtlSeconds = 900, refreshTtlSeconds = 2592000,
+  legacyEnabled = true, ...options
+} = {}) {
+  const config = {
+    server: { publicBaseUrl: normalizeBackendBaseUrl(publicBaseUrl) },
+    auth: loadSocialAuthConfig({}),
+    sessions: {
+      legacy: legacyEnabled ? {
+        secret: 'test-secret-for-local-research-only',
+        accessTtlSeconds: sessionTtlSeconds,
+        refreshTtlSeconds,
+      } : null,
+    },
+    giftcodes: { adminSessionTtl: 3600 },
+  };
   const server = createResearchServer({
-    publicBaseUrl: PUBLIC_BASE,
-    sessionSecret: 'test-secret-for-local-research-only',
+    config,
     store: createTestStore(),
     errorLog: () => {},
     log: () => {},
@@ -146,6 +161,14 @@ test('authorization accepts the original UTF-16 password transform and all compa
   // Scope whitespace is tokenized; the declarations do not expose additional routes.
   const response = await postForm('/authorize', authorizeFields({ scope: ' storage\tauth\nconfig asset transaction message ' }));
   assert.equal(response.status, 200, response.text);
+});
+
+test('disabling legacy sessions preserves discovery but refuses legacy authentication routes', async t => {
+  const { request, postForm } = await fixture(t, { legacyEnabled: false });
+  assert.equal((await request('/locate/auth')).text, PUBLIC_BASE);
+  assert.deepEqual(json(await postForm('/authorize', authorizeFields())), { error: 'legacy_auth_disabled' });
+  assert.deepEqual(json(await request('/profiles/me/myprofile')), { error: 'legacy_auth_disabled' });
+  assert.deepEqual(json(await postForm('/users/me/compliance', {})), { error: 'legacy_auth_disabled' });
 });
 
 test('fresh sessions are distinct and accepted by the compliance route', async (t) => {
@@ -432,5 +455,5 @@ test('MySQL failures are observable and never produce successful login/profile/c
 });
 
 test('a production server cannot silently substitute an in-memory repository', () => {
-  assert.throws(() => createResearchServer({ publicBaseUrl: PUBLIC_BASE, sessionSecret: 'test-secret-for-local-research-only' }), /MySQL repository is required/u);
+  assert.throws(() => createResearchServer({}), /MySQL repository is required/u);
 });

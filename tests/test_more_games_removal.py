@@ -18,9 +18,11 @@ from test_aa_tile_renderer import extract_method
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from android_build_tools import jdk_tool
+from kotlin_test_tools import compile_mixed, runtime_classpath
+from game_source_context import qualified_package, core_source_directory, kotlin_source_directory, type_name, adapt_fixture, legacy_fixture_names
 
-PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
-CORE = ROOT / 'app/src/main/java' / PACKAGE
+PACKAGE = qualified_package().replace('.', '/')
+CORE = core_source_directory()
 
 SHELL = r'''
 package com.gameloft.android.ANMP.GloftGF2F.S800x480;
@@ -69,6 +71,10 @@ public class MoreGamesProbe {
  }
  public static void main(String[] args){
   reset();int checks=0;
+  // Preserve Java short-circuit/null behavior at the public JVM boundary.
+  MoreGamesRemoval.removeWidget(1,4,null);
+  try{MoreGamesRemoval.removeWidget(1,34,null);throw new AssertionError("removed null row accepted");}
+  catch(NullPointerException expected){}
   for(int layer=0;layer<50;layer++)for(int item=0;item<160;item++){
    boolean removed=(layer==1&&(item==34||item==38))||(layer==27&&(item==22||item==23));
    check(MoreGamesRemoval.isWidget(layer,item)==removed,"wrong identity "+layer+":"+item);checks++;
@@ -114,7 +120,7 @@ public class MoreGamesProbe {
 
 class MoreGamesRemovalTest(unittest.TestCase):
     def setUp(self):
-        self.source = (CORE / 'ci.java').read_text()
+        self.source = legacy_fixture_names((CORE / (type_name('ci') + '.java')).read_text())
 
     def fixture(self, mutations=()):
         signatures = [
@@ -145,12 +151,10 @@ class MoreGamesRemovalTest(unittest.TestCase):
             package = directory / PACKAGE
             package.mkdir(parents=True)
             java = package / 'MoreGamesProbe.java'
-            java.write_text(source)
-            helper = package / 'MoreGamesRemoval.java'
-            helper.write_text((CORE / 'MoreGamesRemoval.java').read_text())
-            subprocess.run([str(jdk_tool('javac')), '-d', str(directory), str(java), str(helper)],
-                           check=True, capture_output=True, text=True)
-            return subprocess.run([str(jdk_tool('java')), '-cp', str(directory),
+            java.write_text(adapt_fixture(source))
+            helper = kotlin_source_directory() / 'MoreGamesRemoval.kt'
+            compile_mixed([helper], [java], directory)
+            return subprocess.run([str(jdk_tool('java')), '-cp', runtime_classpath(directory),
                                    PACKAGE.replace('/', '.') + '.MoreGamesProbe'],
                                   capture_output=True, text=True)
 
@@ -246,7 +250,7 @@ public class WelcomeRemovalProbe {
         with tempfile.TemporaryDirectory(prefix='welcome-removal-') as temp:
             directory = Path(temp)
             source = directory / 'WelcomeRemovalProbe.java'
-            source.write_text(self.welcome_fixture(mutation))
+            source.write_text(adapt_fixture(self.welcome_fixture(mutation)))
             compiled = subprocess.run([str(jdk_tool('javac')), '-d', str(directory), str(source)],
                                       capture_output=True, text=True)
             self.assertEqual(compiled.returncode, 0, compiled.stderr)

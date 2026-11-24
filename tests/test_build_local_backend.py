@@ -1,4 +1,4 @@
-"""Offline packaging bindings for the separate local-backend research variant.
+"""Production packaging bindings for the main APK and its configured backend endpoint.
 
 Small ZIP/DEX fixtures model already verified reports. These tests check that
 prepare() binds those reports to its exact inputs and preserves the base
@@ -207,6 +207,90 @@ class LocalBackendPackagingTest(unittest.TestCase):
                 self.assert_rejected_before_output("differs from the verified base DEX")
                 report[field] = valid
 
+    def test_required_startup_guard_must_prove_original_sdk_branch_is_retained(self):
+        def prepare_guarded():
+            return build.prepare(self.original, self.base, self.dex, self.output,
+                                 require_local_startup_guard=True)
+        with self.assertRaisesRegex(ValueError, 'startup guard provenance'):
+            prepare_guarded()
+        valid = {
+            'owner': 'Lcom/gameloft/android/wrapper/au;',
+            'method': 'Qh()V',
+            'predicate': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;->skipLegacyBackend()Z',
+            'original_false_branch_preserved': True,
+            'reverse_patch_semantics_verified': True,
+        }
+        for field, bad in [('owner', 'Lwrong/Owner;'), ('method', 'Qh(I)V'),
+                           ('predicate', 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;->isEnabled()Z'),
+                           ('original_false_branch_preserved', False),
+                           ('original_false_branch_preserved', 1),
+                           ('reverse_patch_semantics_verified', False)]:
+            self.patch['local_startup_guard'] = dict(valid, **{field: bad})
+            self.write_reports()
+            with self.subTest(field=field, value=bad), self.assertRaisesRegex(ValueError, 'startup guard provenance'):
+                prepare_guarded()
+            self.assertFalse(self.output.exists())
+        self.patch['local_startup_guard'] = valid
+        self.write_reports()
+        prepare_guarded()
+        self.assertTrue(self.output.exists())
+
+    def test_network_diagnostics_require_exact_bound_sdk_hook_proof(self):
+        def prepare_instrumented():
+            return build.prepare(self.original, self.base, self.dex, self.output,
+                                 require_network_diagnostics=True)
+        with self.assertRaisesRegex(ValueError, 'Network diagnostics provenance'):
+            prepare_instrumented()
+        invalid = [
+            dict(build.NETWORK_DIAGNOSTICS, owner='Lwrong/Owner;'),
+            dict(build.NETWORK_DIAGNOSTICS, method='run(I)V'),
+            dict(build.NETWORK_DIAGNOSTICS, helper='Lwrong/Helper;'),
+            dict(build.NETWORK_DIAGNOSTICS, begin_calls=True),
+            dict(build.NETWORK_DIAGNOSTICS, begin_calls=2),
+            dict(build.NETWORK_DIAGNOSTICS, reverse_patch_semantics_verified=1),
+            dict(build.NETWORK_DIAGNOSTICS, hook_counts=dict(build.NETWORK_DIAGNOSTICS['hook_counts'], failure=0)),
+            dict(build.NETWORK_DIAGNOSTICS, hook_counts=dict(build.NETWORK_DIAGNOSTICS['hook_counts'], failure=True)),
+            dict(build.NETWORK_DIAGNOSTICS, extra='unreviewed hook'),
+        ]
+        for proof in invalid:
+            self.patch['network_diagnostics'] = proof
+            self.write_reports()
+            with self.subTest(proof=proof), self.assertRaisesRegex(ValueError, 'Network diagnostics provenance'):
+                prepare_instrumented()
+            self.assertFalse(self.output.exists())
+            # Malformed optional proofs must not be accepted when the flag is absent.
+            self.assert_rejected_before_output('Network diagnostics provenance')
+        self.patch['network_diagnostics'] = copy.deepcopy(build.NETWORK_DIAGNOSTICS)
+        self.write_reports()
+        prepare_instrumented()
+        self.assertTrue(self.output.exists())
+
+    def test_facebook_lifecycle_requires_exact_bound_reference_only_proof(self):
+        with self.assertRaisesRegex(ValueError, 'Facebook lifecycle'):
+            build.prepare(self.original, self.base, self.dex, self.output,
+                          require_legacy_facebook_lifecycle=True)
+        good = copy.deepcopy(self.patch)
+        good['legacy_facebook_lifecycle'] = copy.deepcopy(build.FACEBOOK_LIFECYCLE)
+        self.patch = good
+        self.write_reports()
+        build.prepare(self.original, self.base, self.dex, self.output,
+                      require_legacy_facebook_lifecycle=True)
+        self.output.unlink()
+        for mutate in (
+            lambda proof: proof.update(call_count=True),
+            lambda proof: proof.update(call_count=11),
+            lambda proof: proof.update(owner='Lwrong/MIDlet;'),
+            lambda proof: proof.update(helper_methods_verified=False),
+            lambda proof: proof.update(method_references_only=False),
+            lambda proof: proof.update(reverse_patch_semantics_verified=False),
+            lambda proof: proof['method_counts'].update({'onCreate(Landroid/os/Bundle;)V': True}),
+            lambda proof: proof['method_counts'].pop('onDestroy()V'),
+        ):
+            self.patch = copy.deepcopy(good)
+            mutate(self.patch['legacy_facebook_lifecycle'])
+            self.write_reports()
+            self.assert_rejected_before_output('Facebook lifecycle')
+
     def test_rejects_unverified_or_unbound_generated_revision_metadata(self):
         revision = self.baseline["build_revision_metadata"]
         for field, invalid in (("original_guard_accepts_generated_revision", False),
@@ -217,6 +301,23 @@ class LocalBackendPackagingTest(unittest.TestCase):
                 self.write_reports()
                 self.assert_rejected_before_output("Base build revision metadata mismatch")
                 revision[field] = valid
+
+    def test_activity_exit_broadcast_guard_requires_exact_provenance(self):
+        def prepare_guarded():
+            return build.prepare(self.original, self.base, self.dex, self.output,
+                                 require_activity_exit_broadcast=True)
+        with self.assertRaisesRegex(ValueError, 'Activity-exit broadcast guard provenance'):
+            prepare_guarded()
+        for field, invalid in (('registration_method', 'akz()V'),
+                               ('send_method', 'akA(I)V'),
+                               ('reverse_patch_semantics_verified', 1)):
+            self.patch['activity_exit_broadcast'] = dict(build.ACTIVITY_EXIT_BROADCAST, **{field: invalid})
+            self.write_reports()
+            self.assert_rejected_before_output('Activity-exit broadcast guard provenance')
+        self.patch['activity_exit_broadcast'] = build.ACTIVITY_EXIT_BROADCAST
+        self.write_reports()
+        prepare_guarded()
+        self.assertTrue(self.output.exists())
 
     def test_rejects_multiple_dex_or_duplicate_entries_even_with_matching_base_hash(self):
         for name, data in (("classes2.dex", b"unexpected secondary DEX"),

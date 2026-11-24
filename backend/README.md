@@ -1,15 +1,24 @@
 # Green Farm backend: JavaScript và MySQL
 
+Luồng Website độc lập với cấu hình/token Facebook; xem bản sửa và kiểm thử tại
+[WEBSITE_AUTH_ISOLATION.md](../docs/WEBSITE_AUTH_ISOLATION.md).
+Đăng ký/đăng nhập tài khoản riêng bằng trình duyệt ngoài, migration MySQL và cấu hình HTTPS/
+Cloudflare Tunnel được mô tả trong [EMBEDDED_AUTH.md](EMBEDDED_AUTH.md). Nút Facebook
+giữ OAuth chính thức; dữ liệu và API Google cũ được bảo toàn, xem
+[SOCIAL_AUTH.md](SOCIAL_AUTH.md). Dữ liệu nông trại vẫn ở SQLite
+trên thiết bị; các API legacy bên dưới chỉ phục vụ tương thích nghiên cứu và
+không thay thế xác thực tài khoản mới.
+
 Backend dùng Node.js 24+, JavaScript ES Modules và `mysql2/promise`. Điểm khởi
 động là `src/main.js`; không cần TypeScript hoặc bước transpile. Một nguồn URL
 chung cho app và backend nằm tại **`../gradle.properties`**, biến
 `BACKEND_BASE_URL`. Backend đọc trực tiếp file này để tạo mọi URL discovery.
 
 ```properties
-BACKEND_BASE_URL=http://10.37.233.55:8787/
+BACKEND_BASE_URL=https://backend.example.com/
 ```
 
-`10.37.233.55` là IPv4 Windows người dùng cung cấp. Nếu mạng đổi IP, sửa chính
+Đây là URL ví dụ; dùng hostname, IPv4 hoặc IPv6 của backend thật. Nếu URL đổi, sửa
 biến này, khởi động lại backend, **build và cài lại APK**. Đổi file cấu hình không
 đổi được URL đã nhúng trong APK đang cài. Không còn biến `localBackendUrl`,
 `PUBLIC_BASE_URL`, `BIND_HOST` hoặc fallback về localhost/`10.0.2.2`.
@@ -20,14 +29,17 @@ Từ thư mục `backend` trong PowerShell:
 
 ```powershell
 npm ci
-Copy-Item .env.example .env
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
 ```
 
-Sửa `.env`: đặt `DB_PASSWORD` riêng, tài khoản database và
-`RESEARCH_SESSION_SECRET` ngẫu nhiên, ít nhất 32 byte. Giữ session secret ổn định
-qua các lần restart; thay secret sẽ làm token hiện có không hợp lệ. Có thể tạo
-secret riêng bằng `node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"`
-rồi lưu vào `.env` của máy bạn, không đưa vào Git hoặc log hỗ trợ.
+Điền thông tin MySQL thực tế vào `backend/.env`. Giữ
+`LEGACY_AUTH_ENABLED=false` cho luồng tài khoản Website, OAuth và giftcode.
+Khi cần phiên ẩn danh legacy trong môi trường nghiên cứu, đặt
+`LEGACY_AUTH_ENABLED=true` và đặt `RESEARCH_SESSION_SECRET` ngẫu nhiên, ít nhất
+32 byte UTF-8. Giữ secret đó ổn định qua các lần khởi động lại để bảo toàn
+hiệu lực phiên legacy. Khi một mật khẩu có khoảng trắng ở đầu/cuối hoặc chứa
+`#`, dùng dấu nháy trong file `.env` để giữ đúng giá trị. Giữ thông tin kết nối
+và secret trong môi trường backend.
 
 MySQL 8.0/8.4: dùng tài khoản quản trị của chính bạn để tạo database và tài khoản
 ứng dụng một lần. Thay mật khẩu trong ví dụ trước khi chạy; không dùng tài khoản
@@ -54,33 +66,84 @@ npm start
 npm run dev
 ```
 
-Backend kiểm tra kết nối MySQL, migration và các bảng cần thiết **trước khi mở
-cổng HTTP**. Chỉ khi kiểm tra thành công mới ghi `database_ready` rồi `listening`.
-Nếu MySQL không truy cập được, sai thông tin kết nối hoặc schema chưa sẵn sàng,
-backend ghi `startup_database_error`, hướng dẫn kiểm tra `DB_*`/chạy migration,
-đóng pool và thoát với mã **1**; không báo server đã chạy. Sửa cấu hình/khởi động
-MySQL, chạy `npm run migrate` nếu cần, rồi chạy lại `npm start`.
+Lệnh migration chỉ cần nhóm `DB_*`. Lệnh khởi động đọc cấu hình server và các
+tính năng đã bật, rồi kiểm tra kết nối và schema MySQL trước khi mở cổng HTTP.
+Khi triển khai lên database đang hoạt động, dừng các tiến trình ghi, sao lưu và
+kiểm tra khả năng phục hồi theo [hướng dẫn triển khai MySQL](database/README.md).
+Migration khóa chống chạy đồng thời, đối chiếu checksum và giữ các bản ghi hiện
+có. Bản v5 chuyển liên kết nhóm phiên vào bảng phiên. Bản v6 bổ sung các bảng
+giftcode. Bảng liên kết cũ có thủ tục dọn dẹp riêng sau khi đối chiếu dữ liệu.
 
-Migration có khóa chống chạy đồng thời, lưu checksum, tạo bảng nếu chưa có và
-không DROP/TRUNCATE/reset dữ liệu. Sau lần đầu, chạy lại giữ nguyên ID/nội dung.
-Một schema có checksum không khớp sẽ bị từ chối thay vì tự viết lại lịch sử.
+### Nguồn cấu hình
+
+[`src/config.js`](src/config.js) đọc và chuẩn hóa cấu hình. Thứ tự ưu tiên là
+**biến của tiến trình → `backend/.env` → mặc định**. Cả giá trị rỗng đã đặt
+trong tiến trình cũng ghi đè file. Module xác định đường dẫn `.env` từ vị trí
+của chính nó nên thứ tự này giống nhau dù chạy lệnh từ thư mục nào.
+Ứng dụng khởi tạo cấu hình một lần rồi truyền từng nhóm đến các module sử dụng.
 
 | Cấu hình backend | Giá trị/mục đích |
 |---|---|
-| `HOST` | Mặc định `0.0.0.0`, lắng nghe mọi interface IPv4. |
-| `PORT` | Mặc định `8787`; phải khớp port của `BACKEND_BASE_URL`. |
-| `DB_HOST`, `DB_PORT` | Mặc định `127.0.0.1`, `3306`; chỉ backend truy cập MySQL. |
-| `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Bắt buộc, chỉ trong `.env`/môi trường backend. |
-| `DB_POOL_SIZE`, `DB_CONNECT_TIMEOUT_MS` | Pool mặc định 5 kết nối, timeout 5000 ms. |
-| `RESEARCH_SESSION_SECRET` | Bắt buộc, riêng tư và ổn định, ít nhất 32 byte. |
-| `SESSION_TTL_SECONDS` | Access token: mặc định 900 giây, tối đa 86400. |
-| `REFRESH_TTL_SECONDS` | Refresh token: mặc định 2592000 giây; ít nhất access TTL, tối đa 7776000. |
-| `BACKEND_CONFIG_FILE` | Tùy chọn đường dẫn file properties cho test/instance tách biệt. Vẫn đọc đúng khóa `BACKEND_BASE_URL`, không phải URL thứ hai. |
+| `HOST`, `PORT` | Địa chỉ bind IPv4/IPv6 hoặc `localhost`, mặc định `0.0.0.0:8787`. Cổng từ 1 đến 65535. |
+| `BACKEND_CONFIG_FILE` | Đường dẫn thay thế đến file có đúng một khóa `BACKEND_BASE_URL`. Ưu tiên dùng đường dẫn tuyệt đối. Mặc định đọc `gradle.properties` ở gốc repo. |
+| `DB_HOST`, `DB_PORT` | Mặc định `127.0.0.1:3306`. Cổng từ 1 đến 65535. |
+| `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Bắt buộc. Tên database dài 1–64 ký tự ASCII gồm chữ, số hoặc gạch dưới. |
+| `DB_POOL_SIZE` | Mặc định 5 kết nối, từ 1 đến 50. |
+| `DB_CONNECT_TIMEOUT_MS` | Mặc định 5000 ms, từ 100 đến 30000 ms. |
+| `LEGACY_AUTH_ENABLED` | Nhận `true` hoặc `false`. File mẫu chọn `false`. Khi biến vắng mặt, legacy mặc định bật ngoài production. Trong `NODE_ENV=production`, legacy mặc định tắt và giá trị `true` bị từ chối. |
+| `RESEARCH_SESSION_SECRET` | Bắt buộc khi legacy bật, ít nhất 32 byte UTF-8. |
+| `SESSION_TTL_SECONDS` | Access token legacy mặc định 900 giây, từ 1 đến 86400. |
+| `REFRESH_TTL_SECONDS` | Refresh token legacy mặc định 2592000 giây, ít nhất bằng access TTL, tối đa 7776000. Hai TTL legacy được kiểm tra khi legacy bật. |
+| `AUTH_PUBLIC_BASE_URL` | Origin HTTPS cho xác thực và giftcode. Khi bật, đặt cùng giá trị với `AUTH_BASE_URL` trong Gradle. |
+| `AUTH_TRUSTED_PROXY_IP` | IP đầu nối của reverse proxy mà Node nhìn thấy. Proxy này phải ghi đè `X-Forwarded-Proto` và `X-Forwarded-For`. |
+| `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET` | Cặp cấu hình tùy chọn cho Google. |
+| `FACEBOOK_APP_ID`, `FACEBOOK_APP_SECRET`, `FACEBOOK_GRAPH_VERSION` | Cặp cấu hình tùy chọn cho Facebook. Phiên bản Graph mặc định `v24.0`. |
+| `GIFTCODE_ADMIN_PASSWORD_HASH` | Hash Argon2id tùy chọn để bật đăng nhập quản trị tại `/admin/giftcodes`. Xem [hướng dẫn giftcode](../docs/GIFTCODES.md). |
 
-`.env` được Node tự đọc khi chạy entry point/migration; biến môi trường đã đặt
-có ưu tiên. Listener này dùng HTTP trực tiếp. Validator nhận cấu hình origin
-HTTP(S) IPv4 chuẩn; HTTPS không được mở bởi Node listener này và cần triển khai
-TLS/reverse proxy rõ ràng trước khi dùng. Không có chứng chỉ/TLS giả.
+Origin gồm giao thức, hostname hoặc IP và cổng nếu cần. Node nghe HTTP trên
+`HOST`/`PORT`. Để phục vụ xác thực Website hoặc OAuth, cấu hình chứng chỉ hợp lệ
+trên reverse proxy và đặt origin HTTPS công khai. Đăng nhập bằng mật khẩu
+Website hoạt động khi các cấu hình OAuth tùy chọn để trống.
+
+### Dùng cấu hình trong mã
+
+| Nhóm | Trường |
+|---|---|
+| `config.server` | `host`, `port`, `publicBaseUrl`. |
+| `config.database` | `host`, `port`, `database`, `user`, `password`, `connectionLimit`, `connectTimeout`. |
+| `config.sessions.legacy` | `secret`, `accessTtlSeconds`, `refreshTtlSeconds`. Giá trị `null` khi tắt. |
+| `config.auth` | Origin HTTPS, IP proxy, redirect URI, provider và thời hạn của lượt xác thực, mã trao đổi và phiên tài khoản. |
+| `config.giftcodes` | `adminPasswordHash` và `adminSessionTtl` (3600 giây). |
+
+Điểm khởi động gọi `loadConfig()` rồi truyền `config.database` vào
+`createMysqlStore()`. Khi tạo pool, module MySQL sử dụng `database.password`,
+tương ứng với `DB_PASSWORD`. Script migration gọi `loadDatabaseConfig()`.
+Khi thêm biến, khai báo ánh xạ, kiểu, giới hạn, mặc định và điều kiện bật tại
+`src/config.js`, cập nhật `.env.example` và thêm kiểm thử cho giá trị hợp lệ
+lẫn sai. Test có thể gọi `loadConfig(testEnv)` hoặc `loadDatabaseConfig(testEnv)`
+với object riêng và dùng `readEnvironment({ env, envFile })` để thử thứ tự ưu
+tiên. Truyền đúng nhóm cấu hình cho module dùng nó. HTML, API và APK chỉ nhận
+các trường công khai theo giao thức đang sử dụng.
+
+### Chẩn đoán khi khởi động
+
+Backend ghi `database_ready` rồi `listening` sau khi xác nhận database sẵn sàng.
+Khi lỗi, tiến trình thoát mã **1** trước khi mở cổng. Lỗi cấu hình ghi tên biến
+cần sửa. Lỗi MySQL ghi mã và giai đoạn đã lọc để phân biệt các nguyên nhân.
+
+| Sự kiện hoặc mã | Việc cần kiểm tra |
+|---|---|
+| `startup_configuration_error` · `INVALID_CONFIGURATION` | Sửa biến được ghi trong `variable`. Kiểm tra cả biến của tiến trình vì chúng ưu tiên hơn file `.env`. |
+| `startup_database_error` · `MYSQL_CONNECTION_FAILED` | MySQL đang chạy và backend có đường đến `DB_HOST`/`DB_PORT`. |
+| `MYSQL_AUTH_FAILED` | Kiểm tra `DB_USER`, `DB_PASSWORD` và host đăng nhập của tài khoản MySQL. |
+| `MYSQL_DATABASE_NOT_FOUND` | Tạo database đích hoặc sửa `DB_NAME`. |
+| `MYSQL_PERMISSION_DENIED` | Kiểm tra quyền của tài khoản trên database đã chọn. |
+| `MYSQL_SCHEMA_NOT_READY` | Chạy `npm run migrate` trên đúng database trước khi khởi động lại. |
+| `MYSQL_SCHEMA_CHECK_FAILED` | Kiểm tra phiên bản MySQL, quyền và trạng thái migration. |
+
+Migration báo lỗi checksum nếu file đã áp dụng bị thay đổi. Khôi phục nội dung
+file đó và thêm migration mới cho lần thay đổi tiếp theo. Log chẩn đoán dùng mã
+và thông báo đã lọc để tránh lộ mật khẩu, token và chuỗi kết nối.
 
 ## Kiểm tra IPv4 và mạng
 
@@ -139,11 +202,15 @@ bỏ qua khóa bổ sung. Core `s.o` thực hiện refresh qua cùng route. Scop
 `leaderboard social storage auth message config` được nhận cùng các scope M0
 `asset transaction`; nhận tên scope không có nghĩa các dịch vụ đó đã hoạt động.
 
-Đăng nhập hiện là **anonymous legacy** (`anonymous:<credential>`), kiểm tra đúng
+Luồng đăng nhập legacy là **anonymous legacy** (`anonymous:<credential>`), kiểm tra đúng
 phép dẫn xuất password UTF-16 của APK rồi kiểm tra hash trong MySQL. Đây là giao
 thức công khai có thể tự dẫn xuất, không phải chứng minh quyền sở hữu tài khoản
-hiện đại. `NODE_ENV=production` vẫn bị từ chối. Không tạo đăng nhập Facebook thành
-công giả; nút Connect qua SDK Facebook cũ chưa có backend độc lập tương đương.
+hiện đại. Trong `NODE_ENV=production`, xác thực anonymous legacy mặc định bị tắt;
+`LEGACY_AUTH_ENABLED=true` bị từ chối. Giữ `LEGACY_AUTH_ENABLED=false` khi triển
+khai hệ thống tài khoản Facebook/Google mới. Nút Connect qua SDK Facebook cũ
+không được coi là xác thực của hệ thống OAuth mới; không tạo kết quả đăng nhập
+thành công giả. Luồng provider chính thức và các cấu hình còn thiếu được mô tả
+trong [SOCIAL_AUTH.md](SOCIAL_AUTH.md).
 
 Session được ký HMAC, sid chỉ lưu SHA-256 trong DB. Access/refresh có thời hạn;
 refresh token chỉ dùng một lần, giao dịch tạo session mới và xóa session cũ nên
@@ -180,6 +247,14 @@ $env:DB_NAME='green_farm_test'
 npm run test:mysql
 Remove-Item Env:DB_NAME
 ```
+
+`test:mysql` chạy tuần tự theo file vì hai suite dùng chung schema và cleanup có thể deadlock nếu chạy song song. Ca kiểm tra nhiều authorization đồng thời trong từng suite vẫn được giữ nguyên.
+
+`npm run test:mysql:upgrade` cần một schema **rỗng, dùng một lần**, có tên kết
+thúc bằng `_upgrade_test`. Cấu hình `DB_NAME` hoặc `TEST_DB_NAME` trỏ đến schema
+đó và cấp quyền DDL/DML cho tài khoản kiểm thử. Bài kiểm thử dựng dữ liệu v4,
+thử nâng cấp, khôi phục và nâng lại v5. Schema chứa dữ liệu giả sau khi chạy,
+nên tạo schema rỗng khác cho lần chạy tiếp theo.
 
 `npm test` kiểm tra HTTP/config bằng repository test double **chỉ trong test**,
 không phải fallback runtime. `test:mysql` yêu cầu MySQL thật, migration thật,

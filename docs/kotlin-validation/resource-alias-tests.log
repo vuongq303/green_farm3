@@ -1,0 +1,10 @@
+test_dotted_style_name_uses_aapt_field_escaping (test_restore_resource_classes.ResourceAliasesTest.test_dotted_style_name_uses_aapt_field_escaping) ... ok
+test_every_sdk_resource_constant_uses_resource_identity (test_restore_resource_classes.ResourceAliasesTest.test_every_sdk_resource_constant_uses_resource_identity) ... ok
+test_new_package_symbolic_styleable_refs_keep_order_android_attrs_and_offsets (test_restore_resource_classes.ResourceAliasesTest.test_new_package_symbolic_styleable_refs_keep_order_android_attrs_and_offsets) ... ok
+test_styleable_array_order_and_all_index_constants_are_preserved (test_restore_resource_classes.ResourceAliasesTest.test_styleable_array_order_and_all_index_constants_are_preserved) ... ok
+test_unknown_app_resource_id_is_rejected (test_restore_resource_classes.ResourceAliasesTest.test_unknown_app_resource_id_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.027s
+
+OK

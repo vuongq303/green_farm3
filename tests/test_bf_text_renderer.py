@@ -15,6 +15,10 @@ import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(ROOT / "tools"))
+from game_source_context import legacy_core_source, current_source_path
+
 PACKAGE = "com/gameloft/android/ANMP/GloftGF2F/S800x480"
 RUNNER = r"""
 import java.lang.reflect.*;
@@ -168,7 +172,7 @@ class BfTextRendererTest(unittest.TestCase):
             temporary = Path(temp)
             source = temporary / "source" / PACKAGE
             source.mkdir(parents=True)
-            shutil.copyfile(ROOT / "app/src/main/java" / PACKAGE / "bf.java", source / "bf.java")
+            (source / 'bf.java').write_text(legacy_core_source('bf'))
             prefix = "package com.gameloft.android.ANMP.GloftGF2F.S800x480;\n"
             (source / "aj.java").write_text(prefix + "public class aj {}")
             (source / "w.java").write_text(prefix + "public class w {public static boolean XA,XE,XF,Xq,Zo;}")

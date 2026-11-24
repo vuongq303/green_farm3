@@ -20,9 +20,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.jf.dexlib2.AccessFlags;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
 import org.jf.dexlib2.iface.ClassDef;
+import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.writer.io.MemoryDataStore;
 import org.jf.dexlib2.writer.pool.DexPool;
 
@@ -37,6 +39,7 @@ import org.jf.dexlib2.writer.pool.DexPool;
  */
 public final class MergeCoreDex {
     private static final String CORE = "Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/";
+    private static final String D8_LAMBDA_METHOD = "Lcom/android/tools/r8/annotations/LambdaMethod;";
     private static final List<String> R_FAMILIES = Arrays.asList(
             "Lcom/gameloft/android/ANMP/GloftGF2F/R",
             "Lcom/facebook/R",
@@ -44,9 +47,10 @@ public final class MergeCoreDex {
             "Lcom/google/android/gms/ads/impl/R",
             "Lcom/google/firebase/messaging/R");
     private static final Set<String> REQUIRED_CORE = new HashSet<>(Arrays.asList(
-            CORE + "GLLib;", CORE + "ci;", CORE + "GloftGF2F;"));
-    private static final Set<String> ORIGINAL_STREAMS = new HashSet<>(Arrays.asList(
-            CORE + "l;", CORE + "g;"));
+            CORE + "GLLib;", CORE + "ci;", CORE + "GloftGF2F;", CORE + "l;", CORE + "g;"));
+    // l (endian asset input) and g (empty marker) now have verified Kotlin
+    // implementations. They are required overlay identities, not passthrough.
+    private static final Set<String> ORIGINAL_STREAMS = Collections.emptySet();
 
     private MergeCoreDex() {}
 
@@ -57,19 +61,49 @@ public final class MergeCoreDex {
     }
 
     private static boolean isProtectedStream(String descriptor) {
-        return ORIGINAL_STREAMS.contains(descriptor)
-                || descriptor.startsWith(CORE + "l$")
-                || descriptor.startsWith(CORE + "g$");
+        return ORIGINAL_STREAMS.contains(descriptor);
     }
 
     private static boolean allowedOverlay(String descriptor) {
         if (isProtectedStream(descriptor)) return false;
         if (descriptor.startsWith(CORE) && descriptor.endsWith(";")) return true;
+        if (descriptor.equals("L" + RelocateGamePackage.OLD_INTERNAL + "/Start;")
+                || descriptor.startsWith("L" + RelocateGamePackage.OLD_INTERNAL + "/Start$")) return true;
+        if (descriptor.startsWith("L" + RelocateGamePackage.OLD_INTERNAL + "/migration/")) return true;
+        // The transfer UI can be prepared before switching the game namespace.
+        // It is a separate, reviewed component, not a second copy of game core.
+        if (descriptor.startsWith("L" + RelocateGamePackage.NEW_INTERNAL + "/migration/")) return true;
+        // Only the explicit Kotlin stdlib runtime dependencies are program
+        // inputs. The original compile-view remains lookup-only.
+        if (descriptor.startsWith("Lkotlin/") || descriptor.startsWith("Lorg/jetbrains/annotations/")) return true;
         for (String family : R_FAMILIES) {
             if (descriptor.equals(family + ";")
                     || (descriptor.startsWith(family + "$") && descriptor.endsWith(";"))) return true;
         }
         return false;
+    }
+
+    /** D8 37 adds a debug annotation for desugared lambda call sites. */
+    private static boolean isD8LambdaAnnotation(ClassDef definition) {
+        int annotationFlags = AccessFlags.PUBLIC.getValue() | AccessFlags.INTERFACE.getValue()
+                | AccessFlags.ABSTRACT.getValue() | AccessFlags.SYNTHETIC.getValue()
+                | AccessFlags.ANNOTATION.getValue();
+        if (definition.getAccessFlags() != annotationFlags
+                || !"Ljava/lang/Object;".equals(definition.getSuperclass())
+                || !definition.getInterfaces().equals(Collections.singletonList("Ljava/lang/annotation/Annotation;"))
+                || definition.getFields().iterator().hasNext()) {
+            return false;
+        }
+        int methodFlags = AccessFlags.PUBLIC.getValue() | AccessFlags.ABSTRACT.getValue();
+        Set<String> expectedMethods = new HashSet<>(Arrays.asList("holder", "method", "proto"));
+        for (Method method : definition.getMethods()) {
+            if (!expectedMethods.remove(method.getName()) || method.getAccessFlags() != methodFlags
+                    || !method.getParameters().isEmpty() || method.getImplementation() != null
+                    || !"Ljava/lang/String;".equals(method.getReturnType())) {
+                return false;
+            }
+        }
+        return expectedMethods.isEmpty();
     }
 
     private static ApkDex readApk(Path apk) throws IOException {
@@ -193,6 +227,32 @@ public final class MergeCoreDex {
         }
         ApkDex original = readApk(originalApk);
         ApkDex overlay = readApk(overlayApk);
+        List<String> kotlinClasses = new ArrayList<>(), kotlinRuntime = new ArrayList<>();
+        for (ClassDef definition : overlay.classes.values()) {
+            if (definition.getType().startsWith("Lkotlin/")) kotlinRuntime.add(definition.getType());
+            if (!definition.getType().startsWith("Lkotlin/")) {
+                definition.getAnnotations().forEach(annotation -> {
+                    if (annotation.getType().equals("Lkotlin/Metadata;")) kotlinClasses.add(definition.getType());
+                });
+            }
+        }
+        boolean normalizedPackage = overlay.classes.keySet().stream().anyMatch(
+                name -> name.startsWith("L" + RelocateGamePackage.NEW_INTERNAL + "/S800x480/"));
+        boolean renamedSymbols = overlay.classes.containsKey("L" + RelocateGamePackage.NEW_INTERNAL + "/S800x480/FarmGameEngine;");
+        if (normalizedPackage) {
+            if (overlay.classes.keySet().stream().anyMatch(name -> name.startsWith(
+                    CORE))) {
+                throw new IOException("Overlay mixes original and relocated game namespaces");
+            }
+            Map<String, ClassDef> normalized = RelocateGamePackage.rewriteClasses(overlay.classes.values(), true, renamedSymbols);
+            Opcodes overlayOpcodes = Opcodes.forDexVersion(overlay.version);
+            if (!Arrays.equals(RelocateGamePackage.semanticBytes(overlay.classes.values(), overlayOpcodes), RelocateGamePackage.semanticBytes(
+                    RelocateGamePackage.rewriteClasses(normalized.values(), false, renamedSymbols).values(), overlayOpcodes))) {
+                throw new IOException("Overlay inverse package normalization changed canonical semantics");
+            }
+            overlay.classes.clear();
+            overlay.classes.putAll(normalized);
+        }
         if (!original.classes.keySet().containsAll(ORIGINAL_STREAMS)) {
             throw new IOException("Original APK is missing protected stream class definitions: " + ORIGINAL_STREAMS);
         }
@@ -200,8 +260,15 @@ public final class MergeCoreDex {
                 || !overlay.classes.keySet().containsAll(REQUIRED_CORE)) {
             throw new IOException("Original/overlay APK must define every required game core: " + REQUIRED_CORE);
         }
-        for (String descriptor : overlay.classes.keySet()) {
-            if (!allowedOverlay(descriptor)) throw new IOException("Overlay class is outside whitelist or protected: " + descriptor);
+        for (ClassDef definition : overlay.classes.values()) {
+            String descriptor = definition.getType();
+            if (descriptor.equals(D8_LAMBDA_METHOD)) {
+                if (original.classes.containsKey(descriptor) || !isD8LambdaAnnotation(definition)) {
+                    throw new IOException("Unexpected definition of D8 lambda annotation: " + descriptor);
+                }
+            } else if (!allowedOverlay(descriptor)) {
+                throw new IOException("Overlay class is outside whitelist or protected: " + descriptor);
+            }
         }
         if (overlay.version > original.version) {
             throw new IOException("Overlay DEX version " + overlay.version + " requires a newer runtime than original " + original.version);
@@ -224,13 +291,13 @@ public final class MergeCoreDex {
         Map<String, ClassDef> actualRetained = new TreeMap<>(), actualOverlay = new TreeMap<>();
         for (String descriptor : retained.keySet()) actualRetained.put(descriptor, actual.get(descriptor));
         for (String descriptor : overlay.classes.keySet()) actualOverlay.put(descriptor, actual.get(descriptor));
-        byte[] retainedBefore = serialize(retained.values(), opcodes);
-        byte[] retainedAfter = serialize(actualRetained.values(), opcodes);
+        byte[] retainedBefore = RelocateGamePackage.semanticBytes(retained.values(), opcodes);
+        byte[] retainedAfter = RelocateGamePackage.semanticBytes(actualRetained.values(), opcodes);
         if (!Arrays.equals(retainedBefore, retainedAfter)) {
             throw new IOException("Original non-overlay class semantics changed during DEX writing");
         }
-        byte[] overlayBefore = serialize(overlay.classes.values(), opcodes);
-        byte[] overlayAfter = serialize(actualOverlay.values(), opcodes);
+        byte[] overlayBefore = RelocateGamePackage.semanticBytes(overlay.classes.values(), opcodes);
+        byte[] overlayAfter = RelocateGamePackage.semanticBytes(actualOverlay.values(), opcodes);
         if (!Arrays.equals(overlayBefore, overlayAfter)) throw new IOException("Compiled overlay class semantics changed during DEX writing");
         String json = "{\n"
                 + "  \"original_apk_sha256\": " + quote(sha256(Files.readAllBytes(originalApk))) + ",\n"
@@ -243,10 +310,17 @@ public final class MergeCoreDex {
                 + "  \"overlay_class_count\": " + overlay.classes.size() + ",\n"
                 + "  \"retained_original_class_count\": " + retained.size() + ",\n"
                 + "  \"output_class_count\": " + actual.size() + ",\n"
+                + "  \"overlay_package_normalized\": " + normalizedPackage + ",\n"
+                + "  \"game_symbols_renamed\": " + renamedSymbols + ",\n"
+                + "  \"overlay_inverse_relocation_verified\": true,\n"
+                + "  \"kotlin_compiled_classes\": " + jsonArray(kotlinClasses) + ",\n"
+                + "  \"kotlin_runtime_class_count\": " + kotlinRuntime.size() + ",\n"
+                + "  \"kotlin_runtime_classes\": " + jsonArray(kotlinRuntime) + ",\n"
                 + "  \"retained_original_canonical_sha256\": " + quote(sha256(retainedBefore)) + ",\n"
                 + "  \"compiled_overlay_canonical_sha256\": " + quote(sha256(overlayBefore)) + ",\n"
                 + "  \"original_non_overlay_semantics_verified\": true,\n"
                 + "  \"compiled_overlay_semantics_verified\": true,\n"
+                + "  \"semantic_canonical_form\": \"jumbo-string-loads-and-goto32-with-preserved-labels\",\n"
                 + "  \"protected_original_stream_classes\": " + jsonArray(new TreeSet<>(ORIGINAL_STREAMS)) + ",\n"
                 + "  \"replaced_classes\": " + jsonArray(replaced) + ",\n"
                 + "  \"added_classes\": " + jsonArray(added) + "\n}\n";

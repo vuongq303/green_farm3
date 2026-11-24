@@ -19,9 +19,43 @@ CORE_TARGET_CLASS = 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/s;'
 TARGET_CLASSES = [TARGET_CLASS, CORE_TARGET_CLASS]
 TARGET_METHOD = 'aL(Ljava/lang/String;)Ljava/lang/String;'
 ORIGINAL_URL = 'https://eve.gameloft.com/'
+NETWORK_DIAGNOSTICS = {
+    'owner': 'Lcom/gameloft/a/b/e;',
+    'method': 'run()V',
+    'helper': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/NetworkDiagnostics;',
+    'begin_calls': 1,
+    'hook_counts': {'open_connection': 1, 'open_connection_proxy': 1, 'response_code': 1, 'failure': 1},
+    'reverse_patch_semantics_verified': True,
+}
+
+FACEBOOK_LIFECYCLE = {
+    'owner': 'Ljavax/microedition/midlet/MIDlet;',
+    'original_delegate': 'Ljavax/microedition/midlet/v;',
+    'helper': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LegacyFacebookLifecycle;',
+    'call_count': 12,
+    'method_counts': {name: 1 for name in (
+        'onCreate(Landroid/os/Bundle;)V', 'onDestroy()V', 'onPause()V',
+        'onSaveInstanceState(Landroid/os/Bundle;)V', 'onRestart()V', 'onResume()V',
+        'onStart()V', 'onStop()V', 'onNewIntent(Landroid/content/Intent;)V',
+        'onActivityResult(IILandroid/content/Intent;)V', 'onWindowFocusChanged(Z)V',
+        'onConfigurationChanged(Landroid/content/res/Configuration;)V')},
+    'helper_methods_verified': True,
+    'method_references_only': True,
+    'reverse_patch_semantics_verified': True,
+}
+
+ACTIVITY_EXIT_BROADCAST = {
+    'owner': 'Ljavax/microedition/midlet/BaseActivity;',
+    'helper': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/ActivityExitBroadcast;',
+    'registration_method': 'aky()V',
+    'send_method': 'akA()V',
+    'reverse_patch_semantics_verified': True,
+}
 
 
-def prepare(original, base, patched_dex, output):
+def prepare(original, base, patched_dex, output, relocated_dex=None, require_local_startup_guard=False,
+            require_network_diagnostics=False, require_legacy_facebook_lifecycle=False,
+            require_activity_exit_broadcast=False):
     original, base, patched_dex, output = map(Path, (original, base, patched_dex, output))
     base_report = base.with_suffix('.provenance.json')
     patch_report = patched_dex.with_suffix(patched_dex.suffix + '.json')
@@ -33,6 +67,19 @@ def prepare(original, base, patched_dex, output):
         raise ValueError('Unexpected original APK')
     baseline = json.loads(base_report.read_text())
     patch = json.loads(patch_report.read_text())
+    relocation = None
+    packaged_dex = patched_dex
+    if relocated_dex is not None:
+        packaged_dex = Path(relocated_dex)
+        relocation = json.loads(packaged_dex.with_suffix(packaged_dex.suffix + '.json').read_text())
+        if (relocation.get('schema_version') != 1
+                or relocation.get('from_package') != 'com.gameloft.android.ANMP.GloftGF2F'
+                or relocation.get('to_package') != 'com.quanhoang.greenfarm3'
+                or relocation.get('input_dex_sha256') != sha256(patched_dex.read_bytes())
+                or relocation.get('output_dex_sha256') != sha256(packaged_dex.read_bytes())
+                or relocation.get('legacy_game_class_definitions_remaining') != 0
+                or relocation.get('inverse_canonical_semantics_verified') is not True):
+            raise ValueError('Game package relocation provenance mismatch')
     if (baseline.get('mode') != 'java-core-with-original-dex-sdk-dependencies'
             or baseline.get('original_apk_sha256') != EXPECTED_APK_SHA256
             or baseline.get('output_apk_sha256') != sha256(base.read_bytes())
@@ -50,6 +97,45 @@ def prepare(original, base, patched_dex, output):
             or patch.get('reverse_patch_semantics_verified') is not True
             or patch.get('output_dex_sha256') != sha256(patched_dex.read_bytes())):
         raise ValueError('Endpoint patch provenance mismatch')
+    guard = patch.get('local_startup_guard')
+    expected_guard = {
+        'owner': 'Lcom/gameloft/android/wrapper/au;',
+        'method': 'Qh()V',
+        'predicate': 'Lcom/gameloft/android/ANMP/GloftGF2F/S800x480/LocalDevelopmentMode;->skipLegacyBackend()Z',
+        'original_false_branch_preserved': True,
+        'reverse_patch_semantics_verified': True,
+    }
+    guard_verified = (guard == expected_guard and isinstance(guard, dict)
+                      and guard.get('original_false_branch_preserved') is True
+                      and guard.get('reverse_patch_semantics_verified') is True)
+    if ((require_local_startup_guard and not guard_verified)
+            or (guard is not None and not guard_verified)):
+        raise ValueError('Local development startup guard provenance mismatch')
+    network = patch.get('network_diagnostics')
+    network_verified = (network == NETWORK_DIAGNOSTICS and isinstance(network, dict)
+                        and type(network.get('begin_calls')) is int
+                        and network.get('reverse_patch_semantics_verified') is True
+                        and isinstance(network.get('hook_counts'), dict)
+                        and all(type(count) is int for count in network['hook_counts'].values()))
+    if ((require_network_diagnostics and not network_verified)
+            or (network is not None and not network_verified)):
+        raise ValueError('Network diagnostics provenance mismatch')
+    facebook = patch.get('legacy_facebook_lifecycle')
+    facebook_verified = (facebook == FACEBOOK_LIFECYCLE and isinstance(facebook, dict)
+                         and type(facebook.get('call_count')) is int
+                         and facebook.get('helper_methods_verified') is True
+                         and facebook.get('method_references_only') is True
+                         and facebook.get('reverse_patch_semantics_verified') is True
+                         and isinstance(facebook.get('method_counts'), dict)
+                         and all(type(count) is int for count in facebook['method_counts'].values()))
+    if ((require_legacy_facebook_lifecycle and not facebook_verified)
+            or (facebook is not None and not facebook_verified)):
+        raise ValueError('Legacy Facebook lifecycle guard provenance mismatch')
+    activity_exit = patch.get('activity_exit_broadcast')
+    if require_activity_exit_broadcast or activity_exit is not None:
+        if (activity_exit != ACTIVITY_EXIT_BROADCAST
+                or activity_exit.get('reverse_patch_semantics_verified') is not True):
+            raise ValueError('Activity-exit broadcast guard provenance mismatch')
     with zipfile.ZipFile(original) as source, zipfile.ZipFile(base) as before:
         names = before.namelist()
         if len(names) != len(set(names)) or any(
@@ -68,7 +154,7 @@ def prepare(original, base, patched_dex, output):
                 if SIGNATURE.fullmatch(entry.filename):
                     continue
                 if entry.filename == 'classes.dex':
-                    data = patched_dex.read_bytes()
+                    data = packaged_dex.read_bytes()
                 elif entry.filename == resource:
                     # The shared metadata generator verifies this original preimage,
                     # then changes only REVISION-2408 for the patched DEX size.
@@ -84,18 +170,32 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('original', 'base', 'patched-dex', 'output', 'sdk', 'keystore'):
         parser.add_argument('--' + name, required=True, type=Path)
+    parser.add_argument('--relocated-dex', type=Path)
+    parser.add_argument('--require-local-startup-guard', action='store_true')
+    parser.add_argument('--require-network-diagnostics', action='store_true')
+    parser.add_argument('--require-legacy-facebook-lifecycle', action='store_true')
+    parser.add_argument('--require-activity-exit-broadcast', action='store_true')
     args = parser.parse_args()
     output = args.output.resolve()
     inputs = (args.original, args.base, args.patched_dex, args.keystore,
               args.base.with_suffix('.provenance.json'),
               args.patched_dex.with_suffix(args.patched_dex.suffix + '.json'))
+    if args.relocated_dex is not None:
+        inputs += (args.relocated_dex, args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json'))
     if any(output == p.resolve() or (output.exists() and p.exists() and output.samefile(p)) for p in inputs):
         raise ValueError('Output must not overwrite an input, key or provenance report')
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='local-backend-', dir=output.parent) as directory:
         temp = Path(directory)
         unsigned, aligned, signed = [temp / n for n in ('unsigned.apk', 'aligned.apk', 'signed.apk')]
-        baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned)
+        baseline, patch = prepare(args.original, args.base, args.patched_dex, unsigned, args.relocated_dex,
+                                  args.require_local_startup_guard, args.require_network_diagnostics,
+                                  args.require_legacy_facebook_lifecycle, args.require_activity_exit_broadcast)
+        if args.relocated_dex is not None:
+            from verify_runtime_apk import manifest
+            relocation = json.loads(args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json').read_text())
+            if relocation.get('application_id') != manifest(unsigned, args.sdk)[0]:
+                raise ValueError('Relocated provider identities do not match the packaged application ID')
         revision = regenerate_build_revision(args.original, unsigned, temp)
         tools = signing_tools(args.sdk)
         keystore = ensure_debug_keystore(args.keystore)
@@ -107,7 +207,8 @@ def main():
         subprocess.run([str(tools.zipalign), '-c', '-P', '16', '4', str(signed)], check=True)
         payload = verify_assets_native(args.original, signed)
         with zipfile.ZipFile(signed) as apk:
-            if sha256(apk.read('classes.dex')) != patch['output_dex_sha256']:
+            packaged_dex_hash = sha256((args.relocated_dex or args.patched_dex).read_bytes())
+            if sha256(apk.read('classes.dex')) != packaged_dex_hash:
                 raise ValueError('Signed APK DEX differs from verified endpoint patch')
         shutil.copyfile(signed, output)
     report = {
@@ -116,9 +217,12 @@ def main():
         'base_apk_sha256': baseline['output_apk_sha256'],
         'output_apk_sha256': sha256(output.read_bytes()),
         'endpoint_patch': patch,
+        'packaged_dex_sha256': packaged_dex_hash,
+        'package_relocation': (json.loads(args.relocated_dex.with_suffix(args.relocated_dex.suffix + '.json').read_text())
+                               if args.relocated_dex else None),
         'build_revision_metadata': revision,
         'unchanged_assets_native_sha256': payload,
-        'scope': 'SDK and game Janus discovery constructors; unrelated legacy service clients are not migrated.',
+        'scope': 'SDK and game Janus discovery constructors, optional local startup guard and verified SDK HTTP diagnostics; unrelated legacy service clients are not migrated.',
     }
     output.with_suffix('.provenance.json').write_text(json.dumps(report, indent=2) + '\n')
     print('Built complete debug APK with configured backend:', output)

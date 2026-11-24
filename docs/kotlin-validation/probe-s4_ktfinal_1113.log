@@ -1,0 +1,81 @@
+{"number": 1, "command": "seed", "fixture": "s4_ktfinal_1113_main", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 5.701}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 2, "command": "verify", "fixture": "s4_ktfinal_1113_main", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.778}
+{"command":"verify","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 3, "command": "crash-uncommitted", "fixture": "s4_ktfinal_1113_main", "expected_exit": 17, "actual_exit": 17, "passed": true, "seconds": 3.27}
+{"command":"crash-uncommitted","transaction_written":true,"committed":false,"expected_exit":17}
+
+{"number": 4, "command": "verify", "fixture": "s4_ktfinal_1113_main", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.171}
+{"command":"verify","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 5, "command": "crash-committed", "fixture": "s4_ktfinal_1113_main", "expected_exit": 18, "actual_exit": 18, "passed": true, "seconds": 3.74}
+{"command":"crash-committed","committed":true,"expected_exit":18}
+
+{"number": 6, "command": "verify-committed", "fixture": "s4_ktfinal_1113_main", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.625}
+{"command":"verify-committed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 7, "command": "legacy", "fixture": "s4_ktfinal_1113_legacy", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.52}
+{"command":"legacy","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 8, "command": "legacy-no-header", "fixture": "s4_ktfinal_1113_noheader", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.461}
+{"command":"legacy-no-header","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 9, "command": "missing-records-and-imports", "fixture": "s4_ktfinal_1113_legacydamage", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 4.018}
+{"command":"missing-records-and-imports","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 10, "command": "missing-critical-legacy", "fixture": "s4_ktfinal_1113_criticalmissing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.781}
+{"command":"missing-critical-legacy","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 11, "command": "migrate-v1", "fixture": "s4_ktfinal_1113_migration1", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.653}
+{"command":"migrate-v1","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 12, "command": "migrate-v3", "fixture": "s4_ktfinal_1113_migration3", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 4.256}
+{"command":"migrate-v3","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 13, "command": "seed", "fixture": "s4_ktfinal_1113_corrupt", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.897}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 14, "command": "corrupt-read", "fixture": "s4_ktfinal_1113_corrupt", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.292}
+{"command":"corrupt-read","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 15, "command": "seed", "fixture": "s4_ktfinal_1113_missing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.807}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 16, "command": "missing-records", "fixture": "s4_ktfinal_1113_missing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.66}
+{"command":"missing-records","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 17, "command": "seed", "fixture": "s4_ktfinal_1113_allmissing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.8}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 18, "command": "missing-all-tables", "fixture": "s4_ktfinal_1113_allmissing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.328}
+{"command":"missing-all-tables","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 19, "command": "seed", "fixture": "s4_ktfinal_1113_posemissing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.846}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 20, "command": "missing-pose", "fixture": "s4_ktfinal_1113_posemissing", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.698}
+{"command":"missing-pose","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 21, "command": "seed", "fixture": "s4_ktfinal_1113_writefailure", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.864}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 22, "command": "sqlite-write-error", "fixture": "s4_ktfinal_1113_writefailure", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.546}
+{"command":"sqlite-write-error","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 23, "command": "seed", "fixture": "s4_ktfinal_1113_physicalcorrupt", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.977}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 24, "command": "corrupt-file", "fixture": "s4_ktfinal_1113_physicalcorrupt", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.639}
+{"command":"corrupt-file","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 25, "command": "seed", "fixture": "s4_ktfinal_1113_repair", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.693}
+{"command":"seed","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 26, "command": "repair", "fixture": "s4_ktfinal_1113_repair", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 3.54}
+{"command":"repair","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+
+{"number": 27, "command": "async-snapshots", "fixture": "s4_ktfinal_1113_async", "expected_exit": 0, "actual_exit": 0, "passed": true, "seconds": 5.068}
+{"command":"async-snapshots","passed":true,"isolated":true,"sqlite_runtime":"Android"}
+

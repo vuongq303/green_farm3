@@ -18,13 +18,15 @@ import subprocess
 import time
 import uuid
 
-from android_build_tools import BUILD_TOOLS_VERSION, executable_name, jdk_tool
+from android_build_tools import BUILD_TOOLS_VERSION, D8_NO_LAMBDA_METADATA, executable_name, jdk_tool
+from kotlin_test_tools import DEBUG_CLASSES
 from verify_runtime_apk import dex_classes
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGE = 'com.gameloft.android.ANMP.GloftGF2F'
-STORE_CLASS = Path('com/gameloft/android/ANMP/GloftGF2F/S800x480/GameSaveStore.class')
+TARGET_PACKAGE = 'com.quanhoang.greenfarm3'
+LEGACY_PACKAGE = 'com.gameloft.android.ANMP.GloftGF2F'
+STORE_CLASS = Path('com/quanhoang/greenfarm3/S800x480/GameSaveStore.class')
 
 
 def process(command, *, timeout=45, data=None):
@@ -47,11 +49,12 @@ def compiled_classes(explicit):
         if not (directory / STORE_CLASS).is_file():
             raise ValueError('--classes-root lacks the compiled schema4 GameSaveStore')
         return directory
-    preferred = ROOT / 'app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes'
+    preferred = DEBUG_CLASSES
     if (preferred / STORE_CLASS).is_file():
         return preferred
-    matches = [path for path in (ROOT / 'app/build/intermediates/javac/debug').glob('**/classes')
-               if (path / STORE_CLASS).is_file()]
+    matches = sorted({Path(str(path)[:-len(str(STORE_CLASS))]).resolve()
+                      for path in (ROOT / 'app/build').rglob(STORE_CLASS.name)
+                      if path.as_posix().endswith(STORE_CLASS.as_posix())})
     if len(matches) != 1:
         raise ValueError('Build schema4 debug first or supply --classes-root explicitly')
     return matches[0]
@@ -60,6 +63,8 @@ def compiled_classes(explicit):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--serial', default='emulator-5554')
+    parser.add_argument('--package', choices=(TARGET_PACKAGE, LEGACY_PACKAGE), default=TARGET_PACKAGE,
+                        help='Installed new app or legacy migration bridge; storage code always uses the new namespace')
     parser.add_argument('--sdk', type=Path,
                         default=os.environ.get('ANDROID_HOME') or os.environ.get('ANDROID_SDK_ROOT'))
     parser.add_argument('--classes-root', type=Path)
@@ -67,6 +72,7 @@ def main():
     parser.add_argument('--timeout', type=int, default=45)
     parser.add_argument('--output', type=Path, default=ROOT / 'docs/sqlite-validation/probe-results.json')
     args = parser.parse_args()
+    package = args.package
     if not re.fullmatch(r's4_[A-Za-z0-9_-]{1,24}', args.prefix):
         raise ValueError('--prefix must begin with s4_ and contain at most 27 safe characters')
     if not 5 <= args.timeout <= 60:
@@ -81,6 +87,7 @@ def main():
         if not item.is_file():
             raise ValueError('Required Android tool is missing: ' + str(item))
     classes_root = compiled_classes(args.classes_root)
+    java_classes = ROOT / 'app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes'
     work = ROOT / '.local/game-save-probe' / args.prefix
     if work.exists():
         raise ValueError('This probe run prefix already exists; choose a fresh --prefix')
@@ -89,7 +96,7 @@ def main():
     dex_output = work / 'dex'
     classes.mkdir()
     dex_output.mkdir()
-    classpath = os.pathsep.join((str(android), str(classes_root),
+    classpath = os.pathsep.join((str(android), str(classes_root), str(java_classes),
                                str(ROOT / 'app/build/original-dependencies/compile-view.jar')))
     stdout, stderr = checked([jdk_tool('javac'), '-source', '8', '-target', '8',
                               '-cp', classpath, '-d', classes,
@@ -98,9 +105,10 @@ def main():
     programs = sorted(classes.glob('GameSaveStoreProbe*.class'))
     if not programs or len(list(classes.rglob('*.class'))) != len(programs):
         raise RuntimeError('Unexpected program class: the probe must not package app/helper classes')
-    stdout, stderr = checked([jdk_tool('java'), '-cp', d8, 'com.android.tools.r8.D8',
+    stdout, stderr = checked([jdk_tool('java'), D8_NO_LAMBDA_METADATA, '-cp', d8, 'com.android.tools.r8.D8',
                               '--debug', '--min-api', '16', '--lib', android,
                               '--classpath', classes_root,
+                              '--classpath', java_classes,
                               '--classpath', ROOT / 'app/build/original-dependencies/compile-view.jar',
                               '--output', dex_output, *programs],
                              timeout=args.timeout)
@@ -116,22 +124,22 @@ def main():
         return checked([*adb_command, 'shell', command],
                        timeout=args.timeout if timeout is None else timeout, data=data)
 
-    paths, _ = shell(shlex.join(['pm', 'path', PACKAGE]))
+    paths, _ = shell(shlex.join(['pm', 'path', package]))
     apks = [line.removeprefix('package:').strip() for line in paths.splitlines() if line.startswith('package:')]
     if len(apks) != 1 or not apks[0].startswith('/data/app/') or not apks[0].endswith('.apk'):
         raise RuntimeError('Expected one installed complete APK, without split APKs')
     installed_apk = apks[0]
-    private_dir, _ = shell(shlex.join(['run-as', PACKAGE, 'pwd']))
+    private_dir, _ = shell(shlex.join(['run-as', package, 'pwd']))
     private_dir = private_dir.strip()
-    if not private_dir.startswith('/data/') or not private_dir.endswith('/' + PACKAGE):
+    if not private_dir.startswith('/data/') or not private_dir.endswith('/' + package):
         raise RuntimeError('Unexpected run-as application directory')
     relative_code_directory = 'files/sqlite-probe-code-' + args.prefix
     relative_dex = relative_code_directory + '/probe.dex'
     # The bytes are written by run-as, giving them the app UID and data-file
     # SELinux label. No /data/local/tmp accessibility assumption is required.
     upload = 'mkdir -p ' + shlex.quote(relative_code_directory) + ' && cat > ' + shlex.quote(relative_dex)
-    shell(shlex.join(['run-as', PACKAGE, 'sh', '-c', upload]), data=dex.read_bytes())
-    uploaded_hash, _ = shell(shlex.join(['run-as', PACKAGE, 'sha256sum', relative_dex]))
+    shell(shlex.join(['run-as', package, 'sh', '-c', upload]), data=dex.read_bytes())
+    uploaded_hash, _ = shell(shlex.join(['run-as', package, 'sha256sum', relative_dex]))
     dex_hash = hashlib.sha256(dex.read_bytes()).hexdigest()
     if uploaded_hash.split()[0] != dex_hash:
         raise RuntimeError('Uploaded probe DEX checksum mismatch')
@@ -146,6 +154,8 @@ def main():
         ('missing-critical-legacy', 'criticalmissing', 0),
         ('migrate-v1', 'migration1', 0), ('migrate-v3', 'migration3', 0),
         ('seed', 'corrupt', 0), ('corrupt-read', 'corrupt', 0),
+        ('seed', 'restorefailed', 0), ('failed-restore-barrier', 'restorefailed', 0),
+        ('seed', 'futureversion', 0), ('unsupported-version', 'futureversion', 0),
         ('seed', 'missing', 0), ('missing-records', 'missing', 0),
         ('seed', 'allmissing', 0), ('missing-all-tables', 'allmissing', 0),
         ('seed', 'posemissing', 0), ('missing-pose', 'posemissing', 0),
@@ -161,6 +171,8 @@ def main():
         'report_timezone': 'Asia/Saigon',
         'required_schema': 4,
         'device': args.serial,
+        'application_id': package,
+        'storage_code_package': 'com.quanhoang.greenfarm3.S800x480',
         'installed_apk_sha256': installed_hash.split()[0],
         'probe_dex_sha256': dex_hash,
         'probe_dex_classes': sorted(definitions),
@@ -180,7 +192,7 @@ def main():
     with log.open('w', encoding='utf-8') as stream:
         for number, (command, suffix, expected_exit) in enumerate(matrix, 1):
             fixture = args.prefix + '_' + suffix
-            remote = shlex.join(['run-as', PACKAGE, 'env', 'CLASSPATH=' + runtime_classpath,
+            remote = shlex.join(['run-as', package, 'env', 'GREENFARM_PROBE_PACKAGE=' + package, 'CLASSPATH=' + runtime_classpath,
                                  'app_process', '/system/bin', 'GameSaveStoreProbe', command, fixture])
             began = time.monotonic()
             try:

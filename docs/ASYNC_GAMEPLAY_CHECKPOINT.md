@@ -1,3 +1,5 @@
+> Checkpoint lịch sử. Cấu hình hiện tại là 500/2000 ms, ngưỡng 50 và retry hữu hạn; xem [báo cáo cập nhật](MAINTENANCE_REPORT.md).
+
 # Checkpoint: lưu nền, tutorial và ngôn ngữ
 
 Nền mã: `2198e07`, một module Android Java/MIDlet `app`. Backend vẫn JavaScript/MySQL

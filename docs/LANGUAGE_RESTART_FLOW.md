@@ -1,99 +1,27 @@
 # Đổi ngôn ngữ và khởi động lại phiên chơi
 
-Các lựa chọn trong menu ngôn ngữ gọi `LanguageRestartController.select()` thay vì
-gán `ci.aYU` và gọi `Cf()` ngay lập tức. Hộp xác nhận lấy bản dịch theo **ngôn ngữ
-đang dùng** trước khi nhận lựa chọn mới. Hủy hoặc nút Back đóng hộp thoại và giữ
-nguyên ngôn ngữ, tiến độ và phiên hiện tại. Chọn lại ngôn ngữ đang dùng không mở
-hộp thoại và không khởi động lại.
+Menu hiện có vẫn gọi `LanguageRestartController.select()`, hỗ trợ14 locale từ các gói text gốc. Thay ngôn ngữ không đăng xuất tài khoản hoặc reset farm; cần tạo lại MIDlet/static để áp dụng toàn bộ text và cấu hình ở lần khởi động mới.
 
-Trong tutorial, nút pause trên HUD có thể đang bị ẩn theo kịch bản cũ. Phím
-**Menu của Android** vẫn mở màn hình Options có sẵn để vào Language. Đường này
-chỉ hoạt động trong farm của mình đã tải xong, khi tutorial đang chạy và không
-có thao tác đặt/di chuyển chưa xác nhận hoặc chuyển màn hình đang chờ. Callback
-phím chỉ xếp yêu cầu; luồng game mở Options bằng push state 15, giữ màn hình cha
-và trạng thái tutorial. Các phím khác và phím Menu ngoài tutorial dùng nguyên
-handler MIDlet cũ. Không thêm điều khiển debug hoặc sửa tiến độ để mở menu.
+1. Luồng game khóa thao tác, chụp tiến độ đầy đủ và để writer SQLite commit. Sau đó ghi lựa chọn ngôn ngữ vào header. Callback phát sinh trong lúc ghi cũng phải trở thành durable trước khi báo thành công.
+2. Khi checkpoint thành công, nạp đúng **nhóm font của ngôn ngữ vừa chọn**, theo cùng mapping với loader gốc: `/2` cho nhóm chung, `/3` TH, `/4` VI, `/5` KR, `/6` JP; JP/KR còn dùng slot Latin từ `/2`. Tạo các font/charmap trong nhóm tạm, xác minh đủ slot rồi mới đổi đồng thời `aZh` và `asA[2]`. Không giải phóng font mà màn hình cũ còn có thể tham chiếu, không nạp lại texture/sprite/farm.
+3. Thông báo dùng **engine20 / GUI4** hiện có, nội dung `textFor(selectedLanguage)` và chỉ có một nút **Khởi động lại** được dịch theo lựa chọn. Không có Hủy/Để sau/Đóng; Back không bỏ qua checkpoint. Live `aYU` và các text pack gameplay vẫn giữ nguyên cho tới khi tiến trình mới nạp lại; không trộn header với font bằng cách đổi locale giữa frame.
+4. Nhấn Khởi động lại chuẩn bị PendingIntent launcher `Start`, rồi vào `FINAL_SAVING`: một checkpoint bất đồng bộ cuối xử lý các thay đổi SDK/settings đến trong lúc popup mở. Chỉ sau xác nhận durable cuối mới đặt alarm và kết thúc tiến trình cũ. Chạm lặp không tạo nhiều handoff; đường nạp save không gọi lại `select()` nên không tạo vòng lặp restart.
+5. Nếu checkpoint cuối hoặc handoff lỗi, không kết thúc tiến trình. Popup target-language giữ một nút Khởi động lại để người dùng thử lại; checkpoint dùng giá trị tuyệt đối và không gọi lại nhận thưởng. Không tự retry restart theo từng frame.
+6. Nếu font target không tải được, chỉ thử nạp nhóm đó tối đa2 lần mỗi yêu cầu. Font cũ còn hợp lệ được giữ/khôi phục để hiện **lỗi tài nguyên** với một nút Thử lại. Đây không phải thông báo thành công bằng locale cũ: do glyph target chưa dùng được, lỗi được hiển thị bằng font/locale còn hợp lệ. Header lựa chọn đã commit không bị xóa hoặc đổi lại. Chỉ thao tác Thử lại mới nạp lại font, không phát lại gameplay hoặc vòng lặp tự động.
+7. Lỗi lưu trước thông báo thành công tiếp tục dùng cơ chế rollback/bù hiện có; không báo thành công hoặc khởi động lại khi chưa có dữ liệu nhất quán. Retry SQLite vẫn hữu hạn và snapshot chưa lưu giữ trong RAM.
 
-Hộp thoại có bản dịch cho đủ 14 gói văn bản đang được game nạp: EN, DE, FR, IT,
-ES, BR, JP, KR, RU, TR, PL, TH, VI và LATAM. Mã 20 dùng asset `LATAM`; không sửa
-các gói nhị phân hoặc thêm các mã mà `fM(30)` không hỗ trợ.
+`deferredLanguage`/header override hiện dùng để giữ lựa chọn durable trong thời gian **chờ bắt buộc khởi động lại**, không còn là tùy chọn Để sau. Nó bảo vệ cả ghi header trực tiếp từ Options/SDK và không sửa buffer của caller.
 
-Luồng chấp nhận:
+Các popup giữ callback một lần, dọn input cũ và pop state20 trước prompt/handoff kế tiếp. Phím Menu tutorial, ownership của popup tutorial, và tính năng chuyển save được giữ nguyên.
 
-1. Callback nút Đồng ý chỉ ghi quyết định vào bộ điều phối. Mỗi lựa chọn có một
-   mã thế hệ; nhấn lặp hoặc callback cũ không tạo thêm lần lưu/khởi động lại.
-2. Luồng game nhận quyết định tại đầu frame, xóa sự kiện chạm đang chờ và khóa
-   cập nhật game cùng các callback chạm. Callback Android ACTION_CANCEL vẫn được
-   phép dọn trạng thái thao tác.
-3. Chuẩn bị PendingIntent tới launcher `Start`, rồi yêu cầu
-   `ProgressSaveController.requestLanguageCheckpoint()`. Writer ghi gameplay đang
-   chờ bằng ngôn ngữ cũ trước, rồi ghi header ngôn ngữ mới tại hàng rào cuối. Nếu
-   một callback SDK tạo thêm thay đổi, phiên vẫn khóa tới khi snapshot mới cũng
-   commit. Chỉ sau đó mới gọi `SaveCompletion.completed(true)` trên luồng game.
-4. Chỉ callback thành công mới gán ngôn ngữ trong RAM và đặt alarm khởi chạy
-   `Start`. Sau khi đặt alarm thành công, tiến trình hiện tại kết thúc; mọi game
-   loop, worker và static của MIDlet cũ kết thúc cùng nó. Không dùng
-   `Activity.recreate()` vì `GloftGF2F.acw` và các static của engine vẫn tồn tại.
-5. Tiến trình mới đi qua bộ nạp bình thường, đọc header và snapshot đã commit.
-   Không gọi lại `select()` từ đường nạp nên không hiện lại hộp xác nhận.
-
-Nếu lưu thất bại, callback không gán `ci.aYU`; phiên chơi cũ tiếp tục và hiện
-Thử lại/Hủy bằng ngôn ngữ cũ. Thử lại yêu cầu checkpoint mới; hủy giữ phiên đó.
-Không đánh dấu lưu thành công, reset farm, chạy lại tutorial hay phát lại phần
-thưởng trong bộ điều phối ngôn ngữ.
-
-Nếu header mới đã được ghi hoặc đã được đưa vào cache trước khi lỗi xảy ra,
-writer thực hiện một transaction bù để khôi phục ngôn ngữ cũ. Hộp thoại Thử
-lại/Hủy chỉ hiện sau khi transaction bù commit; lỗi ghi transaction bù giữ phiên
-khóa và được writer thử lại. Vì vậy thông báo giữ ngôn ngữ cũ luôn dựa trên thiết
-lập đã lưu bền vững.
-
-Nếu Android từ chối exact alarm, bộ điều phối dùng alarm thường và không yêu cầu
-quyền mới. Nếu cả thao tác chuyển sang launcher thất bại sau khi đã commit,
-tiến độ và ngôn ngữ mới đã được lưu; phiên vẫn khóa và hộp thoại báo riêng lỗi
-khởi động lại. Nút Thử lại chỉ thực hiện lại chuyển launcher, không lưu hoặc
-phát thưởng lần nữa.
-
-Kiểm tra nguồn, không compile/build/cài APK/ADB:
+Kiểm tra host:
 
 ```sh
-python3 -m unittest discover -s tools -p 'test_language_restart_source.py' -v
+python3 -m unittest discover -s tools -p test_language_restart_source.py -v
+python3 -m unittest discover -s tests -p test_progress_save_controller.py -v
+python3 -m unittest discover -s tests -p test_language_notification_fonts.py -v
 ```
 
-Bộ kiểm tra này đối chiếu 14 tuyến menu và asset, ngôn ngữ hộp thoại, vị trí
-thay đổi thiết lập, khóa callback chạm, và thứ tự đặt alarm/kết thúc tiến trình.
-Nó không thay thế kiểm tra thực tế vòng đời Android và SQLite.
+Các test chạy controller thật và font-staging hook được trích từ engine với Android/pack peers điều khiển được:14 locale, nút duy nhất, Back, final save, late writes, lỗi font có giới hạn, tái dùng cache hợp lệ và phục hồi font đã giải phóng. Chưa xác nhận glyph decode, clipping, ảnh popup hoặc alarm trên Android thật; cần kiểm thử thiết bị, đặc biệt đổi giữa VI/TH/JP/KR và nhóm font chung.
 
-Kiểm tra hành vi các bộ điều phối thật bằng Java fixture cô lập:
-
-```sh
-python3 -m unittest discover -s tests -p 'test_progress_save_controller.py' -v
-```
-
-Bộ kiểm tra này chạy nguyên mã `ProgressSaveController`,
-`LanguageRestartController`, `SaveBatchPolicy` và các hàm chuyển trạng thái được
-trích từ `ci`. Writer thủ công điều khiển thời điểm xác nhận commit; Android và
-storage là fixture. Các ca gồm hủy, nhấn Đồng ý lặp, retry sau lỗi lưu, thay đổi
-SDK tới muộn, rollback ngôn ngữ đã commit, queue từ chối header ban đầu, Retry khi
-writer còn bận, và retry riêng thao tác restart. Nó không tạo/cài APK và không
-dùng ADB; alarm và kết thúc tiến trình được quan sát qua fixture.
-
-Fixture cũng chạy hai override phím thật trong `GloftGF2F`: phím thường được
-chuyển cho MIDlet đúng một lần, Menu lặp chỉ xếp một lần mở Options, và yêu cầu
-không được mở khi đang visit farm, còn preview hoặc có chuyển màn hình khác.
-
-Kết quả UI thực tế (Cancel, OK lặp, VI→EN tự restart và cold reopen) cùng các
-giới hạn được ghi trong [checkpoint nghiệm thu](ASYNC_GAMEPLAY_CHECKPOINT.md)
-và [bằng chứng runtime](async-save-validation/game-runtime.json). Bảng dưới là
-các tình huống cần bao phủ; không phải mọi dòng đều đã được thử trên thiết bị.
-
-| Tình huống | Kết quả cần quan sát |
-| --- | --- |
-| Giữa tutorial, nhấn Menu Android → Options → Language | Mở menu cũ; không thay đổi bước tutorial, tiền hoặc phần thưởng đang chờ |
-| VI → EN, chọn Hủy/Back | Hộp thoại tiếng Việt; ngôn ngữ và phiên không đổi |
-| EN → VI, chọn OK một lần/nhiều lần | Hộp thoại tiếng Anh; chỉ một checkpoint và một phiên mới |
-| Đổi ngôn ngữ khi còn tiến độ mới | Chờ commit trước khi thoát; farm, quest, tutorial và phần thưởng khôi phục đúng |
-| SQLite bị lỗi khi lưu | Không restart; ngôn ngữ cũ và phiên cũ còn nguyên; Thử lại có thể thực hiện |
-| Mở menu trước khi vào farm hoặc sau khi rời farm | Header mới không làm mất snapshot farm đã lưu |
-| Khởi động lại hoặc quay lại app sau đổi ngôn ngữ | Không hiện lại xác nhận; không có game loop của phiên trước |
-| Exact alarm bị từ chối | Không hỏi quyền; tự khởi động bằng alarm thường |
+Khôi phục constructor/Init chỉ áp dụng trước mốc engine sẵn sàng; tại đó chưa thể mở menu/popup ngôn ngữ. Không reset trạng thái thông báo hoặc lựa chọn ngôn ngữ khi chỉ pause/resume một engine đang hoạt động.

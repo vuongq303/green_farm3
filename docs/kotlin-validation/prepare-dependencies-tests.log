@@ -1,0 +1,16 @@
+test_conversion_rejects_logged_errors_wrong_count_and_duplicate_classes (test_prepare_core_dependencies.PrepareCoreDependenciesTest.test_conversion_rejects_logged_errors_wrong_count_and_duplicate_classes) ... ok
+test_filter_rejects_missing_core_class_and_same_input_output (test_prepare_core_dependencies.PrepareCoreDependenciesTest.test_filter_rejects_missing_core_class_and_same_input_output) ... ok
+test_filter_removes_source_and_resource_classes_only_preserving_bytes (test_prepare_core_dependencies.PrepareCoreDependenciesTest.test_filter_removes_source_and_resource_classes_only_preserving_bytes) ... ok
+test_java_and_kotlin_same_game_identity_are_rejected (test_prepare_core_dependencies.PrepareCoreDependenciesTest.test_java_and_kotlin_same_game_identity_are_rejected) ... ok
+test_original_apk_and_dex_are_both_verified (test_prepare_core_dependencies.PrepareCoreDependenciesTest.test_original_apk_and_dex_are_both_verified) ... ok
+test_resource_exclusion_covers_only_five_reviewed_outer_and_nested_identities (test_prepare_core_dependencies.PrepareCoreDependenciesTest.test_resource_exclusion_covers_only_five_reviewed_outer_and_nested_identities) ... ok
+test_reviewed_kotlin_streams_replace_binary_lookup_without_weakening_base_profile (test_prepare_core_dependencies.PrepareCoreDependenciesTest.test_reviewed_kotlin_streams_replace_binary_lookup_without_weakening_base_profile) ... ok
+test_reviewed_metadata_is_accepted_and_changed_pins_are_rejected (test_prepare_core_dependencies.PrepareCoreDependenciesTest.test_reviewed_metadata_is_accepted_and_changed_pins_are_rejected) ... ok
+test_source_exclusion_keeps_partial_l_and_original_empty_g (test_prepare_core_dependencies.PrepareCoreDependenciesTest.test_source_exclusion_keeps_partial_l_and_original_empty_g) ... ok
+test_tool_archive_must_match_published_reviewed_fingerprint (test_prepare_core_dependencies.PrepareCoreDependenciesTest.test_tool_archive_must_match_published_reviewed_fingerprint) ... ok
+test_unreviewed_multidex_or_duplicate_dex_is_rejected (test_prepare_core_dependencies.PrepareCoreDependenciesTest.test_unreviewed_multidex_or_duplicate_dex_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.010s
+
+OK

@@ -1,6 +1,9 @@
 import { createHash, randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
 import mysql from 'mysql2/promise';
+import { createSocialStore, checkSocialSchema } from './social-store.js';
+import { createGiftcodeStore, checkGiftcodeSchema } from './giftcode-store.js';
+import { DatabaseStartupError, requireSchemaVersion } from './diagnostics.js';
 
 const derivePassword = promisify(scrypt);
 const MAX_SESSIONS = 10000;
@@ -36,8 +39,8 @@ export function createPoolFromConfig(config) {
     database: config.database,
     user: config.user,
     password: config.password,
-    connectionLimit: config.connectionLimit ?? 5,
-    connectTimeout: config.connectTimeout ?? 5000,
+    connectionLimit: config.connectionLimit,
+    connectTimeout: config.connectTimeout,
     waitForConnections: true,
     queueLimit: 100,
     charset: 'utf8mb4',
@@ -46,6 +49,15 @@ export function createPoolFromConfig(config) {
     bigNumberStrings: true,
     multipleStatements: false,
   });
+}
+
+async function checkLegacySchema(connection) {
+  const [versions] = await connection.execute('SELECT version FROM gf_schema_migrations WHERE version = ?', [1]);
+  requireSchemaVersion(versions);
+  await connection.query('SELECT id, identity_hash, client_id, credential, password_salt, password_hash FROM gf_accounts LIMIT 0');
+  await connection.query('SELECT sid_hash, account_id, device_id, issued_at, expires_at, refresh_expires_at FROM gf_sessions LIMIT 0');
+  await connection.query('SELECT account_id, country, age, updated_at FROM gf_compliance LIMIT 0');
+  return { status: 'ready', schemaVersion: 1 };
 }
 
 /** No in-memory/JSON fallback: every successful write is committed in MySQL. */
@@ -72,15 +84,29 @@ export function createMysqlStore(config) {
   }
 
   return {
+    social: createSocialStore(pool),
+    giftcodes: createGiftcodeStore(pool),
+    async checkStartup({ social, giftcodes }) {
+      let connection;
+      let phase = 'connection';
+      try {
+        // The pool is lazy. Handshake and configured database selection must
+        // succeed before checking tables/migrations on the opened connection.
+        connection = await pool.getConnection();
+        phase = 'schema';
+        const result = await checkLegacySchema(connection);
+        if (social) await checkSocialSchema(connection);
+        if (giftcodes) await checkGiftcodeSchema(connection);
+        return result;
+      } catch (error) {
+        throw new DatabaseStartupError(error, phase);
+      } finally {
+        connection?.release();
+      }
+    },
     async health() {
       try {
-        const [versions] = await pool.execute('SELECT version FROM gf_schema_migrations WHERE version = ?', [1]);
-        if (versions.length !== 1) throw new DatabaseUnavailableError();
-        // A TCP connection alone is insufficient: validate all required tables.
-        await pool.query('SELECT id, identity_hash, client_id, credential, password_salt, password_hash FROM gf_accounts LIMIT 0');
-        await pool.query('SELECT sid_hash, account_id, device_id, issued_at, expires_at, refresh_expires_at FROM gf_sessions LIMIT 0');
-        await pool.query('SELECT account_id, country, age, updated_at FROM gf_compliance LIMIT 0');
-        return { status: 'ready', schemaVersion: 1 };
+        return await checkLegacySchema(pool);
       } catch {
         throw new DatabaseUnavailableError();
       }

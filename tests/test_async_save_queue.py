@@ -15,17 +15,19 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from android_build_tools import jdk_tool
+from kotlin_test_tools import compile_mixed, runtime_classpath
+from game_source_context import qualified_package, kotlin_source_directory, adapt_fixture
 
-PACKAGE = 'com/gameloft/android/ANMP/GloftGF2F/S800x480'
-CORE = ROOT / 'app/src/main/java' / PACKAGE
+PACKAGE = qualified_package().replace('.', '/')
+CORE = kotlin_source_directory()
 
 STORE = r'''
 package com.gameloft.android.ANMP.GloftGF2F.S800x480;
 import java.util.*;
 import java.util.concurrent.*;
 
-final class GameSaveStore {
- static final class Snapshot {
+public final class GameSaveStore {
+ public static final class Snapshot {
   final Map<String,Integer> records;
   final Map<String,Long> versions;
   Snapshot(Map<String,Integer> records,Map<String,Long> versions){
@@ -108,18 +110,18 @@ public class AsyncSaveQueueProbe {
   SaveBatchPolicy batch=new SaveBatchPolicy();
   check(!batch.isDirty()&&!batch.due(100000),"empty policy is due");
   batch.changed(0,0);batch.changed(0,-1);check(!batch.isDirty(),"nonchanges started batch");
-  batch.changed(0,1);check(batch.isDirty()&&!batch.due(199),"debounce fired early");
-  check(batch.due(200),"200ms debounce missing");batch.captured();
+  batch.changed(0,1);check(batch.isDirty()&&!batch.due(499),"debounce fired early");
+  check(batch.due(500),"500ms debounce missing");batch.captured();
   check(!batch.isDirty()&&!batch.due(100000),"capture did not reset batch");
   batch.changed(1000,1);batch.changed(1150,1);
-  check(!batch.due(1349)&&batch.due(1350),"debounce did not follow newest change");batch.captured();
-  for(int now=2000;now<2500;now+=50){batch.changed(now,1);check(!batch.due(now),"continuous changes flushed early");}
-  batch.changed(2499,1);check(!batch.due(2499)&&batch.due(2500),"continuous changes postponed 500ms max wait");
+  check(!batch.due(1649)&&batch.due(1650),"debounce did not follow newest change");batch.captured();
+  for(int now=2000;now<4000;now+=50){batch.changed(now,1);check(!batch.due(now),"continuous changes flushed early");}
+  batch.changed(3999,1);check(!batch.due(3999)&&batch.due(4000),"continuous changes postponed 2000ms max wait");
   batch.captured();batch.changed(3000,49);check(!batch.due(3000),"49 operations flushed early");
   batch.changed(3000,1);check(batch.due(3000),"50th operation did not flush immediately");
   batch.captured();batch.changed(4000,Long.MAX_VALUE);check(batch.due(4000),"large batch overflowed threshold");
-  batch.captured();batch.changed(5000,1);check(!batch.due(5199)&&batch.due(5200),"old max wait leaked into new batch");
-  System.out.println("PASS policy: 200ms debounce, 500ms continuous-change cap, 50 operations and reset");
+  batch.captured();batch.changed(5000,1);check(!batch.due(5499)&&batch.due(5500),"old max wait leaked into new batch");
+  System.out.println("PASS policy: 500ms debounce, 2000ms continuous-change cap, 50 operations and reset");
  }
  static void coalescing(){
   GameSaveStore.reset();Results results=new Results();AsyncSaveQueue queue=new AsyncSaveQueue(results);
@@ -164,6 +166,22 @@ public class AsyncSaveQueueProbe {
     &&GameSaveStore.commits==1&&GameSaveStore.maxActive==1&&GameSaveStore.value("coins")==15,"absolute retry double-applied/dropped data");
   queue.close();System.out.println("PASS retry: first failure retained, no partial publish, newer absolute values survive one atomic retry");
  }
+ static void boundedRetry()throws Exception{
+  GameSaveStore.reset();Results results=new Results();AsyncSaveQueue queue=new AsyncSaveQueue(results);
+  for(int i=0;i<SaveBatchPolicy.MAX_WRITE_ATTEMPTS;i++)GameSaveStore.step(true,false);
+  queue.submit(GameSaveStore.snapshot(1,"coins",10),1,null);
+  for(int i=0;i<SaveBatchPolicy.MAX_WRITE_ATTEMPTS;i++)check(results.next().failure!=null,"failure missing");
+  long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(2);
+  while(!queue.isRetryPaused()&&System.nanoTime()<deadline)Thread.yield();
+  check(queue.isRetryPaused()&&!queue.awaitIdle(0),"retry limit discarded pending work");
+  queue.submit(GameSaveStore.snapshot(2,"coins",17),2,null);
+  Thread.sleep(350);
+  check(GameSaveStore.calls()==SaveBatchPolicy.MAX_WRITE_ATTEMPTS,"new actions restarted unlimited automatic retries");
+  rejects(queue::close,"paused writer discarded unsaved changes");
+  GameSaveStore.step(false,false);queue.retryPending();check(queue.awaitIdle(5000),"explicit retry did not drain");
+  check(GameSaveStore.value("coins")==17&&queue.durableSequence()==2,"retry lost newer absolute state");queue.close();
+  System.out.println("PASS bounded retry: five attempts, retained snapshot, no automatic retry loop, explicit recovery");
+ }
  static void checkpoint(){
   GameSaveStore.reset();Results results=new Results();AsyncSaveQueue queue=new AsyncSaveQueue(results);Object language=new Object();
   GameSaveStore.Step failure=GameSaveStore.step(true,true);
@@ -192,7 +210,7 @@ public class AsyncSaveQueueProbe {
   System.out.println("PASS lifecycle: interrupted/timeout wait preserves pending data; close only succeeds after completion");
  }
  public static void main(String[] args)throws Exception{
-  switch(args[0]){case "policy":policy();break;case "coalescing":coalescing();break;
+  switch(args[0]){case "bounded":boundedRetry();break;case "policy":policy();break;case "coalescing":coalescing();break;
    case "retry":retry();break;case "checkpoint":checkpoint();break;case "interrupt":interruptWait();break;
    default:throw new AssertionError(args[0]);}
  }
@@ -209,27 +227,25 @@ class AsyncSaveQueueTest(unittest.TestCase):
         source = cls.directory / PACKAGE
         source.mkdir(parents=True)
         files = []
-        for name, text in [('AsyncSaveQueue', (CORE / 'AsyncSaveQueue.java').read_text()),
-                           ('SaveBatchPolicy', (CORE / 'SaveBatchPolicy.java').read_text()),
-                           ('GameSaveStore', STORE), ('AsyncSaveQueueProbe', RUNNER)]:
+        for name, text in [('GameSaveStore', STORE), ('AsyncSaveQueueProbe', RUNNER)]:
             path = source / (name + '.java')
-            path.write_text(text)
+            path.write_text(adapt_fixture(text))
             files.append(str(path))
-        compile_result = subprocess.run([str(jdk_tool('javac')), '-d', str(cls.directory), *files],
-                                        capture_output=True, text=True)
-        if compile_result.returncode:
-            raise AssertionError(compile_result.stderr)
+        compile_mixed([CORE / 'AsyncSaveQueue.kt', CORE / 'SaveBatchPolicy.kt'], files, cls.directory)
 
     def run_case(self, name):
-        result = subprocess.run([str(jdk_tool('java')), '-cp', str(self.directory),
+        result = subprocess.run([str(jdk_tool('java')), '-cp', runtime_classpath(self.directory),
                                  PACKAGE.replace('/', '.') + '.AsyncSaveQueueProbe', name],
                                 capture_output=True, text=True, timeout=20)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn('PASS ', result.stdout)
         print(result.stdout.strip())
 
-    def test_200ms_debounce_500ms_max_wait_and_50_operations(self):
+    def test_500ms_debounce_2000ms_max_wait_and_50_operations(self):
         self.run_case('policy')
+
+    def test_bounded_retry_retains_state_until_explicit_recovery(self):
+        self.run_case('bounded')
 
     def test_one_writer_bounded_pending_and_acknowledgement(self):
         self.run_case('coalescing')

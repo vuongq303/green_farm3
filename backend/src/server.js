@@ -1,7 +1,9 @@
 import { createServer } from 'node:http';
 import { HttpError, respond, form, parsePairs, required, routeSegments, validateClientPath } from './http.js';
 import { createSessionService } from './services/sessions.js';
-import { normalizeBackendBaseUrl } from './config.js';
+import { createSocialAuthRouter } from './auth/router.js';
+import { createGiftcodeRouter } from './giftcodes/router.js';
+import { handleGiftcodeAdminPage } from '../web/giftcode-admin.mjs';
 
 const DATACENTER_NAME = 'local';
 const DATACENTER_ID = 'local-research';
@@ -12,16 +14,18 @@ const URL_KEYS = [
 ];
 
 /** Original HTTP contracts, with an explicitly supplied persistent repository. */
-export function createResearchServer(options) {
-  const baseUrl = normalizeBackendBaseUrl(options.publicBaseUrl).replace(/\/$/u, '');
-  const store = options.store;
+export function createResearchServer({
+  config, store, socialStore = store?.social, socialProviders, now = Date.now,
+  log = entry => console.log(JSON.stringify(entry)),
+  errorLog = entry => console.error(JSON.stringify(entry)),
+}) {
   if (!store || ['health', 'createSession', 'refreshSession', 'findSession', 'saveCompliance'].some(name => typeof store[name] !== 'function')) {
     throw new Error('A MySQL repository is required; there is no memory/file fallback');
   }
-  const now = options.now ?? Date.now;
-  const sessions = createSessionService({ store, secret: options.sessionSecret, ttl: options.sessionTtlSeconds ?? 900, refreshTtl: options.refreshTtlSeconds ?? 2592000, now });
-  const log = options.log ?? (entry => console.log(JSON.stringify(entry)));
-  const errorLog = options.errorLog ?? (entry => console.error(JSON.stringify(entry)));
+  const baseUrl = config.server.publicBaseUrl.replace(/\/$/u, '');
+  const sessions = config.sessions.legacy ? createSessionService({ store, config: config.sessions.legacy, now }) : null;
+  const social = createSocialAuthRouter({ config: config.auth, store: socialStore, now, providers: socialProviders, errorLog });
+  const giftcodes = createGiftcodeRouter({ auth: config.auth, giftcodes: config.giftcodes, store: store.giftcodes, socialStore, now });
 
   const server = createServer((request, response) => {
     let path = '[unmatched]';
@@ -39,6 +43,29 @@ export function createResearchServer(options) {
         throw new HttpError(400, 'invalid_path');
       }
       const url = new URL(request.url, 'http://local.invalid');
+      if (url.pathname === '/admin/giftcodes' || url.pathname.startsWith('/admin/giftcodes/')) {
+        path = url.pathname.startsWith('/admin/giftcodes/assets/') ? '/admin/giftcodes/assets/:file' : '/admin/giftcodes';
+        if (handleGiftcodeAdminPage(request, response, url)) return;
+        throw new HttpError(404, 'route_not_found');
+      }
+      if (url.pathname === '/giftcodes' || url.pathname.startsWith('/giftcodes/') ||
+          url.pathname === '/admin/api/giftcodes' || url.pathname.startsWith('/admin/api/giftcodes/')) {
+        path = giftcodes.recognize(url.pathname);
+        response.setHeader('X-Content-Type-Options', 'nosniff');
+        response.setHeader('Referrer-Policy', 'no-referrer');
+        await giftcodes.handle(request, response, url, path);
+        return;
+      }
+      if (url.pathname === '/auth' || url.pathname.startsWith('/auth/')) {
+        // OAuth query strings contain authorization codes and must never enter logs.
+        path = url.pathname.startsWith('/auth/callback/') ? '/auth/callback/:provider'
+          : url.pathname.startsWith('/auth/assets/') ? '/auth/assets/:file'
+          : ['/auth/attempt', '/auth/facebook', '/auth/google', '/auth/exchange', '/auth/me',
+            '/auth/refresh', '/auth/logout', '/auth/browser/start', '/auth/login', '/auth/register',
+            '/auth/web/login', '/auth/web/register'].includes(url.pathname) ? url.pathname : '/auth/[unknown]';
+        await social.handle(request, response, url);
+        return;
+      }
       const parts = routeSegments(url.pathname);
       let expectedMethod;
 
@@ -80,6 +107,10 @@ export function createResearchServer(options) {
         response.setHeader('Allow', expectedMethod);
         request.resume();
         throw new HttpError(405, 'method_not_allowed');
+      }
+
+      if (!sessions && ['/authorize', '/profiles/me/myprofile', '/users/me/compliance'].includes(path)) {
+        throw new HttpError(503, 'legacy_auth_disabled');
       }
 
       if (path === '/health' || path === '/healthz') {

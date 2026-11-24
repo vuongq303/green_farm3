@@ -21,8 +21,86 @@ def debugKeystore = rootProject.layout.projectDirectory.file('.local/baseline-de
 if (providers.gradleProperty('localBackendUrl').isPresent()) {
     throw new GradleException('localBackendUrl is no longer supported. Set only BACKEND_BASE_URL in the root gradle.properties.')
 }
+// One origin parser for domains, IPv4 and IPv6, shared with the SDK patcher contract.
 def backendBaseUrl = providers.gradleProperty('BACKEND_BASE_URL').orElse('')
         .map { BackendBaseUrl.normalize(it) }
+def androidCompileApi = 37
+def androidBuildToolsVersion = '37.0.0'
+// Compare Android's target-gated policies without changing the production baseline.
+def androidTargetApi = providers.gradleProperty('greenfarmTargetSdk').map { value ->
+    if (!value.isInteger() || !(value.toInteger() in 28..androidCompileApi)) {
+        throw new GradleException("greenfarmTargetSdk must be an API level from 28 to ${androidCompileApi}")
+    }
+    value.toInteger()
+}.orElse(28)
+def androidSdkDirectory = androidComponents.sdkComponents.sdkDirectory
+def gameNamespace = 'com.quanhoang.greenfarm3'
+// Optional local sandbox mode remains independent of online authentication.
+def localDevelopment = providers.gradleProperty('greenfarmLocalDevelopment').map { value ->
+    switch (value.toLowerCase(Locale.ROOT)) {
+        case 'true': return true
+        case 'false': return false
+        default: throw new GradleException('greenfarmLocalDevelopment must be true or false')
+    }
+}.orElse(false)
+def offlinePlay = providers.gradleProperty('greenfarmOfflinePlay').map { value ->
+    switch (value.toLowerCase(Locale.ROOT)) {
+        case 'true': return true
+        case 'false': return false
+        default: throw new GradleException('greenfarmOfflinePlay must be true or false')
+    }
+}.orElse(false)
+def onlineAccounts = providers.gradleProperty('greenfarmOnlineAccounts').map { value ->
+    if (value == 'true') return true
+    if (value == 'false') return false
+    throw new GradleException('greenfarmOnlineAccounts must be true or false')
+}.orElse(true)
+def authBaseUrl = providers.gradleProperty('AUTH_BASE_URL').orElse('').map { value ->
+    if (value == '') return ''
+    try {
+        def normalized = BackendBaseUrl.normalize(value)
+        if (!normalized.startsWith('https://')) throw new IllegalArgumentException()
+        return normalized
+    } catch (Exception ignored) {
+        throw new GradleException('AUTH_BASE_URL must be an HTTPS origin without credentials, path, query or fragment')
+    }
+}
+def generateLocalDevelopmentConfig = tasks.register('generateLocalDevelopmentConfig') {
+    inputs.property('enabled', localDevelopment)
+    inputs.property('offlinePlay', offlinePlay)
+    inputs.property('backendBaseUrl', backendBaseUrl)
+    inputs.property('onlineAccounts', onlineAccounts)
+    inputs.property('authBaseUrl', authBaseUrl)
+    def directory = layout.buildDirectory.dir('generated/local-development-config')
+    outputs.dir(directory)
+    doLast {
+        def source = new File(directory.get().asFile,
+                'com/quanhoang/greenfarm3/S800x480/LocalDevelopmentConfig.java')
+        source.parentFile.mkdirs()
+        source.setText("""package com.quanhoang.greenfarm3.S800x480;
+/** Generated for this debug build; never read from player data or network. */
+public final class LocalDevelopmentConfig {
+    private LocalDevelopmentConfig() {}
+    public static final boolean ENABLED = ${localDevelopment.get()};
+    public static final boolean OFFLINE_PLAY = ${offlinePlay.get()};
+    public static final String BACKEND_BASE_URL = "${backendBaseUrl.get()}";
+    public static final boolean ONLINE_ACCOUNTS = ${onlineAccounts.get() && !localDevelopment.get() && !offlinePlay.get()};
+    public static final String AUTH_BASE_URL = "${authBaseUrl.get()}";
+}
+""", 'UTF-8')
+    }
+}
+def legacyApplicationId = 'com.gameloft.android.ANMP.GloftGF2F'
+def legacyExport = providers.gradleProperty('greenfarmLegacyExport').map { value ->
+    switch (value.toLowerCase(Locale.ROOT)) {
+        case 'true': return true
+        case 'false': return false
+        default: throw new GradleException('greenfarmLegacyExport must be true or false')
+    }
+}.orElse(false)
+// Export bridge updates the installed old app with its existing signing key.
+// Both builds run the same source classes under the new internal namespace.
+def resolvedApplicationId = legacyExport.get() ? legacyApplicationId : gameNamespace
 
 // JADX Java/resources are UTF-8 regardless of the Windows system code page.
 tasks.withType(Exec).configureEach {
@@ -38,66 +116,83 @@ def prepareDebugSigningKey = tasks.register('prepareDebugSigningKey', PrepareDeb
 }
 
 android {
-    namespace 'com.gameloft.android.ANMP.GloftGF2F'
-    compileSdkVersion 28
-    buildToolsVersion '35.0.0'
+    namespace = gameNamespace
+    compileSdk = androidCompileApi
+    buildToolsVersion = androidBuildToolsVersion
     useLibrary 'org.apache.http.legacy'
 
     // Preserve the IDs embedded in original SDK DEX and obfuscated R holders.
-    aaptOptions {
+    androidResources {
         additionalParameters '--stable-ids',
                 layout.buildDirectory.file('generated/restored-resources/stable-ids.txt').get().asFile.absolutePath
     }
 
     sourceSets {
         main {
-            // Compile 108 restored game classes, progress helpers and SDK R aliases.
-            // Every other runtime class, including Application, comes from original DEX.
-            java.srcDirs = [layout.buildDirectory.dir('generated/core-java')]
+            // Compile the remaining recovered Java sources and SDK R aliases;
+            // Kotlin implementations compile directly from src/main/kotlin.
+            // Unrecovered SDK/runtime classes still come from original DEX.
+            java.srcDirs = [layout.buildDirectory.dir('generated/core-java'),
+                           layout.buildDirectory.dir('generated/local-development-config')]
+            // Keep JADX's unselected Java files out of the Kotlin source lookup.
+            kotlin.srcDirs = ['src/main/kotlin']
             res.srcDirs = [layout.buildDirectory.dir('generated/restored-res')]
             jniLibs.srcDirs = ['src/main/lib']
         }
     }
 
     defaultConfig {
-        applicationId 'com.gameloft.android.ANMP.GloftGF2F'
-        minSdkVersion 16
-        targetSdkVersion 28
-        versionCode 44220
-        versionName '4.4.2'
+        applicationId = resolvedApplicationId
+        minSdk = 16
+        targetSdk = legacyExport.get() ? 28 : androidTargetApi.get()
+        versionCode = 44220
+        versionName = '4.4.2'
         vectorDrawables.useSupportLibrary = true
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner = 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     signingConfigs {
         debug {
-            storeFile debugKeystore.asFile
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile = debugKeystore.asFile
+            storePassword = 'android'
+            keyAlias = 'androiddebugkey'
+            keyPassword = 'android'
         }
     }
 
     buildTypes {
-        debug { signingConfig signingConfigs.debug }
+        debug { signingConfig = signingConfigs.debug }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    lintOptions { abortOnError false }
+    // The final merger preserves the compression of the original JNI libraries.
+    packaging { jniLibs { useLegacyPackaging = true } }
+
+    lint { abortOnError = false }
     buildFeatures { buildConfig = false }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+        // Retain Java 8-compatible interface dispatch during the mixed migration.
+        jvmDefault = org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode.DISABLE
+    }
 }
 
 def prepareCoreDependencies = tasks.register('prepareCoreDependencies', Exec) {
     inputs.file(rootProject.file('green-farm-3.apk'))
     inputs.file(rootProject.file('tools/prepare_core_dependencies.py'))
     inputs.file(rootProject.file('tools/make_core_compile_view.py'))
+    inputs.file(rootProject.file('tools/relocate_compile_view.py'))
     inputs.files(rootProject.fileTree('tools') { include '*build_tools.py' })
     inputs.file(rootProject.file('docs/ORIGINAL_BYTECODE_TOOLS.json'))
-    inputs.files(fileTree('src/main/java/com/gameloft/android/ANMP/GloftGF2F/S800x480') { include '*.java' })
+    inputs.files(fileTree('src/main/java/com/quanhoang/greenfarm3/S800x480') { include '*.java' })
+    inputs.files(fileTree('src/main/kotlin') { include '**/*.kt' })
     outputs.dir(layout.buildDirectory.dir('original-dependencies'))
     commandLine pythonCommand.get(), rootProject.file('tools/prepare_core_dependencies.py'),
             '--output-dir', layout.buildDirectory.dir('original-dependencies').get().asFile
@@ -107,7 +202,11 @@ def restoreResources = tasks.register('restoreResources', Exec) {
     inputs.dir('src/main/res')
     inputs.file(rootProject.file('tools/restore_ninepatch.py'))
     inputs.file(rootProject.file('tools/restore_resource_values.py'))
-    def frameworkAttrs = new File(android.sdkDirectory, 'platforms/android-28/data/res/values/attrs.xml')
+    // Restore the decompiled resource values against the original recovery API.
+    // API 37 is used when AAPT links the restored output.
+    def frameworkAttrs = androidSdkDirectory.map {
+        it.file('platforms/android-28/data/res/values/attrs.xml')
+    }
     inputs.file(frameworkAttrs)
     outputs.dir(layout.buildDirectory.dir('generated/restored-res'))
     commandLine pythonCommand.get(), rootProject.file('tools/restore_ninepatch.py'),
@@ -119,7 +218,7 @@ def restoreResources = tasks.register('restoreResources', Exec) {
             environment 'PYTHONIOENCODING', 'utf-8'
             commandLine pythonCommand.get(), rootProject.file('tools/restore_resource_values.py'),
                     layout.buildDirectory.dir('generated/restored-res').get().asFile,
-                    '--framework-attrs', frameworkAttrs
+                    '--framework-attrs', frameworkAttrs.get().asFile
         }
     }
 }
@@ -135,9 +234,10 @@ def restoreResourceClasses = tasks.register('restoreResourceClasses', Exec) {
 def prepareCoreSources = tasks.register('prepareCoreSources', Sync) {
     dependsOn restoreResourceClasses
     from('src/main/java') {
-        include 'com/gameloft/android/ANMP/GloftGF2F/S800x480/*.java'
-        // l and its synthetic g token must retain their original implementations.
-        exclude 'com/gameloft/android/ANMP/GloftGF2F/S800x480/l.java'
+        include 'com/quanhoang/greenfarm3/S800x480/*.java'
+        // The incomplete JADX l.java is superseded by the verified Kotlin
+        // stream and marker implementations, never by an empty runtime stub.
+        exclude 'com/quanhoang/greenfarm3/S800x480/l.java'
     }
     from(layout.buildDirectory.dir('generated/restored-java')) { include '**/R.java' }
     into(layout.buildDirectory.dir('generated/core-java'))
@@ -146,35 +246,56 @@ def prepareCoreSources = tasks.register('prepareCoreSources', Sync) {
 def generateStableResourceIds = tasks.register('generateStableResourceIds', Exec) {
     inputs.file('src/main/res/values/public.xml')
     inputs.file(rootProject.file('tools/generate_stable_ids.py'))
+    inputs.property('resourcePackage', resolvedApplicationId)
     outputs.file(layout.buildDirectory.file('generated/restored-resources/stable-ids.txt'))
-    commandLine pythonCommand.get(), rootProject.file('tools/generate_stable_ids.py')
+    commandLine pythonCommand.get(), rootProject.file('tools/generate_stable_ids.py'),
+            '--package', resolvedApplicationId
 }
 
-configurations { dexMergeTool }
+configurations {
+    dexMergeTool
+    // Only this reviewed runtime is a program input. The compile-view is still
+    // lookup-only; do not use compileClasspath/runtimeClasspath wholesale here.
+    kotlinRuntimeOverlay {
+        canBeConsumed = false
+        canBeResolved = true
+        transitive = false
+    }
+}
 
 dependencies {
+    // AGP's built-in Kotlin defaults to its own compiler version even when the
+    // buildscript resolves a newer Kotlin Gradle plugin. Match the overlay runtime.
+    add('kotlinCompilerClasspath', "org.jetbrains.kotlin:kotlin-compiler-embeddable:${rootProject.kotlinVersion}")
+
     // Lookup-only classfiles are excluded from D8 and from the packaged APK.
     compileOnly files(layout.buildDirectory.file('original-dependencies/compile-view.jar')).builtBy(prepareCoreDependencies)
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.kotlinVersion}"
+    kotlinRuntimeOverlay "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.kotlinVersion}"
     dexMergeTool 'org.smali:dexlib2:2.5.2'
 }
 
 tasks.named('preBuild') {
-    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds
+    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds,
+            generateLocalDevelopmentConfig
 }
 
 // Android Studio executes this native setup task after model sync. Populate
 // its generated source/resource roots and lookup-only jar on a clean checkout.
 tasks.matching { it.name == 'generateDebugSources' }.configureEach {
-    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds
+    dependsOn prepareCoreDependencies, prepareCoreSources, restoreResources, generateStableResourceIds,
+            generateLocalDevelopmentConfig
 }
 
-tasks.matching { it.name == 'validateSigningDebug' }.configureEach {
+// AGP supplies these signing inputs as files without the task dependency.
+tasks.matching { it.name in ['validateSigningDebug', 'packageDebug', 'packageDebugAndroidTest'] }.configureEach {
     dependsOn prepareDebugSigningKey
 }
 
 def compileDexMergeTool = tasks.register('compileDexMergeTool', JavaCompile) {
     source rootProject.file('tools/MergeCoreDex.java')
     source rootProject.file('tools/PatchBackendEndpoint.java')
+    source rootProject.file('tools/RelocateGamePackage.java')
     classpath = configurations.dexMergeTool
     destinationDirectory = layout.buildDirectory.dir('dex-merge-tool')
     sourceCompatibility = '8'
@@ -194,29 +315,31 @@ androidComponents {
             originalApk.set(rootProject.layout.projectDirectory.file('green-farm-3.apk'))
             keystore.set(debugKeystore)
             projectDirectory.set(rootProject.layout.projectDirectory)
-            sdkDirectory.set(android.sdkDirectory)
+            sdkDirectory.set(androidSdkDirectory)
             workDirectory.set(layout.buildDirectory.dir("intermediates/original-sdk-merge/${variant.name}"))
             pythonExecutable.set(pythonCommand)
             backendUrl.set(backendBaseUrl)
+            applicationId.set(variant.applicationId)
+            gamePackage.set(gameNamespace)
             mergeToolClasspath.from(configurations.dexMergeTool,
                     compileDexMergeTool.flatMap { it.destinationDirectory })
             // Rebuild only this project's classfiles at its declared minSdk.
             // Studio's device-specific carrier DEX is not a stable merge input.
             overlayMinSdk.set(variant.minSdk.apiLevel)
             overlayCompileClasspath.from(variant.compileClasspath)
+            overlayRuntimeClasspath.from(configurations.kotlinRuntimeOverlay)
             androidBootClasspath.from(androidComponents.sdkComponents.bootClasspath)
-            d8Jar.set(new File(android.sdkDirectory, 'build-tools/35.0.0/lib/d8.jar'))
-            apkSignerJar.set(new File(android.sdkDirectory, 'build-tools/35.0.0/lib/apksigner.jar'))
-            zipalignExecutable.set(new File(android.sdkDirectory,
-                    "build-tools/35.0.0/${windows ? 'zipalign.exe' : 'zipalign'}"))
+            def buildTools = androidSdkDirectory.map { it.dir("build-tools/${androidBuildToolsVersion}") }
+            d8Jar.set(buildTools.map { it.file('lib/d8.jar') })
+            apkSignerJar.set(buildTools.map { it.file('lib/apksigner.jar') })
+            zipalignExecutable.set(buildTools.map { it.file(windows ? 'zipalign.exe' : 'zipalign') })
             packagingSources.from(rootProject.files('tools/build_core_source.py',
                     'tools/prepare_core_dependencies.py',
                     'tools/build_binary_baseline.py', 'tools/build_local_backend.py',
                     'tools/UpdateBuildRevision.java', 'tools/verify_runtime_apk.py'))
             packagingSources.from(rootProject.fileTree('tools') { include '*build_tools.py' })
-            buildToolsFiles.from(new File(android.sdkDirectory, "build-tools/35.0.0/${windows ? 'zipalign.exe' : 'zipalign'}"),
-                    new File(android.sdkDirectory, "build-tools/35.0.0/${windows ? 'aapt2.exe' : 'aapt2'}"),
-                    new File(android.sdkDirectory, 'build-tools/35.0.0/lib/apksigner.jar'))
+            buildToolsFiles.from(zipalignExecutable, apkSignerJar,
+                    buildTools.map { it.file(windows ? 'aapt2.exe' : 'aapt2') })
         }
         // PROJECT deliberately excludes compile-only SDK/runtime dependencies.
         // Include both class directories and AGP's generated project/R JARs.

@@ -1,0 +1,38 @@
+{
+  "apk": "/workspace/green_farm3/.local/kotlin-migration/delivery/new/app-debug.apk",
+  "package": "com.quanhoang.greenfarm3",
+  "application": "javax.microedition.midlet.App",
+  "launcher": "com.quanhoang.greenfarm3.Start",
+  "dex_count": 1,
+  "class_count": 7647,
+  "payload_count": 59,
+  "game_package": "com.quanhoang.greenfarm3",
+  "legacy_game_class_definitions_remaining": 0,
+  "network_policy": {
+    "internet_permission": true,
+    "debuggable": true,
+    "uses_cleartext_traffic": true,
+    "network_security_config": null
+  },
+  "verified_game_components": [
+    "com.quanhoang.greenfarm3.ActivityClearAllTasks",
+    "com.quanhoang.greenfarm3.ActivityMessage",
+    "com.quanhoang.greenfarm3.GoogleIAPTrackerReceiver",
+    "com.quanhoang.greenfarm3.InGameBrowserActivity",
+    "com.quanhoang.greenfarm3.KeyProvider",
+    "com.quanhoang.greenfarm3.Nt",
+    "com.quanhoang.greenfarm3.PushNotification.FirebaseInstanceIDService",
+    "com.quanhoang.greenfarm3.PushNotification.FirebaseMessageService",
+    "com.quanhoang.greenfarm3.PushNotification.LocalPushReceiver",
+    "com.quanhoang.greenfarm3.PushNotification.PushDeleteReceiver",
+    "com.quanhoang.greenfarm3.PushNotification.PushIntentReceiver",
+    "com.quanhoang.greenfarm3.S800x480.GloftGF2F",
+    "com.quanhoang.greenfarm3.Start",
+    "com.quanhoang.greenfarm3.installer.IReferrerReceiver",
+    "com.quanhoang.greenfarm3.migration.SaveTransferActivity",
+    "com.quanhoang.greenfarm3.migration.SaveTransferPreparationReceiver"
+  ],
+  "known_dangling_original_components": [
+    "com.quanhoang.greenfarm3.SoftKeyBoardActivity"
+  ]
+}

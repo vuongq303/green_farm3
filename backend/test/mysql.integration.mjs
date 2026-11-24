@@ -2,15 +2,14 @@ import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { createServer } from 'node:net';
 import { after, test } from 'node:test';
-import { loadDatabaseConfig, loadEnvironment } from '../src/config.js';
+import { loadDatabaseConfig, readEnvironment } from '../src/config.js';
 import { createMysqlStore, createPoolFromConfig } from '../src/db/store.js';
 import { migrate } from '../src/db/migrate.js';
 
 // This explicitly selected suite uses a real, isolated MySQL database. It never
 // drops/truncates tables and cleans up only its own randomly namespaced rows.
-loadEnvironment();
-const config = loadDatabaseConfig();
-config.database = process.env.TEST_DB_NAME ?? config.database;
+const env = readEnvironment();
+const config = loadDatabaseConfig({ ...env, DB_NAME: env.TEST_DB_NAME ?? env.DB_NAME });
 if (!config.database.endsWith('_test')) {
   throw new Error('test:mysql requires a dedicated DB_NAME or TEST_DB_NAME ending in _test');
 }
@@ -38,7 +37,7 @@ test('real MySQL migrations are additive, checksum tracked and idempotent', asyn
   const first = await migrate(pool);
   assert.ok([...first.applied, ...first.alreadyApplied].includes(1));
   const again = await migrate(pool);
-  assert.deepEqual(again, { applied: [], alreadyApplied: [1] });
+  assert.deepEqual(again, { applied: [], alreadyApplied: [1, 2, 3, 4, 5, 6] });
 });
 
 test('accounts, sessions, profile identity and compliance survive store restart', async t => {

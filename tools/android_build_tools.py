@@ -7,7 +7,9 @@ import shutil
 import subprocess
 
 
-BUILD_TOOLS_VERSION = '35.0.0'
+BUILD_TOOLS_VERSION = '37.0.0'
+# Device probes must not introduce a duplicate annotation into the target classpath.
+D8_NO_LAMBDA_METADATA = '-Dcom.android.tools.r8.disableLambdaMethodAnnotations=true'
 
 
 def executable_name(name, platform_name=None):

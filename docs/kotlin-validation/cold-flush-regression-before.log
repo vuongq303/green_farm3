@@ -1,0 +1,21 @@
+test_actual_controllers_and_transition (test_progress_save_controller.ProgressSaveControllerTest.test_actual_controllers_and_transition) ... FAIL
+
+======================================================================
+FAIL: test_actual_controllers_and_transition (test_progress_save_controller.ProgressSaveControllerTest.test_actual_controllers_and_transition)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/green_farm3/tests/test_progress_save_controller.py", line 420, in test_actual_controllers_and_transition
+    self.assertEqual(cold.returncode, 0, cold.stdout + cold.stderr)
+AssertionError: 1 != 0 : Exception in thread "main" java.lang.ExceptionInInitializerError
+	at com.quanhoang.greenfarm3.S800x480.ProgressSaveController.flushForLifecycle(ProgressSaveController.kt:426)
+	at com.quanhoang.greenfarm3.S800x480.ProgressSaveChecks.coldNoWriter(ProgressSaveChecks.java:178)
+	at com.quanhoang.greenfarm3.S800x480.ProgressSaveChecks.main(ProgressSaveChecks.java:184)
+Caused by: java.lang.IllegalStateException: Engine initialized without its MIDlet
+	at com.quanhoang.greenfarm3.S800x480.FarmGameEngine.<clinit>(FarmGameEngine.java:4)
+	... 3 more
+
+
+----------------------------------------------------------------------
+Ran 1 test in 9.146s
+
+FAILED (failures=1)

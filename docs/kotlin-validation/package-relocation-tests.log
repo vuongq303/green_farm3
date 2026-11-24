@@ -1,0 +1,6 @@
+test_structural_relocation_and_jumbo_pool_semantics (test_package_relocation.PackageRelocationTest.test_structural_relocation_and_jumbo_pool_semantics) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.939s
+
+OK

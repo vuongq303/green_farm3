@@ -21,6 +21,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from asm_tools import asm_jar
 from android_build_tools import executable_name
+from game_source_context import (current_source_path, current_compiled_path, current_staged_path, legacy_class_bytes, legacy_core_source)
+
 
 PACKAGE = "com/gameloft/android/ANMP/GloftGF2F/S800x480"
 AJ = "L" + PACKAGE + "/aj;"
@@ -96,9 +98,9 @@ class CoreFloatDispatchTest(unittest.TestCase):
             self.skipTest("Requires verified original conversion and JDK")
         asm = asm_jar()
         for name in sorted(CLASSES):
-            source = ROOT / "app/src/main/java" / PACKAGE / (name + ".java")
-            staged = ROOT / "app/build/generated/core-java" / PACKAGE / (name + ".java")
-            compiled = classes / PACKAGE / (name + ".class")
+            source = current_source_path(name)
+            staged = current_staged_path(name)
+            compiled = current_compiled_path(name)
             if not compiled.is_file():
                 self.skipTest("Requires compiled app core " + name)
             self.assertEqual(source.read_bytes(), staged.read_bytes(),
@@ -112,8 +114,10 @@ class CoreFloatDispatchTest(unittest.TestCase):
             result = subprocess.run([str(javac), '-cp', str(asm), str(scanner)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             manifest = root / "methods.tsv"
+            selected_methods = {(case[0], case[1]) for case in CASES}
+            selected_methods.add(('ci', 'socialAccountScreen(I)Z'))
             manifest.write_text("".join(name + "\t" + method + "\n"
-                                        for name, method in sorted({(case[0], case[1]) for case in CASES})))
+                                        for name, method in sorted(selected_methods)))
             baseline = root / "original"
             baseline.mkdir()
             with zipfile.ZipFile(original) as archive:
@@ -136,7 +140,13 @@ class CoreFloatDispatchTest(unittest.TestCase):
                 return methods
 
             before = invocations(baseline)
-            after = invocations(classes / PACKAGE)
+            normalized = root / "current-owner-fixture"
+            normalized.mkdir()
+            for name in CLASSES:
+                (normalized / (name + ".class")).write_bytes(legacy_class_bytes(current_compiled_path(name).read_bytes()))
+            after = invocations(normalized)
+            config = ROOT / 'app/build/generated/local-development-config/com/quanhoang/greenfarm3/S800x480/LocalDevelopmentConfig.java'
+            online_accounts = config.is_file() and 'ONLINE_ACCOUNTS = true;' in config.read_text()
             for name, method, target, float_descriptor, integer_descriptor, original_count in CASES:
                 with self.subTest(type=name, method=method, target=target, descriptor=float_descriptor):
                     key = (name, method)
@@ -148,8 +158,20 @@ class CoreFloatDispatchTest(unittest.TestCase):
                                      "Original float invocation count changed")
                     self.assertEqual(before[key][integer_call], 0,
                                      "Mixed original overloads require individual call-site proof")
-                    self.assertGreater(after[key][float_call], 0,
-                                       "Original float rendering target is absent")
+                    if online_accounts and name == 'ci' and method == 'kx(I)Z':
+                        # Account mode delegates the native Facebook renderer; it
+                        # must retain the proven float overload in that renderer.
+                        self.assertEqual(after[key][PACKAGE + '/ci.socialAccountScreen(I)Z'], 1)
+                        self.assertGreater(after[('ci', 'socialAccountScreen(I)Z')][float_call], 0)
+                        self.assertEqual(after[('ci', 'socialAccountScreen(I)Z')][integer_call], 0)
+                    elif online_accounts and name == 'ci' and method == 'lA(I)Z':
+                        # The requested age/gender bypass removes this renderer
+                        # from the online build, but must enter the account gate.
+                        self.assertEqual(after[key][PACKAGE + '/ci.enterOnlineAccountGate()V'], 1)
+                        self.assertEqual(after[key][float_call], 0)
+                    else:
+                        self.assertGreater(after[key][float_call], 0,
+                                           "Original float rendering target is absent")
                     self.assertEqual(after[key][integer_call], 0,
                                      "Lost float conversions selected a conflicting integer overload")
             print("PASS: " + str(len(CASES)) + " rendering overload pairs across six current classes preserve original float targets and exclude conflicting integer targets")

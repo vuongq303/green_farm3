@@ -1,0 +1,97 @@
+package com.quanhoang.greenfarm3.S800x480
+
+import android.view.KeyEvent
+import javax.microedition.midlet.MIDlet
+import com.quanhoang.greenfarm3.migration.SaveTransferActivity
+import com.quanhoang.greenfarm3.migration.SaveTransferGate
+import com.gameloft.android.wrapper.au as WrapperDeviceContext
+
+/** Original MIDlet entry points; JVM names are required by the wrapper runtime. */
+open class GloftGF2F : MIDlet() {
+    init { acx = this }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_MENU && event?.isLongPress == true) {
+            val activity = MIDlet.cnA
+            if (activity != null && !activity.isFinishing) {
+                SaveTransferActivity.launch(activity)
+                return true
+            }
+        }
+        if (keyCode == KeyEvent.KEYCODE_MENU && acw != null && LanguageRestartController.menuKeyDown()) return true
+        return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_MENU && acw != null && LanguageRestartController.menuKeyUp()) return true
+        return super.onKeyUp(keyCode, event)
+    }
+
+    @Synchronized
+    public override fun mj() {
+        synchronized(GloftGF2F::class.java) {
+            if (acw != null) return
+            var storageStage = "transfer_gate"
+            try {
+                val context = MIDlet.cnA ?: WrapperDeviceContext.getContext()
+                if (context != null && !SaveTransferGate.enterGame(context)) {
+                    ProgressSaveController.showStartupError()
+                    return
+                }
+                storageStage = "progress_store"
+                ProgressSaveController.initialize()
+            } catch (failure: RuntimeException) {
+                android.util.Log.e("GreenFarmSave", "storage_initialize_failed method=GloftGF2F.mj" +
+                    " phase=bootstrap_storage stage=$storageStage " +
+                    (if (storageStage == "progress_store") "database=greenfarm-progress.db slot=device-local " else "file=save-transfer.lock ") +
+                    SaveRestoreException.diagnostics(failure, if (storageStage == "progress_store")
+                        SaveRestoreException.Code.SQLITE_OPEN_FAILED else SaveRestoreException.Code.ENGINE_RESTORE_FAILED), null)
+                ProgressSaveController.showStartupError()
+                return
+            }
+            try {
+                synchronized(FarmGameEngine::class.java) {
+                    try {
+                        val game = FarmGameEngine(this, javax.microedition.lcdui.r.b(this))
+                        // Binary bootstrap reads acw during Init. Frame callbacks
+                        // share this monitor, so they cannot see half an Init.
+                        acw = game
+                        game.Init()
+                    } catch (failure: RuntimeException) {
+                        // Constructor can fail after the base canvas installed QD.
+                        // Stop only that failed instance, before releasing frames.
+                        GameRuntime.QD?.markInitializationFailed()
+                        acw = null
+                        throw failure
+                    }
+                }
+            } catch (failure: RuntimeException) {
+                android.util.Log.e("GreenFarmResources", "engine_initialize_failed method=GloftGF2F.mj phase=engine_init " +
+                    SaveRestoreException.diagnostics(failure, SaveRestoreException.Code.ENGINE_RESTORE_FAILED), null)
+                ProgressSaveController.showEngineStartupError()
+                return
+            }
+            try { acx!!.jf("MIDlet://stayAwake") } catch (unavailableKeepAwake: Exception) {
+                // The original wrapper treats this optional command as best effort.
+            }
+        }
+    }
+
+    public override fun mk() { acw?.Pause() }
+
+    public override fun al(unconditional: Boolean) {
+        if (acw == null) return
+        FarmGameEngine.HH()
+        FarmGameEngine.EZ()
+        FarmGameEngine.Ms()
+        FarmGameEngine.rE()
+        if (!ProgressSaveController.flushForLifecycle()) return
+        GameRuntime.be("GLLib.quit")
+        GameRuntime.Qn = -1
+    }
+
+    companion object {
+        @JvmField var acw: FarmGameEngine? = null
+        @JvmField var acx: GloftGF2F? = null
+    }
+}

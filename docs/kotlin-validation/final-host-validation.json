@@ -1,0 +1,54 @@
+{
+  "recorded_at": "2026-11-13T12:03:53.286836+07:00",
+  "report_timezone": "Asia/Saigon",
+  "full_suite": {
+    "tests": 154,
+    "elapsed_seconds": 198.549,
+    "passed": true,
+    "skipped": 0,
+    "log": "final-python-tests.log"
+  },
+  "full_suite_started_at_source_commit": "d573b80",
+  "full_suite_live_apk_sha256": "e50267165674703221a1f3e874aa33008d5999e228f9e6e63a2a36a471955daf",
+  "full_suite_live_application_id": "com.quanhoang.greenfarm3",
+  "full_suite_scope_note": "The full run began before the cold no-writer lifecycle guard reorder. Its live APK was the earlier cloud APK. It passed ActualApkTest, which validates APK definitions/components/payload, not gameplay. The subsequently discovered cold-receiver runtime failure is addressed by the separate focused run below; full-suite success is not a claim that the earlier APK completed save transfer.",
+  "focused_cold_flush": {
+    "tests": 1,
+    "elapsed_seconds": 8.365,
+    "passed": true,
+    "skipped": 0,
+    "log": "final-cold-flush-tests.log"
+  },
+  "focused_source_commit": "1064add5f3edfcc007a675e994171aaca1784f96",
+  "focused_cold_flush_jvm_branches": [
+    "Fresh process, no save writer: lifecycle flush does not initialize the engine before a MIDlet exists",
+    "Active game writer: existing batching, queue, language, transition and save-transfer gate behaviors"
+  ],
+  "focused_count_note": "Both JVM branches run within the existing one unittest case. Do not add this repeated test to154 as a distinct new suite test.",
+  "focused_production_source_sha256": "8aaaf164fc57bcd63aca87d8a5b996b3d46c44a82e1c8eb056c68cd1c7d4cd3c",
+  "tools_suite": {
+    "tests": 20,
+    "elapsed_seconds": 0.071,
+    "passed": true,
+    "skipped": 0,
+    "log": "final-tools-tests.log"
+  },
+  "callback_jvm_abi": "callback-abi-final.json",
+  "environment": {
+    "java_home": "/workspace/tooling/jdk-25",
+    "android_home": "/workspace/tooling/android-sdk",
+    "android_user_home": "/workspace/tooling/android-user",
+    "gradle_user_home": "/workspace/tooling/gradle-home",
+    "original_jar": ".local/bytecode-tools/greenfarm-original.jar"
+  },
+  "commands": [
+    "python3 -m unittest discover -s tests -p test_*.py -v",
+    "python3 -m unittest discover -s tools -p test_*.py -v",
+    "python3 -m unittest discover -s tests -p test_progress_save_controller.py -v"
+  ],
+  "limits": [
+    "No ADB or device actions performed by these host suites",
+    "Cold-flush-fixed APKs must be rebuilt and tested independently; their hashes differ from the live APK consumed by the full host suite",
+    "Host-suite elapsed time is not a gameplay performance/FPS measurement"
+  ]
+}

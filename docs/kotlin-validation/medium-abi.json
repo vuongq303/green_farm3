@@ -1,0 +1,61 @@
+{
+  "baseline": "Original APK dex2jar bytecode; source checkpoint5c24d6e for existing recovery-only CI worker accessors",
+  "note": "Private implementation symbols may be renamed. Public/package callable names, JVM descriptors and staticness preserved. New Kotlin companions are additive.",
+  "classes": [
+    {
+      "class": "e",
+      "baseline_callable_members": 16,
+      "missing_abi": []
+    },
+    {
+      "class": "bv",
+      "baseline_callable_members": 10,
+      "missing_abi": []
+    },
+    {
+      "class": "bs",
+      "baseline_callable_members": 8,
+      "missing_abi": []
+    },
+    {
+      "class": "be",
+      "baseline_callable_members": 11,
+      "missing_abi": []
+    },
+    {
+      "class": "j",
+      "baseline_callable_members": 7,
+      "missing_abi": []
+    },
+    {
+      "class": "x",
+      "baseline_callable_members": 93,
+      "missing_abi": []
+    },
+    {
+      "class": "bl",
+      "baseline_callable_members": 10,
+      "missing_abi": []
+    },
+    {
+      "class": "ah",
+      "baseline_callable_members": 15,
+      "missing_abi": []
+    },
+    {
+      "class": "bt",
+      "baseline_callable_members": 20,
+      "missing_abi": []
+    },
+    {
+      "class": "cy",
+      "baseline_callable_members": 5,
+      "missing_abi": []
+    },
+    {
+      "class": "b",
+      "baseline_callable_members": 50,
+      "missing_abi": []
+    }
+  ]
+}

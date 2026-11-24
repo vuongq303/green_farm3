@@ -1,37 +1,58 @@
-# APK debug đã build
+# APK debug và chuyển save
 
-[Tải green-farm-3-debug.apk](green-farm-3-debug.apk) — khoảng 15 MB, phiên bản 4.4.2.
-APK hoàn chỉnh của module **app**, gồm runtime DEX gốc, 108 lớp Java lõi và các
-helper lưu nền/ngôn ngữ/tutorial. Nguồn app: checkpoint `cd8ff09`.
+[Tải game mới: green-farm-3-debug.apk](green-farm-3-debug.apk) — application ID
+**com.quanhoang.greenfarm3**, khoảng15,8MB, version4.4.2. Đây là APK hoàn chỉnh
+của module **app**, nguồn thực thi checkpoint `1064add`.
 
-Đã build bằng `:app:assembleDebug`, cả khi IDE inject API24; DEX cuối vẫn 035,
-minSdk16. Kiểm tra Application thật, DEX, 59 assets/native payload giữ nguyên,
-chữ ký v1/v2/v3 và ZIP alignment đều đạt. Thông tin/SHA-256/chứng thư debug:
-[build-info.json](build-info.json), [checksum](green-farm-3-debug.apk.sha256).
+Phạm vi Kotlin **chưa hoàn tất**: 99 file Kotlin; trong236 lớp namespace game
+nguyên gốc có83 Kotlin,28 Java và125 lớp integration còn lấy từ DEX. Toàn bộ110
+lớp lõi có source (82 Kotlin/28 Java). Runtime MIDlet/SDK và10 thư viện native
+vẫn được giữ; APK gốc còn là đầu vào build. Không coi Kotlin stdlib hoặc lớp
+phụ compiler sinh là logic game đã chuyển.
 
-APK dùng **http://10.37.233.55:8787/** từ `BACKEND_BASE_URL` trong root
-`gradle.properties`. Chạy [backend JavaScript/MySQL](../backend/README.md) trên
-máy Windows đó, kiểm tra `/health` từ cả Windows và emulator. APK không chứa
-server hoặc credential DB; đổi địa chỉ cần build/cài lại.
+Ứng dụng mới có thư mục dữ liệu riêng. Để giữ tiến trình bản cũ:
 
-Farm được lưu vào SQLite trên thiết bị, schema4; MySQL backend lưu tài khoản,
-session và compliance. Mở project, chọn **Android App app**, chọn máy rồi **Run**.
+1. Dùng [APK cầu nối xuất save](green-farm-3-legacy-export-debug.apk), hoặc build
+   `:app:assembleDebug -PgreenfarmLegacyExport=true` bằng **đúng khóa ký bản cũ**.
+   Cập nhật bản cũ, không uninstall/clear data để cài cầu nối.
+2. Mở màn Chuyển bản lưu, nhấn Chuẩn bị rồi Xuất bằng SAF.
+3. Cài game mới, mở Chuyển bản lưu, Chuẩn bị và Nhập chính tệp vừa xuất; sau đó
+   Mở game và kiểm tra farm. [Hướng dẫn đầy đủ](../docs/SAVE_TRANSFER_KOTLIN.md).
 
-Cùng mã nguồn app, dùng URL cloud, đã chạy trên emulator API28: giữ bản lưu cũ,
-mở được farm tiếng Việt sau lỗi sprite khởi tạo trễ và tự khởi động lại về English.
-Bốn lần OK nhanh chỉ tạo một lần khởi động lại. Quest mở ra vẫn còn các mục tiêu
-0/1; mua bê hợp lệ trừ đúng 100 xu. Nhãn lưu thông thường đã được bỏ.
-**129/129** test mã, **20/20** test công cụ/ngôn ngữ và **27/27** kiểm tra SQLite
-Android đạt. [Báo cáo và ma trận 12 trường hợp](../docs/ASYNC_GAMEPLAY_CHECKPOINT.md).
+APK cầu nối giữ application ID cũ nhưng tất cả game class dùng namespace mới;
+ngoại lệ hai literal authority/URI KeyProvider được kiểm chứng riêng. Một khóa
+ký khác sẽ không cập nhật được ứng dụng cũ. Khóa riêng nằm trong `.local/`, không
+được commit; dùng cùng khóa cho các lần cập nhật tiếp theo.
 
-Bài đo cùng 100 yêu cầu snapshot tổng hợp giảm 100→6 commit, caller p95
-457,60→31,85 ms; đây không phải 100 lượt thu hoạch hoặc phép đo FPS.
-Encoder game gốc vẫn chạy ở ranh giới frame; SQLite chạy bằng một worker riêng,
-giữ WAL/FULL. Các bản APK dùng cho benchmark/probe và UI được ghi riêng trong
-build-info để tránh nhầm với bản nhúng IP Windows này.
+Hai APK được build sạch trên Linux, không override biến backend:
 
-Windows LAN và chính APK nhúng IP Windows chưa chạy được từ cloud. Chưa kiểm
-chứng 50–100 lượt thu hoạch thật với tổng XP/kho/quest, FPS trước/sau, đủ 14 ngôn
-ngữ trên thiết bị, toàn bộ di chuyển ✓/✕, vật nuôi/công trình, thiết bị thật hoặc
-Android mới. Kết quả cold restart cuối và giới hạn còn lại nằm trong báo cáo.
-Khóa ký riêng, database người chơi và credential không được commit.
+```sh
+./gradlew :app:clean :app:assembleDebug -PgreenfarmLegacyExport=true --stacktrace
+./gradlew :app:clean :app:assembleDebug --stacktrace
+```
+
+Kết quả tương ứng1m54s và1m44s,45task. DEX035, minSdk16, Application thật,
+16 component game,0 game class thuộc package cũ,59 assets/native payload nguyên
+byte, chữ ký v1/v2/v3 và ZIP alignment16KB đều đạt. Metadata, chứng thư và SHA:
+[build-info.json](build-info.json), [checksum game](green-farm-3-debug.apk.sha256),
+[checksum cầu nối](green-farm-3-legacy-export-debug.apk.sha256).
+
+Cả hai dùng **http://10.37.233.55:8787/** từ root `gradle.properties`.
+Chạy [backend JavaScript/MySQL](../backend/README.md) trên Windows đó; APK không
+chứa server hoặc credential database. Đổi IP/port cần build/cài lại.
+
+Cùng source với URL cloud đã được thử trên API28: SAF chuyển14record nguyên
+byte từ app cũ sang app mới; farm mở lại,1900xu/50cash/XP7/level1/tutorial23/EN
+được giữ sau lần load đầu và hai cold restart. Đổi sang Tiếng Việt cũng tự
+restart và khôi phục farm với đúng số dư/XP/tutorial.154test host,20test tools,
+regression cold receiver,27probe storage và30probe migration từ APK đã cài đạt.
+[Báo cáo](../docs/KOTLIN_MIGRATION_CHECKPOINT.md),
+[bằng chứng runtime](../docs/kotlin-validation/game-runtime.json).
+
+Chính hai binary nhúng IP Windows và mạng LAN chưa được chạy từ cloud; build
+Windows, thiết bị thật, Android mới, toàn bộ quest/kho/vật nuôi, âm thanh thực và
+FPS trước/sau chưa được xác nhận đầy đủ. Các quan sát gameplay/ngôn ngữ bổ sung
+được ghi riêng trong báo cáo, không suy ra từ build hoặc kiểm tra byte.
+
+Mở project → **Android App app** → chọn thiết bị → **Run**. Output mặc định cuối
+vẫn là APK game mới tại `app/build/outputs/apk/debug/app-debug.apk`.
