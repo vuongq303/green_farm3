@@ -8,17 +8,19 @@ import javax.microedition.midlet.v
 /** Preserves legacy SDK ownership and forwards the real game host lifecycle to browser accounts. */
 class LegacyFacebookLifecycle private constructor() {
     companion object {
-        private fun enabled() = !LocalDevelopmentConfig.ONLINE_ACCOUNTS
+        private fun enabled() = !LocalDevelopmentConfig.ONLINE_ACCOUNTS && !LocalDevelopmentConfig.OFFLINE_PLAY
 
         @JvmStatic fun onCreate(bundle: Bundle?) { if (enabled()) v.onCreate(bundle) }
         @JvmStatic fun onDestroy() { if (enabled()) v.onDestroy() }
         @JvmStatic fun onPause() {
-            if (enabled()) v.onPause() else SocialAccountController.onHostPaused()
+            if (enabled()) v.onPause()
+            else if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) SocialAccountController.onHostPaused()
         }
         @JvmStatic fun onSaveInstanceState(bundle: Bundle?) { if (enabled()) v.onSaveInstanceState(bundle) }
         @JvmStatic fun onRestart() { if (enabled()) v.onRestart() }
         @JvmStatic fun onResume() {
-            if (enabled()) v.onResume() else SocialAccountController.onHostResumed()
+            if (enabled()) v.onResume()
+            else if (LocalDevelopmentConfig.ONLINE_ACCOUNTS) SocialAccountController.onHostResumed()
         }
         @JvmStatic fun onStart() { if (enabled()) v.onStart() }
         @JvmStatic fun onStop() { if (enabled()) v.onStop() }

@@ -13,7 +13,7 @@ from kotlin_test_tools import compile_mixed, runtime_classpath
 PACKAGE = 'com/quanhoang/greenfarm3/S800x480/'
 JAVA = {
     PACKAGE + 'LocalDevelopmentConfig.java': '''package com.quanhoang.greenfarm3.S800x480;
-        public class LocalDevelopmentConfig {public static boolean ONLINE_ACCOUNTS=true;}''',
+        public class LocalDevelopmentConfig {public static boolean ONLINE_ACCOUNTS=true, OFFLINE_PLAY=false;}''',
     PACKAGE + 'w.java': 'package com.quanhoang.greenfarm3.S800x480;public class w {public static boolean ZR=true;}',
     PACKAGE + 'GameRuntime.java': 'package com.quanhoang.greenfarm3.S800x480;public class GameRuntime {public static void be(String s){}}',
     PACKAGE + 'ay.java': 'package com.quanhoang.greenfarm3.S800x480;public class ay {public ay(Object image){}}',
@@ -71,6 +71,9 @@ fun main(){
  disabled()
  check(Recorder.loads==0&&Recorder.calls.isEmpty()&&bu.clears==0&&bu.cacheReads==0&&bu.cacheWrites==0)
  LocalDevelopmentConfig.ONLINE_ACCOUNTS=false
+ LocalDevelopmentConfig.OFFLINE_PLAY=true;disabled()
+ check(Recorder.loads==0&&Recorder.calls.isEmpty()&&bu.clears==0&&bu.cacheReads==0&&bu.cacheWrites==0)
+ LocalDevelopmentConfig.OFFLINE_PLAY=false
  bt.I("legacy","legacy");bt.ar(32,32);bt.nS();bt.eL(16);bt.nT();bt.nU();bt.nV()
  check(bt.nW()&&bt.nX()&&bt.nY()&&bt.getPassword()=="legacy-session")
  val profile=bt.nZ();check(profile.name=="Legacy Name"&&profile.id=="legacy-id"&&profile.firstName=="First"&&profile.score==42&&profile.index==-2)

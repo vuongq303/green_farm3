@@ -43,6 +43,13 @@ def localDevelopment = providers.gradleProperty('greenfarmLocalDevelopment').map
         default: throw new GradleException('greenfarmLocalDevelopment must be true or false')
     }
 }.orElse(false)
+def offlinePlay = providers.gradleProperty('greenfarmOfflinePlay').map { value ->
+    switch (value.toLowerCase(Locale.ROOT)) {
+        case 'true': return true
+        case 'false': return false
+        default: throw new GradleException('greenfarmOfflinePlay must be true or false')
+    }
+}.orElse(false)
 def onlineAccounts = providers.gradleProperty('greenfarmOnlineAccounts').map { value ->
     if (value == 'true') return true
     if (value == 'false') return false
@@ -60,6 +67,7 @@ def authBaseUrl = providers.gradleProperty('AUTH_BASE_URL').orElse('').map { val
 }
 def generateLocalDevelopmentConfig = tasks.register('generateLocalDevelopmentConfig') {
     inputs.property('enabled', localDevelopment)
+    inputs.property('offlinePlay', offlinePlay)
     inputs.property('backendBaseUrl', backendBaseUrl)
     inputs.property('onlineAccounts', onlineAccounts)
     inputs.property('authBaseUrl', authBaseUrl)
@@ -74,8 +82,9 @@ def generateLocalDevelopmentConfig = tasks.register('generateLocalDevelopmentCon
 public final class LocalDevelopmentConfig {
     private LocalDevelopmentConfig() {}
     public static final boolean ENABLED = ${localDevelopment.get()};
+    public static final boolean OFFLINE_PLAY = ${offlinePlay.get()};
     public static final String BACKEND_BASE_URL = "${backendBaseUrl.get()}";
-    public static final boolean ONLINE_ACCOUNTS = ${onlineAccounts.get() && !localDevelopment.get()};
+    public static final boolean ONLINE_ACCOUNTS = ${onlineAccounts.get() && !localDevelopment.get() && !offlinePlay.get()};
     public static final String AUTH_BASE_URL = "${authBaseUrl.get()}";
 }
 """, 'UTF-8')

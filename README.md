@@ -37,6 +37,12 @@ gian nằm riêng trong `intermediates`, không dùng để cài.
 APK chuẩn: `app/build/outputs/apk/debug/app-debug.apk`.
 Bản APK debug đã build để tải nằm trong [artifacts/](artifacts/README.md).
 
+Để chơi offline với mức tiền khởi đầu thông thường, build bằng
+`./gradlew :app:assembleDebug -PgreenfarmOfflinePlay=true` (Windows dùng
+`gradlew.bat`). Lần đầu game hiển thị màn nhập tuổi và điều khoản. ACCEPT
+hợp lệ chuyển trực tiếp vào trình tải farm cục bộ. Các lần mở sau dùng thông tin
+đã lưu. Xem [luồng khởi động offline](docs/OFFLINE_STARTUP.md).
+
 Chạy độc lập backend để phát triển: build với
 `./gradlew :app:assembleDebug -PgreenfarmLocalDevelopment=true`
 (Windows dùng `gradlew.bat`). Mặc định cờ này là `false`; build lại với `false`

@@ -4956,7 +4956,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             Thread.sleep(1000L);
         } catch (InterruptedException e) {
         }
-        if (qO()) {
+        if (canOpenAgePolicyLink()) {
             HK();
             return;
         }
@@ -4974,7 +4974,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             Thread.sleep(1000L);
         } catch (InterruptedException e) {
         }
-        if (qO()) {
+        if (canOpenAgePolicyLink()) {
             HL();
             return;
         }
@@ -4993,7 +4993,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
             Thread.sleep(1000L);
         } catch (InterruptedException e) {
         }
-        if (!qO()) {
+        if (!canOpenAgePolicyLink()) {
             StringBuilder sbAppend = new StringBuilder().append("Show_Toast_");
             String strDt = dt(1006);
             if (strDt == null) {
@@ -25102,6 +25102,7 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static void cb(int i, int i2) {
+        if (LocalDevelopmentMode.skipLegacyBackend() || baf == null) return;
         int i3;
         if (bbi || bbl) {
             if (i < 16) {
@@ -41826,7 +41827,16 @@ public final class FarmGameEngine extends GameRuntime implements av {
     }
 
     public static boolean qO() {
-        return !LocalDevelopmentMode.skipLegacyBackend() && (bx("isConnectedMobile") || bx("isConnectedWifi"));
+        return !LocalDevelopmentMode.skipLegacyBackend() && hasNetworkConnection();
+    }
+
+    private static boolean canOpenAgePolicyLink() {
+        return (LocalDevelopmentConfig.OFFLINE_PLAY || !LocalDevelopmentMode.skipLegacyBackend())
+                && hasNetworkConnection();
+    }
+
+    private static boolean hasNetworkConnection() {
+        return bx("isConnectedMobile") || bx("isConnectedWifi");
     }
 
     public static final void qP() {
@@ -51854,33 +51864,24 @@ public final class FarmGameEngine extends GameRuntime implements av {
                     int iKR2 = GloftGF2F.acw.kR();
                     String upperCase2 = System.getProperty("microedition.locale").toUpperCase();
                     String str6 = "[GameloftLogo] device:" + iKR2 + ",game:" + aYU + ",prev.:" + aOD;
+                    int welcomeState = LocalDevelopmentConfig.OFFLINE_PLAY ? offlineStartupState() : (qN() ? 60 : 18);
                     if (iKR2 == 2 || iKR2 == 0 || iKR2 == 1 || iKR2 == 4 || iKR2 == 3 || iKR2 == 5 || iKR2 == 10 || iKR2 == 11 || iKR2 == 11 || iKR2 == 16 || iKR2 == 15 || iKR2 == 9 || iKR2 == 7 || aYU == 12) {
                         ro();
-                        if (qN()) {
-                            fF(60);
-                        } else {
-                            fF(18);
-                        }
+                        fF(welcomeState);
                     } else if (aYU == -1) {
                         String property = System.getProperty("microedition.locale.country");
                         if (!(iKR2 == 6 && property != null && property.equals("BR")) && upperCase2.indexOf("PT_BR") < 0 && upperCase2.indexOf("BR") < 0 && upperCase2.indexOf("PT-BR") < 0) {
                             fE(5);
                         } else {
                             ro();
-                            if (qN()) {
-                                fF(60);
-                            } else {
-                                fF(18);
-                            }
+                            fF(welcomeState);
                         }
                     } else {
                         ro();
-                        if (qN()) {
-                            fF(60);
-                        } else {
-                            fF(18);
-                        }
+                        fF(welcomeState);
                     }
+                } else if (LocalDevelopmentConfig.OFFLINE_PLAY) {
+                    fF(offlineStartupState());
                 } else if (!qN()) {
                     fF(18);
                 } else if (La()) {
@@ -51992,6 +51993,10 @@ public final class FarmGameEngine extends GameRuntime implements av {
         return false;
     }
 
+    private static int offlineStartupState() {
+        return aUb && aTO > 0 ? 18 : 60;
+    }
+
     static void Dt() {
         gX(60);
         if (bg(44, 20)) {
@@ -52008,9 +52013,9 @@ public final class FarmGameEngine extends GameRuntime implements av {
             kp(777);
             return;
         }
-        if (LocalDevelopmentMode.isEnabled()) {
-            // This is a local research policy, never a server compliance answer.
-            // Keep the original Accept UI and the shared save/loading continuation.
+        if (LocalDevelopmentMode.skipLegacyBackend()) {
+            // Use the existing local age classification and record it in the usual preferences.
+            aTY = false;
             bbi = true;
             bbj = false;
             bbk = false;

@@ -5,7 +5,8 @@ import com.gameloft.android2d.socialnetwork.l as SocialSdk
 /** Original SocialNetwork adapter; no replacement authentication or fabricated results. */
 open class bt {
     companion object {
-        private fun legacyEnabled() = w.ZR && !LocalDevelopmentConfig.ONLINE_ACCOUNTS
+        private fun legacyEnabled() =
+            w.ZR && !LocalDevelopmentConfig.ONLINE_ACCOUNTS && !LocalDevelopmentConfig.OFFLINE_PLAY
 
         @JvmStatic fun I(first: String?, second: String?) { if (legacyEnabled()) SocialSdk.I(first, second) }
         @JvmStatic fun ar(first: Int, second: Int) { if (legacyEnabled()) SocialSdk.ar(first, second) }

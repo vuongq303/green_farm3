@@ -21,7 +21,7 @@ JAVA = {
     'android/content/Intent.java': 'package android.content; public class Intent {}',
     'android/content/res/Configuration.java': 'package android.content.res; public class Configuration {}',
     'com/quanhoang/greenfarm3/S800x480/LocalDevelopmentConfig.java': '''package com.quanhoang.greenfarm3.S800x480;
-        public class LocalDevelopmentConfig {public static boolean ONLINE_ACCOUNTS=true;}''',
+        public class LocalDevelopmentConfig {public static boolean ONLINE_ACCOUNTS=true, OFFLINE_PLAY=false;}''',
     'com/quanhoang/greenfarm3/S800x480/SocialAccountController.java': """package com.quanhoang.greenfarm3.S800x480;
         public class SocialAccountController {public static int pauses,resumes;
           public static void onHostPaused(){pauses++;} public static void onHostResumed(){resumes++;}}""",
@@ -77,6 +77,11 @@ fun main(){
  check(Recorder.classLoads==0&&Recorder.events.isEmpty()) {"Online website/browser accounts touched the legacy Facebook SDK"}
  check(SocialAccountController.pauses==1&&SocialAccountController.resumes==1){"The actual MIDlet bridge must forward each online host pause/resume once"}
  LocalDevelopmentConfig.ONLINE_ACCOUNTS=false
+ LocalDevelopmentConfig.OFFLINE_PLAY=true
+ callbacks()
+ check(Recorder.classLoads==0&&Recorder.events.isEmpty())
+ check(SocialAccountController.pauses==1&&SocialAccountController.resumes==1)
+ LocalDevelopmentConfig.OFFLINE_PLAY=false
  callbacks()
  check(Recorder.classLoads==1)
  check(SocialAccountController.pauses==1&&SocialAccountController.resumes==1){"Legacy callbacks must not enter online auth"}
